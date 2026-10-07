@@ -27,6 +27,8 @@ First publish the completed tool's independent public source repository, deploy 
 
 Live release verified on 2026-10-07: 20 HTTPS GET/HEAD checks cover the homepage, metadata, sitemap, robots, redirects, missing paths, MIME types and security headers; all 5 public assets match the reviewed production build byte for byte. Both languages link through the unit and date tools and back to their matching-language homepage. The implementation passed 12 offline tests. Desktop, 320 CSS px, keyboard focus and FAQ controls were checked in the in-app browser. Physical devices, assistive technology, real 200% zoom and search-engine indexing remain unverified. A source push does not automatically update the live site.
 
+M13 source preparation (2026-10-07): the catalog now contains hidden drafts for Focus Timer and Color Palette. The bilingual title and introduction describe the growing collection of everyday tools. These source changes passed the 12 offline tests, source check and exact production-output check, but have not yet replaced the live homepage. A draft has no live URL or release date and stays out of both rendered catalogs. It becomes published only after the corresponding tool passes its real HTTPS release checks, followed by a verified homepage deployment.
+
 No software license has been selected; public source access is not a license grant.
 
 The production build includes canonical and language links, `robots.txt`, a sitemap, explicit root redirects, and static security headers. It has no client-side JavaScript, telemetry, external assets, storage, or server-side calculator logic.
