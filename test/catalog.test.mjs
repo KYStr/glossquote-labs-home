@@ -25,7 +25,10 @@ test("accepts a complete draft without inventing live URLs or a publication date
     zh: { name: "規劃中工具", description: "測試草稿。", useCase: "草稿用途。", example: { label: "範例", value: "1", detail: "不會顯示。" } },
     en: { name: "Draft tool", description: "A test draft.", useCase: "Draft use.", example: { label: "Example", value: "1", detail: "It stays hidden." } }
   });
-  assert.equal(validateCatalog(catalog).tools[2].status, "draft");
+  const draft = validateCatalog(catalog).tools.find((tool) => tool.slug === "planned-tool");
+  assert.equal(draft.status, "draft");
+  assert.equal(draft.publishedAt, null);
+  assert.equal(draft.urls, null);
 });
 
 test("rejects unknown schema keys at every level", () => {

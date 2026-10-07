@@ -54,7 +54,8 @@ function createFixtureProject(t) {
   catalog.tools.push({
     slug: "third-fixture-tool",
     status: "published",
-    publishedAt: "2026-10-06",
+    // This fake tool must remain recent as the real catalog grows.
+    publishedAt: "9999-12-31",
     urls: {
       "zh-Hant": "https://fixture.glossquote.com/index.html",
       en: "https://fixture.glossquote.com/en/index.html"
