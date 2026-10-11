@@ -1,5 +1,15 @@
 # GlossQuote homepage
 
+## Current live release — 2026-10-11
+
+[繁體中文](https://glossquote.com/index.html) · [English](https://glossquote.com/en/index.html)
+
+Deployed source: [6c6ee2dcad4e](https://github.com/KYStr/glossquote-labs-home/commit/6c6ee2dcad4ed72f1e056974251533c4c694f46c); Cloudflare version `2bc8033e-d346-4e8f-b820-6932319088ab`. This dated status supersedes older candidate-only or NOT_DEPLOYED notes below. Later documentation-only commits do not change the deployed assets.
+
+Release verification passed: 5 public assets matched the reviewed build byte for byte across 17 HTTP response checks, including HTTPS, security headers, MIME, bilingual SEO, robots/sitemap, missing paths and configured redirects. Both language pages received scoped browser checks. Both live catalogs contain ten tools with matching-language links. An English homepage → JSON → English homepage round trip was exercised.
+
+The runtime retains its previously accepted offline test evidence; the updated homepage passed 12 tests in this release. Full Network/Storage inspection, physical devices, assistive technology and all remaining documented manual checks are still NOT_RUN. Live publication is not a claim of exhaustive certification or search-engine indexing.
+
 The bilingual static homepage at `https://glossquote.com/index.html` and `https://glossquote.com/en/index.html` helps visitors choose a published Gloss Tools calculator. The tool list and recent additions are generated from [`catalog.json`](catalog.json); drafts never render as live links.
 
 ## Local work
