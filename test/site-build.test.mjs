@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -187,7 +187,7 @@ test("linked catalog and stylesheet paths, plus remote CSS, fail before either o
     if (existsSync(catalogPath)) {
       const details = lstatSync(catalogPath);
       if (!details.isSymbolicLink()) throw new Error("Catalog junction cleanup refused an unexpected file");
-      rmSync(catalogPath, { recursive: false, force: false });
+      unlinkSync(catalogPath); // 上方已確認為符號連結；只移除連結，不遞迴刪除目標。
     }
     writeFileSync(catalogPath, originalCatalogText, "utf8");
   }
@@ -206,7 +206,7 @@ test("linked catalog and stylesheet paths, plus remote CSS, fail before either o
     if (existsSync(publicPath)) {
       const details = lstatSync(publicPath);
       if (!details.isSymbolicLink()) throw new Error("Stylesheet junction cleanup refused an unexpected directory");
-      rmSync(publicPath, { recursive: false, force: false });
+      unlinkSync(publicPath); // 上方已確認為符號連結；保留外部來源目錄。
     }
     renameSync(preservedPublicPath, publicPath);
   }
