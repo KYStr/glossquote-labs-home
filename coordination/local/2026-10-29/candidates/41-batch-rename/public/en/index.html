@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Rename receipts, photos, and attachments in your browser. Preview numbered or literal replacement names, then download an uncompressed ZIP copy. Originals stay unchanged; unzip the copy after download.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Batch File Renamer and ZIP Download | GlossQuote</title>
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to workspace</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a><nav aria-label="Navigation"><a id="language-link" href="/index.html" lang="zh-Hant" aria-describedby="language-note">繁體中文</a><a href="https://glossquote.com/en/index.html">Tools home</a></nav></header>
+  <main id="workspace">
+    <div class="intro"><h1>Batch rename files</h1><p class="promise">Download a renamed ZIP copy. Your originals stay unchanged. The ZIP is uncompressed; unzip it after download.</p><p id="language-note" class="muted small">Changing language clears files and settings from this workspace.</p></div>
+    <section aria-labelledby="files-heading">
+      <div class="selection-bar"><h2 id="files-heading">Files to rename</h2><span id="summary" class="measure" role="status" aria-live="polite">0 / 100 files · 0 B / 64 MiB</span></div>
+      <label class="file-picker" for="files"><span>Select files</span><input id="files" type="file" multiple aria-describedby="limits selection-order selection-errors"></label>
+      <p id="limits" class="small">Up to 100 files; 16 MiB per file; 64 MiB total. Select individual files; folders and drag-and-drop are not supported.</p>
+      <p id="selection-order" class="muted small">Files are appended in the FileList order received by the browser, which may differ from the order you clicked them in the picker. Use Move up / Move down to set the delivery order.</p>
+      <div id="selection-errors" class="notice error" role="status" hidden></div>
+    </section>
+    <form id="rules" autocomplete="off" novalidate>
+      <fieldset class="mode-choice"><legend>Naming mode</legend><label><input id="mode-sequence" type="radio" name="mode" value="sequence" checked>Numbered names</label><label><input id="mode-replace" type="radio" name="mode" value="replace">Literal replacement</label></fieldset>
+      <fieldset id="sequence-fields" class="rule-fields"><legend class="sr-only">Numbering settings</legend>
+        <div class="field wide"><label for="base">Name base</label><input id="base" type="text" value="file" spellcheck="false" aria-describedby="base-help rule-errors"><small id="base-help">1–80 characters. For example, file → file-001.PDF. Extension case is kept.</small></div>
+        <div class="field"><label for="start">Start at</label><input id="start" type="text" inputmode="numeric" value="1" aria-describedby="start-help rule-errors"><small id="start-help">1–999,999,999; the final number must also fit.</small></div>
+        <div class="field"><label for="width">Minimum digits</label><input id="width" type="text" inputmode="numeric" value="3" aria-describedby="width-help rule-errors"><small id="width-help">1–9; pads with zeros, never truncates longer numbers.</small></div>
+      </fieldset>
+      <fieldset id="replace-fields" class="rule-fields" hidden disabled><legend class="sr-only">Literal replacement settings</legend>
+        <div class="field"><label for="find">Find text</label><input id="find" type="text" spellcheck="false" aria-describedby="find-help rule-errors"><small id="find-help">1–80 characters. Case-sensitive; replaces all non-overlapping matches from left to right.</small></div>
+        <div class="field"><label for="replacement">Replace with</label><input id="replacement" type="text" spellcheck="false" aria-describedby="replacement-help rule-errors"><small id="replacement-help">Up to 80 characters. Leave empty to delete matches. Only affects the stem, not the extension.</small></div>
+        <div class="field"><label for="prefix">Add prefix (optional)</label><input id="prefix" type="text" spellcheck="false" aria-describedby="prefix-help rule-errors"><small id="prefix-help">Up to 40 characters, added before the replaced stem. Also works when nothing matches.</small></div>
+      </fieldset>
+      <div id="rule-errors" class="notice error" role="status" hidden></div>
+    </form>
+    <section class="preview" aria-labelledby="preview-heading">
+      <div class="selection-bar"><h2 id="preview-heading">Name preview</h2><button id="clear" type="button" disabled>Clear workspace</button></div>
+      <p id="empty" class="empty">No files selected. Select individual files to preview the new names.</p>
+      <ol id="file-list" class="file-list" aria-label="Current order and new filenames" aria-busy="false"></ol>
+      <p class="muted small">Remove only affects this page’s list; it does not delete source files. Any name error blocks the whole ZIP. No partial archive or automatic name repair.</p>
+      <p class="muted small">Some systems may treat names that differ only by case or equivalent Unicode forms as the same. This tool conservatively blocks those duplicate outputs; adjust the rule to continue.</p>
+      <div class="action-area"><p id="status" role="status" aria-live="polite" aria-atomic="true">No files selected. Select individual files to preview the new names.</p><progress id="progress" max="1" value="0" hidden></progress><div id="build-errors" class="notice error" hidden></div><div class="actions"><button id="build" class="primary" type="button" disabled>Build ZIP</button><button id="cancel" type="button" hidden>Cancel</button><a id="download" class="button primary" download="renamed-files.zip" hidden>Download ZIP copy</a></div></div>
+      <p id="download-note" class="small" hidden>If a ZIP with this name already exists, your browser or OS handles it according to your download settings. The tool does not write to your source files.</p>
+    </section>
+    <aside class="privacy" aria-label="Data handling"><p><strong>Files are processed locally in this browser and are not uploaded.</strong> File bytes and embedded metadata remain unchanged, including any photo EXIF, GPS, or document properties. This tool does not inspect or remove that content. Check the copy before sharing it.</p><p class="small muted">Files, rules, and output stay in this page’s memory. Clearing or leaving the page releases its references; this does not securely erase your device, browser memory, or downloaded files. The page initially loads its own static assets. Device memory limits can still prevent a ZIP from finishing; retry with fewer files.</p></aside>
+    <section class="help" aria-labelledby="how-heading"><h2 id="how-heading">Prepare a delivery copy</h2><p>Select individual files and review their order before building an archive. Choose numbered names or replace literal, non-overlapping text in each filename stem, with an optional prefix. The tool checks every output name before creating the archive. Unsafe names and collisions stop the whole batch; no name is silently repaired.</p><p>Files are processed in this browser and are not uploaded. Their bytes remain unchanged, including embedded photo and document metadata. The ZIP uses the STORE method and does not compress its contents, so its size can be larger than the combined source bytes. Download the copy, unzip it on your device, and check the files before delivery.</p><ol><li>Select files and check the sizes and count.</li><li>Choose one naming mode.</li><li>Review the order and each new name.</li><li>Build and download the ZIP copy.</li><li>Unzip and check the files on your device before delivery.</li></ol>
+      <h2>Filename rules</h2><p>Each full output name may use up to 180 UTF-8 bytes; some characters use multiple bytes. Path separators, control characters, disallowed Windows characters, and reserved device names are rejected. Names cannot end in an ASCII space or dot. Original extensions are kept: .gitignore has no extension, while .env.local keeps .local.</p>
+      <h2>Frequently asked questions</h2>
+      <details><summary>Will this change or overwrite my originals?</summary><p>No. The tool downloads a separate ZIP copy. Your browser or OS controls the download location and same-name behavior.</p></details>
+      <details><summary>Does the ZIP compress photos or documents?</summary><p>No. It uses the ZIP STORE method and does not compress files. Unzip the download before use.</p></details>
+      <details><summary>Does it remove photo EXIF or document metadata?</summary><p>No. It preserves the original bytes and does not inspect or remove embedded metadata.</p></details>
+      <details><summary>Why are some names rejected?</summary><p>Unsafe names, reserved names, or collisions stop the whole archive so names are not silently altered.</p></details>
+    </section>
+    <noscript><p class="notice error">Enable JavaScript to preview names and build the ZIP locally.</p></noscript>
+  </main>
+  <footer>Gloss Tools by GlossQuote · Local candidate</footer>
+</body>
+</html>

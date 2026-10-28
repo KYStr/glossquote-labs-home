@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Enter 2–32 teams and the number of courts to create single or double round-robin fixtures, byes, time slots, and team opponent lists.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Round-Robin Schedule | Gloss Tools</title>
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to scheduling workspace</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools</a><span class="product-name">Round-robin schedule</span><a href="../index.html" lang="zh-Hant" hreflang="zh-Hant" title="Changing language clears this page">繁體中文</a></header>
+  <main>
+    <div class="intro"><h1>Build a complete round-robin schedule</h1><p>Review the matchups and byes, then assign slots based on your available courts.</p></div>
+    <noscript><p class="notice">Enable JavaScript to create schedules in this page. This tool does not provide server-side scheduling.</p></noscript>
+    <nav class="mobile-nav" aria-label="Scheduling workspace"><button id="show-input" type="button" aria-controls="input-panel" aria-pressed="true">Input and settings</button><button id="show-results" type="button" aria-controls="result-panel" aria-pressed="false">Full schedule</button></nav>
+    <div class="workspace" id="workspace" data-view="input">
+      <section id="input-panel" class="settings" aria-labelledby="input-heading">
+        <h2 id="input-heading">Input and settings</h2>
+        <form id="schedule-form" novalidate autocomplete="off">
+          <div class="field"><label for="teams">Teams (one per line)</label><p class="help" id="teams-help">Paste 2–32 teams, up to 80 characters per name. No duplicate names or blank lines; names are case sensitive.</p><textarea id="teams" name="teams" rows="4" maxlength="16384" spellcheck="false" aria-describedby="teams-help teams-error"></textarea><p class="field-error" id="teams-error"></p></div>
+          <div class="field"><label for="cycles">Round-robin mode</label><select id="cycles" name="cycles" aria-describedby="cycles-error"><option value="1">Single (one meeting per pair)</option><option value="2">Double (two meetings per pair)</option></select><p class="field-error" id="cycles-error"></p></div>
+          <div class="field"><label for="courts">Available courts</label><input id="courts" name="courts" type="text" inputmode="numeric" maxlength="2" value="2" aria-describedby="courts-help courts-error"><p class="help" id="courts-help">1–16 courts. Limited courts add slots while keeping every matchup.</p><p class="field-error" id="courts-error"></p></div>
+          <details id="timing-details"><summary>Optional timing settings</summary>
+            <fieldset aria-describedby="timing-help timing-error"><legend>Assign times to slots</legend><p class="help" id="timing-help">Leave all four fields blank for an untimed schedule, or complete all four. Civil times only: no timezone, daylight-saving or rest-time conversion.</p>
+              <div class="field"><label for="startDate">Start date</label><input id="startDate" name="startDate" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" aria-describedby="timing-help startDate-error"><p class="help">Format YYYY-MM-DD; years 2000–2099.</p><p class="field-error" id="startDate-error"></p></div>
+              <div class="field"><label for="startTime">Start time</label><input id="startTime" name="startTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:mm" aria-describedby="startTime-error"><p class="help">24-hour HH:mm, for example 09:00.</p><p class="field-error" id="startTime-error"></p></div>
+              <div class="field"><label for="matchMinutes">Minutes per match</label><input id="matchMinutes" name="matchMinutes" type="text" inputmode="numeric" maxlength="4" aria-describedby="matchMinutes-help matchMinutes-error"><p class="help" id="matchMinutes-help">Whole number from 1 to 1440.</p><p class="field-error" id="matchMinutes-error"></p></div>
+              <div class="field"><label for="changeoverMinutes">Changeover minutes between slots</label><input id="changeoverMinutes" name="changeoverMinutes" type="text" inputmode="numeric" maxlength="3" aria-describedby="changeoverMinutes-help changeoverMinutes-error"><p class="help" id="changeoverMinutes-help">Whole number from 0 to 120. Includes round transitions once; none after the last match.</p><p class="field-error" id="changeoverMinutes-error"></p></div>
+              <p class="field-error" id="timing-error"></p>
+            </fieldset>
+          </details>
+          <div class="form-actions"><button id="create" class="primary" type="submit">Create schedule</button><button id="clear" type="button">Clear all</button></div>
+          <section id="clear-confirm" class="notice" hidden aria-label="Confirm clear"><p>Clear all teams, timing settings and the schedule? Downloaded files will remain.</p><div class="actions"><button id="confirm-clear" type="button">Confirm clear</button><button id="cancel-clear" type="button">Keep content</button></div></section>
+          <section id="errors" class="error-summary" hidden tabindex="-1" aria-labelledby="error-heading"><h3 id="error-heading">Correct these fields, then create the schedule</h3><ul id="error-list"></ul></section>
+        </form>
+        <p class="privacy">The schedule is created in this page. A file is created only when you choose to download it.</p>
+        <p class="help">No account, upload or browser storage. Refreshing or changing language clears this page; clearing does not delete downloaded files.</p>
+      </section>
+      <section id="result-panel" class="canvas" aria-labelledby="result-heading">
+        <div class="canvas-heading"><h2 id="result-heading" tabindex="-1">Full schedule</h2><p id="status" class="status" role="status" aria-live="polite">Not created yet</p></div>
+        <div id="result-empty" class="empty"><h3>Start with your teams</h3><p>Enter teams and choose “Create schedule” to see all rounds, byes and court assignments.</p></div>
+        <div id="result-content" hidden><p id="result-summary" class="result-summary"></p><p id="time-summary" class="help"></p><p class="notice">Home/away are labels, not actual home venues. Match order is fixed; rest times and referee assignments are not optimized.</p>
+          <div id="schedule-list" class="schedule-list"></div>
+          <section class="team-view" aria-labelledby="team-heading"><h3 id="team-heading">Team opponent lists</h3><label for="team-select">Choose a team to see opponents</label><select id="team-select"><option value="">Choose a team</option></select><div id="opponent-panel" hidden><h4 id="opponent-heading"></h4><ol id="opponent-list" class="matches"></ol></div></section>
+          <div class="download-area"><h3>Download the full schedule</h3><p class="help">Both files include all rounds and every team’s opponent list, regardless of the selected team. TXT and JSON together are limited to 2 MiB.</p><div class="actions"><button id="download-txt" type="button" disabled>Download TXT</button><button id="download-json" type="button" disabled>Download JSON</button></div><p id="download-status" role="status" aria-live="polite"></p></div>
+        </div>
+      </section>
+    </div>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">Before you schedule</h2>
+      <details><summary>What happens when there is an odd number of teams?</summary><p>Each round has one bye; in a single round robin, every team receives one bye.</p></details>
+      <details><summary>Will limited courts remove any matches?</summary><p>No. Each round is split into additional slots in a fixed order, and all matchups remain in the schedule.</p></details>
+      <details><summary>Does the home/away label mean a real home venue?</summary><p>No. The second meeting in a double round robin swaps the labels. The tool does not know the actual venue or advantage.</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to Gloss Tools</a><span>Gloss Tools by GlossQuote · Preview candidate</span></footer>
+</body>
+</html>

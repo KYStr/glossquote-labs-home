@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; object-src 'none'; connect-src 'none'; font-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Image Redaction Tool | GlossQuote</title>
+  <meta name="description" content="Cover image areas with opaque black rectangles in your browser, inspect a flattened PNG, and download a copy. You choose each area; the tool does not detect sensitive information.">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <header class="topbar"><a href="https://glossquote.com/en/index.html">Gloss Tools</a><span>Image Redactor</span><nav aria-label="Language"><a href="/index.html" lang="zh-Hant">繁體中文</a></nav></header>
+  <main>
+    <div class="page-heading"><h1>Cover sensitive areas in an image</h1><p>Manual masks · Local processing · Flattened PNG</p></div>
+    <p class="safety-note">Draw the areas you want to cover. The tool does not detect sensitive information. Inspect the whole image before downloading.</p>
+    <div class="source-toolbar">
+      <input id="source-file" class="file-input" type="file" accept="image/png,image/jpeg" aria-describedby="file-help error" disabled>
+      <label for="source-file" class="button primary" id="source-label">Choose image</label>
+      <button id="clear-source" type="button" disabled>Clear image</button>
+      <span id="source-info" class="data"></span>
+    </div>
+    <p id="file-help" class="help">One static PNG or JPEG; up to 8 MiB, 8,192 pixels per edge and 16,000,000 total pixels.</p>
+    <p id="source-name" class="source-name" hidden></p>
+    <section id="replace-confirm" class="confirmation" aria-labelledby="replace-question" hidden>
+      <p id="replace-question">Replacing the image will remove its masks and preview. Continue? Cancel keeps the current image.</p>
+      <div class="button-row"><button id="replace-cancel" type="button">Cancel replacement</button><button id="replace-accept" type="button">Replace image</button></div>
+    </section>
+    <p id="status" role="status" aria-live="polite" aria-atomic="true">Choose one PNG or JPEG. The image is processed in this page.</p>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="workspace">
+      <section class="canvas-column" aria-labelledby="canvas-heading">
+        <h2 id="canvas-heading">Image canvas</h2>
+        <div id="canvas-region" class="canvas-region" role="region" aria-label="Image canvas" tabindex="0" aria-describedby="canvas-help">
+          <p id="empty-state">Choose an image to draw solid black rectangles here.</p>
+          <div id="image-stage" class="image-stage" hidden>
+            <canvas id="editor-canvas" width="1" height="1" aria-label="Image and black mask preview; use coordinate fields for equivalent controls" hidden></canvas>
+            <div id="draft-mask" class="draft-mask" aria-hidden="true" hidden></div>
+          </div>
+        </div>
+        <p id="canvas-help" class="help">Drag to draw a rectangle. Use the x, y, width and height fields to add or adjust a mask with the keyboard.</p>
+      </section>
+      <aside class="mask-panel" aria-labelledby="mask-count">
+        <h2 id="mask-count">Masks 0 / 50</h2>
+        <p id="coordinate-help" class="help">Coordinates use the original image pixels in its displayed orientation, with the origin at the top left.</p>
+        <form id="mask-form" novalidate>
+          <fieldset id="coordinate-fields" disabled>
+            <legend id="coordinate-heading">Add a mask by coordinates</legend>
+            <div class="coordinate-grid">
+              <div><label for="mask-x">x</label><input id="mask-x" name="x" type="number" inputmode="numeric" min="0" step="1" value="0" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-y">y</label><input id="mask-y" name="y" type="number" inputmode="numeric" min="0" step="1" value="0" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-width">Width</label><input id="mask-width" name="width" type="number" inputmode="numeric" min="1" step="1" value="1" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-height">Height</label><input id="mask-height" name="height" type="number" inputmode="numeric" min="1" step="1" value="1" aria-describedby="coordinate-help error"></div>
+            </div>
+          </fieldset>
+          <div class="button-row"><button id="add-mask" type="submit" disabled>Add mask</button><button id="update-mask" type="button" disabled>Update selected mask</button></div>
+        </form>
+        <button id="delete-mask" type="button" disabled>Delete selected mask</button>
+        <p id="no-masks" class="help">No masks yet. Draw on the image or enter coordinates to add one.</p>
+        <ol id="mask-list" class="mask-list" aria-label="Mask list"></ol>
+        <div class="button-row"><button id="undo-mask" type="button" disabled>Undo last added</button><button id="clear-masks" type="button" disabled>Clear all masks</button></div>
+        <section id="masks-confirm" class="confirmation" aria-labelledby="masks-question" hidden>
+          <p id="masks-question">Clearing all masks will prevent PNG generation and remove the current preview. Continue?</p>
+          <div class="button-row"><button id="masks-cancel" type="button">Keep masks</button><button id="masks-accept" type="button">Clear all masks</button></div>
+        </section>
+      </aside>
+    </div>
+    <div class="export-bar">
+      <p>Transparent areas become white before opaque black masks are applied.</p>
+      <div class="button-row"><button id="cancel-generation" type="button" disabled>Cancel generation</button><button id="generate" class="primary" type="button" disabled>Create PNG preview</button></div>
+    </div>
+    <section id="output-section" class="output-section" aria-labelledby="output-heading" hidden>
+      <div class="output-heading"><h2 id="output-heading">Exported PNG preview</h2><button id="download" class="primary" type="button" disabled>Download PNG copy</button></div>
+      <p id="output-info" class="data"></p><p>Inspect the complete export, including all unmasked areas.</p>
+      <div class="output-preview" role="region" aria-label="Actual exported PNG preview" tabindex="0"><img id="output-image" alt="Actual exported PNG; inspect whether you covered every sensitive area" hidden></div>
+    </section>
+    <section class="help-section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">How to use this tool</h2>
+      <p>The support targets are current stable desktop Chrome and Edge. Mobile preview is best effort. If your device cannot process the image, try a desktop browser or a smaller image. The tool will not resize or upload it.</p>
+      <details><summary>Does the tool find emails or order numbers automatically?</summary><p>No. Draw every area you want to cover.</p></details>
+      <details><summary>Can I move a mask after downloading?</summary><p>No. The exported PNG contains composited pixels and no editable mask layer. Your source image remains on your device.</p></details>
+      <details><summary>Is my image uploaded?</summary><p>Your image is processed in the current browser page, with no upload or storage feature. Clearing the image or leaving releases references held by the program. Browser memory cleanup is not secure erasure and does not delete the source on your device.</p></details>
+      <details><summary>Why do transparent areas become white?</summary><p>The export composites the image over white before drawing black masks, so viewers do not choose different transparent backgrounds.</p></details>
+      <details><summary>Does this guarantee a safely anonymized image?</summary><p>No. It covers only the rectangles you choose. Inspect the whole export and its unmasked areas.</p></details>
+    </section>
+    <noscript><p class="error">Enable JavaScript to process images in this page.</p></noscript>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to all tools</a><span>Gloss Tools by GlossQuote · Local candidate preview</span></footer>
+</body>
+</html>

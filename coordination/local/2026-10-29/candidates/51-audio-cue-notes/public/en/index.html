@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="Play an audio file locally, capture notes at the current time, jump back to a note, and export or re-import your notes.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; media-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Timestamped Audio Notes | Gloss Tools</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a href="https://glossquote.com/en/index.html">Gloss Tools</a><span class="product-name">Timestamped audio notes</span><span class="badge">Local candidate</span></header>
+  <nav class="language" aria-label="Language"><a href="../index.html" lang="zh-Hant" aria-describedby="language-warning">繁體中文</a><span id="language-warning">Switching language leaves this page. Unexported notes and the audio workspace will be lost.</span></nav>
+  <main>
+    <h1>Take notes while listening to audio</h1>
+    <p class="intro">Choose a local recording and capture a thought at the moment it happens.</p>
+    <p class="privacy">Audio and notes stay in this page’s memory. Nothing is uploaded or saved automatically. Export before refreshing or leaving.</p>
+    <noscript><p>Enable JavaScript to use the local workspace.</p></noscript>
+    <section class="source-area" aria-labelledby="source-heading">
+      <h2 id="source-heading">Audio source</h2>
+      <label for="audio-file">Choose audio</label>
+      <input id="audio-file" type="file" accept="audio/*" aria-describedby="audio-help error">
+      <p class="help" id="audio-help">One local file, up to 64 MiB. Playback depends on your browser; this tool does not convert or transcribe audio.</p>
+      <p id="source-info" class="source-info">No audio attached</p>
+      <div id="metadata" hidden>
+        <form id="metadata-form" novalidate>
+          <div class="metadata-fields">
+            <div><label for="source-title">Source title</label><input id="source-title" type="text" aria-describedby="metadata-help error" autocomplete="off"></div>
+            <div><label for="source-duration">Source timeline duration</label><input id="source-duration" class="time-input" type="text" inputmode="text" aria-describedby="metadata-help error" autocomplete="off"></div>
+          </div>
+          <p id="metadata-help" class="help">Title: up to 200 UTF-16 code units. Duration: HH:MM:SS.mmm (2–8 hour digits), at least as long as every note. Save to apply changes.</p>
+          <button id="save-metadata" type="submit">Save source details</button>
+        </form>
+        <p id="duration-info" class="help"></p>
+        <p id="duration-mismatch" class="notice" hidden>The source timeline and actual audio durations differ. Notes beyond the audio remain available, with seeking disabled.</p>
+        <button id="adopt-duration" type="button" hidden>Use current audio duration</button>
+      </div>
+      <audio id="audio" controls preload="metadata" aria-label="Local audio player"></audio>
+      <p id="playback-state" role="status">Choose audio or import notes to begin</p>
+      <div class="capture-bar"><button id="capture" class="primary" type="button" disabled>Capture this moment</button><span>Current position <output id="position" class="time">—</output></span></div>
+      <p id="capture-help" class="help">Load audio, then use the player’s play control to listen. Jumping to a note changes position without starting playback.</p>
+      <p id="over-timeline" class="notice" hidden>The playback position exceeds the source timeline. Use the current audio duration before capturing this moment.</p>
+      <section id="editor" class="editor" aria-labelledby="editor-heading" hidden>
+        <h3 id="editor-heading">New note</h3><p id="draft-time" class="time"></p>
+        <form id="note-form" novalidate>
+          <label for="note-text">Note text</label><textarea id="note-text" rows="4" aria-describedby="note-help error"></textarea>
+          <p id="note-help" class="help">Up to 2,000 UTF-16 code units per note; include non-whitespace text. Drafts are not exported.</p>
+          <div class="actions"><button id="save-note" class="primary" type="submit">Save note</button><button id="cancel-editor" type="button">Cancel</button></div>
+        </form>
+      </section>
+      <p id="error" class="error" role="alert" hidden></p>
+      <p id="feedback" role="status" class="help"></p>
+      <div class="file-actions"><div><label for="import-file">Import JSON</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="import-help error"><p id="import-help" class="help">Up to 4 MiB. Validate and preview before confirming replacement. Importing does not load audio.</p></div><button id="clear" class="quiet" type="button" disabled>Clear everything</button></div>
+    </section>
+    <section id="confirmation" class="confirmation" aria-labelledby="confirmation-heading" tabindex="-1" hidden>
+      <h2 id="confirmation-heading"></h2><p id="confirmation-detail"></p><p id="confirmation-summary" class="plain-text"></p><p id="confirmation-mismatch" class="notice" hidden></p>
+      <div id="confirmation-actions" class="actions"></div>
+    </section>
+    <section class="notes-area" aria-labelledby="notes-heading">
+      <h2 id="notes-heading" tabindex="-1">Timestamped notes</h2><p id="quota" class="help">Notes 0 / 1,000 · UTF-8 text 0 / 1,048,576 bytes</p>
+      <p id="empty-notes">No notes yet. Load audio and capture this moment, or import notes from a previous JSON export.</p><ol id="notes"></ol>
+    </section>
+    <section class="export-area" aria-labelledby="export-heading"><h2 id="export-heading">Take your notes with you</h2><p class="help">Markdown and JSON: up to 4 MiB each, 8 MiB combined. Re-import JSON to restore notes. Neither format includes audio.</p><div class="actions"><button id="export-markdown" type="button" disabled>Download Markdown</button><button id="export-json" type="button" disabled>Download JSON</button></div></section>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">How it works</h2><details><summary>Is my recording uploaded?</summary><p>No. The candidate selects and plays a local file in the browser.</p></details><details><summary>Can it play every audio file?</summary><p>No guarantee. Playback depends on the current browser’s supported formats; this tool does not convert audio.</p></details><details><summary>Does it transcribe speech?</summary><p>No. You enter every note yourself.</p></details><details><summary>Does an export include audio?</summary><p>No. JSON contains only a source title, duration metadata, and notes.</p></details><details><summary>Are exports size-limited?</summary><p>Markdown and JSON are each capped at 4 MiB; an oversized export creates no partial download.</p></details><details><summary>Does switching language keep my work?</summary><p>No. Export first or the current workspace will be lost.</p></details></section>
+  </main>
+  <footer><p>M1 local candidate: real browser, codec and assistive technology acceptance has not been run.</p><a href="https://glossquote.com/en/index.html">Back to Gloss Tools</a><span>Gloss Tools by GlossQuote</span></footer>
+</body>
+</html>
