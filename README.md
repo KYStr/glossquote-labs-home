@@ -1,5 +1,13 @@
 # GlossQuote homepage
 
+## 本地與雲端共同工作入口 — 2026-10-29
+
+GlossQuote Labs 現在使用 GitHub 作為本地 Codex 與雲端 dots 的共同來源與承接依據。開始、恢復、交接及交驗前先讀 [AGENTS.md](AGENTS.md) 與 [共用工作規則](docs/CLOUD-LOCAL-WORKFLOW.md)，再讀遠端最新 [工作登記](coordination/work-registry.json)。主頁／預案／候選先上 GitHub，唯一承接登記成功並讀回後才開工，最後以固定候選獨立驗收。
+
+首次接入：[貼給本地 Codex 的提示詞](docs/LOCAL-CODEX-HANDOFF.md) · [雲端 dots 接入指令](docs/CLOUD-DOTS-HANDOFF.md) · [協作命令](docs/COORDINATION-COMMANDS.md) · [專案任務板](https://gent-cloud-task-board.agentkystr.chatgpt.site/)。兩端原承接者完成盤點與確認前不開放新領取，原本工作保留 checkpoint；`catalog.json` 的 published／draft 不是可用預案庫存。
+
+預案完整且未被消耗的庫存 <6 時補預案 P1，達6降 P3；工具製作維持 P3，預設本地 Codex。任務明確允許雲端才能由雲端承接。下面的主頁發布證據與既有發布流程繼續有效；這次協作規則更新本身沒有部署主頁或宣稱工具新驗收通過。
+
 ## Current live release — 2026-10-11
 
 [繁體中文](https://glossquote.com/index.html) · [English](https://glossquote.com/en/index.html)
