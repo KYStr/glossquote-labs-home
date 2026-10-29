@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Enter a deadline, workweek, holidays, tasks, and dependencies to calculate early/late dates, workday slack, and the critical path.">
+  <title>Deadline Back-Planner | Gloss Tools</title>
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body data-pane="input">
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools</a>
+    <span class="product-name">Deadline back-planner</span>
+    <a href="../index.html" lang="zh-Hant" hreflang="zh-Hant" class="language">繁體中文</a>
+  </header>
+  <main id="workspace">
+    <div class="intro">
+      <h1>Work backward from a deadline to a reviewable plan</h1>
+      <p>Use the longest dependency path to set the project anchor, then see how much each task can move.</p>
+      <p class="help">You provide the holidays. This tool does not model team capacity or resource constraints.</p>
+    </div>
+    <nav class="pane-switch" aria-label="Workspace views">
+      <button id="input-tab" type="button" aria-controls="input-pane" aria-pressed="true">Calendar and tasks</button>
+      <button id="result-tab" type="button" aria-controls="results-pane" aria-pressed="false">Plan results</button>
+    </nav>
+    <div class="execution-feedback">
+      <p id="status" role="status" aria-live="polite">✎ Editing</p>
+      <p id="progress" class="help" aria-live="off"></p>
+      <button id="cancel" type="button" hidden>Cancel calculation</button>
+    </div>
+    <div class="workspace">
+      <section id="input-pane" aria-labelledby="input-heading">
+        <h2 id="input-heading">Calendar and tasks</h2>
+        <form id="project-form" novalidate autocomplete="off">
+          <div class="field">
+            <label for="deadline">Deadline (required)</label>
+            <input id="deadline" name="deadline" type="text" maxlength="10" inputmode="numeric" placeholder="YYYY-MM-DD" aria-describedby="deadline-help" data-help="deadline-help" spellcheck="false">
+            <p id="deadline-help" class="help">A date in 2000–2099. Non-workday deadlines move earlier, with an explanation in the result.</p>
+          </div>
+          <fieldset id="workweek" tabindex="-1" aria-describedby="workweek-help" data-help="workweek-help">
+            <legend>Weekly workdays (select at least one)</legend>
+            <div class="weekdays">
+              <label><input name="weekday" type="checkbox" value="1" checked>Mon</label>
+              <label><input name="weekday" type="checkbox" value="2" checked>Tue</label>
+              <label><input name="weekday" type="checkbox" value="3" checked>Wed</label>
+              <label><input name="weekday" type="checkbox" value="4" checked>Thu</label>
+              <label><input name="weekday" type="checkbox" value="5" checked>Fri</label>
+              <label><input name="weekday" type="checkbox" value="6">Sat</label>
+              <label><input name="weekday" type="checkbox" value="0">Sun</label>
+            </div>
+            <p class="help" id="workweek-help">Dates are not converted between timezones. Both start and finish dates count.</p>
+          </fieldset>
+          <div class="field">
+            <label for="holidays">Confirmed holidays (optional)</label>
+            <textarea id="holidays" name="holidays" rows="3" maxlength="15000" placeholder="YYYY-MM-DD" spellcheck="false" aria-describedby="holidays-help" data-help="holidays-help"></textarea>
+            <p id="holidays-help" class="help">At most 366 unique dates, one per line or separated by commas. Holidays outside your workweek do not remove another day.</p>
+          </div>
+          <div class="task-heading"><h3>Tasks and predecessors</h3><span id="task-count" class="help"></span></div>
+          <p class="help">Use 1–260 workdays per task. Successors start on the next workday after predecessors finish. At most 500 dependencies per project.</p>
+          <p id="dependency-help" class="help"></p>
+          <div id="task-rows" tabindex="-1"></div>
+          <button id="add-task" type="button">Add task</button>
+          <div id="errors" class="errors" hidden></div>
+          <div class="actions">
+            <button id="calculate" class="primary" type="submit" aria-describedby="calculate-help" disabled>Calculate plan</button>
+            <button id="clear" type="button" class="quiet">Clear all</button>
+          </div>
+          <p id="calculate-help" class="help">Enter a deadline to enable calculation.</p>
+        </form>
+      </section>
+      <section id="results-pane" aria-labelledby="results-heading" aria-busy="false">
+        <div class="result-heading"><h2 id="results-heading">Plan results</h2></div>
+        <div id="empty-result" class="empty-result"><h3 id="empty-title">No plan calculated yet</h3><p id="empty-help">Enter a deadline and tasks to see a schedule here.</p></div>
+        <div id="result-content"></div>
+        <div id="downloads" hidden>
+          <div class="actions"><a id="download-txt" class="button" download="project-backplan.txt">Download TXT</a><a id="download-json" class="button" download="project-backplan.json">Download JSON</a></div>
+          <p id="download-size" class="help"></p>
+        </div>
+        <p class="model-note">Slack is the number of workdays a task can move. ◆ Critical means zero slack. Every root task has the same early start at the project anchor. Parallel work is allowed; this tool does not allocate staff or guarantee on-time delivery.</p>
+      </section>
+    </div>
+    <section class="guidance" aria-labelledby="faq-title">
+      <h2 id="faq-title">How the plan works</h2>
+      <details><summary>Why is there no start-date field?</summary><p>The tool finds the longest dependency path first, then counts back from the adjusted deadline to set the earliest start for every root task.</p></details>
+      <details><summary>What happens when the deadline falls on a weekend or holiday?</summary><p>It moves to the previous workday in your calendar. The result shows both the entered and adjusted dates.</p></details>
+      <details><summary>Does the critical path guarantee a delay?</summary><p>No. It marks tasks with zero slack under this model. It does not estimate staffing, risk, interruptions, or other resource limits.</p></details>
+    </section>
+    <p class="privacy">Your data is processed in this page's memory, with no uploads or automatic saving. Editing, cancelling, clearing, or leaving removes results and download links. Downloaded files remain on your device; browser process memory cannot be guaranteed erased.</p>
+    <noscript><p class="errors">Enable JavaScript to calculate. No data has been sent or saved.</p></noscript>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to the Gloss Tools homepage</a><span>Gloss Tools by GlossQuote · Local preview candidate</span></footer>
+</body>
+</html>

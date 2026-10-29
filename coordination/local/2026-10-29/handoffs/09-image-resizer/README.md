@@ -1,0 +1,67 @@
+## File size limit update — 2026-10-13 source candidate
+
+Set the dimensions required by a form, then optionally choose a file size limit in kB (1000 bytes), KiB (1024) or bytes. JPEG/WebP try bounded lower quality values without changing dimensions or the selected format; PNG is checked once. Only an actual result within the exact limit can be downloaded. Failure and timeout retain the source/settings for editing and offer no download; this is not an optimal-quality search. Both languages include full controls/help/FAQ.
+
+容量上限預設關閉、數字空白、單位kB；明確換算並按actual bytes核對。最多12次／30秒，不放大、不偷偷縮圖或改JPEG；PNG一次、WebP→PNG明示。改設定使舊下載失效。這是已驗證的本機來源候選，最新容量版仍待整合發布与外部複驗，沒有把以下舊live紀錄當成新版。
+
+Current local evidence: 13 target product cases in each language, actual native JPEG 185178bytes/800×600 under200kB and WebP199246bytes/800×600 under200KiB; controlled-clock/callback cases are labeled separately. Full zoom/AT/physical devices/nativeGC/complete Network-Storage-Offline remain NOT_RUN. No new dependencies or credential reads.
+
+---
+
+# 圖片縮放與匯出 / Image resizer
+
+## Current live release — 2026-10-11
+
+[繁體中文](https://images.glossquote.com/index.html) · [English](https://images.glossquote.com/en/index.html)
+
+Deployed source: [34d954b3a982](https://github.com/KYStr/glossquote-labs-image-resizer/commit/34d954b3a982797dec4fc2f1f570fd5565d84a2e); Cloudflare version `4f890aca-28ad-40bc-94e1-19b24f440331`. This dated status supersedes older candidate-only or NOT_DEPLOYED notes below. Later documentation-only commits do not change the deployed assets.
+
+Release verification passed: 14 public assets matched the reviewed build byte for byte across 35 HTTP response checks, including HTTPS, security headers, MIME, bilingual SEO, robots/sitemap, missing paths and configured redirects. Both language pages received scoped browser checks. A native file chooser and PNG download were exercised; the downloaded PNG header confirms 1200 × 800 pixels. Changed settings invalidate the previous download.
+
+The runtime retains its previously accepted offline test evidence; this release changes hosting configuration and documentation, not tool algorithms. Full Network/Storage inspection, physical devices, assistive technology and all remaining documented manual checks are still NOT_RUN. Live publication is not a claim of exhaustive certification or search-engine indexing.
+
+GlossQuote-Labs browser-local single-image tool. Complete Traditional Chinese and English interfaces. No dependencies, accounts, image upload endpoint, telemetry, storage writes or remote fonts.
+
+Accept one static PNG or 8-bit baseline/progressive JPEG up to 10 MiB, 8,192 pixels per edge and 12 MP. Keep proportions, reduce the longest edge/width/height, then explicitly generate PNG, JPEG (white composite) or feature-tested WebP. Maximum target edge 4,000; maximum output 8 MP. View actual MIME/dimensions/bytes before downloading. Cancel, change settings or clear invalidate stale results. Startup checks all eight EXIF directions and actual encoding MIME.
+
+This version does not crop, enlarge, batch, fetch image URLs or accept HEIC, SVG, GIF, animated PNG or WebP input. It does not promise smaller output, preserved original metadata, print DPI/color fidelity or secure memory erasure.
+
+## Local development
+
+Node 24+ (tested v24.14.0), npm 11.9.0. No install step.
+
+```powershell
+npm.cmd test
+npm.cmd run check
+npm.cmd run build
+npm.cmd run dev
+```
+
+Preview: http://127.0.0.1:4189/index.html and http://127.0.0.1:4189/en/index.html. Bound to loopback, static public only, noindex. If the assigned port is busy the default server uses a system-assigned loopback port and prints it. Explicit override: `npm.cmd run dev -- --port=0`. Stop only this server with Ctrl+C.
+
+Actual synthetic browser acceptance:
+
+```powershell
+npm.cmd run fixtures
+```
+
+Open http://127.0.0.1:5189/browser-fixtures.html for native EXIF/alpha/codec feasibility, then http://127.0.0.1:5189/product-tests.html for product workflows in either language. Fixtures and generated test/product-fixture are excluded from build/source publication. Never use private photos for tests.
+
+## Release candidate build
+
+Default build stays noindex. Only the explicit, approved candidate origin is accepted for production SEO:
+
+```powershell
+npm.cmd run build -- --release --site=https://images.glossquote.com
+npm.cmd run verify:release
+```
+
+This creates dist with canonical, reciprocal zh-Hant/en/x-default, sitemap/robots, 404, MIME/security `_headers` and root redirects. It **does not deploy**. wrangler.jsonc prepares a static-assets Worker at images.glossquote.com with no dynamic backend, workers.dev or preview URLs. Wrangler is not installed as a project dependency; packaging and live Cloudflare/HTTPS/DNS verification belong to the authorized integration release. This implementation chat did not read credentials or deploy.
+
+Source publication to the independent public repository KYStr/glossquote-labs-image-resizer is separately authorized. Source availability is not a live-website claim. The integration chat owns homepage catalog updates and hosting.
+
+## Verification and privacy
+
+[Acceptance results](docs/TEST-RESULTS.md), [compatibility and official format references](docs/COMPATIBILITY.md), [privacy contract](docs/PRIVACY.md), [release candidate](docs/RELEASE-CANDIDATE.md).
+
+Desktop Chromium 155.0.8059.27 is actually tested. Other browser/device combinations remain unverified; runtime capability checks fail closed. Authorized manual NOT_RUN includes native bitmap/GC profiling, full browser zoom (200% text reflow passed), screen reader, physical mobile/touch, native picker navigation and OS save workflow. No performance, search-indexing or security-certification claim.

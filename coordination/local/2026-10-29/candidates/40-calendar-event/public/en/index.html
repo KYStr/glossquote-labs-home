@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Create an ICS file for one event with dates and a time zone. Preview timed or all-day events locally, with daylight-saving checks and no sign-in.">
+<title>Calendar Event to ICS File | GlossQuote Labs</title>
+<link rel="stylesheet" href="/styles/app.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to event details</a>
+<header class="topbar">
+  <a class="brand" href="https://glossquote.com/en/index.html">GlossQuote Labs</a>
+  <nav aria-label="Site navigation"><a href="https://glossquote.com/en/index.html">All tools</a><a href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav>
+</header>
+<main id="main">
+  <div class="intro"><h1>Turn event details into a calendar file</h1><p>Enter one event and its time zone. Check the dates, then download an ICS file to import into your calendar.</p></div>
+  <p id="initialization" class="notice">Enable JavaScript to generate a file. The form stays disabled until the tool starts.</p>
+  <noscript><p class="notice">Enable JavaScript and reload. This tool processes event details only in this page.</p></noscript>
+  <div class="workspace">
+    <form id="event-form" novalidate autocomplete="off" tabindex="-1">
+      <fieldset id="app-controls" disabled>
+        <legend class="sr-only">Event details and dates</legend>
+        <section id="error-summary" class="error-summary" role="region" aria-labelledby="error-summary-title" tabindex="-1" hidden></section>
+        <fieldset class="content-fields">
+          <legend>Event details</legend>
+          <div class="field"><label for="title">Event title <span class="optional">(required)</span></label><input id="title" name="title" type="text" maxlength="240" required spellcheck="false" aria-describedby="title-help error-title"><p id="title-help" class="help">Up to 120 characters.</p><p class="field-error" id="error-title"></p></div>
+          <div class="field"><label for="location">Location <span class="optional">(optional)</span></label><input id="location" name="location" type="text" maxlength="400" spellcheck="false" aria-describedby="location-help error-location"><p id="location-help" class="help">Up to 200 characters.</p><p class="field-error" id="error-location"></p></div>
+          <div class="field"><label for="notes">Notes <span class="optional">(optional)</span></label><textarea id="notes" name="notes" rows="3" maxlength="8000" spellcheck="false" aria-describedby="notes-help error-notes"></textarea><p id="notes-help" class="help">Up to 4000 characters; line breaks are allowed. Links are not parsed and invitations are not sent.</p><p class="field-error" id="error-notes"></p></div>
+        </fieldset>
+        <fieldset class="mode-fields"><legend>Event type</legend><div class="mode-options"><label><input type="radio" id="mode-timed" name="mode" value="timed" checked>Timed</label><label><input type="radio" id="mode-all-day" name="mode" value="all-day">All day</label></div></fieldset>
+        <fieldset id="timed-fields">
+          <legend>Dates and times</legend><p class="help group-help">Start and end share one time zone. For overnight events, enter the full end date. Maximum 366 days.</p>
+          <fieldset class="endpoint"><legend>Start</legend>
+            <div class="datetime-row">
+              <div class="field"><label for="startDate">Start date</label><input type="date" id="startDate" name="startDate" min="2000-01-01" max="2099-12-31" required aria-describedby="error-startDate"><p class="field-error" id="error-startDate"></p></div>
+              <div class="field"><label for="startTime">Start time</label><input type="time" id="startTime" name="startTime" step="60" required aria-describedby="error-startTime"><p class="field-error" id="error-startTime"></p></div>
+            </div>
+            <fieldset id="startChoice" class="occurrence" tabindex="-1" aria-describedby="start-choice-help error-startChoice" hidden><legend id="start-choice-legend">Start: choose an occurrence</legend><p id="start-choice-help" class="help">The clock shows this time twice. Choose one occurrence.</p><div id="start-options"></div><p class="field-error" id="error-startChoice"></p></fieldset>
+          </fieldset>
+          <fieldset class="endpoint"><legend>End</legend>
+            <div class="datetime-row">
+              <div class="field"><label for="endDate">End date</label><input type="date" id="endDate" name="endDate" min="2000-01-01" max="2099-12-31" required aria-describedby="error-endDate"><p class="field-error" id="error-endDate"></p></div>
+              <div class="field"><label for="endTime">End time</label><input type="time" id="endTime" name="endTime" step="60" required aria-describedby="error-endTime"><p class="field-error" id="error-endTime"></p></div>
+            </div>
+            <fieldset id="endChoice" class="occurrence" tabindex="-1" aria-describedby="end-choice-help error-endChoice" hidden><legend id="end-choice-legend">End: choose an occurrence</legend><p id="end-choice-help" class="help">The clock shows this time twice. Choose one occurrence.</p><div id="end-options"></div><p class="field-error" id="error-endChoice"></p></fieldset>
+          </fieldset>
+          <div class="field"><label for="zone">Time zone</label><select id="zone" name="zone" aria-describedby="zone-help error-zone">
+            <option value="UTC">Coordinated Universal Time · UTC</option>
+            <option value="Asia/Taipei" selected>Taipei · Asia/Taipei</option>
+            <option value="Asia/Tokyo">Tokyo · Asia/Tokyo</option>
+            <option value="Asia/Hong_Kong">Hong Kong · Asia/Hong_Kong</option>
+            <option value="Asia/Singapore">Singapore · Asia/Singapore</option>
+            <option value="America/New_York">New York · America/New_York</option>
+            <option value="America/Los_Angeles">Los Angeles · America/Los_Angeles</option>
+            <option value="Europe/London">London · Europe/London</option>
+            <option value="Europe/Berlin">Berlin · Europe/Berlin</option>
+            <option value="Australia/Sydney">Sydney · Australia/Sydney</option>
+          </select><p class="help" id="zone-help">Daylight-saving checks use this zone. Your calendar may display the event in its own local time zone.</p><p class="field-error" id="error-zone"></p></div>
+        </fieldset>
+        <fieldset id="all-day-fields" disabled hidden>
+          <legend>All-day dates</legend><p class="help group-help">The last day is included. No time or time zone applies. Up to 366 days including both dates.</p>
+          <div class="datetime-row">
+            <div class="field"><label for="allStartDate">Start date</label><input type="date" id="allStartDate" name="allStartDate" min="2000-01-01" max="2099-12-30" required aria-describedby="error-allStartDate"><p class="field-error" id="error-allStartDate"></p></div>
+            <div class="field"><label for="lastDate">Last day (included)</label><input type="date" id="lastDate" name="lastDate" min="2000-01-01" max="2099-12-30" required aria-describedby="last-help error-lastDate"><p id="last-help" class="help">No later than 2099-12-30.</p><p class="field-error" id="error-lastDate"></p></div>
+          </div>
+        </fieldset>
+        <div class="actions"><button id="preview" type="submit" class="primary">Preview calendar file</button><button id="clear" type="button">Clear</button></div>
+      </fieldset>
+    </form>
+    <section id="result" class="result" aria-labelledby="result-title" data-state="idle">
+      <h2 id="result-title">Check your event</h2><p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">No preview yet. Enter your event details, then preview the calendar file.</p>
+      <dl id="summary" hidden></dl>
+      <a id="download" class="button download" aria-disabled="true" tabindex="-1">Download ICS</a>
+      <p id="download-note" class="notice" hidden></p><p class="help">Downloading does not add the event to your calendar or send invitations. File name: glossquote-event.ics.</p>
+      <details id="raw-details" hidden><summary>View ICS text</summary><pre tabindex="0" aria-label="Generated ICS text"><code id="raw-ics"></code></pre></details>
+    </section>
+  </div>
+  <section class="guide" aria-labelledby="guide-title"><h2 id="guide-title">From event details to your calendar</h2><ol><li>Enter a title, complete dates and times in your selected zone, or choose all day.</li><li>Preview the local times. If a time occurs twice, explicitly choose the first or second occurrence.</li><li>Download the ICS file, import it into your calendar, and check the displayed dates and times.</li></ol><p class="help">Details stay in this page’s memory. Leaving or clearing removes the draft; it does not delete files you have already downloaded.</p></section>
+  <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Common questions</h2>
+    <h3>Does this add the event to my calendar?</h3><p>No. It creates an ICS file for you to import. Import steps and display can differ between calendars; check the event when importing.</p>
+    <h3>How do time zones work?</h3><p>Timed events are resolved in your selected zone and saved in UTC. Your calendar may display its own local time. Repeated times require a choice; skipped times are rejected.</p>
+    <h3>Is the last all-day date included?</h3><p>Yes. The file uses the following date as its exclusive end, as required by ICS.</p>
+    <h3>Are my details uploaded?</h3><p>Form data and the file stay in page memory. There is no account or sync; drafts are not retained after leaving. Language links do not include your input.</p>
+  </section>
+</main>
+<footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/en/index.html">Back to all tools</a></footer>
+</body>
+</html>

@@ -1,0 +1,145 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mountApp, createScheduleState } from '../public/js/app.js';
+import { fakeDocument, descendants } from './dom-support.mjs';
+
+for (const locale of ['zh-Hant', 'en']) {
+  test(`${locale}: offline event logic creates complete 5-team schedule/opponents, explicitly requests fixed downloads`, async () => {
+    const doc = await fakeDocument(locale);
+    const revoked = [], created = [];
+    const state = createScheduleState({ urlApi: {
+      createObjectURL(blob) { created.push(blob); return `blob:fixture-${created.length}`; }, revokeObjectURL(url) { revoked.push(url); }
+    }, defer: () => 1, cancelDefer: () => {} });
+    mountApp(doc, state);
+    const get = id => doc.getElementById(id);
+    get('teams').value = 'A\nB\nC\nD\nE';
+    assert.equal(get('schedule-form').fire('submit').defaultPrevented, true);
+    assert.equal(state.snapshot().ready, true);
+    assert.equal(get('schedule-list').children.length, 5);
+    assert.equal(descendants(get('schedule-list'), 'li').length, 10);
+    assert.equal(get('result-content').hidden, false);
+    assert.equal(get('result-empty').hidden, true);
+    assert.equal(get('download-txt').disabled, false);
+    assert.equal(get('workspace').dataset.view, 'results');
+    assert.equal(created.length, 0);
+    get('team-select').value = '0';
+    get('team-select').fire('change');
+    assert.equal(get('opponent-list').children.length, 5);
+    assert.equal(get('schedule-list').children.length, 5);
+    assert.equal(get('opponent-heading').textContent, 'A');
+    get('download-json').click();
+    assert.equal(created.length, 1);
+    assert.deepEqual(doc.downloadRequests, [{ href: 'blob:fixture-1', download: 'round-robin.json' }]);
+    const payload = JSON.parse(await created[0].text());
+    assert.equal(payload.rounds.flatMap(round => round.matches).length, 10);
+    assert.equal(payload.opponents.length, 5);
+    // A19: source edits synchronously remove output before a later invalid submit.
+    get('teams').value = 'A\nA';
+    get('teams').focus();
+    get('schedule-form').fire('input', get('teams'));
+    assert.equal(doc.activeElement, get('teams'));
+    assert.equal(state.getResult(), null);
+    assert.equal(get('schedule-list').children.length, 0);
+    assert.equal(get('download-json').disabled, true);
+    assert.deepEqual(revoked, ['blob:fixture-1']);
+    get('schedule-form').fire('submit');
+    assert.equal(get('errors').hidden, false);
+    assert.equal(state.getResult(), null);
+    assert.equal(get('teams').attributes['aria-invalid'], 'true');
+    assert.equal(doc.activeElement, get('errors'));
+    get('teams').value = 'A\nB';
+    get('schedule-form').fire('input', get('teams'));
+    get('schedule-form').fire('submit');
+    assert.equal(state.snapshot().ready, true);
+    assert.equal(get('errors').hidden, true);
+    assert.equal(doc.createdTags.includes('script'), false);
+    doc.firePageHide();
+    assert.equal(state.snapshot().ready, false);
+  });
+}
+
+test('offline UI logic: partial timing blocks, rollover is visible, clear requires inline confirmation, pagehide erases references', async () => {
+  const doc = await fakeDocument('en');
+  const revoked = [];
+  const state = createScheduleState({ urlApi: { createObjectURL: () => 'blob:owned', revokeObjectURL: url => revoked.push(url) }, defer: () => 1, cancelDefer: () => {} });
+  mountApp(doc, state);
+  const get = id => doc.getElementById(id);
+  get('teams').value = 'A\nB';
+  get('startTime').value = '23:30';
+  get('schedule-form').fire('submit');
+  assert.equal(state.snapshot().ready, false);
+  assert.equal(get('timing-details').open, true);
+  assert.ok(get('error-list').textContent.includes('all four'));
+  get('startDate').value = '2026-10-23';
+  get('matchMinutes').value = '90';
+  get('changeoverMinutes').value = '15';
+  get('schedule-form').fire('submit');
+  assert.ok(get('time-summary').textContent.includes('2026-10-24 01:00 (+1 day)'));
+  assert.ok(get('schedule-list').textContent.includes('2026-10-24 01:00 (+1 day)'));
+  get('clear').click();
+  assert.equal(get('clear-confirm').hidden, false);
+  assert.equal(state.snapshot().ready, true);
+  get('cancel-clear').click();
+  assert.equal(get('clear-confirm').hidden, true);
+  assert.equal(get('teams').value, 'A\nB');
+  get('clear').click();
+  get('confirm-clear').click();
+  assert.equal(state.getResult(), null);
+  assert.equal(get('teams').value, '');
+  assert.equal(get('startTime').value, '');
+  assert.equal(get('result-content').hidden, true);
+  get('teams').value = 'A\nB';
+  get('schedule-form').fire('submit');
+  get('download-txt').click();
+  doc.firePageHide();
+  assert.deepEqual(revoked, ['blob:owned']);
+  assert.equal(state.snapshot().activeUrls, 0);
+  assert.equal(get('schedule-list').children.length, 0);
+  assert.equal(get('team-select').children.length, 1);
+  assert.equal(get('teams').value, '');
+});
+
+test('offline UI logic: literal hostile names and maximum 992-match display are never truncated', async () => {
+  const doc = await fakeDocument('zh-Hant');
+  const state = mountApp(doc);
+  const get = id => doc.getElementById(id);
+  get('teams').value = '<script>alert(1)</script>\n=1+1';
+  get('schedule-form').fire('submit');
+  assert.ok(get('schedule-list').textContent.includes('<script>alert(1)</script>'));
+  assert.equal(doc.createdTags.includes('script'), false);
+  get('teams').value = Array.from({ length: 32 }, (_, i) => `Fake${i}`).join('\n');
+  get('cycles').value = '2';
+  get('courts').value = '1';
+  get('schedule-form').fire('input', get('teams'));
+  get('schedule-form').fire('submit');
+  assert.equal(state.snapshot().ready, true);
+  assert.equal(get('schedule-list').children.length, 62);
+  assert.equal(descendants(get('schedule-list'), 'li').length, 992);
+  get('team-select').value = '31';
+  get('team-select').fire('change');
+  assert.equal(get('opponent-list').children.length, 62);
+  doc.firePageHide();
+});
+
+test('offline UI logic: actual output-limit error leaves no preview, bytes or download capability from a previous success', async () => {
+  const doc = await fakeDocument('en');
+  let blobCount = 0;
+  const state = createScheduleState({ urlApi: { createObjectURL: () => { blobCount++; return 'blob:never'; }, revokeObjectURL: () => {} } });
+  mountApp(doc, state);
+  const get = id => doc.getElementById(id);
+  get('teams').value = 'A\nB';
+  get('schedule-form').fire('submit');
+  assert.equal(state.snapshot().ready, true);
+  get('teams').value = Array.from({ length: 32 }, (_, i) => `${String(i).padStart(2, '0')}${'😀'.repeat(78)}`).join('\n');
+  get('cycles').value = '2';
+  get('courts').value = '1';
+  get('schedule-form').fire('input', get('teams'));
+  get('schedule-form').fire('submit');
+  assert.equal(get('result-content').hidden, true);
+  assert.equal(get('schedule-list').children.length, 0);
+  assert.equal(get('download-txt').disabled, true);
+  assert.equal(get('download-json').disabled, true);
+  assert.ok(get('error-list').textContent.includes('2 MiB'));
+  assert.equal(state.getResult(), null);
+  assert.equal(blobCount, 0);
+});

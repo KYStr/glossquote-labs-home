@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="在瀏覽器中整理收據、照片與附件檔名，預覽序號或字面取代結果，再下載不壓縮的 ZIP 副本。原始檔案不會被修改，下載後需自行解壓。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>批次檔名整理與 ZIP 下載｜GlossQuote</title>
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">跳至工作區</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a><nav aria-label="導覽"><a id="language-link" href="/en/index.html" lang="en" aria-describedby="language-note">English</a><a href="https://glossquote.com/index.html">工具首頁</a></nav></header>
+  <main id="workspace">
+    <div class="intro"><h1>批次檔名整理</h1><p class="promise">下載重新命名後的 ZIP 副本。原檔不變；ZIP 不壓縮，下載後需解壓。</p><p id="language-note" class="muted small">切換語言會清除此工作區的檔案與設定。</p></div>
+    <section aria-labelledby="files-heading">
+      <div class="selection-bar"><h2 id="files-heading">待整理檔案</h2><span id="summary" class="measure" role="status" aria-live="polite">0 / 100 檔 · 0 B / 64 MiB</span></div>
+      <label class="file-picker" for="files"><span>選取檔案</span><input id="files" type="file" multiple aria-describedby="limits selection-order selection-errors"></label>
+      <p id="limits" class="small">最多 100 個檔案；每檔 16 MiB；合計 64 MiB。只選取個別檔案，不接受資料夾或拖放。</p>
+      <p id="selection-order" class="muted small">以瀏覽器收到的 FileList 順序加入；不同批次接在末端，不保證等於選擇器中的點選先後。請用上移／下移固定交付順序。</p>
+      <div id="selection-errors" class="notice error" role="status" hidden></div>
+    </section>
+    <form id="rules" autocomplete="off" novalidate>
+      <fieldset class="mode-choice"><legend>命名方式</legend><label><input id="mode-sequence" type="radio" name="mode" value="sequence" checked>序號命名</label><label><input id="mode-replace" type="radio" name="mode" value="replace">字面取代</label></fieldset>
+      <fieldset id="sequence-fields" class="rule-fields"><legend class="sr-only">序號設定</legend>
+        <div class="field wide"><label for="base">名稱主體</label><input id="base" type="text" value="file" spellcheck="false" aria-describedby="base-help rule-errors"><small id="base-help">1–80 個字元；例如 file → file-001.PDF。副檔名保留大小寫。</small></div>
+        <div class="field"><label for="start">起始序號</label><input id="start" type="text" inputmode="numeric" value="1" aria-describedby="start-help rule-errors"><small id="start-help">1–999,999,999；末筆也須在範圍內。</small></div>
+        <div class="field"><label for="width">最少位數</label><input id="width" type="text" inputmode="numeric" value="3" aria-describedby="width-help rule-errors"><small id="width-help">1–9；左補零，不截短較長序號。</small></div>
+      </fieldset>
+      <fieldset id="replace-fields" class="rule-fields" hidden disabled><legend class="sr-only">字面取代設定</legend>
+        <div class="field"><label for="find">尋找文字</label><input id="find" type="text" spellcheck="false" aria-describedby="find-help rule-errors"><small id="find-help">1–80 個字元；區分大小寫，從左至右取代不重疊的所有命中。</small></div>
+        <div class="field"><label for="replacement">取代為</label><input id="replacement" type="text" spellcheck="false" aria-describedby="replacement-help rule-errors"><small id="replacement-help">最多 80 個字元；留空會刪除命中。只取代檔名主體，不動副檔名。</small></div>
+        <div class="field"><label for="prefix">加上前綴（可留空）</label><input id="prefix" type="text" spellcheck="false" aria-describedby="prefix-help rule-errors"><small id="prefix-help">最多 40 個字元，加在取代後的主體前方。找不到文字時仍可加前綴。</small></div>
+      </fieldset>
+      <div id="rule-errors" class="notice error" role="status" hidden></div>
+    </form>
+    <section class="preview" aria-labelledby="preview-heading">
+      <div class="selection-bar"><h2 id="preview-heading">檔名預覽</h2><button id="clear" type="button" disabled>清除工作區</button></div>
+      <p id="empty" class="empty">尚未選取檔案。選取個別檔案以預覽新名稱。</p>
+      <ol id="file-list" class="file-list" aria-label="目前清單與新檔名" aria-busy="false"></ol>
+      <p class="muted small">移除只影響本頁清單，不會刪除原檔。任何名稱錯誤都會阻擋整份 ZIP，不會輸出部分檔案或自動修正名稱。</p>
+      <p class="muted small">部分系統可能把只差大小寫或等價 Unicode 寫法的檔名視為相同；此工具會保守地阻止這些重複輸出，請調整規則。</p>
+      <div class="action-area"><p id="status" role="status" aria-live="polite" aria-atomic="true">尚未選取檔案。選取個別檔案以預覽新名稱。</p><progress id="progress" max="1" value="0" hidden></progress><div id="build-errors" class="notice error" hidden></div><div class="actions"><button id="build" class="primary" type="button" disabled>建立 ZIP</button><button id="cancel" type="button" hidden>取消</button><a id="download" class="button primary" download="renamed-files.zip" hidden>下載 ZIP 副本</a></div></div>
+      <p id="download-note" class="small" hidden>若已有同名 ZIP，瀏覽器/OS 會依你的下載設定處理；工具不會寫回來源檔。</p>
+    </section>
+    <aside class="privacy" aria-label="資料處理說明"><p><strong>僅在此瀏覽器本機處理，不會上傳。</strong> 檔案 bytes 與內嵌 metadata 會原樣保留，包括照片中可能存在的 EXIF、GPS 或文件屬性；本工具不檢查或清除這些內容。交付前請自行確認副本。</p><p class="small muted">檔案、規則與產物只在目前頁面記憶體；清除或離開頁面會放棄本頁引用，不代表安全抹除裝置、瀏覽器記憶體或下載檔。初次載入需要本站靜態頁面資產。裝置記憶體不足時仍可能無法完成 ZIP，請減少檔案重試。</p></aside>
+    <section class="help" aria-labelledby="how-heading"><h2 id="how-heading">整理交付副本</h2><p>選取個別檔案後，依列表順序檢查新檔名。你可以使用序號命名，或對檔名主體的指定文字做字面取代並加上前綴。所有名稱會在建立 ZIP 前先檢查；若有不允許的字元、保留名稱或碰撞，整批會停止，不會悄悄改名。</p><p>工具不會將檔案上傳，也不讀取內容作預覽；ZIP 會逐位元組保留原檔內容，包括照片或文件中可能存在的 metadata。ZIP 使用不壓縮格式，因此它通常會比所有來源內容的總 bytes 稍大。下載後請在你的裝置上解壓，並自行檢查交付副本。</p><ol><li>選取檔案，確認大小與數量。</li><li>選擇一種命名方式。</li><li>調整清單順序，逐列檢查預覽。</li><li>建立並下載 ZIP 副本。</li><li>在你的裝置解壓，檢查後交付。</li></ol>
+      <h2>檔名規則</h2><p>輸出完整名稱最多 180 UTF-8 bytes；中文等字元可能佔多個 bytes。不接受路徑分隔符、控制字元、Windows 禁字或保留裝置名稱，也不能以 ASCII 空格或點結尾。原副檔名會保留；單一前導點檔如 .gitignore 沒有副檔名，.env.local 則保留 .local。</p>
+      <h2>常見問題</h2>
+      <details><summary>會改動或覆蓋我的原檔嗎？</summary><p>不會。工具只下載另一份 ZIP 副本；下載位置與同名處理由瀏覽器或 OS 決定。</p></details>
+      <details><summary>ZIP 會壓縮照片或文件嗎？</summary><p>不會。ZIP 使用 STORE，不壓縮，下載後需要解壓。</p></details>
+      <details><summary>照片的 EXIF 或文件 metadata 會移除嗎？</summary><p>不會。工具保留原始 bytes，也不檢查或移除內嵌 metadata。</p></details>
+      <details><summary>為什麼不接受部分檔名？</summary><p>為避免路徑、保留名稱或碰撞造成誤解，任何不安全輸出都會阻止整批建立 ZIP，不會自動修名。</p></details>
+    </section>
+    <noscript><p class="notice error">請啟用 JavaScript 以使用本機檔名預覽與 ZIP 建檔。</p></noscript>
+  </main>
+  <footer>Gloss Tools by GlossQuote · 本機候選版本</footer>
+</body>
+</html>
