@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2026-10-29.1",
-  "revision": 284,
+  "revision": 285,
   "repository": "KYStr/glossquote-labs-home",
   "branch": "codex/initial-publication",
   "baseline": {
@@ -4886,6 +4886,63 @@
         "consumedAt": "2026-10-29T14:03:54.914Z"
       },
       "registeredAt": "2026-10-29T14:02:05.875Z"
+    },
+    {
+      "id": "spec-cloud-existing-image-overlay-20261028",
+      "title": "兩張圖片疊合校稿 — 原雲端候選規格（既有責任）",
+      "authorId": "cloud-dot:01a17302-361a-7582-accd-8565c98f6033:/root/build_glossquote_image_overlay",
+      "source": {
+        "repository": "KYStr/glossquote-labs-home",
+        "commit": "3b1f36083d08eb3a780c3d6cccc31e1ff1d63fcf",
+        "path": "archives/cloud-candidates/2026-10-29/image-overlay/source/package.json"
+      },
+      "document": {
+        "repository": "KYStr/glossquote-labs-home",
+        "commit": "3b1f36083d08eb3a780c3d6cccc31e1ff1d63fcf",
+        "path": "archives/cloud-candidates/2026-10-29/image-overlay/source/docs/SPEC.md"
+      },
+      "acceptanceCriteria": [
+        {
+          "id": "functionality",
+          "label": "兩張方向處理後同寬高的靜態PNG或8-bit baseline/progressive JPEG；A/B角色、B整數0–100%疊合比例、白底逐RGB絕對差異；明示非真偽或印刷色準檢測，不裁切/縮放/對齊/批次/匯出。"
+        },
+        {
+          "id": "boundaries",
+          "label": "各檔非空≤10MiB、編碼與解碼邊長≤4096px/≤4,000,000像素；PNG CRC/動畫/容器與JPEG完整後SOS marker檢查，拒late SOF/DNL、壞檔/不等尺寸/無效設定；不留半成品或可誤用舊結果。"
+        },
+        {
+          "id": "privacy",
+          "label": "純瀏覽器記憶體處理，無上傳/API/帳戶/追蹤/外部資產/storage writes；pagehide清來源；不建立objectURL；位圖關閉與臨時canvas釋放，不保證原生峰值記憶體或安全抹除。"
+        },
+        {
+          "id": "security",
+          "label": "檔名只入textContent，格式按bytes不信檔名/MIME；CSP禁止connect/object/frame/form與外部程式；來源建置與loopback伺服器拒絕symlink、路徑穿越與非GET/HEAD，保留已驗與未驗邊界。"
+        },
+        {
+          "id": "usability",
+          "label": "顯示檔名及方向處理後尺寸，明確Preview按鈕；檔案/模式/比例變動即撤舊預覽；Clear/Cancel保留恢復路徑；fit與1:1可捲動檢查；白底差異排除隱藏透明色、不可見alpha、metadata及原始bytes。"
+        },
+        {
+          "id": "accessibility",
+          "label": "語意label、原生鍵盤控制、可見焦點、live status與錯誤說明；視覺/實際鍵盤/縮放/AT等按原規格及最新批准適用範圍核驗；未測如實NOT_RUN，不以DOM mock替代、不擅加已放寬硬門檻。"
+        },
+        {
+          "id": "localization-seo",
+          "label": "繁中英文靜態頁與對等介面/錯誤/說明、同語言首頁連結；preview noindex且無canonical/sitemap，production獨立目錄必須明確HTTPS origin；不臆造liveURL或發布狀態。"
+        },
+        {
+          "id": "toolchain-provenance",
+          "label": "Node24內建零依賴；原21條source manifest07467b7…d97與archive53檔分別核，52檔原樣/README去私人reviewer一句；歷史52/52、check/build及controlled mocks只作既有證據，本輪不重測或換成90分。"
+        },
+        {
+          "id": "compatibility",
+          "label": "單一native工作列且最多最新一個pending，取消/改設定阻止晚到read/decode/render/error污染；native解碼不可強停，卡住需reload。真browser/EXIF1–8/記憶體/NetworkStorage/BFCache/多引擎與完整使用仍待驗，不冒稱全驗收。"
+        }
+      ],
+      "status": "draft",
+      "readiness": null,
+      "consumedBy": null,
+      "registeredAt": "2026-10-29T14:18:22.220Z"
     }
   ],
   "tasks": [
@@ -13701,6 +13758,17 @@
       "observedAt": "2026-10-29T14:17:11.970Z",
       "taskId": null,
       "specId": null
+    },
+    {
+      "operationId": "cloud-image-overlay-register-spec-20261029-1418",
+      "requestHash": "ed3294420d9d174f504165a8b69d16165ff3c8a71c742027681952b82e666b3b",
+      "revision": 285,
+      "action": "register-spec",
+      "actorId": "cloud-dot:01a17302-361a-7582-accd-8565c98f6033:/root/build_glossquote_image_overlay",
+      "executor": "cloud-dot",
+      "observedAt": "2026-10-29T14:18:22.220Z",
+      "taskId": null,
+      "specId": "spec-cloud-existing-image-overlay-20261028"
     }
   ],
   "pendingReconciliationTasks": [
