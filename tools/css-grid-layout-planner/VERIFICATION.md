@@ -17,3 +17,11 @@ One automation attempt to press Tab on the non-focusable preview heading timed o
 ## Unassessed / required independent work
 
 All nine product quality aspects remain null: functionality,boundaries,privacy,security,usability,accessibility,localization-seo,toolchain-provenance,compatibility. This is a review candidate, not accepted/ready/published. Native BFCache, complete lifecycle/IME matrix,12-block native journey, read-only network/storage audit, actual server-header negative cases, screen reader and non-author visible FAQ extension/restoration remain to be assessed. No full native or privacy/security PASS is inferred from core tests or source scans. Formal origin/canonical/deployment-specific SEO is not available and not fabricated.
+
+## r2 affected summary repair — 2026-10-30
+
+The preceding r1 observations remain historical and are not promoted to r2. Independent normal UI review found that SPEC §3.3 required rows × columns and per-block row/column spans, but r1 only showed bounds and an unlabeled cell count. r2 changes only app.mjs and i18n.mjs among the seven runtime files; core, controller, both HTML pages and stylesheet are byte-identical. Manifest SHA256 d3a95f4b3f41205a698ca28151cfebbd4874a68d807024941c416e1f40702801.
+
+New source-contract test summary-contract.test.mjs passed once, and check/build passed. It checks source-template and bilingual-key presence, not actual rendering or native quality. Existing ten unaffected test groups were not rerun.
+
+Actual managed Chrome normal UI affected observation, 12:55:42–12:56:10 UTC: Load example A → Generate in Chinese displayed 網格（列 × 欄）: 2 × 3, total6/empty0; three blocks retained bounds and explicitly labeled row spans1/1/1, column spans3/1/2 and cells3/1/2. Normal language confirmation → English initial page → Load example A → Generate displayed the corresponding Grid (rows × columns), Row span, Column span and Cells labels with identical values. These are real rendered accessibility-tree observations from normal button actions, not injected state. Copy/download were not operated during this affected pass; no export success or denied-action retry is claimed. Preview stopped and status confirmed stopped at12:56:10. Exact browser version/OS and all prior untested scope remain unknown/NOT_RUN. This is author repair evidence, not an independent score or acceptance.
