@@ -1,12 +1,12 @@
 # Box Shadow Builder 作者文件查核
 
 Spec ID：`spec-box-shadow-builder-v1`  
-對應版本：v1 r1，2026-10-30  
-狀態：作者文件自核完成，等待非作者八節完整度審查。不是產品測試、品質分數、ready 或部署聲明。
+對應版本：v1 r2，2026-10-30  
+狀態：作者已依原非作者 R1 修訂並完成受影響文件自核，等待獨立複審。不是產品測試、品質分數、ready 或部署聲明。
 
 ## 精確文件
 
-- [SPEC.md](./SPEC.md)：35,243 UTF-8 bytes；SHA-256 `2ab92141f3c5985746f536a14a2b8a9fcbccc71718c54b6e3e16d2016ead90de`。
+- [SPEC.md](./SPEC.md)：37,635 UTF-8 bytes；SHA-256 `4befa00eed81e5510ffa1996f2fe26247514572de2277a902e8761a6de76ae6f`。
 - [固定開工 brief](https://github.com/KYStr/glossquote-labs-home/blob/368fb4ba06b884bc126d0186355d197efc90b285/docs/specs/box-shadow-builder/BRIEF.md)：5,421 bytes；SHA-256 `61509d91a6b8662de04ae45fa4a3c8789a32309cad69d97f78a2d1a4d27943c0`。
 - 文件使用 UTF-8、無 BOM、LF、末行 LF。提交後仍須以固定 commit 讀回，不能只有本地 hash。
 
@@ -28,6 +28,14 @@ Spec ID：`spec-box-shadow-builder-v1`
 本次以標準函式做文件查核：八個頂層章節恰為 1–8；九面向列齊；T01–T11/B01–B08 計畫標號存在；無 BOM/CR、末行 LF。直接抄錄規格單層期望文字獨立計算為 **228 bytes**；四個最長合法 token 組合（inset、兩個 -48、blur64、spread-24、三位 RGB、0.99）加固定中文註解為 **411 bytes**，小於 1024 上限。這是文件長度推導，不是呼叫未存在的產品 serializer 得出的綠測。
 
 逐項人工核數值計畫：x/y −49/−48/−47/47/48/49，blur −1/0/1/63/64/65，spread −25/−24/−23/23/24/25，opacity −1/0/1/99/100/101；保留原始長度、符號、格式、mode/HEX、0/1/4/5 層及首錯順序。防守性 E_OUTPUT_LIMIT 不能在有界合法輸入下自然到達，規格明示由長度上界保障，不假造正常使用反例。
+
+## r2 窄修與保留歷史
+
+原 r1 固定候選 `600927aad37872a47d1507f380066c103ba8f025` 及 [非作者報告](https://github.com/KYStr/glossquote-labs-home/blob/1da9b9b8d51ab56f50b32fa654fc97173b9d05b2/docs/specs/box-shadow-builder/REVIEW-600927a.md) 保留。R1 指出「編輯或再下載立即 revoke」與「不得早於瀏覽器接收」沒有可觀察 ACK 可同時滿足；作者接受這個文件矛盾，沒有稱已重現原生下載 bug。
+
+本次只改版號及 §3.2、§3.3、§3.4、§4.4、T09、B06 的受影響敘述：有效結果及新的取出權立即失效；已提出下載的獨立單一 lease 保留原 30 秒期限。普通 edit、確認清除、重新產生及連按不撤銷、不替換、不延長 lease；lease 活著時停用新下載。到期僅依目前有效結果/對話框/頁面狀態開放新下載，舊 timer 不影響新 URL。hidden/pagehide/dispose 可提前 purge，明示可能中止尚未接收的下載，不承諾 OS 完成/取消。Blob/URL/click 失敗清理的原契約保留。
+
+文件自核重新執行，八節、九面向及 228/411-byte 算術結果未變。精確差異只有上述 8 個文字替換（含版號），反向還原逐字等於原 r1 SPEC；第 6 節九面向表逐字未改。T09/B06 現要求下載後立即編輯、重產生、清除、連按、到期與晚到 timer 的明確結果。這些是新文件計畫與契約一致性自核，不是已執行產品測試或獨立通過。
 
 ## 公開內容與未完成項
 
