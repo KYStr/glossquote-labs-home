@@ -1,9 +1,13 @@
 # Producer verification — not independent product scoring
 
 Observed 2026-10-30 UTC. Runtime manifest SHA-256:
-`c05de02930855df9a1f4b512ed904f864469409a3eea6e93b7a0fc6c21e9444c`.
+`98ba76a8091b9d5728ba9c324c9d41cbcf7785357cf9cdb891cf42dee77ec62a`.
 
-## r3 affected correction
+## r4 lifecycle correction
+
+Independent source review found OM-LIFECYCLE-003: a pending removal confirmation retained its closure across pagehide and persisted pageshow, permitting a stale acceptance to remove a dimension from the fresh blank draft. The r4 source discards the confirmation action, return-focus reference and open modal before pagehide and every reset. Ordinary cancel/Escape semantics are unchanged. The actual app/controller controlled-DOM regression and ordinary cancel control pass; together with the prior affected focus and isolated build tests, nine tests pass at 06:45 UTC. Static check and 13-file build pass. These controlled events are not a real BFCache observation. The native BFCache removal scenario was blocked by the execution tool and remains NOT_RUN; no alternate action bypassed it. The r3 candidate stays preserved in its original commit. All independent scores remain null.
+
+## Historical r3 affected correction
 
 SPEC L56 requires focus to stay on the same dimension movement button when it reaches the boundary. The r2 source instead focused the name field. This r3 changes movement buttons to semantic aria-disabled with a guarded inert handler, retaining native button focus, and adds matching visual styling. Two controlled-DOM tests execute the actual fields function and check focus identity, preserved input and inert boundary activation; these are not browser tests. Five isolated build tests also passed (7 affected tests total), with syntax/static check and build successful. Download core and export modules are unchanged; the earlier 19 tests and browser downloads below are explicitly historical r2 evidence, not a new full r3 execution. Managed desktop Chromium real-keyboard verification reproduced the r2 defect at 06:09:15 UTC: second dimension Up + Return moved it first but focused its name. Same-r3 at 06:09:38 Up + Return retained focus on d2-up and the accessibility tree exposed disabled; at 06:09:44 Space + Return left order and focus unchanged; at 06:09:50 Down + Return returned the dimension to the bottom with focus on disabled d2-down. Values were preserved, valid preview count remained four and no result was generated. OM-FOCUS-002 is closed only for these finite ordering cases, not full accessibility or rubric acceptance.
 

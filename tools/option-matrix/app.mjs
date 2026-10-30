@@ -38,8 +38,10 @@ function confirm(label,action,trigger){confirmAction=action;returnFocus=trigger;
 function closeConfirm(accepted){const action=confirmAction,focus=returnFocus;confirmAction=null;returnFocus=null;$('dialog').close();focus?.focus();if(accepted)action?.();}
 // Escape 與取消按鈕走同一無副作用路徑。
 $('dialog').addEventListener('cancel',e=>{e.preventDefault();closeConfirm(false);});$('keep').onclick=()=>closeConfirm(false);$('accept').onclick=()=>closeConfirm(true);
+// 生命週期重設丟棄舊確認動作與舊節點焦點，不執行或復原離頁前的回呼。
+function discardConfirm(){confirmAction=null;returnFocus=null;if($('dialog').open)$('dialog').close();}
 // 完整清除只作用頁內資料及自己的下載租期。
-function reset(example=false){composeDepth=0;session.composition(false);lease.clear();draft=example?[{id:'d1',name:english?'Login':'登入',optionsText:english?'Guest\nMember':'訪客\n會員'},{id:'d2',name:english?'Language':'語言',optionsText:'繁中\nEnglish'}]:[{id:'d1',name:'',optionsText:''},{id:'d2',name:'',optionsText:''}];page=0;fields('d1-name');validate();}
+function reset(example=false){discardConfirm();composeDepth=0;session.composition(false);lease.clear();draft=example?[{id:'d1',name:english?'Login':'登入',optionsText:english?'Guest\nMember':'訪客\n會員'},{id:'d2',name:english?'Language':'語言',optionsText:'繁中\nEnglish'}]:[{id:'d1',name:'',optionsText:''},{id:'d2',name:'',optionsText:''}];page=0;fields('d1-name');validate();}
 // 只有不存在於草稿的最小 ID 才能分配。
 $('add').onclick=()=>{if(draft.length===6)return;session.invalidate();const id=Array.from({length:6},(_,i)=>`d${i+1}`).find(id=>!draft.some(d=>d.id===id));draft.push({id,name:'',optionsText:''});fields(id+'-name');validate();};
 // 重複生成由 disabled 與 session token 共同防護。
@@ -61,6 +63,6 @@ for(const kind of ['json','csv'])$(kind).onclick=()=>{const data=session.state.f
 // 背景只取消進行中的工作；完成結果與草稿可以保留。
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&session.state.phase==='generating'){session.cancel();validate();}});
 // 離頁及 BFCache 返回清除資料，不能復活舊下載或結果。
-window.addEventListener('pagehide',()=>{session.invalidate();lease.clear();draft=[];$('fields').replaceChildren();});window.addEventListener('pageshow',e=>{if(e.persisted)reset();});
+window.addEventListener('pagehide',()=>{discardConfirm();session.invalidate();lease.clear();draft=[];$('fields').replaceChildren();});window.addEventListener('pageshow',e=>{if(e.persisted)reset();});
 // 初次載入保持兩空欄，不自動生成範例或下載。
 reset();

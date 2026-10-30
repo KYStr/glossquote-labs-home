@@ -23,4 +23,4 @@ Node 24.22.1 was used. No package install is needed. Preview binds only `127.0.0
 
 ## Verification boundaries
 
-See `VERIFICATION.md`. Passing core tests or source inspection is not GUI, accessibility, cross-browser, native audio/GPU, or independent quality evidence. Desktop browser compatibility remains to be exercised through the authorized managed preview.
+See `VERIFICATION.md`. Passing core tests or source inspection is not GUI, accessibility, cross-browser, native audio/GPU, or independent quality evidence. Limited historical managed-browser examples are recorded explicitly; r4 lifecycle correction has controlled-event evidence only, not native BFCache proof or complete desktop acceptance.
