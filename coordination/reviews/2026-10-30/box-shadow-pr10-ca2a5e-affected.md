@@ -1,0 +1,9 @@
+# Box Shadow Builder r3 — affected technical follow-up
+
+Candidate: `ca2a5e194f538b50aca9f22b9d6c03367ebfb1bc`, PR10. Original owner submitted this candidate at registry359; read back independently. Reviewer is the same nonauthor as the [original technical finding](https://github.com/KYStr/glossquote-labs-home/blob/2be2d6859307a38a5d69c9802b95c552564a64c8/coordination/reviews/2026-10-30/box-shadow-pr10-00ded50-technical.md).
+
+The fixed public `tools/box-shadow-builder/public/controller.mjs` was fetched and compared byte-for-byte against the tested local r3 file: SHA256 `e25d07adee9591f4ab4dc383e83fdd2376d7ca79f5c5640eefff3eb3dc7adea1`. The changed copy path now captures one original deadline, checks it when accepting completion, consumes the operation token, and schedules only the remaining interval. No application wait extension or clipboard read was added.
+
+Independent affected results: the original two cases (2999ms success and 3001ms late completion before delayed timer) both pass. Two new necessary controls pass: delivery of the old cancelled timer cannot end a newer copy; a synchronous provider consuming2500ms leaves only500ms, and completion at the original3000ms boundary falls back. These are four controlled true-Controller cases, not native clipboard observations. The author's18-test suite was not rerun or counted as independent.
+
+**BOX-COPY-LATE-001 is resolved for this exact r3 candidate only.** The original00ded50 red evidence remains valid historical evidence. This scoped technical pass is not whole-tool acceptance, a quality score, OS clipboard success/cancellation, or proof of BFCache/network/storage/CSP/accessibility/compatibility. All nine independent quality dimensions remain unassigned; the full fixed specification's outstanding native and formal-origin checks remain. No merge, deployment, owner transfer or product source change was performed by this reviewer.
