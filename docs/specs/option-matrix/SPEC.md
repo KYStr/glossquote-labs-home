@@ -3,7 +3,7 @@
 **狀態：DRAFT / SPEC_ONLY，待非作者完整度審查。不是 ready 庫存、工具候選或產品通過證明。**
 
 - 規格 ID：`spec-option-matrix-v1`。
-- 文件修訂：public-r2；只移除內部協作識別，產品需求與驗收標準不變。
+- 文件修訂：public-r3；依獨立完整度審查澄清乘積上限的合法可達測例，2,000列上限與其他產品需求、品質門檻不變。
 - [固定 brief](https://github.com/KYStr/glossquote-labs-home/blob/3236a9e030d0d24238a970a32ff98e4ac5794612/coordination/cloud/2026-10-29/SPEC-STOCK-BRIEF.md)；[既有主頁 source baseline](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md)。baseline 僅是工程/發布契約入口，沒有宣稱已存在本工具程式。
 - 本文件以 GitHub commit 固定後由 registry 的 `document` 指向該 commit；文件不自填自己的未知 commit。所有執行、品質分數及原生證據目前為 `NOT_RUN / null`。
 
@@ -159,7 +159,7 @@ enumerate用索引向量從全0開始：每輸出一列後，自最後一維加1
 | 面向ID | 必達要求 / 方法 | 必留證據 / 未通過處置 |
 |---|---|---|
 | functionality | 1維/2×3/不等長6維/2,000列完整列舉，固定順序/唯一tuple/正確caseId；真UI主旅程/分頁/完整下載 | literal expected與實際輸出bytes、真鍵鼠流程；漏列/錯序/只匯出當頁為fail |
-| boundaries | 全部raw/碼點/byte/選項數/乘積端點±1；empty/duplicates/schema/Unicode；取消/修改/背景/5秒timeout/晚到回調 | 分支原始log；取消後零可用半結果、generation不串線；不可控原生時序列NOT_RUN，不用mock冒替 |
+| boundaries | 全部raw/碼點/byte/選項數端點±1；乘積上限用合法維度及選項數可達的最近下/等/上界1980/2000/2016，不要求不可達的1999/2001；empty/duplicates/schema/Unicode；取消/修改/背景/5秒timeout/晚到回調 | 分支原始log；取消後零可用半結果、generation不串線；不可控原生時序列NOT_RUN，不用mock冒替 |
 | privacy | 真browser全Network/Storage從載入、輸入、生成、下載、清除、離頁/返回觀察；不得漏同源遙測 | 原始請求與storage檢查範圍；只看到UI不算PASS，無能力則null |
 | security | 字面HTML/URL/公式、CSV_RISK、Unicode/原型/未知鍵、DOM與build allowlist；靜態headers真讀回 | source與負例、artifact/headers對應同commit；有限檢查非全面安全保證 |
 | usability | 非作者只靠頁內說明完成新增/排序/生成/翻頁/下載/修錯/取消；理解完整組合≠有效業務測試 | 真操作觀察、產物重新以文字工具打開核對；不得宣稱使用者研究/喜好；無實作時NOT_RUN |
@@ -176,7 +176,7 @@ enumerate用索引向量從全0開始：每輸出一列後，自最後一維加1
 |---|---|
 | T01 基本列舉 | 單維`[x]`→C0001[x]；`[a,b]×[x,y,z]`→六個明列tuple；六維各一項→一列六格 |
 | T02 次序與重複 | 同值跨維合法，duplicate同維拒絕；換維度次序改tuple欄順/枚舉快慢，不遺漏；測同名label與caseId保留名 |
-| T03 容量 | 維度0/1/6/7；每維0/1/12/13；10×10×10×2=2000過、×3拒；原字串/碼點/總UTF8/輸出bytes每一界線-1/等於/+1，用多byte與escape字符構造 |
+| T03 容量 | 維度0/1/6/7；每維0/1/12/13；乘積最近可達下界2×9×10×11=1980與等界2×10×10×10=2000過，上界2×7×12×12=2016拒；原10×10×10×3=3000拒例保留；1999為大於12的質數、2001=3×23×29，無法由各維1–12且至多6維形成，不偽造合法輸入；原字串/碼點/總UTF8/輸出bytes每一界線-1/等於/+1，用多byte與escape字符構造 |
 | T04 文字 | CRLF/CR/LF、末尾一LF與兩LF、中間空行、ASCII邊空格重複、全形空白、NFC外觀相同但bytes不同、emoji、孤立surrogate、每個禁控制區間端點；結果不能偷偷normalize |
 | T05 schema | null/array代object/未知key/getter/holeyarray/非primitive；不得呼叫accessor作驗證副作用；原草稿不變 |
 | T06 序列化 | 應與§4範例JSON以固定indent/LF重建bytes一致；CSV引號/逗號/中文/emoji字面往返；caseId+表頭/每列欄數；001仍字串；formula風險header與值及NBSP前綴阻CSV但JSON保留 |
