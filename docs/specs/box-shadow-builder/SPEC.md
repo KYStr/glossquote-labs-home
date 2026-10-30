@@ -1,7 +1,7 @@
 # CSS 卡片陰影編輯器 / Box Shadow Builder
 
 Spec ID：`spec-box-shadow-builder-v1`  
-版本：v1 r1，2026-10-30  
+版本：v1 r2，2026-10-30  
 交付：完整製作規格候選；不是產品實作、上線結果或已通過品質評分。
 
 ## 1 目標與成功條件
@@ -72,7 +72,7 @@ HEX 留空，不偷偷載入有效範例或自動產生結果。常見格式例�
 
 「往前一層 / Move earlier」把該整層與前一層交換；「往後一層 / Move later」與後一層交換。端點按鈕停用，資料、錯誤與欄位 ID 一起跟隨穩定層 ID；完成後焦點在被移動層的 HEX，而非變成 disabled 的按鈕。序號與摘要重排，不另排序顏色、數值或 outer/inset。第一層不是永遠「最上面的一切」：不同模式的平面由 CSS 決定。
 
-任何 input、change、compositionstart、有效增刪或排序，先增加 generation 並撤下全部已產生結果、成功訊息、複製/下載能力及舊 Blob URL，再處理編輯。即使值最後改回原值，也須再次按產生。composition 期間禁止產生；compositionend 不自動生成。無效果的端點操作不得改資料或製造結果。
+任何 input、change、compositionstart、有效增刪或排序，先增加 generation 並撤下全部已產生結果、成功訊息及新複製/下載能力，再處理編輯。已提出下載的單一 Blob URL lease 與結果 generation 分離，依第 4.4 節保留有限交接時間，不因編輯提前撤銷。即使值最後改回原值，也須再次按產生；重新產生不延長或替換既有 lease。composition 期間禁止產生；compositionend 不自動生成。無效果的端點操作不得改資料或製造結果。
 
 ### 3.3 修錯與結果取出
 
@@ -86,15 +86,15 @@ HEX 留空，不偷偷載入有效範例或自動產生結果。常見格式例�
 
 複製只在一次明確 click 的使用者手勢中呼叫 writeText；拒絕/不支援/應用等待逾 3 秒時顯示「無法確認複製，請選取下方文字自行複製」，不讀剪貼簿、不呼叫隱藏 execCommand。待處理時停用複製，最多一個目前 generation 的應用請求。3 秒是應用等待界，不保證已取消作業系統操作；過期 promise 不能更改 UI。之後顯式重試可以開始新請求，不把舊 OS 操作宣稱撤回。
 
-下載以同一快照的 Blob 及固定檔名提出一次原生下載，不需檔案讀寫權限。通知用「已提出下載，請檢查瀏覽器下載項目」，只有測試實讀檔案後才可在證據中稱 bytes 相同。
+下載以同一快照的 Blob 及固定檔名提出一次原生下載，不需檔案讀寫權限。單一下載 lease 存活時停用新下載，顯示「下載交接中，最長等待 30 秒後可再下載」；仍可編輯、再次產生或複製有效新結果，但不得替換舊 lease。通知用「已提出下載，請檢查瀏覽器下載項目」，只有測試實讀檔案後才可在證據中稱 bytes 相同。
 
 ### 3.4 清除、語言及頁面生命週期
 
-清除及切換語言若已有非初始 raw、結果或 pending 動作，先用可及性對話框提示會丟棄本頁內容。取消完全保留 raw、層序、generation/有效結果與焦點回到觸發按鈕；取消不可因進出 dialog 自動失效。對話框開啟時禁止表單及取出動作。確認清除回初始一層/空 HEX，清錯誤與所有暫態，焦點到第一層 HEX。
+清除及切換語言若已有非初始 raw、結果或 pending 動作，先用可及性對話框提示會丟棄本頁內容。取消完全保留 raw、層序、generation/有效結果與焦點回到觸發按鈕；取消不可因進出 dialog 自動失效。對話框開啟時禁止表單及取出動作。確認清除回初始一層/空 HEX，清錯誤、有效結果及 pending copy，焦點到第一層 HEX；唯已提出下載的 lease 仍按原期限保留，不因清除提前撤銷。對話框顯示這個有限例外，不能承諾清除可取消已提出的下載。
 
 語言確認後到同工具另一固定語言頁；不把輸入寫到 URL、storage 或 history state。無資料時直接切換。切換取消不得改文件 lang/title 或混出兩種語言。預覽/輸出文案語言一致；CSS 固定中文註解是輸出契約，英文頁須明示，不偷偷變輸出 bytes。
 
-document hidden：撤下結果、使 pending 回調過期並撤銷 Blob URL，保留原始欄位；回到 visible 仍要再次按產生。pagehide：清除所有 raw、結果及暫態至初始；pageshow 也再次重設，防 BFCache 復原舊資料。一般重新載入也是初始，不做恢復承諾。上述清除只描述應用可控記憶體/DOM，不保證瀏覽器、作業系統或已下載檔案的安全抹除。
+document hidden：撤下結果、使 pending copy 回調過期並 purge 下載 lease/Blob URL，保留原始欄位；回到 visible 仍要再次按產生。pagehide/dispose：清除所有 raw、結果、lease 及暫態至初始；pageshow 也再次重設，防 BFCache 復原舊資料。語言確認後導航也走 pagehide 清理。這些離頁/背景 purge 可中止尚未被瀏覽器接收的下載，頁內須提醒取出期間留在頁面並檢查下載項目；不承諾已完成或已取消 OS 下載。一般重新載入也是初始，不做恢復承諾。上述清除只描述應用可控記憶體/DOM，不保證瀏覽器、作業系統或已下載檔案的安全抹除。
 
 ## 4 輸入、驗證與輸出契約
 
@@ -164,7 +164,7 @@ canonical 整數只接受 `0` 或可選 ASCII 減號接 1–9 開頭的十進位
 
 下載檔名固定 `shadow.css`，Blob type `text/css;charset=utf-8`。複製、readonly textarea、Blob bytes 都直接使用核心成功結果 css，不從 CSSOM、innerText 或重新計算取得；textarea 不自動換行寫回內容。輸出最大 1024 bytes，無壓縮、資料 URL 或多檔 ZIP。
 
-同時最多保存一個目前快照的 Blob URL。每次顯式下載先撤銷前一個，再建立新的；新 URL 最長保留 30 秒，或在任何失效/清除/hidden/pagehide/dispose 時立即撤銷，以先到者為準。舊計時器不得誤撤銷後來的新 URL；用 URL token 比對並清除舊 timer。不得立刻 revoke 到正常瀏覽器尚未接收下載；30 秒不是對所有下載器成功的保證。
+下載使用獨立的單一 lease：只有目前結果有效、沒有對話框且沒有存活 lease 才能取出。接受顯式 click 時先鎖住新下載，再把當刻 css 複製到 Blob、建立唯一 URL，提出一次原生下載並從該次起計固定 30 秒期限。edit、清除、再次產生或連按都不得提前 revoke、替換或延長已提出下載的 lease；它可以暫存舊快照的有限輸出，但舊快照不再顯示或提供新的取出。\n\n期限到即撤銷該 URL、解除 lease；只在當下有有效結果、無對話框且頁面可用時重新開放下載。使用與結果 generation 不同的 lease token，舊 timer/回調只能結束它自己的 lease，不能撤銷後來的新 URL或復活舊結果；清理 timer，重複清理冪等。每個入口先核期限，不靠連按續命。hidden/pagehide/dispose 是明示的提早 purge 例外；Blob/URL/下載 click 拋錯則立即撤銷已建 URL 並解除失敗 lease。\n\n瀏覽器下載交接沒有本工具可依賴的完成 ACK，30 秒只是有界交接保留期，不保證任何瀏覽器已接收或落盤；背景/離頁可能提前中止尚未接收的下載。不能要求「一定等到接收才 revoke」卻又宣稱具備這個不可觀察判定。新下載在 lease 期間確實停用，不以無上限排隊或多 URL 規避一個上限。
 
 ## 5 實作與交付架構
 
@@ -242,7 +242,7 @@ T07 每種 input/change/compositionstart/add/remove/reorder 都在後續動作�
 
 T08 clipboard：成功、拒絕、API 不在、3 秒 timeout；pending 時 edit/clear/hidden/pagehide/語言確認，再讓舊 promise resolve/reject，不能復活成功訊息/輸出或把新 generation 按鈕狀態覆蓋。pending 取消對話框則原狀態按真事件發展，不憑取消額外重置；不要聲稱 OS 舊 write 被取消。
 
-T09 Blob URL：連續下載只保留一個，替換時 revoke 原；30 秒 timer、edit、clear、hidden、pagehide、dispose 各撤銷；舊 timer 在新 URL 存在時不能撤銷新 URL。沒有有效快照或對話框開啟時不得 createObjectURL/click下載。
+T09 Blob URL lease：第一次下載後立即 edit、確認清除、再產生及連按，均不得提早 revoke、建立第二 URL/排隊下載或延長原 30 秒；舊結果能力仍立即失效。到原期限才撤銷該 URL，依當下有效結果/對話框/頁面狀態決定按鈕，不復活舊結果。再開始第二次下載後交付第一個晚到 timer，不能撤銷新 URL。hidden/pagehide/dispose 各即時 purge 並冪等，明示不保證先前下載已接收。沒有有效快照、對話框開啟或 lease 存活時，真 handler guard 均不得 createObjectURL/click下載，不能只測 disabled 外觀。
 
 T10 失敗原子性：core error、CSS.supports false、預覽 rule 不在、設定 CSSOM throw、Blob/createObjectURL throw/下載 click throw。前四者不得留下半成功的預覽或輸出；後三者只報下載失敗並清理已建 URL，保留有效快照供選取/重試，不把一次取出失敗當產生失敗。通知不含 exception stack/raw。這些有替身的定向測試只證分支契約，實際能力另做真瀏覽器。
 
@@ -262,7 +262,7 @@ B04 inset方向：單層 inset，x10/y10/blur0/spread0/#000000/100，在白卡�
 
 B05 正常四層旅程：由一層新增至四層、故意輸入一個錯誤、首錯定位修正、移動首尾、刪至一層、再產生；核欄位與 stable ID 焦點、不越4/少於1、無舊結果混入、窄視窗局部捲動正常。
 
-B06 取出：同一有效快照正常 copy 並以可控制的測試接收區/使用者檢視確認文字；真下載讀回 shadow.css 的 bytes/MIME/filename，與固定 expected 比對。權限拒絕/不支援時可選取文字替代，不強迫授權。不得把一般 page spy「呼叫了 writeText」當 OS clipboard 已保存。
+B06 取出：同一有效快照正常 copy 並以可控制的測試接收區/使用者檢視確認文字；真下載讀回 shadow.css 的 bytes/MIME/filename，與固定 expected 比對。再做下載後立即編輯/重產生/連按：新下載在原 lease 期間停用、沒有第二下載或舊結果能力，原檔案是否實際收到據實記錄；30 秒後只對有效新快照開放新的顯式下載。背景/離頁 purge 的交接限制另記，不稱取消 OS 操作已成功。權限拒絕/不支援時可選取文字替代，不強迫授權。不得把一般 page spy「呼叫了 writeText」當 OS clipboard 已保存。
 
 B07 生命週期：在 pending/成功狀態正常切換頁面可見性、取消/確認清除與語言、離開返回或重新載入；觀察 raw/結果按契約，舊 toast 不復活。BFCache 未實際發生則標該分支未測，不把單純 new page reload 當全部驗證。
 
