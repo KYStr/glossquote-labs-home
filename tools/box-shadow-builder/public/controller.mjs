@@ -17,12 +17,12 @@ export class Controller { // 控制器的依賴可定向替換，產品仍接真
   reset(){this.composing=false;this.modal=false;this.invalidate('initial');} // 一般清除保留已提出下載的有限租約。
   dispose(){this.reset();this.purge();} // 離頁清掉所有應用暫態。
   copy(raw){ // 正常使用者手勢中同步發出writeText，不讀clipboard。
-    if(!this.current(raw)||this.state.copying)return;const generation=this.generation,id=++this.copyId,css=this.state.result.css; // 只捕捉有效不可變快照。
+    if(!this.current(raw)||this.state.copying)return;const generation=this.generation,id=++this.copyId,css=this.state.result.css,deadline=this.now()+3000; // 只捕捉有效不可變快照。
     const valid=()=>generation===this.generation&&id===this.copyId&&this.state.result?.css===css; // 過期操作不能污染後來結果。
-    const finish=message=>{if(!valid())return;if(this.copyTimer!==null)this.cancel(this.copyTimer);this.copyTimer=null;this.state={...this.state,copying:false,message};this.emit();}; // 共用成功與失敗清理。
+    const finish=message=>{if(!valid())return;if(this.copyTimer!==null)this.cancel(this.copyTimer);this.copyTimer=null;this.state={...this.state,copying:false,message:this.now()>=deadline?'copyFallback':message};this.copyId++;this.emit();}; // 採入時核原固定期限且消耗token，晚timer或promise不能再改UI。
     let write;try{write=this.clipboard();}catch{finish('copyFallback');return;}if(typeof write!=='function'){finish('copyFallback');return;} // 缺能力安全保留可選文字。
     this.state={...this.state,copying:true,message:'copying'};this.emit();let pending;try{pending=write(css);}catch{finish('copyFallback');return;} // 原生手勢內立即呼叫。
-    this.copyTimer=this.schedule(()=>{if(!valid())return;finish('copyFallback');this.copyId++;},3000);Promise.resolve(pending).then(()=>finish('copied'),()=>finish('copyFallback')); // 三秒只是應用等待界，不宣稱撤回OS。
+    this.copyTimer=this.schedule(()=>{if(!valid())return;finish('copyFallback');this.copyId++;},Math.max(0,deadline-this.now()));Promise.resolve(pending).then(()=>finish('copied'),()=>finish('copyFallback')); // 三秒只是應用等待界，不宣稱撤回OS。
   } // 結束複製。
   download(raw,deliver){ // 只允許一個有界租約，不排隊或續命。
     if(!this.current(raw)||this.lease)return false;const lease={id:++this.leaseId,url:null,timer:null,deadline:this.now()+30000};this.lease=lease;this.emit(); // 先鎖再建立Blob。
