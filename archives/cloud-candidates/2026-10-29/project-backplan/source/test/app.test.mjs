@@ -1,0 +1,42 @@
+// 這些是受控狀態機測試，不冒充真實瀏覽器/AT/剪貼簿/下載證據。
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { harness, deferred } from './dom-harness.mjs';
+for(const language of ['zh-Hant','en']){
+  test(`${language} controlled DOM: initialization, exact example, submit prevention`,async()=>{
+    const h=await harness(language);try{assert.equal(h.node('editor').disabled,false);assert.equal(h.node('calculate').disabled,false);assert.equal(h.node('copy').disabled,true);await h.example();const event=await h.submit();assert.equal(event.defaultPrevented,true);assert.equal(h.node('result').hidden,false);for(const date of ['2026-11-02','2026-11-04','2026-11-05','2026-11-06'])assert.ok(h.node('report').value.includes(date));assert.equal(h.node('schedule').children.length,2);}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: every edit channel clears result/report/export`,async()=>{
+    const h=await harness(language);try{
+      for(const [id,value,type]of [['project','Changed','input'],['deadline','2026-11-05','input'],['holidays','2026-11-04','change'],['T1-name','Changed','input'],['T1-duration','2','input'],['T2-dependencies','','input'],['weekday-0','0','change'],['T1-name','IME','compositionstart']]){
+        await h.example();await h.submit();assert.notEqual(h.node('report').value,'');await h.change(id,value,type);assert.equal(h.node('report').value,'');assert.equal(h.node('summary').children.length,0);assert.equal(h.node('schedule').children.length,0);assert.equal(h.node('copy').disabled,true);assert.equal(h.node('download').disabled,true);
+      }
+      await h.example();await h.submit();await h.click('add-task');assert.equal(h.node('report').value,'');assert.equal(h.node('tasks').children.length,3);assert.equal(h.document.activeElement.id,'T3-name');
+      h.node('tasks').children[1].querySelector('button').click();assert.equal(h.node('tasks').children.length,2);assert.ok(h.node('T3-name'));assert.equal(h.node('T2-name'),undefined);
+    }finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: composition blocks submit until compositionend`,async()=>{
+    const h=await harness(language);try{await h.example();await h.submit();h.node('T1-name').dispatch('compositionstart');await h.submit();assert.equal(h.node('report').value,'');assert.equal(h.node('copy').disabled,true);assert.equal(h.node('result').hidden,true);h.node('T1-name').dispatch('compositionend');await h.submit();assert.notEqual(h.node('report').value,'');}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: invalid graph clears export and associates error`,async()=>{
+    const h=await harness(language);try{await h.example();await h.submit();await h.change('T2-dependencies','NO_SUCH_TASK');await h.submit();assert.equal(h.node('report').value,'');assert.equal(h.node('error-box').hidden,false);assert.equal(h.node('T2-dependencies').getAttribute('aria-invalid'),'true');assert.ok(h.node('T2-dependencies').getAttribute('aria-describedby').includes('error-text'));assert.equal(h.document.activeElement.id,'T2-dependencies');await h.change('T2-dependencies','T1');assert.equal(h.node('T2-dependencies').hasAttribute('aria-invalid'),false);}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: cancel and Escape preserve content, clear resets`,async()=>{
+    const h=await harness(language);try{await h.example();await h.submit();const report=h.node('report').value;await h.click('clear');assert.equal(h.node('clear-dialog').open,true);await h.click('cancel-clear');assert.equal(h.node('report').value,report);assert.equal(h.document.activeElement.id,'clear');await h.click('clear');const event=h.node('clear-dialog').dispatch('cancel');assert.equal(event.defaultPrevented,true);assert.equal(h.node('report').value,report);assert.equal(h.document.activeElement.id,'clear');await h.click('clear');await h.click('confirm-clear');assert.equal(h.node('deadline').value,'');assert.equal(h.node('project').value,'');assert.equal(h.node('report').value,'');assert.equal(h.node('tasks').children.length,1);assert.equal(h.document.activeElement.id,'project');}finally{await h.cleanup();}
+  });
+  for(const outcome of ['resolve','reject'])test(`${language} controlled DOM: stale A ${outcome}/finally leaves B DOM/focus/busy unchanged`,async()=>{
+    const h=await harness(language);try{const pending=[];h.clipboard(text=>{const d=deferred();pending.push({...d,text});return d.promise;});await h.example();await h.submit();await h.click('copy');assert.equal(h.node('copy').getAttribute('aria-busy'),'true');await h.change('project','New');await h.submit();await h.click('copy');const before=h.snapshot();pending[0][outcome](outcome==='reject'?new Error('old'):undefined);await h.spin();assert.equal(h.snapshot(),before);assert.equal(h.node('copy').getAttribute('aria-busy'),'true');pending[1].resolve();await h.spin();assert.equal(h.node('copy').hasAttribute('aria-busy'),false);assert.equal(h.node('copy').disabled,false);}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: clipboard fail/missing provides manual selection; success only fulfilled`,async()=>{
+    const h=await harness(language);try{await h.example();await h.submit();h.clipboard(()=>Promise.reject(new Error('denied')));await h.click('copy');assert.equal(h.document.activeElement.id,'report');assert.equal(h.node('report').selectionEnd,h.node('report').value.length);assert.equal(h.node('copy').disabled,false);h.clipboard(null);await h.click('copy');assert.equal(h.document.activeElement.id,'report');const d=deferred();h.clipboard(()=>d.promise);await h.click('copy');const status=h.node('status').textContent;assert.equal(h.node('copy').disabled,true);d.resolve();await h.spin();assert.notEqual(h.node('status').textContent,status);}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: TXT exact bytes, fixed filename and bounded delayed URLs`,async()=>{
+    const h=await harness(language);try{await h.example();await h.submit();await h.click('download');assert.equal(h.node('download').disabled,true);assert.equal(h.downloads[0].name,'project-backplan.txt');assert.equal(h.downloads[0].liveAtClick,true);assert.equal(h.urls.size,1);const blob=[...h.urls.values()][0];assert.equal(blob.type,'text/plain;charset=utf-8');assert.deepEqual(new Uint8Array(await blob.arrayBuffer()),new TextEncoder().encode('\ufeff'+h.node('report').value));assert.equal(h.revoked.length,0);await h.click('download');assert.equal(h.urls.size,1);assert.equal(h.downloads.length,1);assert.equal(h.revoked.length,0);await h.change('project','Changed');assert.equal(h.urls.size,1);await h.submit();assert.equal(h.node('download').disabled,true);await h.tick();assert.equal(h.urls.size,0);assert.equal(h.node('download').disabled,false);await h.click('download');h.event('pagehide');assert.equal(h.urls.size,0);}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: pagehide/pageshow/visibility invalidates raw data and async operations`,async()=>{
+    const h=await harness(language);try{for(const life of ['pagehide','pageshow','visibilitychange']){await h.example();await h.submit();await h.click('download');const d=deferred();h.clipboard(()=>d.promise);await h.click('copy');if(life==='visibilitychange'){h.document.visibilityState='hidden';h.documentEvent(life);}else h.event(life,{persisted:true});assert.equal(h.node('deadline').value,'');assert.equal(h.node('project').value,'');assert.equal(h.node('report').value,'');assert.equal(h.urls.size,0);const before=h.snapshot();d.reject(new Error('late'));await h.spin();assert.equal(h.snapshot(),before);h.document.visibilityState='visible';}}finally{await h.cleanup();}
+  });
+  test(`${language} controlled DOM: 50 task bound, stable IDs after remove, literal markup`,async()=>{
+    const h=await harness(language);try{await h.example();for(let i=2;i<50;i++)h.node('add-task').click();assert.equal(h.node('tasks').children.length,50);assert.equal(h.node('add-task').disabled,true);h.node('add-task').click();assert.equal(h.node('tasks').children.length,50);h.node('tasks').children[10].querySelector('button').click();assert.equal(h.node('T11-name'),undefined);h.node('add-task').click();assert.ok(h.node('T51-name'));assert.equal(h.node('tasks').children.length,50);await h.example();await h.change('T1-name','<img src=x onerror=alert(1)>');await h.submit();assert.equal(h.node('schedule').children[0].children[0].children[0].textContent,'[T1] <img src=x onerror=alert(1)>');}finally{await h.cleanup();}
+  });
+}

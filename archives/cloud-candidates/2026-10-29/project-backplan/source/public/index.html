@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>專案期限倒排 · GlossQuote Labs</title>
+  <meta name="description" content="從明確截止日、工作天數與任務依賴，倒推出各項工作的最晚開始與完成日期。">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#tool">跳至工具</a>
+  <header class="site-header"><a class="brand" href="https://glossquote.com/index.html">GlossQuote<span> / LABS</span></a><nav aria-label="所有工具"><a href="https://glossquote.com/index.html">所有工具</a><a id="language-link" href="./en/index.html" lang="en" aria-describedby="language-warning">English</a></nav></header>
+  <main id="tool">
+    <section class="hero"><p class="badge">隔離預覽 · 尚未發布</p><p class="eyebrow">先定終點，再排每一步</p><h1>專案期限倒排</h1><p class="headline">讓截止日，變成可執行的起點。</p><p class="intro">設定任務、前後關係與工作日，倒推出每項工作最晚何時開始。資料只在此頁處理，不自動套用國定假日。</p></section>
+    <p id="language-warning" class="small">切換語言會清除輸入與結果。</p><p id="init-status" role="status">正在初始化；若未啟用，請重新載入。</p><noscript><p class="notice">需要 JavaScript 才能計算；目前表單保持停用。</p></noscript>
+    <form id="planner" autocomplete="off" novalidate>
+      <fieldset id="editor" disabled><legend class="sr-only">專案期限倒排</legend>
+        <section class="panel"><h2>01 / 設定終點</h2><div class="two-columns"><div><label for="project">專案名稱（選填）</label><input id="project" type="text" maxlength="200" aria-describedby="project-hint"><p id="project-hint" class="hint">最多 100 個字元，單行文字。</p></div><div><label for="deadline">截止日（含當日）</label><input id="deadline" type="text" placeholder="YYYY-MM-DD" maxlength="10" aria-describedby="date-hint" required><p id="date-hint" class="hint">公曆 0001–9999 年，YYYY-MM-DD。不讀取今天日期。</p></div></div>
+          <fieldset id="weekdays"><legend>工作星期</legend><p id="week-hint" class="hint">至少選一天；套用到所有任務。</p><div class="days"><label class="day"><input type="checkbox" value="0" class="weekday" aria-describedby="week-hint" checked><span>週一</span></label><label class="day"><input type="checkbox" value="1" class="weekday" aria-describedby="week-hint" checked><span>週二</span></label><label class="day"><input type="checkbox" value="2" class="weekday" aria-describedby="week-hint" checked><span>週三</span></label><label class="day"><input type="checkbox" value="3" class="weekday" aria-describedby="week-hint" checked><span>週四</span></label><label class="day"><input type="checkbox" value="4" class="weekday" aria-describedby="week-hint" checked><span>週五</span></label><label class="day"><input type="checkbox" value="5" class="weekday" aria-describedby="week-hint" ><span>週六</span></label><label class="day"><input type="checkbox" value="6" class="weekday" aria-describedby="week-hint" ><span>週日</span></label></div></fieldset>
+          <label for="holidays">非工作日期（選填）</label><textarea id="holidays" rows="3" maxlength="4026" spellcheck="false" aria-describedby="holiday-hint"></textarea><p id="holiday-hint" class="hint">每行一個 YYYY-MM-DD，最多 366 個，不可重複。即使勾選該星期，也會排除此日。</p>
+        </section>
+        <section class="panel"><div class="section-heading"><h2>02 / 拆解必要工作</h2><span id="task-count" class="count">0 / 50</span></div><p id="tasks-hint" class="hint">1–50 項；每項 1–365 個工作日。依賴請填畫面上的固定 ID，移除任務不會重新編號。</p><div id="tasks"></div><button id="add-task" type="button" class="secondary">+ 新增任務</button></section>
+        <div class="form-actions"><button id="calculate" type="submit" disabled>倒排專案<span aria-hidden="true"> ↗</span></button><button id="example" type="button" class="secondary">載入範例</button><button id="clear" type="button" class="quiet">清除全部</button></div>
+      </fieldset>
+    </form>
+    <div id="error-box" class="notice error" role="alert" tabindex="-1" hidden><h2>請檢查輸入</h2><p id="error-text"></p></div>
+    <section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">03 / 最晚時程</h2><p id="status" role="status" aria-live="polite">尚未計算。輸入變更後，請重新倒排。</p><div id="result" hidden><div id="summary" class="summary"></div><p id="adjustment" class="notice" hidden></p><div id="schedule"></div><label for="report">可複製的完整文字</label><textarea id="report" readonly rows="9"></textarea><div class="export-actions"><button id="copy" type="button" disabled>複製文字</button><button id="download" type="button" class="secondary" disabled>下載 TXT</button></div><p class="hint">TXT 為 UTF-8（含 BOM），內容與上方文字相同，固定 LF 換行。每次下載後需等 10 秒才能再次下載；已開始的複製或下載無法保證撤回。</p></div></section>
+    <section class="faq"><h2>使用前，先看這三件事</h2><details><summary>「最晚開始」代表保證來得及？</summary><p>不是。這是依照輸入日曆與依賴計算的理論最晚日期。不檢查人力、設備、緩衝、實際開工日或今天是否已逾期；平行任務可以重疊。</p></details><details><summary>工期與截止日怎麼算？</summary><p>工期含開始及完成工作日。前置完成後，後繼最早從下一個工作日開始。若截止日不是工作日，所有末端任務會取截止日之前最近的工作日。</p></details><details><summary>資料會儲存嗎？</summary><p>不會上傳、追蹤或儲存輸入。首次載入靜態頁面仍需網路。變更輸入會撤銷舊結果；離開或隱藏頁面、切換語言與重新載入會清除輸入與結果。複製和下載只在你按下按鈕後執行。</p></details></section>
+  </main>
+  <footer><p>無帳號 · 無資料上傳 · 無自動假日</p><a href="https://glossquote.com/index.html">所有工具 ↗</a></footer>
+  <dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-description"><h2 id="clear-title">清除所有輸入與結果？</h2><p id="clear-description">這個動作無法復原。取消或按 Escape 會保留目前內容。</p><div class="dialog-actions"><button id="cancel-clear" type="button" class="secondary" autofocus>保留內容</button><button id="confirm-clear" type="button">確認清除</button></div></dialog>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Project Deadline Backplanner · GlossQuote Labs</title>
+  <meta name="description" content="Work backward from an explicit deadline using task durations, dependencies and your working calendar.">
+  <link rel="stylesheet" href="../styles.css">
+  <script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#tool">Skip to tool</a>
+  <header class="site-header"><a class="brand" href="https://glossquote.com/en/index.html">GlossQuote<span> / LABS</span></a><nav aria-label="All tools"><a href="https://glossquote.com/en/index.html">All tools</a><a id="language-link" href="../index.html" lang="zh-Hant" aria-describedby="language-warning">繁體中文</a></nav></header>
+  <main id="tool">
+    <section class="hero"><p class="badge">Isolated preview · Not published</p><p class="eyebrow">START WITH THE FINISH</p><h1>Project Deadline Backplanner</h1><p class="headline">Turn a deadline into a clear starting point.</p><p class="intro">Map tasks, dependencies and workdays to see the latest date each task can start. Inputs stay on this page; national holidays are not applied automatically.</p></section>
+    <p id="language-warning" class="small">Switching language clears inputs and results.</p><p id="init-status" role="status">Initializing. If controls remain disabled, reload the page.</p><noscript><p class="notice">JavaScript is needed to calculate. The form remains disabled.</p></noscript>
+    <form id="planner" autocomplete="off" novalidate>
+      <fieldset id="editor" disabled><legend class="sr-only">Project Deadline Backplanner</legend>
+        <section class="panel"><h2>01 / Set the finish</h2><div class="two-columns"><div><label for="project">Project name (optional)</label><input id="project" type="text" maxlength="200" aria-describedby="project-hint"><p id="project-hint" class="hint">Up to 100 characters, single-line text.</p></div><div><label for="deadline">Deadline (inclusive)</label><input id="deadline" type="text" placeholder="YYYY-MM-DD" maxlength="10" aria-describedby="date-hint" required><p id="date-hint" class="hint">Gregorian years 0001–9999, YYYY-MM-DD. Today’s date is never read.</p></div></div>
+          <fieldset id="weekdays"><legend>Working weekdays</legend><p id="week-hint" class="hint">Choose at least one day. This calendar applies to every task.</p><div class="days"><label class="day"><input type="checkbox" value="0" class="weekday" aria-describedby="week-hint" checked><span>Mon</span></label><label class="day"><input type="checkbox" value="1" class="weekday" aria-describedby="week-hint" checked><span>Tue</span></label><label class="day"><input type="checkbox" value="2" class="weekday" aria-describedby="week-hint" checked><span>Wed</span></label><label class="day"><input type="checkbox" value="3" class="weekday" aria-describedby="week-hint" checked><span>Thu</span></label><label class="day"><input type="checkbox" value="4" class="weekday" aria-describedby="week-hint" checked><span>Fri</span></label><label class="day"><input type="checkbox" value="5" class="weekday" aria-describedby="week-hint" ><span>Sat</span></label><label class="day"><input type="checkbox" value="6" class="weekday" aria-describedby="week-hint" ><span>Sun</span></label></div></fieldset>
+          <label for="holidays">Non-working dates (optional)</label><textarea id="holidays" rows="3" maxlength="4026" spellcheck="false" aria-describedby="holiday-hint"></textarea><p id="holiday-hint" class="hint">One YYYY-MM-DD per line, up to 366 unique dates. These dates are excluded even on selected weekdays.</p>
+        </section>
+        <section class="panel"><div class="section-heading"><h2>02 / Map the essential work</h2><span id="task-count" class="count">0 / 50</span></div><p id="tasks-hint" class="hint">1–50 tasks; 1–365 workdays each. Reference the fixed IDs shown beside tasks. Removing a task does not renumber the others.</p><div id="tasks"></div><button id="add-task" type="button" class="secondary">+ Add task</button></section>
+        <div class="form-actions"><button id="calculate" type="submit" disabled>Build backplan<span aria-hidden="true"> ↗</span></button><button id="example" type="button" class="secondary">Load example</button><button id="clear" type="button" class="quiet">Clear all</button></div>
+      </fieldset>
+    </form>
+    <div id="error-box" class="notice error" role="alert" tabindex="-1" hidden><h2>Check your inputs</h2><p id="error-text"></p></div>
+    <section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">03 / Your latest schedule</h2><p id="status" role="status" aria-live="polite">No plan yet. Recalculate after changing any input.</p><div id="result" hidden><div id="summary" class="summary"></div><p id="adjustment" class="notice" hidden></p><div id="schedule"></div><label for="report">Complete copyable report</label><textarea id="report" readonly rows="9"></textarea><div class="export-actions"><button id="copy" type="button" disabled>Copy text</button><button id="download" type="button" class="secondary" disabled>Download TXT</button></div><p class="hint">TXT uses UTF-8 with a BOM, the same text as above, and fixed LF line endings. Wait 10 seconds between downloads. A copy or download already started cannot be guaranteed to be recalled.</p></div></section>
+    <section class="faq"><h2>Three things to know before you plan</h2><details><summary>Does the latest start guarantee I can finish?</summary><p>No. These are theoretical latest dates based on your calendar and dependencies. Staffing, equipment, buffers, an actual start date and whether today is too late are not checked. Parallel tasks may overlap.</p></details><details><summary>How are durations and deadlines counted?</summary><p>Durations include the first and last workdays. A successor may start no earlier than the next workday after its predecessor finishes. If the deadline is not a workday, terminal tasks finish on the previous workday.</p></details><details><summary>Are my inputs saved?</summary><p>Inputs are not uploaded, tracked or stored. The initial static page load still requires a network. Editing inputs invalidates the result. Leaving or hiding the page, switching language or reloading clears inputs and results. Copy and download run only when you press their buttons.</p></details></section>
+  </main>
+  <footer><p>No account · No input uploads · No automatic holidays</p><a href="https://glossquote.com/en/index.html">All tools ↗</a></footer>
+  <dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-description"><h2 id="clear-title">Clear all inputs and results?</h2><p id="clear-description">This cannot be undone. Cancel or press Escape to keep the current content.</p><div class="dialog-actions"><button id="cancel-clear" type="button" class="secondary" autofocus>Keep content</button><button id="confirm-clear" type="button">Clear everything</button></div></dialog>
+</body>
+</html>

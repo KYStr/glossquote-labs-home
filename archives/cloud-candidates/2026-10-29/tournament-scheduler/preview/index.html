@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="輸入 2–32 隊，產生單循環或雙循環對戰、輪空與每隊賽程；資料留在目前頁面。">
+<title>循環賽賽程表 · Gloss Tools</title>
+<link rel="stylesheet" href="/styles.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#main">跳至工具</a>
+<header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools 首頁</a><nav aria-label="語言"><a id="language-link" href="/en/index.html" hreflang="en">English</a><small>切換語言會清除目前資料。</small></nav></header>
+<main id="main">
+<div class="intro"><p class="eyebrow">未發布預覽 · 不開放索引</p><h1>循環賽賽程表</h1><p class="tagline">每一隊，都遇上每個對手。</p><p>貼上隊伍，選擇循環次數，再核對每輪與每隊的對戰。</p></div>
+<section class="workbench" aria-labelledby="setup-heading"><h2 id="setup-heading">01 / 設定隊伍</h2>
+<form id="scheduler" novalidate autocomplete="off"><fieldset id="editor" disabled><legend class="sr-only">01 / 設定隊伍</legend>
+<div class="input-grid"><div><label for="roster">參賽隊伍</label><p id="roster-hint" class="hint">一行一隊，2–32 隊；空白行忽略，同名以 # 序號區分。每名最多 64 個 Unicode 碼點，整份最多 8192 個 UTF-16 單位。</p><textarea id="roster" rows="8" spellcheck="false" autocomplete="off" aria-describedby="roster-hint" placeholder="甲隊
+乙隊
+丙隊"></textarea></div>
+<div class="settings"><label for="mode">賽制</label><select id="mode" aria-describedby="mode-hint"><option value="single">單循環：每對一次</option><option value="double">雙循環：每對兩次</option></select><p id="mode-hint" class="hint">雙循環第二段將同一對的左右順序交換；左右不代表主客場。</p><button id="example" type="button">載入 5 隊範例</button></div></div>
+<div class="actions"><button id="clear" type="button">清除全部</button><button id="calculate" type="submit" class="primary" disabled>產生賽程</button></div>
+</fieldset></form>
+<p id="init-status" class="hint">正在準備工具；如未啟用，請確認 JavaScript 可用。</p><noscript><p>此工具需要 JavaScript 才能在本頁計算。停用時不會送出隊伍資料。</p></noscript>
+<div id="error-box" class="error" role="alert" tabindex="-1" hidden><strong>請檢查輸入</strong><p id="error-text"></p></div>
+<p id="status" role="status" aria-live="polite" aria-atomic="true">尚未產生賽程。</p></section>
+<section id="result" hidden aria-labelledby="result-heading"><h2 id="result-heading" tabindex="-1">02 / 賽程結果</h2><div id="summary" class="metrics"></div><p class="assumptions">固定按輸入順序排程，不隨機抽籤。沒有安排日期、場地或時段，也不保證休息、場地或主客場公平。</p><h3>逐輪對戰</h3><div id="rounds" class="round-grid"></div><h3>每隊賽程</h3><p class="hint">展開隊伍名稱，核對每一輪的對手與輪空。</p><div id="team-schedules"></div>
+<div class="report-panel"><label for="report">完整純文字報告</label><p id="report-hint" class="hint">可手動選取；含逐輪與每隊賽程。TXT 為 UTF-8、無 BOM、無末尾換行。</p><textarea id="report" rows="10" readonly spellcheck="false" aria-describedby="report-hint"></textarea><div class="actions"><button id="copy" type="button" disabled>複製報告</button><button id="download" type="button" disabled>下載 TXT</button></div><p class="hint">每次下載保留 60 秒交接時間，期間暫停重複下載。</p></div></section>
+<section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">使用說明</h2><details><summary>輪空如何安排？</summary><p>奇數隊每輪有一隊輪空；單循環每隊輪空一次，雙循環每隊兩次。偶數隊沒有輪空。相同輸入與賽制會得到相同賽程。</p></details><details><summary>會儲存或上傳隊伍嗎？</summary><p>不會。資料只保留目前頁面記憶體，不使用帳號、儲存、遙測或外部 API。首次載入靜態頁面仍需網路。離開、重新整理或清除會遺失資料；已複製或下載的內容由你與瀏覽器管理。</p></details><details><summary>這是公平的主客場或場地安排嗎？</summary><p>不是。單循環保證每對遇一次，雙循環保證每對遇兩次；但不最佳化場地、時段、休息間隔或主客場，也不記錄比分與排名。</p></details></section>
+</main>
+<dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-description"><h2 id="clear-title">清除隊伍與賽程？</h2><p id="clear-description">這會移除目前所有輸入及結果，無法復原。已交給瀏覽器的下載或剪貼簿寫入不會撤回。</p><div class="actions"><button id="cancel-clear" type="button" autofocus>保留資料</button><button id="confirm-clear" type="button" class="primary">確認清除</button></div></dialog>
+<footer>在目前頁面計算 · 不保存草稿</footer>
+</body>
+</html>
