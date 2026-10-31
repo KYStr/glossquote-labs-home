@@ -4,7 +4,7 @@
 
 ## 固定文件
 
-SPEC.md：32378 UTF-8 bytes，SHA256 `bf8f1bac67ed7accaa5d6c2485ba181ed6d746cd2e7ae84b14c6ae616e58dbbb`。候選commit與draft PR由交件記錄指向包含本檔的實際head，不能把分支名當固定候選。
+SPEC.md：32749 UTF-8 bytes，SHA256 `f9310462f9ba12b6ef96e0d231f0bb8c857314823b58713f13a58184a7b2c6f5`。候選commit與draft PR由交件記錄指向包含本檔的實際head，不能把分支名當固定候選。
 
 ## 八節自查（不是ready核准）
 
@@ -34,3 +34,9 @@ SPEC.md：32378 UTF-8 bytes，SHA256 `bf8f1bac67ed7accaa5d6c2485ba181ed6d746cd2e
 產品程式尚未製作。npm test/check/build、真頁面、clipboard、CSP/Network/Storage、BFCache、鍵盤/讀屏/對比、播放、效能、原生CSS對照、跨引擎與手機全部 NOT_RUN。作者文檔算術不是產品核心實作/測試，也不是獨立評分。
 
 交另一位未參與本預案製作的reviewer檢查固定SPEC八節，特別核對有理反解/表格rounding、取消與焦點時序、原生可執行驗收與九面向。發現矛盾原作者同ID修正，未通過不得mark-ready；作者不代簽。公開保存不等merge/部署；本次無產品實作、workflow、catalog、費用、憑證或私人輸入。
+
+## 同稿R1 affected修正（版本1.1）
+
+原T04「近中心必與Q相等」誤將理論y=x與有界逆解結果混同，且Q須先除1000000。僅將T04期望改為既定有理誤差abs(y-Q/1000000)≤9*2^-41、渲染Number後≤1e-9，明定Q499999嚴格低於0.5、Q500001嚴格高於0.5；端點/精確比較成功才要求精確值，Q500000=0.5。§4.2算法與其餘技術內容未改。
+
+作者僅對這三個Q用Fraction重新核文件的40輪二分，兩鄰點誤差約∓1.3175742641189345e-16，皆在界內且在正確一側，中心精確0.5。分母含5的兩鄰點理論值不能等於此dyadic多項式的有限dyadic近似。這是修訂後文件可執行性查核，非產品程式測試；四個未受影響解析例、CSS literal與其他已完成文件檢查沒有重跑，保留上列歷史證據。未外寫/自標ready，交原非作者affected複核。
