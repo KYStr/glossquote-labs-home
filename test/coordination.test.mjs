@@ -1,7 +1,8 @@
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyBatch, applyOperation, inventorySummary, validateRegistry, SPEC_SECTIONS, REPOSITORY, BRANCH } from '../scripts/coordination-core.mjs';
-import { executeBatch, executeOperation, GitHubError, GitHubClient } from '../scripts/coordination.mjs';
+import { MAX_REGISTRY_BYTES, MAX_RESPONSE_BYTES, executeBatch, executeOperation, GitHubError, GitHubClient } from '../scripts/coordination.mjs';
 
 const source = {repository: REPOSITORY, commit: 'a'.repeat(40), path: 'README.md'};
 const proof = {repository: REPOSITORY, commit: 'b'.repeat(40), path: 'coordination/evidence.md'};
@@ -357,4 +358,62 @@ test('revision return takes priority over another reserved production item',()=>
   const ids=i=>({taskId:registry.tasks[i].id,claimId:registry.tasks[i].owner.claimId,evidence:'Fixture actual resume.'});
   assert.throws(()=>apply(registry,local,'start',ids(1)),{code:'REVISION_FIRST'});
   registry=apply(registry,local,'resume',ids(0));assert.equal(registry.tasks[0].status,'working');
+});
+
+function registryPayload(registry, suffix = '') {
+  const bytes=Buffer.from(JSON.stringify(registry)+suffix);
+  return {type:'file',sha:createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),size:bytes.length,encoding:'base64',content:bytes.toString('base64'),html_url:'https://github.com/KYStr/glossquote-labs-home/blob/codex/initial-publication/coordination/work-registry.json'};
+}
+function readClient(responses) {
+  const calls=[];const client=new GitHubClient('',{fetchFn:async(url,init)=>{calls.push({url,init});const value=responses.shift();if(value instanceof Error)throw value;if(typeof value==='number')return {ok:false,status:value};return {ok:true,text:async()=>JSON.stringify(value)};}});
+  return {client,calls};
+}
+test('small Contents payload retains exact SHA and valid registry with no fallback',async()=>{
+  const payload=registryPayload(reconciled()),{client,calls}=readClient([payload]);
+  const result=await client.readRegistry();assert.equal(result.sha,payload.sha);assert.equal(result.registry.revision,6);assert.equal(calls.length,1);assert.equal(calls[0].init.redirect,'error');
+});
+test('large encoding-none metadata reads only exact same-repository Git blob, preserving all history',async()=>{
+  const registry=reconciled();registry.padding='x'.repeat(1024*1024);const payload=registryPayload(registry);
+  const metadata={...payload,encoding:'none',content:'',git_url:'https://evil.test/blob',download_url:'https://evil.test/raw'};
+  const {client,calls}=readClient([metadata,payload]);const result=await client.readRegistry();
+  assert.deepEqual(result.registry,registry);assert.equal(result.sha,payload.sha);
+  assert.equal(calls[1].url,`https://api.github.com/repos/${REPOSITORY}/git/blobs/${payload.sha}`);assert.equal(calls[1].init.redirect,'error');
+});
+test('registry decoder rejects bad metadata, noncanonical base64, size/hash mismatch and invalid UTF8/JSON',async()=>{
+  const payload=registryPayload(reconciled());
+  const malformed=[{...payload,sha:'bad'},{...payload,size:0},{...payload,size:1.5},{...payload,type:'symlink'},{...payload,encoding:'none',content:'not empty'},{...payload,content:payload.content+'!'},{...payload,content:payload.content.slice(0,-1)},{...payload,size:payload.size+1},{...payload,sha:'f'.repeat(40)}];
+  for(const data of malformed)await assert.rejects(readClient([data]).client.readRegistry());
+  for(const bytes of [Buffer.from([0xff]),Buffer.from('not JSON'),Buffer.from('{}')]){
+    const data={...payload,size:bytes.length,sha:createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),content:bytes.toString('base64')};
+    await assert.rejects(readClient([data]).client.readRegistry(),{code:'INVALID_REGISTRY'});
+  }
+  // Nonzero padding bits decode to identical bytes but must be rejected.
+  await assert.rejects(readClient([{...payload,size:1,content:'e31=',sha:'a'.repeat(40)}]).client.readRegistry());
+});
+test('fallback refuses wrong blob identity/size/encoding and missing blob without retries',async()=>{
+  const payload=registryPayload(reconciled()),metadata={...payload,encoding:'none',content:''};
+  for(const bad of [{...payload,sha:'f'.repeat(40)},{...payload,size:payload.size+1},{...payload,encoding:'none',content:''},404]) {
+    const {client,calls}=readClient([metadata,bad]);await assert.rejects(client.readRegistry());assert.equal(calls.length,2);
+  }
+});
+test('raw 4 MiB and JSON 8 MiB limits are bounded; at-limit registry still reads',async()=>{
+  const registry=reconciled(),base=Buffer.byteLength(JSON.stringify(registry));const payload=registryPayload(registry,' '.repeat(MAX_REGISTRY_BYTES-base));
+  assert.equal(payload.size,MAX_REGISTRY_BYTES);assert.deepEqual((await readClient([payload]).client.readRegistry()).registry,registry);
+  const {client,calls}=readClient([{...payload,size:MAX_REGISTRY_BYTES+1,encoding:'none',content:''}]);
+  await assert.rejects(client.readRegistry(),{code:'REGISTRY_TOO_LARGE'});assert.equal(calls.length,1);
+  const big=new GitHubClient('',{fetchFn:async()=>({ok:true,text:async()=> ' '.repeat(MAX_RESPONSE_BYTES+1)})});
+  await assert.rejects(big.readRegistry(),{code:'RESPONSE_TOO_LARGE'});
+});
+test('lost write readback can cross Contents threshold and still resolves original operation exactly',async()=>{
+  const registry=production(),cmd=command(registry,local,'claim',{taskId:'fixture-task'}),after=applyOperation(registry,cmd).registry;
+  after.padding='x'.repeat(1024*1024);const payload=registryPayload(after),metadata={...payload,encoding:'none',content:''};
+  let puts=0;const urls=[];const responses=[registryPayload(registry),metadata,payload];
+  const client=new GitHubClient('fixture-not-real',{fetchFn:async(url,init)=>{urls.push(url);if(init.method==='PUT'){puts++;throw new Error('lost');}return{ok:true,text:async()=>JSON.stringify(responses.shift())};}});
+  const result=await executeOperation(client,cmd,{verifyReferences:false});assert.equal(puts,1);assert.equal(result.reconciledAfterLostResponse,true);assert.equal(result.operationId,cmd.operationId);assert.equal(urls.at(-1),`https://api.github.com/repos/${REPOSITORY}/git/blobs/${payload.sha}`);
+});
+
+test('oversized proposed write fails before PUT and noncanonical pad bits fail even at matching byte hash',async()=>{
+  const {client,calls}=readClient([]);await assert.rejects(client.writeRegistry('a'.repeat(40),{padding:'x'.repeat(MAX_REGISTRY_BYTES)},{action:'fixture',operationId:'fixture'}),{code:'REGISTRY_TOO_LARGE'});assert.equal(calls.length,0);
+  const bytes=Buffer.from('0'),sha=createHash('sha1').update('blob 1\0').update(bytes).digest('hex');
+  await assert.rejects(readClient([{type:'file',sha,size:1,encoding:'base64',content:'MB=='}]).client.readRegistry(),{code:'INVALID_RESPONSE'});
 });

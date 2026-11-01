@@ -1,7 +1,10 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { REGISTRY_PATH, REPOSITORY, BRANCH, CoordinationError, applyBatch, applyOperation, validateRegistry, inventorySummary, operationReferences, fingerprint } from './coordination-core.mjs';
 
+export const MAX_REGISTRY_BYTES = 4 * 1024 * 1024;
+export const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 const API = 'https://api.github.com';
 const encodePath = path => path.split('/').map(encodeURIComponent).join('/');
 const endpoint = `/repos/${REPOSITORY}/contents/${encodePath(REGISTRY_PATH)}`;
@@ -25,19 +28,35 @@ export class GitHubClient {
     catch { throw new GitHubError(0, 'GitHub request failed or its response was lost. Do not assume a write failed.'); }
     if (!response.ok) throw new GitHubError(response.status);
     const raw = await response.text();
-    if (raw.length > 4_000_000) fail('RESPONSE_TOO_LARGE', 'GitHub response is too large for this coordination operation.');
+    if (Buffer.byteLength(raw, 'utf8') > MAX_RESPONSE_BYTES) fail('RESPONSE_TOO_LARGE', 'GitHub response is too large for this coordination operation.');
     try { return JSON.parse(raw); } catch { fail('INVALID_RESPONSE', 'GitHub did not return valid JSON.'); }
   }
   async readRegistry() {
     const content = await this.request(`${endpoint}?ref=${encodeURIComponent(BRANCH)}`);
-    if (content.type !== 'file' || content.encoding !== 'base64' || typeof content.sha !== 'string') fail('INVALID_RESPONSE', 'Expected a GitHub registry file with blob SHA.');
+    if (content.type !== 'file' || !/^[a-f0-9]{40}$/.test(content.sha ?? '') || !Number.isSafeInteger(content.size) || content.size <= 0) fail('INVALID_RESPONSE', 'Expected registry file metadata with exact SHA and positive byte size.');
+    if (content.size > MAX_REGISTRY_BYTES) fail('REGISTRY_TOO_LARGE', 'Registry exceeds the bounded 4 MiB raw limit; do not truncate history.');
+    let blob = content;
+    if (content.encoding === 'none' && content.content === '') {
+      // Do not follow metadata URLs: pin the official same-repository blob endpoint to the observed SHA.
+      blob = await this.request(`/repos/${REPOSITORY}/git/blobs/${content.sha}`);
+    }
+    if (blob.sha !== content.sha || blob.size !== content.size || blob.encoding !== 'base64' || typeof blob.content !== 'string') fail('INVALID_RESPONSE', 'Registry blob metadata differs from the observed file.');
+    const encoded = blob.content.replace(/[\r\n]/g, '');
+    if (encoded.length > 4 * Math.ceil(MAX_REGISTRY_BYTES / 3)) fail('REGISTRY_TOO_LARGE', 'Registry encoded payload exceeds the raw limit.');
+    if (encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) fail('INVALID_RESPONSE', 'Registry blob is not strict base64.');
+    const bytes = Buffer.from(encoded, 'base64');
+    if (bytes.length !== content.size || bytes.toString('base64') !== encoded) fail('INVALID_RESPONSE', 'Registry blob size or canonical base64 does not match.');
+    const digest = createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
+    if (digest !== content.sha) fail('BLOB_HASH_MISMATCH', 'Registry bytes do not match the exact observed Git blob SHA.');
     let registry;
-    try { registry = JSON.parse(Buffer.from(content.content, 'base64').toString('utf8')); } catch { fail('INVALID_REGISTRY', 'Registry is not UTF-8 JSON.'); }
+    try { registry = JSON.parse(new TextDecoder('utf-8', {fatal: true, ignoreBOM: true}).decode(bytes)); } catch { fail('INVALID_REGISTRY', 'Registry is not valid UTF-8 JSON.'); }
     validateRegistry(registry);
     return {registry, sha: content.sha, url: content.html_url};
   }
   async writeRegistry(sha, registry, command) {
-    return this.request(endpoint, {method: 'PUT', body: {branch: BRANCH, sha, message: `coordination: ${command.action} ${command.taskId ?? command.specId ?? command.operationId}`, content: Buffer.from(`${JSON.stringify(registry, null, 2)}\n`, 'utf8').toString('base64')}});
+    const bytes = Buffer.from(`${JSON.stringify(registry, null, 2)}\n`, 'utf8');
+    if (bytes.length > MAX_REGISTRY_BYTES) fail('REGISTRY_TOO_LARGE', 'Proposed registry exceeds 4 MiB; stop before writing, never truncate history.');
+    return this.request(endpoint, {method: 'PUT', body: {branch: BRANCH, sha, message: `coordination: ${command.action} ${command.taskId ?? command.specId ?? command.operationId}`, content: bytes.toString('base64')}});
   }
   async verifyReference(ref) {
     const data = await this.request(`/repos/${ref.repository}/contents/${encodePath(ref.path)}?ref=${encodeURIComponent(ref.commit)}`);

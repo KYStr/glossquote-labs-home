@@ -13,11 +13,11 @@ GlossQuote Labs 現在新增雲端 dots 作為協作者。請把 GitHub 當成�
 3. **由你自己確認規則。** 取得可追溯的實際工作／對話身分，使用 `local-codex` 執行環境。讀取目前 contractVersion 和主頁 baseline 後，以 `acknowledge` 寫入自己的採用證據；不要替雲端、其他代理或我簽收。若真正主頁基線需要更換，先依 `change-baseline` 留下來源證據，再由兩端重新確認。
 4. **遷入既有工作，暫時不領新的。** 依序 register-spec／register-task，再由實際承接者 adopt-existing。未完整的舊預案保留 reserved／待補齊，不冒充 ready。對應已知 pending 條目並檢查雲端是否已做同一項；遇到重複就比較候選、保留兩邊成果，提出合併／選定承接者的具體處理，不另開一份重做。
 5. **完成本地盤點交接。** 把完整盤點報告先提交 GitHub，再用 reconcile 寫入實際 taskIds／specIds／evidenceRef。只在真的完整時填 inventoryComplete。這只是本地確認；雲端要由原統籌自行確認，兩端齊全前不要開新 claim。
-6. **之後每次工作先領取。** 先讀遠端 registry，確認 task 未被承接、你的環境獲允許、來源與預案已在 GitHub。用協作 CLI 以最新 revision／blob SHA 取得 claim，讀回同一 operationId／claimId／owner 才開工。409 要重讀並重新選擇，不能覆蓋他人的 claim；網路結果不明先查原 operationId。開始、恢復、提交與交接都重新核對 owner。
-7. **遵守優先級。** 工具製作維持低優先 P3，預設由本地接續。完整且未被製作承接的預案少於 6 份時，補製作說明書是 P1；達 6 份降 P3；被承接後低於 6 份再升 P1。未知庫存先盤點。對方工作沒有新回報不等於釋放，不可自行搶走；高優先任務受阻保留責任與恢復條件。
+6. **之後每次工作先領取。** 先讀遠端 registry，確認 task 未被承接、你的環境獲允許、來源與預案已在 GitHub。用協作 CLI 以最新 revision／blob SHA 取得 claim，讀回同一 operationId／claimId／owner 才開工。409 要重讀並重新選擇，不能覆蓋他人的 claim；網路結果不明先查原 operationId。開始、恢復、提交與交接都重新核對 owner。 依 [最新批量協作規則](CLOUD-LOCAL-WORKFLOW.md)，每位 actor 一批預領 5 件尚未交付製作子件（含自己已持有的子件），逐件做、同時最多 1 件 working；全部條件通過才單次 CAS、逐件讀回，不足不造 ready。完成整批再提交固定候選，各件獨立驗收；reviewing 保 owner 但不占下一批未交付名額，退修在安全 checkpoint 優先回切。
+7. **遵守優先級。** 工具製作維持低優先 P3，預設由本地接續。完整且未被製作承接的預案少於 40 份時，補製作說明書是 P1；達 40 份降 P3；被承接後低於 40 份再升 P1。未知庫存先盤點。對方工作沒有新回報不等於釋放，不可自行搶走；高優先任務受阻保留責任與恢復條件；可執行 P1 恢復時在安全 checkpoint 回切，不因預領批次而改派原 owner。
 8. **最後交驗。** 候選先推 GitHub、開 PR，固定同一 candidate commit 和預先約定的完整驗收面向。由非作者的 reviewer 逐項給分與證據，每個必要面向至少 90，必要檢查已完成才 accepted。NOT_RUN、測試數量或平均分不能當通過。accepted 與正式部署／catalog published 分開，沿用原本發布流程與批准範圍。
 
-先完成上述盤點與 GitHub 接入，並向我回報：主頁基線 commit、盤點報告連結、你的 ACK operationId、已遷入工作的 owner/claim、核實的 ready 庫存（或尚未知的具體原因）、與雲端重複的項目、尚待原雲端統籌確認的事項。不要把「讀到規則」說成其他代理已採用，也不要為了湊出 6 份而把草稿直接標 ready。
+先完成上述盤點與 GitHub 接入，並向我回報：主頁基線 commit、盤點報告連結、你的 ACK operationId、已遷入工作的 owner/claim、核實的 ready 庫存（或尚未知的具體原因）、與雲端重複的項目、尚待原雲端統籌確認的事項。不要把「讀到規則」說成其他代理已採用，也不要為了湊出 40 份而把草稿直接標 ready。
 
 ---
 
