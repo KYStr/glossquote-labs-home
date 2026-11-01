@@ -1,0 +1,13 @@
+# Integer Representation Inspector — preparatory BRIEF v0.1
+
+DRAFT only; documentation batch02. No taskclaim/ready/product/deployment.
+
+Goal: distinguish exact signed integer value and selected-width bit pattern. One integer in bases2/8/10/16, widths8/16/32/64, signed/unsigned input ranges; output mathematical representations, exact bits, MSB-first hexbyte display, signed/unsigned reinterpretation and labeled bit-weighttable. Conversion and two's-complement are ONE specification, not two stock items. No arithmetic/bitmask/file/float/Unicode/clipboard/storage/network features.
+
+Use SPEC.md as complete normative draft. Inputs capped80rawunits, exact grammar bybase, BigInt without floating intermediates, reject range before encoding; fixed outputformat and independent >2^53/minmaxexamples. Complete state/keyboard/bilingual/dirty/error/reset behavior, no misleading automatic wrapping or endian claim. Zero dependencies/Node24 static application only in future separately admitted production.
+
+Independent eight-section document acceptance: goal(scope/problem/success);scope(inclusions/exclusions/actual existing product boundaries);userFlow(normal/error/reset/repeat/language/focus);inputsOutputs(raw/enums/ranges/math/serialization/goldenvalues);implementation(safe bounded core/controller/statictoolchain);acceptance(nine aspects each with methods,evidence,anchors andNOT_RUN);tests(boundary/native/keyboard/privacy/state/largeintegers);handoff(fixedhashes/nonselfreview/claimlater/noimplicitpublication). Every item independently true/false with evidence; any contradiction=>revision. Product aspects functionality,boundaries,privacy,security,usability,accessibility,localization-seo,toolchain-provenance,compatibility each later>=90 plus all mandatory checks. Product score now null, all runtimeNOT_RUN.
+
+Non-overlap: fixed existing text-workbenchSPEC is linecleaning/codepoint+UTF8metrics, unit-converterSPEC is physicalunit conversion; neither offers integer radices/fixedwidth encoding. Existing checksum/JSON tools do not supply this workflow. Full dedup source/owner check must be refreshed before registryadmission, not inferred from newtitle. Preserve allowners/localstop/baseline. Action-refusal bypass is prohibited.
+
+Coordinator receives thisBRIEF+SPEC exacthashes and arranges nonauthorreview and authorized batchsave. No newclaim/ACK/ready byauthor; no implementation, npm dependencies, publichosting, cost or gameslot changes. Source baseline26525d5f6380915ea95dde879dec769442db0d95; currentbatchprotocolc13b91598c15b14948d38e60cec9a5fa0616bbd2. Files must receive a fixed GitHub reference before use as admissible source; private draft is not inventory.

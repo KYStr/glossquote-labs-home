@@ -1,0 +1,11 @@
+# Rational Arithmetic Workbench — preparatory BRIEF v0.2
+
+Private documentation draft, not claim/ready/product. Goal: exact addition, subtraction, multiplication or division of two bounded integer fractions, with normalized inputs, unreduced pair, gcd, canonical result and unambiguous signed mixed form. Four raw fields, one operator; BigInt, no floating rounding. No expression evaluator, decimals, units, files, quiz, storage, clipboard or remote service.
+
+Distinct from physical Unit Converter, Recipe Scaler, Bill Splitter, and Integer Representation: none supplies this two-rational exact-arithmetic explanation flow. Functional de-duplication and owner/source check must be fresh before admission; no action-refusal bypass or original-owner takeover.
+
+Deliver full SPEC with eight independent documentary gates: goal(success/problem);scope(inclusions/exclusions/dedup);userFlow(initial/edit/error/recovery/reset/language/focus);inputsOutputs(closed syntax/ranges/schema/exact arithmetic/format);implementation(bounded pure core/state/static ESM, no added dependencies);acceptance(nine fixed aspects, methods/evidence/anchors);tests(independent literal values/edge/native/privacy/keyboard/timing);handoff(fixed sources/hashes/nonauthor review/later lawful production). Missing or conflicting mandatory contract =>revision, notready.
+
+SPEC provides14 independent arithmetic examples, exact signed zero/denominator normalization/division-by-zero contracts and fixed summary bytes. Nine future product aspects functionality,boundaries,privacy,security,usability,accessibility,localization-seo,toolchain-provenance,compatibility require independent same-candidate evidence, each>=90 and mandatory checks complete. Current allNOT_RUN/null; no scores from document completeness or testcount.
+
+Coordinator handles authorized fixed GitHub batchsave and nonauthor completeness review; author does not claim/ACK/markready. Future production must have distinct task/allowedexecutor/claim-readback. Preserve localstop/owners/baseline26525d5f6380915ea95dde879dec769442db0d95 and batchprotocolc13b91598c15b14948d38e60cec9a5fa0616bbd2; no game resources, npm dependencies, hosting/publication/cost/security expansion. Product source does not exist yet.
