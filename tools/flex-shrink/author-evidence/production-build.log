@@ -1,0 +1,19 @@
+[Sanitized transcript: private absolute candidate path replaced with <candidate-root>; execution output otherwise unchanged.]
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> flex-shrink-distribution-explorer@1.0.0 build:production
+> node scripts/build.mjs --mode production
+
+<candidate-root>/scripts/build.mjs:7
+export async function expected(mode){if(!['preview','production'].includes(mode))throw Error('invalid mode');if(mode==='production')throw Error('PRODUCTION_ORIGIN_UNAPPROVED: canonical origin remains unset; no production artifact emitted');const origin='http://127.0.0.1:4180';const app=(await fs.readFile(root+'/src/app.mjs','utf8')).replace('/* DICTIONARY */','const messages='+JSON.stringify(messages)+';');return {'index.html':html('zh-Hant',mode,origin),'en/index.html':html('en',mode,origin),'assets/app.mjs':app,'assets/core.mjs':await fs.readFile(root+'/src/core.mjs','utf8'),'assets/styles.css':await fs.readFile(root+'/src/styles.css','utf8'),'robots.txt':'User-agent: *\nDisallow: /\n','sitemap.xml':'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>\n','_headers':'/*\n  Content-Security-Policy: '+CSP+'\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n','_redirects':'/ /index.html 302\n/en /en/index.html 302\n'};}
+                                                                                                                                          ^
+
+Error: PRODUCTION_ORIGIN_UNAPPROVED: canonical origin remains unset; no production artifact emitted
+    at expected (<candidate-root>/scripts/build.mjs:7:139)
+    at build (<candidate-root>/scripts/build.mjs:8:53)
+    at <candidate-root>/scripts/build.mjs:9:149
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.22.1
