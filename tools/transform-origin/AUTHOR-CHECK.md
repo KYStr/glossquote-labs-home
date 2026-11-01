@@ -1,4 +1,4 @@
-# Author self-check — Transform Origin r1
+# Author self-check — Transform Origin r2 label correction
 Observed 2026-11-01 05:43–05:51 UTC. Implementation-author self-check; not independent review.
 
 Fixed specification: 9dad1e10e9158df9d405460b0370cbc45e6679d6. This is author evidence only, not independent quality acceptance. All eight quality scores remain null.
@@ -23,3 +23,10 @@ Fixed specification: 9dad1e10e9158df9d405460b0370cbc45e6679d6. This is author ev
 - Independent review, deployment, catalog and live-site verification NOT_RUN. Source availability does not establish acceptance or deployment.
 
 Required gaps restrict acceptance; they do not erase author work already performed. No averages, test counts or sampled UI observations are converted to quality scores.
+
+## R2 affected correction — 2026-11-01 06:13–06:16 UTC
+Independent normal-UI review of r1 identified overlapping vertex IDs when sx=0 and near-touching labels for mirrored B=SRT, sx=-2, plus default origin proximity. R2 changes diagram annotation only: per-panel coincident IDs are grouped with slash separators, label rectangles use bounded collision-avoidance placement and leader lines, and display padding keeps annotations inside the diagram. Coordinates, core matrices, CSS generation, table values and the mathematical oracle are unchanged. Slash groups identify vertices sharing a diagram position; they do not rename vertices.
+
+Executed affected author checks: four new label cases (default, sx=0, mirrored B=SRT/sx=-2, and both scales zero) preserve all four IDs in each panel, leave input geometry unchanged, keep label rectangles in bounds and avoid rectangle overlaps in these cases. Three existing source-safety/semantics/explicit-copy checks rerun because app rendering changed; all pass. Syntax and static build pass. Unchanged mathematical cases were not rerun.
+
+Normal Chromium page observations: default O and A/B labels separately legible; sx=0 shows A·P0/P1 and A·P2/P3 plus corresponding B groups; mirrored B=SRT/sx=-2 shows separate B P0/P3 and P1/P2 with lower diagram margin; both scales zero shows all P0/P1/P2/P3 in each panel group. No clipboard action, responsive DevTools, native numeric fixture or Firefox was attempted. These are affected author observations, not independent review, exhaustive annotation guarantees or scores. Original NOT_RUN items and native 45-degree residual above remain unchanged.

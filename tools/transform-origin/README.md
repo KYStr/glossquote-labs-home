@@ -1,4 +1,4 @@
-# Transform / Origin — source candidate r1
+# Transform / Origin — source candidate r2
 
 A buildless, dependency-free, bilingual CSS 2D transform explorer. This candidate implements fixed SPEC `9dad1e10e9158df9d405460b0370cbc45e6679d6`, not a new scope or quality rubric.
 
