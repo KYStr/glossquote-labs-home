@@ -30,3 +30,19 @@ No complete aspect score is issued from this partial evidence. All scores are nu
 | maintainability-performance | null | No architecture audit or hardware-qualified UI latency measurement in this blind first-use pass. |
 
 Author-reported native 45-degree residual approximately 0.000778144 CSS px is not a 1e-6 pass; author mathematical units remain separate evidence. DevTools was unavailable under organizational policy and was not bypassed. Unexecuted native/runtime/accessibility/privacy/performance checks remain NOT_RUN. Fixing R1 does not close these unrelated missing requirements. This report does not accept the product, approve or merge PR21, or authorize deployment.
+
+## R2 affected independent follow-up — 2026-11-01 06:21–06:23 UTC
+
+Reviewed product candidate: `292e851ac04febd3d94707c49e2e058d27d68a96`, same PR21 and specification. Authored package manifest SHA256: `78489ec7545734eb3f954c6ab4be159dff8afb11f8bf1dc296f0b40831ab5c33`.
+All 24 authored payloads were independently checked byte-for-byte against the fixed remote candidate and manifest before the normal local preview. This packaging check is not a product score.
+
+**R1 closed in the affected observed desktop scenarios.** Independent normal UI observations confirmed:
+- Default origin O and A·P0 labels are separately readable.
+- Default values with sx=0 show legible A/B P0/P1 and P2/P3 groups rather than overprinted individual labels. Mathematical values and explicit degenerate warning remain.
+- sx=sy=0 shows all four IDs in each panel's grouped label.
+- Reset then B=SRT and sx=-2 produces distinct nearby B labels with visible lower margin.
+- Entering tx '-' removes the new diagram and results; switching to English preserves the invalid raw value, error and selected order; Reset restores defaults and diagram while retaining English.
+
+The affected observations did not reveal a regression. They are not a proof of every possible annotation arrangement, every viewport or all eight quality aspects. Unchanged author mathematical tests were not rerun. All eight complete-aspect scores remain null and requiredChecksComplete remains false. The original native 45-degree discrepancy and all outstanding required evidence above remain unresolved; no score, accepted verdict, merge or deployment follows from closing R1.
+
+The original review above remains bound to baca3449; this follow-up alone is bound to 292e851. No old numeric score is carried forward, and no untested requirement is removed.
