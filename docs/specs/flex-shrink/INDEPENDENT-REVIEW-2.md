@@ -18,5 +18,16 @@ Reviewer: cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/g
 - tests (§5) — TRUE. F01–F15 exact rational fixtures (independently derived, with rounded-display traps like F15), F16–F26 covering grammar/lifecycle/native geometry at a stated 0.1 CSS px tolerance/CSP and setter observation/BFCache truthfulness/contrast/performance checkpoint; an unexercised BFCache must be reported as such.
 - handoff (§§7–8) — TRUE. Author risks enumerated with mitigations; immutable four-document delivery bound to one candidate; registration, independent mark-ready and production claim kept distinct; no merge, deployment or catalog authority claimed.
 
+## Criterion mapping (this task's predeclared criteria are the nine product aspects, scored as document coverage)
+- functionality (95): §4 fixes the official-subset model — initial freezes, factor-sum<1 partial shrink, violation loop, minima and residual overflow — with per-round traces, preview and CSS from one immutable snapshot (§§2–3).
+- boundaries (96): §3 closed grammar/length/range/precision, §4 zero-weight degeneracy and tie handling, F13–F18/F23 for min>basis, no-shrinkable-items, formatting and stale/error/reset states.
+- privacy (95): the tool processes only non-sensitive numbers; §§2/4/5 prohibit upload, URL state, persistence, telemetry, file reads and extra permissions, and F22 prescribes the future runtime observation evidence.
+- security (95): closed parser and fixed output, known style/text sinks only, malicious-input rejection, bounded synchronous core; no arbitrary CSS/HTML or external resources (§§3–4.1).
+- usability (95): a non-author desktop user can input, understand freeze vs overflow from the trace, repair errors and manually select CSS, with the model-vs-full-browser distinction stated (§§1–3, F19).
+- accessibility (95): §2 keyboard/focus/labels/errors/text alternatives, finite stated contrast ratios and zoom/reflow, colour never sole cue, no unmeasurable device gates.
+- localization-seo (94): both languages' static/dynamic text and errors specified consistent, numbers/CSS language-invariant, lang/title/description/same-language links verifiable (§§2, 4.1, F26).
+- toolchain-provenance (95): existing Node 24 zero-dependency toolchain, pure-core/presentation layering, independently derived fixtures, version/source/build/handoff reproducibility (§§4.1, 7–8).
+- compatibility (94): named desktop viewports/zoom, native comparison with the 0.1 CSS px error contract, navigation/reset behaviour and the bounded F25 timing checkpoint; unsupported surfaces listed, not claimed (§5 F20–F25).
+
 ## Scope and limits of this verdict
 This is the documentary gate for a specification task. The product does not exist yet: all product tests, native browser evidence and the nine product-aspect scores remain NOT_RUN/null, exactly as the documents state. The specification was separately marked ready earlier (registry revision 397) and has since been consumed by its production task; this review closes the specification task's own acceptance record and changes no spec status.
