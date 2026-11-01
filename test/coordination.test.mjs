@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyOperation, inventorySummary, validateRegistry, SPEC_SECTIONS, REPOSITORY, BRANCH } from '../scripts/coordination-core.mjs';
-import { executeOperation, GitHubError, GitHubClient } from '../scripts/coordination.mjs';
+import { applyBatch, applyOperation, inventorySummary, validateRegistry, SPEC_SECTIONS, REPOSITORY, BRANCH } from '../scripts/coordination-core.mjs';
+import { executeBatch, executeOperation, GitHubError, GitHubClient } from '../scripts/coordination.mjs';
 
 const source = {repository: REPOSITORY, commit: 'a'.repeat(40), path: 'README.md'};
 const proof = {repository: REPOSITORY, commit: 'b'.repeat(40), path: 'coordination/evidence.md'};
@@ -56,17 +56,17 @@ test('unknown inventory is null; catalog draft/published counts do not become re
   assert.equal(inventorySummary(reconciled()).readyUnconsumedCount, 0);
 });
 
-test('complete reviewed specifications follow 5 -> 6 -> 5 stock threshold on production claim', () => {
+test('complete reviewed specifications follow 39 -> 40 -> 39 stock threshold on production claim', () => {
   let registry = reconciled();
-  for (let i = 0; i < 5; i++) registry = addSpec(registry, `spec-${i}`);
-  assert.equal(inventorySummary(registry).readyUnconsumedCount, 5);
+  for (let i = 0; i < 39; i++) registry = addSpec(registry, `spec-${i}`);
+  assert.equal(inventorySummary(registry).readyUnconsumedCount, 39);
   assert.equal(inventorySummary(registry).specPriority, 'P1');
   registry = addSpec(registry, 'fixture-spec');
-  assert.equal(inventorySummary(registry).readyUnconsumedCount, 6);
+  assert.equal(inventorySummary(registry).readyUnconsumedCount, 40);
   assert.equal(inventorySummary(registry).specPriority, 'P3');
   registry = addTask(registry);
   registry = apply(registry, local, 'claim', {taskId: 'fixture-task'});
-  assert.equal(inventorySummary(registry).readyUnconsumedCount, 5);
+  assert.equal(inventorySummary(registry).readyUnconsumedCount, 39);
   assert.equal(inventorySummary(registry).specPriority, 'P1');
   assert.equal(inventorySummary(registry).productionPriority, 'P3');
 });
@@ -236,4 +236,125 @@ test('the same specification document cannot be counted twice; revision withdraw
   assert.equal(registry.specs[0].status, 'draft'); assert.equal(inventorySummary(registry).readyUnconsumedCount, 0);
   registry = addTask(registry);
   assert.throws(() => apply(registry, author, 'revise-spec', {specId: 'fixture-spec', document: registry.specs[0].document, source, acceptanceCriteria: criteria.slice(0, 1), evidence: 'Attempt to drop a dispatched criterion.'}), {code: 'SPEC_ALREADY_ASSIGNED'});
+});
+
+
+function batchStock(count = 6) {
+  let registry = reconciled();
+  for (let i = 0; i < count; i++) {
+    registry = addSpec(registry, `batch-spec-${i}`);
+    registry = addTask(registry, `batch-task-${i}`, {specId: `batch-spec-${i}`});
+  }
+  return registry;
+}
+function claimBatch(registry, actor = local, start = 0, count = 5) {
+  return Array.from({length: count}, (_, i) => command(registry, actor, 'claim', {taskId: `batch-task-${start+i}`, expectedRevision: registry.revision+i}));
+}
+test('five claims use one CAS and individual readbacks; reservations are not execution', async () => {
+  const registry = batchStock(), client = new FakeGitHub(registry), commands = claimBatch(registry);
+  const result = await executeBatch(client, commands, {verifyReferences: false});
+  assert.equal(client.writes, 1); assert.equal(result.receipts.length, 5);
+  assert.equal(new Set(result.receipts.map(r => r.operationId)).size, 5);
+  assert.ok(result.receipts.every(r => r.taskStatus === 'claimed' && !r.actualExecutionClaimed));
+  assert.equal(client.registry.tasks.filter(t => t.status === 'working').length, 0);
+  assert.equal(inventorySummary(client.registry).readyUnconsumedCount, 1);
+  assert.equal((await executeBatch(client, commands, {verifyReferences:false})).receipts[0].idempotent, true);
+  assert.equal(client.writes, 1);
+});
+test('existing own item can top up four; sixth claim and second concurrent start fail', () => {
+  let registry = batchStock();
+  registry = apply(registry, local, 'claim', {taskId:'batch-task-0'});
+  const own = clone(registry.tasks[0].owner);
+  registry = applyBatch(registry, claimBatch(registry, local, 1, 4)).registry;
+  assert.deepEqual(registry.tasks[0].owner, own);
+  assert.throws(() => apply(registry, local, 'claim', {taskId:'batch-task-5'}), {code:'CLAIM_LIMIT'});
+  const start = i => ({taskId:`batch-task-${i}`,claimId:registry.tasks[i].owner.claimId,evidence:'Actual fixture start.'});
+  registry = apply(registry, local, 'start', start(0));
+  assert.throws(() => apply(registry, local, 'start', start(1)), {code:'ACTIVE_LIMIT'});
+  registry = apply(registry, local, 'block', {...start(0),checkpoint:'Completed fixture candidate retained.',blocker:'Await complete batch submission, not revision.',resumeCondition:'batch submit ready'});
+  registry = apply(registry, local, 'start', start(1));
+  assert.equal(registry.tasks[0].status,'blocked');assert.equal(registry.tasks[1].status,'working');
+});
+test('invalid last child, insufficient batch, stale revision and disallowed executor never PUT or mutate input', async () => {
+  for (const kind of ['missing','short','stale','executor']) {
+    const registry=batchStock(), before=clone(registry), client=new FakeGitHub(registry);
+    const commands=claimBatch(registry,kind==='executor'?author:local,0,kind==='short'?4:5);
+    if(kind==='missing') commands[4].taskId='absent-task';
+    if(kind==='stale') commands[4].expectedRevision--;
+    await assert.rejects(executeBatch(client,commands,{verifyReferences:false}));
+    assert.equal(client.writes,0);assert.deepEqual(registry,before);assert.deepEqual(client.registry,before);
+  }
+});
+test('batch race preserves winning owners; no CAS retry', async () => {
+  const registry=batchStock(), client=new FakeGitHub(registry);
+  const results=await Promise.allSettled([executeBatch(client,claimBatch(registry),{verifyReferences:false}),executeBatch(client,claimBatch(registry,local2),{verifyReferences:false})]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+  assert.equal(results.find(r=>r.status==='rejected').reason.code,'REVISION_CONFLICT');
+  assert.ok(client.registry.tasks.slice(0,5).every(t=>t.owner.actorId===local.id));assert.equal(client.writes,2);
+});
+test('lost batch response resolves all original hashes; partial/altered retry cannot write', async () => {
+  const registry=batchStock(),client=new FakeGitHub(registry),commands=claimBatch(registry);client.loseResponse=true;
+  const result=await executeBatch(client,commands,{verifyReferences:false});
+  assert.ok(result.receipts.every(r=>r.reconciledAfterLostResponse));assert.equal(client.writes,1);
+  const changed=clone(commands);changed[4].observedAt='2026-10-30T01:00:00.000Z';
+  await assert.rejects(executeBatch(client,changed,{verifyReferences:false}),{code:'IDEMPOTENCY_CONFLICT'});
+  const partial=new FakeGitHub(applyOperation(registry,commands[0]).registry);
+  await assert.rejects(executeBatch(partial,commands,{verifyReferences:false}),{code:'PARTIAL_BATCH'});assert.equal(partial.writes,0);
+});
+test('failed batch readback remains unknown without repeat PUT', async () => {
+  const registry=batchStock(),client=new FakeGitHub(registry),read=client.readRegistry.bind(client);
+  client.readRegistry=async()=>{if(client.reads)throw new Error('offline');return read();};
+  await assert.rejects(executeBatch(client,claimBatch(registry),{verifyReferences:false}),{code:'OUTCOME_UNKNOWN'});assert.equal(client.writes,1);
+});
+test('reference failure for any child prevents the whole batch write',async()=>{
+  const registry=batchStock(),client=new FakeGitHub(registry);client.verifyReference=async()=>{throw new Error('missing source');};
+  await assert.rejects(executeBatch(client,claimBatch(registry)),/missing source/);assert.equal(client.writes,0);
+});
+test('submitted work retains owner but frees unsubmitted slots; batch review still rejects self-scoring',()=>{
+  let registry=reviewable();const own=clone(registry.tasks[0].owner);
+  for(let i=0;i<5;i++){registry=addSpec(registry,`batch-spec-${i}`);registry=addTask(registry,`batch-task-${i}`,{specId:`batch-spec-${i}`});}
+  registry=applyBatch(registry,claimBatch(registry)).registry;
+  assert.deepEqual(registry.tasks[0].owner,own);assert.equal(registry.tasks[0].status,'reviewing');
+  assert.throws(()=>applyBatch(registry,[goodReview(registry,{actor:local})]),{code:'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.throws(()=>applyBatch(registry,[goodReview(registry,{candidate:{...candidate,commit:'d'.repeat(40)}})]),{code:'CANDIDATE_MISMATCH'});
+});
+
+test('five completed checkpoints submit atomically with distinct candidates and retain independent review gates', async () => {
+  let registry = batchStock(); registry = applyBatch(registry, claimBatch(registry)).registry;
+  for (const task of registry.tasks.slice(0,5)) {
+    const ids = {taskId:task.id,claimId:task.owner.claimId};
+    registry=apply(registry,local,'start',{...ids,evidence:'Fixture actual sequential production.'});
+    registry=apply(registry,local,'block',{...ids,checkpoint:`Fixed completed candidate ${task.id}`,blocker:'Await batch submission, not revision.',resumeCondition:'batch submit ready'});
+  }
+  let staged=registry; const commands=[];
+  for(let i=0;i<5;i++){
+    const task=staged.tasks[i], ids={taskId:task.id,claimId:task.owner.claimId};
+    for(const [action,extra] of [['resume',{evidence:'Original completion checkpoint verified for submission.'}],['submit',{candidate:{...candidate,commit:String(i+1).repeat(40)},pullRequest:`https://github.com/KYStr/example-tool/pull/${i+1}`,evidence:'Completed individual candidate.',evidenceRef:proof}]]) {
+      const cmd=command(staged,local,action,{...ids,...extra});commands.push(cmd);staged=applyOperation(staged,cmd).registry;
+    }
+  }
+  const client=new FakeGitHub(registry);client.verifyReference=async()=>{};const prs=[];client.verifyPullRequest=async(url,c)=>prs.push([url,c.commit]);
+  const result=await executeBatch(client,commands);
+  assert.equal(client.writes,1);assert.equal(prs.length,5);assert.equal(result.receipts.length,10);
+  assert.ok(client.registry.tasks.slice(0,5).every(t=>t.status==='reviewing'&&t.owner.actorId===local.id));
+  assert.equal(new Set(client.registry.tasks.slice(0,5).map(t=>t.submission.candidate.commit)).size,5);
+  assert.ok(client.registry.tasks.slice(0,5).every(t=>t.acceptance===null));
+});
+
+test('historical overflow preserves owners and blocks new claims without invalidating registry',()=>{
+  let registry=batchStock(7);registry=applyBatch(registry,claimBatch(registry)).registry;
+  // Simulate a previously submitted task returning for revision after the next batch was reserved.
+  const prior=clone(registry.tasks[0]);prior.id='historical-revision';prior.specId='batch-spec-6';prior.status='revision';
+  registry.tasks.push(prior);assert.equal(validateRegistry(registry),registry);
+  const owners=registry.tasks.map(t=>clone(t.owner));
+  assert.throws(()=>apply(registry,local,'claim',{taskId:'batch-task-5'}),{code:'CLAIM_LIMIT'});
+  assert.deepEqual(registry.tasks.map(t=>t.owner),owners);
+});
+
+test('revision return takes priority over another reserved production item',()=>{
+  let registry=batchStock();registry=applyBatch(registry,claimBatch(registry)).registry;
+  registry.tasks[0].status='revision';
+  const ids=i=>({taskId:registry.tasks[i].id,claimId:registry.tasks[i].owner.claimId,evidence:'Fixture actual resume.'});
+  assert.throws(()=>apply(registry,local,'start',ids(1)),{code:'REVISION_FIRST'});
+  registry=apply(registry,local,'resume',ids(0));assert.equal(registry.tasks[0].status,'working');
 });

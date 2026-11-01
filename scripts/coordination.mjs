@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { REGISTRY_PATH, REPOSITORY, BRANCH, CoordinationError, applyOperation, validateRegistry, inventorySummary, operationReferences, fingerprint } from './coordination-core.mjs';
+import { REGISTRY_PATH, REPOSITORY, BRANCH, CoordinationError, applyBatch, applyOperation, validateRegistry, inventorySummary, operationReferences, fingerprint } from './coordination-core.mjs';
 
 const API = 'https://api.github.com';
 const encodePath = path => path.split('/').map(encodeURIComponent).join('/');
@@ -90,6 +90,42 @@ export async function executeOperation(client, command, {verifyReferences = true
   fail('READBACK_MISMATCH', 'GitHub acknowledged a write, but the exact operation is absent from readback. Do not start work.');
 }
 
+/** One snapshot, all child validation/reference checks, one CAS and exact per-child readback. */
+export async function executeBatch(client, commands, {verifyReferences = true} = {}) {
+  const before = await client.readRegistry();
+  const proposed = applyBatch(before.registry, commands);
+  const result = (snapshot, events, extra) => ({saved: true, batchSize: commands.length,
+    receipts: commands.map((command, i) => receipt(snapshot, command, events[i], extra))});
+  if (proposed.idempotent) return result(before, proposed.events, {idempotent: true, putAttempted: false});
+  if (verifyReferences) {
+    let staged = before.registry;
+    const checked = new Set();
+    for (const command of commands) {
+      for (const ref of operationReferences(staged, command)) {
+        const key = fingerprint(ref);
+        if (!checked.has(key)) { await client.verifyReference(ref); checked.add(key); }
+      }
+      const task = staged.tasks.find(row => row.id === command.taskId);
+      if (command.action === 'submit') await client.verifyPullRequest(command.pullRequest, command.candidate);
+      if (command.action === 'review') await client.verifyPullRequest(task.submission.pullRequest, command.candidate);
+      staged = applyOperation(staged, command).registry;
+    }
+  }
+  let writeError = null;
+  try { await client.writeRegistry(before.sha, proposed.registry, {action: 'batch', operationId: commands[0].operationId}); }
+  catch (error) { writeError = error; }
+  let after;
+  try { after = await client.readRegistry(); }
+  catch { fail('OUTCOME_UNKNOWN', 'Batch outcome unknown. Check every original operationId/request hash before any retry or work.'); }
+  const events = commands.map(command => after.registry.events.find(event => event.operationId === command.operationId));
+  for (let i = 0; i < commands.length; i++) if (events[i] && events[i].requestHash !== fingerprint(commands[i])) fail('IDEMPOTENCY_CONFLICT', 'A child operation ID was used for another request.');
+  if (events.every(Boolean)) return result(after, events, {idempotent: false, putAttempted: true, reconciledAfterLostResponse: Boolean(writeError)});
+  if (events.some(Boolean)) fail('PARTIAL_BATCH', 'Readback contains only part of the original batch. Stop and inspect; never fill gaps automatically.');
+  if (writeError?.status === 409 || writeError?.status === 422 || after.sha !== before.sha) fail('REVISION_CONFLICT', 'Batch lost compare-and-swap; no automatic retry or ownership takeover.');
+  if (writeError) fail('WRITE_NOT_CONFIRMED', 'Original batch operations are absent from readback. Inspect access and original IDs before a deliberate retry.');
+  fail('READBACK_MISMATCH', 'Exact batch events are missing. Do not start work.');
+}
+
 async function stdinJson() {
   let raw = '';
   for await (const chunk of process.stdin) { raw += chunk; if (raw.length > 1_000_000) fail('INPUT_TOO_LARGE', 'Command is too large.'); }
@@ -102,16 +138,17 @@ export async function main(argv = process.argv.slice(2)) {
     const registry = JSON.parse(await readFile(path ?? REGISTRY_PATH, 'utf8'));
     console.log(JSON.stringify({valid: Boolean(validateRegistry(registry)), revision: registry.revision, inventory: inventorySummary(registry)}, null, 2)); return;
   }
-  if (!['read', 'apply'].includes(action)) {
-    console.log('Usage: node scripts/coordination.mjs read | validate [registry.json] | apply < command.json\nRead is public. Writes require GH_TOKEN or GITHUB_TOKEN in the local environment. Never put credentials in JSON, shell arguments, commits or prompts. The CLI records protocol state only; it never launches work, merges a PR or deploys.'); return;
+  if (!['read', 'apply', 'apply-batch'].includes(action)) {
+    console.log('Usage: node scripts/coordination.mjs read | validate [registry.json] | apply < command.json | apply-batch < commands.json\nRead is public. Writes require GH_TOKEN or GITHUB_TOKEN in the local environment. Never put credentials in JSON, shell arguments, commits or prompts. The CLI records protocol state only; it never launches work, merges a PR or deploys.'); return;
   }
   const client = new GitHubClient(process.env.GH_TOKEN || process.env.GITHUB_TOKEN);
   if (action === 'read') { const snapshot = await client.readRegistry(); console.log(JSON.stringify({...snapshot, inventory: inventorySummary(snapshot.registry)}, null, 2)); return; }
   const command = await stdinJson();
-  if (Object.keys(command).some(key => /token|password|authorization/i.test(key))) fail('SECRET_IN_INPUT', 'Credentials do not belong in command JSON.');
-  console.log(JSON.stringify(await executeOperation(client, command), null, 2));
+  if ((Array.isArray(command) ? command : [command]).some(child => Object.keys(child).some(key => /token|password|authorization/i.test(key)))) fail('SECRET_IN_INPUT', 'Credentials do not belong in command JSON.');
+  console.log(JSON.stringify(await (action === 'apply-batch' ? executeBatch(client, command) : executeOperation(client, command)), null, 2));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch(error => {
   console.error(JSON.stringify({ok: false, code: error.code ?? (error instanceof GitHubError ? `GITHUB_${error.status}` : 'FAILED'), message: error instanceof CoordinationError || error instanceof GitHubError ? error.message : 'Coordination command failed before a confirmed receipt. Inspect the registry before retrying.'})); process.exitCode = 1;
 });
+

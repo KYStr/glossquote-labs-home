@@ -271,3 +271,22 @@ aspects 要列全，score 是數字；每項均至少 90 且有證據才可 acce
 | CANDIDATE_MISMATCH / INCOMPLETE_REVIEW / SCORE_BELOW_TARGET | 回到精確候選修正、補實證與獨立複驗；不換較容易的驗收標準。 |
 
 這套工具只做共用狀態轉換與 GitHub 讀回，不會遙控本地 Codex、喚醒舊對話、核發發布批准或保證擁有 repo 寫權的人無法繞過協議。任務板應持續把「規則已保存」「本人已確認」「實際執行」「驗收通過」「已發布」分開顯示。
+
+## Labs 批量製作（2026-11-01 使用者更新）
+
+- ready 且未消耗的完整預案目標為 **40**；低於 40 補預案 P1、達 40 降 P3。未知仍是未知，不把 draft/reserved/claimed/reviewing/catalog 當 ready。製作仍為 P3，預設 local-codex，cloud-dot 必須在各 task 明確允許。
+- 每位實際 actor 一批預領 **5 件尚未交付的製作子件**；已有自己的 1 件時只補 4 件。claimed/working/blocked/revision 計入名額，reviewing 已完整交驗不占下一批名額，但仍保留原 owner、claim 與獨評責任；accepted 也不占。退修優先在現行安全 checkpoint 回切。歷史或新退修造成超過 5 件不刪 owner、不搶件，先消化到上限以下再補領。
+- 一個後備批次不是五名人力、也不是同時五件執行：每位 actor 同時最多 **1 件 working**；其餘是預領。四名 maker 保留各自遊戲主線；兩位品控仍以各自可接的 P1 獨評優先，安全點回切，不因預領而擴借調人數。
+- 每個子件各有 taskId、operationId、claimId、固定來源與驗收條件。一次 fresh snapshot 對全部子操作依序純轉換驗證（expectedRevision 逐件 +1），所有條件及固定 GitHub references/PR 都通過才以原 blob SHA **一次 CAS** 寫完整 registry；逐件讀回原 operationId/requestHash、actor、claim、task、revision。任一條件不符整批不寫，競爭失敗不強推、不盲重試。
+- 結果不明先讀全部原 opIds；全數精確存在才認已落盤，部分存在就停下查明，不自動補寫其餘或換 ID 重送。庫存不足不造 ready、不部分領取當完整批次；例如兩位各已有 1 件而 ready 只有 6 件，所需 8 件仍缺 2，先由既有規格原責任人補齊並獨審。
+- 逐件完成後先用原有 block 保存真實完成 checkpoint／候選定位，blocker 明寫「待整批交驗，非退修」，resumeCondition 明寫 `batch submit ready`，不能顯示為正在製作或在等修正。全部製作完成後再一次保存 GitHub 產品來源批次；GitHub commit 與 registry submit 是兩個不同步驟，仍需原批准範圍。
+- 整批交驗以各件原 claim 的 resume→submit 操作列逐件固定 candidate/PR/evidence，暫存期間各件都已 block；resume 只恢復交驗前狀態，不是新的實作執行證據。一次 CAS 可容納 5 組 resume/submit。每件均獨立審查相同固定候選的完整約定面向，禁止混分、自評或把預領當執行；未完成檢查仍 NOT_RUN。交驗、accepted、merge、部署分開，不擴發布/分享/憑證/費用權限。
+- 單件 apply 保留相容與修復用途，但同樣受未交付 5 件與 working 1 件上限限制。正式批領使用 apply-batch；不是以五次單領繞過整批不足檢查。既有本地盤點、主頁 baseline、他人 owner 完全不變。
+
+### 批次 CLI
+
+```sh
+node scripts/coordination.mjs apply-batch < commands.json
+```
+
+`commands.json` 是 1–20 個完整既有 command 的陣列，不新增 registry action/schema。每個 command 使用不同 operationId，同一實際 actor；第一筆 expectedRevision 為最新 R，其後為 R+1、R+2…；claim 的 operationId 即其子件 claimId。補領批次完成後該 actor 尚未交付製作必須恰為 5 件。成功回傳 `receipts[]`，每件保留 owner、taskStatus、原 operationRevision、currentRevision、blobSha 與 `actualExecutionClaimed:false`；預領回執不代表已啟動五件。若是已成功批次的精確重送，原 hashes 全吻合會讀回不重寫。此工具不建立產品 commit、不啟動 agent、不合併 PR 或部署。

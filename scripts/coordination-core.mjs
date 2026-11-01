@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 export const REGISTRY_PATH = 'coordination/work-registry.json';
 export const REPOSITORY = 'KYStr/glossquote-labs-home';
 export const BRANCH = 'codex/initial-publication';
+export const LABS_BATCH_POLICY = Object.freeze({threshold: 40, claimBatchSize: 5, maxActivePerActor: 1, submissionMode: 'batch'});
 export const EXECUTORS = ['local-codex', 'cloud-dot'];
 export const SPEC_SECTIONS = ['goal', 'scope', 'userFlow', 'inputsOutputs', 'implementation', 'acceptance', 'tests', 'handoff'];
 const ACTIVE = new Set(['claimed', 'working', 'blocked', 'reviewing', 'revision']);
@@ -142,12 +143,12 @@ export function inventorySummary(registry) {
   const known = registry.baseline.inventoryComplete && isReconciled(registry);
   const count = known ? registry.specs.filter(spec => spec.status === 'ready').length : null;
   return {
-    readyUnconsumedCount: count, inventoryStatus: known ? 'confirmed' : 'unknown',
-    specPriority: known ? (count < 6 ? 'P1' : 'P3') : null,
+    ...LABS_BATCH_POLICY, readyUnconsumedCount: count, inventoryStatus: known ? 'confirmed' : 'unknown',
+    specPriority: known ? (count < LABS_BATCH_POLICY.threshold ? 'P1' : 'P3') : null,
     reconciliationPriority: known ? null : 'P1', productionPriority: 'P3',
     productionDefaultExecutor: 'local-codex',
     phases: Object.fromEntries([...STATUSES].map(status => [status, registry.tasks.filter(task => task.workType === 'production' && task.status === status).length])),
-    reason: known ? (count < 6 ? 'Ready, unconsumed specification stock is below six.' : 'Specification stock has reached six.') : 'Local and cloud inventories have not both been reconciled. Do not infer zero or use catalog draft counts.'
+    reason: known ? (count < LABS_BATCH_POLICY.threshold ? 'Ready, unconsumed specification stock is below forty.' : 'Specification stock has reached forty.') : 'Local and cloud inventories have not both been reconciled. Do not infer zero or use catalog draft counts.'
   };
 }
 
@@ -160,7 +161,15 @@ function ownedTask(registry, command) {
   check(command.claimId === task.owner.claimId, 'STALE_CLAIM', 'The exact current claimId is required.');
   return task;
 }
+function productionHeld(registry, actorId) {
+  return registry.tasks.filter(task => task.workType === 'production' && ['claimed', 'working', 'blocked', 'revision'].includes(task.status) && task.owner?.actorId === actorId);
+}
+function checkProductionCapacity(registry, task, actor) {
+  if (task.workType === 'production') check(productionHeld(registry, actor.id).length < LABS_BATCH_POLICY.claimBatchSize,
+    'CLAIM_LIMIT', 'At most five unsubmitted production tasks per actor; existing ownership is preserved.');
+}
 function readyToClaim(registry, task, actor) {
+  checkProductionCapacity(registry, task, actor);
   check(registry.baseline.inventoryComplete && isReconciled(registry), 'RECONCILIATION_REQUIRED', 'Local and cloud must reconcile existing work before any new claim.');
   check(task.allowedExecutors.includes(actor.executor), 'EXECUTOR_NOT_ALLOWED', 'This executor is not explicitly allowed to take this task.');
   check(task.status === 'ready' || task.status === 'released', 'ALREADY_OWNED', 'Task is not available. Silence or stale observations do not release ownership.');
@@ -311,6 +320,8 @@ export function applyOperation(input, command) {
       check(['claimed', 'blocked', 'revision'].includes(task.status), 'INVALID_STATE', 'Task cannot start or resume from this state.');
       check(!task.handoff, 'HANDOFF_PENDING', 'Do not resume while a handoff is pending.');
       if (task.workType === 'production') { const spec = registry.specs.find(row => row.id === task.specId); check(spec.status === 'consumed' && spec.consumedBy.taskId === task.id, 'INCOMPLETE_SPEC', 'Finish the reserved legacy specification review before production resumes.'); }
+      if (task.workType === 'production' && task.status !== 'revision') check(!productionHeld(registry, command.actor.id).some(row => row.id !== task.id && row.status === 'revision'), 'REVISION_FIRST', 'Return to revision work at a safe checkpoint before starting another reserved item.');
+      if (task.workType === 'production') check(!productionHeld(registry, command.actor.id).some(row => row.id !== task.id && row.status === 'working'), 'ACTIVE_LIMIT', 'Only one production task may be working per actor; checkpoint the current item first.');
       text(command.evidence, 'evidence'); task.status = 'working'; task.blocker = null; task.lastObservation = {at: command.observedAt, evidence: command.evidence};
       break;
     }
@@ -347,6 +358,7 @@ export function applyOperation(input, command) {
       check(registry.baseline.inventoryComplete && isReconciled(registry), 'RECONCILIATION_REQUIRED', 'Reconciliation is required.');
       check(task.status === 'blocked' && task.handoff?.toActorId === command.actor.id && task.handoff.offerId === command.offerId && task.owner?.claimId === task.handoff.previousClaimId, 'STALE_HANDOFF', 'Exact current handoff offer is required.');
       check(task.allowedExecutors.includes(command.actor.executor), 'EXECUTOR_NOT_ALLOWED', 'Executor not allowed.'); text(command.evidence, 'evidence');
+      checkProductionCapacity(registry, task, command.actor);
       task.lastHandoff = {...task.handoff, acceptedBy: command.actor.id, acceptedAt: command.observedAt, evidence: command.evidence};
       task.owner = {actorId: command.actor.id, executor: command.actor.executor, claimId: command.operationId, claimedAt: command.observedAt}; task.status = 'claimed'; task.handoff = null; task.blocker = null;
       if (!task.contributors.includes(command.actor.id)) task.contributors.push(command.actor.id);
@@ -393,4 +405,28 @@ export function operationReferences(registry, command) {
   }
   if (command.specId) { const spec = registry.specs.find(row => row.id === command.specId); if (spec) { add(spec.document); add(spec.source); } }
   return [...new Map(refs.map(ref => [canonical(ref), ref])).values()];
+}
+
+
+/** Validate the entire batch in memory before any write. Each child retains its exact operation ID/hash/revision. */
+export function applyBatch(input, commands) {
+  validateRegistry(input);
+  check(Array.isArray(commands) && commands.length > 0 && commands.length <= 20, 'INVALID_BATCH', 'Provide 1–20 explicit child commands.');
+  check(commands.every(object), 'INVALID_BATCH', 'Every child must be a command object.');
+  unique(commands.map(command => command.operationId), 'batch operation IDs');
+  check(commands.every(command => same(command.actor, commands[0].actor)), 'INVALID_BATCH', 'One actual actor must own a batch.');
+  const existing = commands.map(command => input.events.find(event => event.operationId === command.operationId));
+  for (let i = 0; i < commands.length; i++) if (existing[i]) check(existing[i].requestHash === fingerprint(commands[i]), 'IDEMPOTENCY_CONFLICT', 'A child operation ID has a different request hash.');
+  check(existing.every(Boolean) || existing.every(event => !event), 'PARTIAL_BATCH', 'Only part of this batch is recorded. Inspect original operation IDs; do not resend or fill gaps automatically.');
+  if (existing.every(Boolean)) return {registry: structuredClone(input), events: existing, idempotent: true};
+  let registry = input;
+  const events = [];
+  for (const command of commands) {
+    const proposed = applyOperation(registry, command);
+    registry = proposed.registry; events.push(proposed.event);
+  }
+  if (commands.some(command => command.action === 'claim' && taskById(registry, command.taskId).workType === 'production')) {
+    check(productionHeld(registry, commands[0].actor.id).length === LABS_BATCH_POLICY.claimBatchSize, 'BATCH_INCOMPLETE', 'A production claim batch must fill the actor to five including existing work; insufficient ready inventory is not fabricated.');
+  }
+  return {registry, events, idempotent: false};
 }
