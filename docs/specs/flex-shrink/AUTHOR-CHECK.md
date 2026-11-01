@@ -1,4 +1,4 @@
-# Flex Shrink — author document check v0.1
+# Flex Shrink — author document check v0.2
 
 Document arithmetic only; no product implementation or browser execution. Not an independent review or readiness decision.
 
@@ -30,3 +30,11 @@ F15: shrink0.25 on item1 only, initial deficit0.01 gives request0.0025; width9.9
 ## Coverage
 
 Eight sections are present: goal/distinct bounded scope; interaction and accessibility; numeric I/O; official-subset implementation; cases and desktop evidence; original nine-aspect contract; author risks/checks; immutable delivery and separate readiness/production gates. Native geometry, contrast, keyboard flow, privacy, security, compatibility and performance tests are NOT_RUN. All nine product scores null. The author does not award independent document PASS,90 or ready.
+
+## Affected document corrections F1–F3
+
+F1: no-growth now defines F0=C−sum(H), all reasons grow-zero, empty rounds. New F11b C400/B100×3/M150,0,0 gives H150,100,100, F0/residual50 and no rounds; M>B does not turn a grow-zero explanation into a shrink round. Existing shrink arithmetic is unchanged.
+
+F2: fixed type=text/inputmode=decimal raw input.value snapshots, no coercion/blur rewrites/maxlength, app-owned novalidate submission and composition-aware Enter. Single-line CR/LF sanitization is explicitly not clipboard-byte preservation; pure parser and UI checks are distinct. F17/F19 cover the boundary.
+
+F3: fixed future command/script interface, deterministic build trees/checks and static file allowlist with exact README/package baseline references. These are future implementation requirements, not already-existing Flex commands or executed tests. Exact CSP denies connections/inline attributes; known individual style-property setters must be observed working under it, without loosening policy. No product, workflow, deployment or new dependency was introduced. All product evidence remains NOT_RUN and scores null; original nonauthor must close these findings against the revised fixed candidate.
