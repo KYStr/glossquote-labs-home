@@ -1,4 +1,4 @@
-# Flex Shrink Distribution Explorer — complete preparation specification v0.1
+# Flex Shrink Distribution Explorer — complete preparation specification v0.2
 
 2026-11-01. Documentation candidate, not an implemented or accepted product. BRIEF is fixed at KYStr/glossquote-labs-home commit77dab8e0bc5a06245795adcaecc6c83021f59038, docs/specs/flex-shrink/BRIEF.md. Source baseline: commit26525d5f6380915ea95dde879dec769442db0d95, README.md. Formal specification task: labs-flex-shrink-spec-20261031. Proposed spec identifier: spec-flex-shrink-20261031. No product scores are supplied.
 
@@ -31,6 +31,10 @@ One opaque solid sRGB theme; no gradient/image/transparent backgrounds behind fu
 ## 3. Numeric input and deterministic output
 
 C in[40,1200] CSSpx; basis B and minimum M in[0,1200] CSSpx; shrink S in[0,4]. All inclusive. Every numeric field accepts only ASCII outer whitespace U+0009–000D/U+0020 followed by full-match `(?:0|[1-9][0-9]*)(?:\.[0-9]{1,2})?`. No signs, exponents, commas, units, leading zeros other than0, NaN/Infinity or Unicode digits/whitespace. Raw maximum64 UTF-16 code units, checked BEFORE parsing. Overlong paste is visible but never parsed; HTML maxlength is not a substitute for application validation. Canonical numbers remove fractional trailing zeros/dot. M>B is valid and intentional. No hidden validation requiring sum of minima≤C or all shrink factors≥1.
+
+Numeric controls MUST be `<input type="text" inputmode="decimal" autocomplete="off" spellcheck="false">`, with no maxlength or native numeric coercion. The controller stores each field's `input.value` string on every input event, including invalid/overlong lexemes; Generate validates that snapshot. Do not use type=number, valueAsNumber, parseFloat, or trim/canonicalize/write back on blur or success. Examples/reset are the only intentional numeric raw replacements; language changes retain strings. Inputmode is a keyboard hint, not a validator. Use form novalidate and prevent submit navigation so app errors and Enter handling are deterministic; ignore Enter while composition is active and Generate only after committed input.
+
+Raw means the value exposed by the single-line text control, not the original clipboard bytes. HTML text controls strip CR/LF; do not claim preservation or validation of stripped line endings, and do not add clipboard reads. The pure parser still tests the full stated ASCII-whitespace grammar, including CR/LF at the outer edge; UI evidence separately records browser sanitization (a paste of `1\n2` can expose `12`, which is validated as12). Tabs/other controls are accepted only when actually present and allowed by the grammar. This boundary follows [HTML text-state sanitization](https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)); it does not promise arbitrary multiline input support.
 
 Parse to integer hundredths and use exact rational arithmetic thereafter (BigInt numerator/positive denominator, normalized). Decimal presentation of calculated widths/free space/weights is fixed2 fractional digits, half-away-from-zero, trailing zeros retained; render negative zero as0.00. Retain reduced exact fraction in a details column (integers without /1). Input/CSS values remain canonical requested decimals, not calculated rounded widths. Round only at display; exact residual is C−sum(final widths), not sum of rounded strings. For example width1/8→0.13 and residual−1/8→−0.13. A residual whose absolute value rounds to0.00 still has its exact sign/status and fraction explained, not called exact fit.
 
@@ -72,7 +76,7 @@ Replace width and per-item numbers with canonical inputs; include exactly N nth-
 
 Use existing repository Node24+ zero-dependency toolchain, pure parsing/calculation/formatting/serialization functions, state controller and bilingual semantic renderer. No product source is delivered here. Production later needs its own task/claim. Rational operations/comparisons must not convert to Number before final CSSOM measurement comparison. Bound N≤6 and raw lengths, gcd-normalize every operation; synchronous finite work, no worker/network/permission/retry mechanism.
 
-For the scoped model let H_i=max(B_i,M_i). Outer and inner widths agree because margins/padding/borders are0. Initialize targets T_i=B_i. If sum(H)<C, the official algorithm selects grow, but all grow factors are0: freeze all at H, show no-growth and residual; no shrink rounds. Otherwise use shrink. Freeze S_i=0 or B_i<H_i at H_i. Reasons distinguish zero-shrink, minimum-above-basis or both. Other items initially active. F0=C−sum(frozen target or active B), fixed for all later rounds.
+For the scoped model let H_i=max(B_i,M_i). Outer and inner widths agree because margins/padding/borders are0. Initialize targets T_i=B_i. If sum(H)<C, the official algorithm selects grow, but all grow factors are0: freeze all at H with initial reason `grow-zero` for every item (even when M>B); define F0=C−sum(H), final residual=F0, and rounds=[] (display “no shrink rounds”, not fabricated A/D/R rows). Show no-growth; the original requested B remains visible separately. Otherwise use shrink. Freeze S_i=0 or B_i<H_i at H_i. Reasons distinguish zero-shrink, minimum-above-basis or both. Other items initially active. F0=C−sum(frozen target or active B), fixed for all later rounds.
 
 Each round recomputes R=C−sum(frozen T or active B) and A=sum(active S). R*=R unless A<1 and abs(F0*A)<abs(R), in which case R*=F0*A. Equality keeps R. D=sum(active S_i*B_i). If R*=0, tentative U_i=B_i. If R*≠0 and D>0, U_i=B_i−abs(R*)*(S_i*B_i)/D. Limit each active value L_i=max(U_i,M_i,0). V=sum(L_i−U_i). With no finite max in this scope V cannot be negative: V=0 freezes all active; V>0 freezes precisely positive-minimum-violation items. Set all active tentative targets to L before freezing, but next round distributes from original B, never from prior tentative widths. Keep frozen widths unchanged. A negative V is an internal invariant failure, not a user error or a silent approximation.
 
@@ -80,7 +84,30 @@ Zero-weight degeneracy: if D=0 all active bases are0 (active S>0; S0 was frozen)
 
 Finish T_i as used model widths, each nonnegative and≥M_i. Residual may be nonzero even when min sum fits C, because factors below1 request only partial shrink. Do not force normalization to C. Official intrinsic-size/automatic-minimum algorithms are excluded rather than approximated by entered numbers. Native measurements use getBoundingClientRect on untransformed empty boxes only; computed flex-basis is not evidence of used width.
 
-Safe construction: no innerHTML, eval, dynamic imports, arbitrary property names or CSS text injection from raw input. Set known style properties from canonical validated values. Errors and labels use textContent. Require finite documented CSP/static asset allowlist from approved toolchain, no third-party fonts/scripts. Developer evidence uses synthetic inputs only. No URL state, cookies/storage writes, telemetry or sensitive data logs.
+Safe construction: no innerHTML, eval, dynamic imports, arbitrary property names or CSS text injection from raw input. Set known style properties from canonical validated values. Errors and labels use textContent. Use the exact proposed CSP and static asset contract below; no third-party fonts/scripts. Developer evidence uses synthetic inputs only. No URL state, cookies/storage writes, telemetry or sensitive data logs.
+
+### 4.1 Reproducible future implementation interface
+
+Baseline sources actually read: [README.md](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md) and [package.json](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/package.json). They establish Node>=24, built-in modules only, and preview/production build separation. They are homepage scripts, NOT an already-existing Flex implementation. The later separately claimed tool must implement the following interface in its own approved source root; no edit to homepage scripts or workflow is authorized here:
+
+```
+node --version
+npm test
+npm run check
+npm run build:preview
+npm run check:generated:preview
+npm run build:production
+npm run check:generated:production
+npm run dev
+```
+
+No install/network dependency step. Future package scripts must map test→`node --test`, check→`node scripts/check.mjs`, build:preview/production→`node scripts/build.mjs --mode preview|production`, check:generated:preview/production→`node scripts/check-generated.mjs --mode preview|production`, dev→`node scripts/serve.mjs`. Every check/test/build must exit0 or fail nonzero with the failing fixture/path; no skipped required test passes. Tests contain independent literal F01–F17/F26 expected data and state tests; check enforces bounded sinks, imports, bilingual strings and this asset list. Builds deterministically emit dist/ (noindex preview) and dist-production/ (production metadata); generated checks compare file allowlist, exact generated CSS/JS/HTML, links, CSP and hashes. Neither command deploys. Dev binds127.0.0.1:4180, serves only prebuilt dist/ with the same CSP headers and no write endpoints. Browser F18–F25 are separate recorded manual checks, not claimed by npm test. The implementer supplies real command transcripts, Node version, source commit and output SHA manifest; these commands are specifications to implement, all currently NOT_RUN.
+
+Static emitted file allowlist, for both modes: index.html, en/index.html, assets/app.mjs, assets/core.mjs, assets/styles.css, robots.txt, sitemap.xml, _headers, _redirects. HTML may request only the same-origin named module graph (app→core) and styles.css; system fonts only, no images/favicons/font files, source maps, arbitrary imports or extra resources. Robots/sitemap and redirects are build metadata; _headers/_redirects are hosting configuration, not UI assets. Network evidence must distinguish page navigations/metadata from data requests. Production canonical origin remains unset until separately approved, so production check must fail rather than invent a domain. Preview uses noindex and local URLs. No publication is implied by a build.
+
+Proposed response CSP (not a claim about existing deployed headers): `default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self'; style-src-attr 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'none'; manifest-src 'none'`. Deliver as HTTP header through the local preview server and eventual approved hosting _headers; do not rely on meta for frame-ancestors. No unsafe-inline/eval, nonce bypass, telemetry/report endpoint or remote allowlist. Source inspection narrows same-origin script/style permissions to the named emitted files; CSP self alone is not a path allowlist.
+
+Dynamic preview sizing uses direct known CSSStyleDeclaration properties only (container.style.width and item.style.flexGrow/flexShrink/flexBasis/minWidth) from canonical validated decimals. No setAttribute('style'), cssText, injected style element, stylesheet text parsing, arbitrary property/value or event-handler attributes. [CSP3 style-src-attr](https://www.w3.org/TR/2026/WD-CSP3-20261027/#style-src-attr) governs style attributes; the required baseline must demonstrate these individual property setters actually work under the exact response CSP, with no violation, while injected style attributes/inline scripts are blocked. This is a required F22 compatibility/security observation, not an assumed pass and not permission to loosen CSP if it fails. Constant layout/colors remain in styles.css. Any necessary contract change requires same-candidate review, not silent widening.
 
 ## 5. Author reference cases and future test matrix
 
@@ -98,6 +125,7 @@ These expected values are document arithmetic, not product tests. Items are list
 |F09|100;0,100,100;1,1,1|0,50,50;0|
 |F10|100;100,100,100;1,1,1;50,50,50|50,50,50;−50|
 |F11|400;100,100,100;1,1,1|100,100,100;100; no-growth branch|
+|F11b|400;100,100,100;1,1,1;150,0,0|150,100,100;50; H=150,100,100, F0=50, every reason grow-zero, rounds=[]|
 |F12|300;100,100,100;1,1,1|100,100,100;0; zero-space round|
 |F13|40;0,0,0;1,1,1;50,0,0|50,0,0;−10; zero-weight active set|
 |F14|40;0,0,0;1,1,1|0,0,0;40; no-growth branch|
@@ -107,12 +135,12 @@ For F15, F0=−0.01, active factor sum0.25, R*=−0.0025; apparent rounded total
 
 Additional planned cases, all product NOT_RUN:
 - F16 inclusive bounds C40/1200, B/M0/1200, S0/4; invalid adjacent hundredths. N3/6 accepted; impossible select/programmatic N2/7 rejected safely.
-- F17 grammar: empty,01,+1,−0,1e2,0x10,comma,Unicode space/digit,third decimal,Infinity; ASCII-trimmed valid numbers accepted. Raw64 versus65 reject in correct order, retain input.
+- F17 grammar: empty,01,+1,−0,1e2,0x10,comma,Unicode space/digit,third decimal,Infinity; ASCII-trimmed valid numbers accepted. Raw64 versus65 reject in correct order, retain visible input before and after blur/Generate/language switch; verify type=text/inputmode and no valueAsNumber. Pure parser CR/LF-whitespace tests and separate single-line UI sanitization observation must not be conflated.
 - F18 generate→edit/count-change→Select cannot expose stale output; generate twice, invalid→valid, examples/reset/language states; every output derives one snapshot.
-- F19 numeric Enter versus button success preserves focus, errors focus first field; full keyboard navigation/select fallback and nonauthor normal task in both languages.
+- F19 committed numeric Enter (not composing) versus button success preserves focus, errors focus first field; full keyboard navigation/select fallback and nonauthor normal task in both languages.
 - F20 1280×800 and320×800 CSS viewports on the same desktop;200% zoom from wide viewport, record resulting CSS viewport. Only dedicated wrappers scroll; focus/error/help not clipped.
 - F21 native previews F01–F15 plus six-item upper bounds; measure all item widths and cumulative right edge relative to container. Per-item error≤0.1 CSSpx and total sum error≤0.1*N CSSpx versus exact model converted for measurement. Record raw measurements, browser/OS/device scale/zoom and screenshots. Do not round measurements into a pass. If baseline fails, investigate/fix or revise documented supported subset with review, never waive silently. This is finite numerical tolerance, not screenshot-byte equality.
-- F22 inspect real network/storage/permissions from load through editing, selection, reset and navigation: static allowlisted assets only, no data requests/storage writes/permission prompts; source review supplements, never replaces runtime evidence.
+- F22 inspect real network/storage/permissions from load through editing, selection, reset and navigation: exact §4.1 response CSP/asset list and direct style setters, blocked inline attribute/script probes, static allowlisted assets only, no data requests/storage writes/permission prompts; source review supplements, never replaces runtime evidence.
 - F23 reload/back/forward/BFCache and JS-unavailable/unsupported state; explicitly identify unexercised BFCache rather than fabricate coverage.
 - F24 contrast pairs/states, labels/error associations, focus/reflow as §2; screenshots locate computed-color observations.
 - F25 twenty sequential six-item upper-bound Generate actions after previous render; record handler-entry→next requestAnimationFrame elapsed time for every action, each≤100ms on named baseline; confirm no extra listeners/nodes, responsive reset/edit. This is an app checkpoint, not physical display-latency certification.
