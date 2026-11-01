@@ -46,3 +46,40 @@ All 24 authored payloads were independently checked byte-for-byte against the fi
 The affected observations did not reveal a regression. They are not a proof of every possible annotation arrangement, every viewport or all eight quality aspects. Unchanged author mathematical tests were not rerun. All eight complete-aspect scores remain null and requiredChecksComplete remains false. The original native 45-degree discrepancy and all outstanding required evidence above remain unresolved; no score, accepted verdict, merge or deployment follows from closing R1.
 
 The original review above remains bound to baca3449; this follow-up alone is bound to 292e851. No old numeric score is carried forward, and no untested requirement is removed.
+
+
+---
+
+# Independent normal-UI review — Transform Origin r2
+
+Product candidate: `292e851ac04febd3d94707c49e2e058d27d68a96`, `tools/transform-origin/`.
+Specification: `9dad1e10e9158df9d405460b0370cbc45e6679d6`, `docs/specs/transform-origin/SPEC.md`.
+Review performed 2026-11-01 06:26–06:38 UTC, independently of the product author. This continuation does not rerun or adopt the author's 29 tests. The later head `fa9ed2171ab5a30e9fd57db1d7c0f547b6c46d1c` differs from the product candidate only in INDEPENDENT-REVIEW.md (remote compare verified).
+
+## Scope and decision
+R1 (overlapping vertex/origin labels) remains CLOSED on r2. All legal ordinary-UI portions below were performed, rather than stopping at the affected-only review. No further blocking product defect was observed within this coverage. This is **not acceptance**: five aspects retain mandatory evidence gaps. No averaging or substitution of author tests is used.
+
+| Fixed aspect | Score | Independent basis / remaining gap |
+|---|---:|---|
+| math | 94 | All six orders in both panels, center/outside origins, mirrored/zero scales, 45°, ±360°, legal large bounds: 14 scenarios, 112 displayed vertices. Independent point-by-point reverse-function arithmetic matched within 1e-6; maximum displayed error 3.559642323125445e-7. Matrix/origin/AABB outputs were also inspected. |
+| validation | 95 | All seven fields: 105 invalid observations (12 grammar examples per field plus precision and both range violations), 35 valid raw/boundary observations, seven language/raw checks. Invalid input removed results and copy controls; correction recovered results. Raw leading signs/zeros and surrounding spaces persisted on blur while generated values normalized. |
+| css-output | null | Visible CSS order/units/identity/normalization and static template are consistent; actual native HTML CSS geometry remains unverified to required tolerance. Author's reported 45° residual 0.000778144 is not a 1e-6 PASS. Clipboard success feedback is not an exact clipboard-byte readback. |
+| visualization | 92 | Named vertices, A/B comparison, origin/AABB, mirroring and degenerate explanations observed; r2 coincident labels aggregate all IDs, near labels and O are distinguishable. Auto-fit does not change table coordinates. |
+| interaction-a11y | null | 18-step keyboard sequence, reverse Tab, skip link then first input, native selects, B hide/show state, visible focus, bilingual raw/error recovery, keyboard reset/copy observed. Static labels/descriptions/error associations and 600 ms polite announcement present. Actual assistive announcement and clipboard refusal recovery not executed; stylesheet color calculation is not full computed-state contrast verification. |
+| responsive-compatibility | null | Ordinary Chromium menu visibly confirmed 100% and 200%; at 200% text/fields/errors/results/copy remain usable with vertical scrolling and single-column result panels. Exact 320/768/1440 CSS-pixel matrix and Firefox remain untested. No real-phone gate added. |
+| privacy-reliability | null | Repeated order changes, errors/corrections and six reset cycles recovered without observed crash. Static source uses textContent, finite enums, no fetch/storage/eval, and CSP connect-src none. This is not an independent runtime network/storage audit or clipboard-refusal exercise. |
+| maintainability-performance | null | Pure math/validation module, separate label placement, shared LIMITS and bilingual dictionary, no external runtime dependencies, bounded four-vertex work observed in source. Readable separation is good; app/CSS are densely formatted. Required hardware-tagged UI latency measurement remains unexecuted. |
+
+## Normal UI observations
+- Invalid lexemes per field: empty, "-", ".5", "1.", "1e2", "NaN", "Infinity", "0x10", "12px", "1,5", fullwidth digit, Unicode minus; plus overprecision and both out-of-range values. Two concurrent invalid fields gave two errors and no stale copyable output.
+- Valid cases per field: leading plus/zeros, negative zero with spaces, ordinary decimal with spaces, min and max. Values remained raw after leaving fields; valid output normalized.
+- Keyboard progression: seven inputs, example, reset, A order, B order, show B, A table/CSS/copy, B table/CSS/copy. Skip link followed by Tab reaches tx. Reverse Tab from copy reaches its CSS region.
+- At 200% normal browser zoom, invalid tx remains visible with an explanatory error and keyboard focus; corrected input restores outputs. Copy A by normal control/Return showed “CSS copied.” No inference about refusal or exact clipboard bytes.
+- Six repeat edit/reset cycles retained focus on Reset and restored defaults/results. Chinese example restored default values; no claim is made about a live-announcement event captured before its debounce.
+- Static palette luminance calculations for declared colors against declared light backgrounds found text minima: ink10.803, muted5.812, eyebrow5.865, error6.866, A6.512, B6.320. Focus orange4.716; input border3.758. These support the authored palette only, not every actual computed state.
+
+## Unavailable evidence and limits
+Organization policy explicitly blocks DevTools on this page. No alternate developer/runtime interface was used to bypass this. Normal browser menu zoom is separate and was used successfully. Firefox and calibrated viewport fixtures were unavailable in the current review. Author's native fixture result is retained as unresolved, not transformed into a math failure or a native PASS. Required evidence remains null until actually obtained under allowed resources.
+
+## Follow-through
+Preserve the same product bytes and original owner. Resolve or supply the specific missing native, compatibility, assistive/clipboard-refusal, privacy-runtime and latency evidence before acceptance. Additional review-only commits do not constitute a changed product. No merge, deployment, production edit, or acceptance is performed by this report.
