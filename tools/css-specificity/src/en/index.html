@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Selector Specificity Comparator</title>
+<meta id="meta-desc" name="description" content="Compare the specificity (A,B,C) of two CSS selectors from the supported subset, locally, with a per-node contribution breakdown. It does not execute selectors or predict the cascade winner.">
+<!--META-->
+<link rel="stylesheet" href="/assets/styles.css">
+<script type="module" src="/assets/app.mjs"></script>
+</head>
+<body>
+<main>
+<h1 data-i18n="h1">CSS Selector Specificity Comparator</h1>
+<p class="tagline" data-i18n="tagline">Compare the specificity of two selectors and see exactly where every point comes from.</p>
+
+<section aria-labelledby="scope-h">
+<h2 id="scope-h" data-i18n="scopeH">What this tool does</h2>
+<p data-i18n="scopeP1">Enter two selectors and press Compare to get each (A,B,C) triple, the first differing component, and a complete node contribution tree. Everything is computed in your browser; nothing is sent or stored.</p>
+<p data-i18n="scopeP2">Note: specificity is not the cascade. This tool does not execute selectors, match a DOM, or predict which rule wins; it only computes specificity within the supported subset below.</p>
+<details id="grammar">
+<summary data-i18n="grammarSummary">Supported grammar subset (complete list)</summary>
+<p data-i18n="gIntro">Only the following grammar is supported; anything outside the subset is reported as unsupported or a syntax error, which is not a claim about browser CSS validity.</p>
+<ul>
+<li data-i18n="gType">Type and universal: an ident ([A-Za-z_][A-Za-z0-9_-]*) or *, only at the start of a compound.</li>
+<li data-i18n="gSimple">Simple selectors: #id, .class, [attr] (attribute presence only, a bare ident inside the brackets).</li>
+<li data-i18n="gOrdinary">Ordinary pseudo-classes (single colon): hover, focus, focus-visible, focus-within, active, checked, disabled, enabled, root, empty, first-child, last-child, only-child.</li>
+<li data-i18n="gFunctions">Functional pseudo-classes: :is(...), :not(...), :where(...), whose argument is a comma-separated list of complex selectors (1–8 branches, functions nested at most 4 deep).</li>
+<li data-i18n="gPseudoEl">Pseudo-elements (double colon): before, after, first-line, first-letter, only at the end of the final compound of the top-level selector, and only after a type, universal, or simple selector.</li>
+<li data-i18n="gCombinators">Combinators: whitespace (descendant), &gt;, +, ~. A top-level comma is unsupported.</li>
+<li data-i18n="gLimits">Each field is limited to 1024 UTF-16 units of raw text; the core never trims or normalizes your input, and the raw text is retained exactly.</li>
+<li data-i18n="gScoring">Scoring: ID=(1,0,0); class/attribute/ordinary pseudo-class=(0,1,0); type/pseudo-element=(0,0,1); *=(0,0,0). :is/:not take the lexicographically greatest branch (not a componentwise maximum; ties do not multiply); :where always contributes 0, but its children must still parse and their scores remain visible in the tree. Comparison inspects A, then B, then C; components never carry.</li>
+</ul>
+</details>
+</section>
+
+<div class="field">
+<label for="left-input" data-i18n="leftLabel">Left selector (L)</label>
+<textarea id="left-input" rows="3" autocomplete="off" spellcheck="false">#card .title</textarea>
+</div>
+<div class="field">
+<label for="right-input" data-i18n="rightLabel">Right selector (R)</label>
+<textarea id="right-input" rows="3" autocomplete="off" spellcheck="false">.card h2.title</textarea>
+</div>
+
+<div class="actions">
+<button type="button" id="compare-btn" data-i18n="compare">Compare</button>
+<button type="button" id="reset-btn" class="secondary" data-i18n="reset">Reset</button>
+<a id="lang-link" href="/index.html">繁體中文</a>
+</div>
+
+<p id="status" role="status" aria-live="polite" data-i18n="statusIdle">Not compared yet.</p>
+
+<section id="error-summary" hidden aria-labelledby="errors-h">
+<h2 id="errors-h" data-i18n="errorsH">Error summary</h2>
+<ul id="error-list"></ul>
+</section>
+
+<section id="result" hidden aria-labelledby="result-h">
+<h2 id="result-h" data-i18n="resultH">Comparison result</h2>
+<p id="cmp-prose"></p>
+<p><span data-i18n="firstDiffLabel">First differing component</span>: <span id="first-diff-value"></span></p>
+<div class="field">
+<label for="summary-text" data-i18n="summaryLabel">Technical summary (readonly, manually selectable)</label>
+<textarea id="summary-text" rows="4" readonly></textarea>
+</div>
+<h3><span data-i18n="leftTreeH">Left contribution tree</span> <span id="left-triple"></span></h3>
+<div id="left-tree" class="trees"></div>
+<h3><span data-i18n="rightTreeH">Right contribution tree</span> <span id="right-triple"></span></h3>
+<div id="right-tree" class="trees"></div>
+<p data-i18n="treeNote">Each line: node kind, the raw source slice, and that node's (A,B,C). Selector and compound nodes sum the contributions of their children.</p>
+</section>
+
+<footer>
+<p data-i18n="footerNote">Fully local tool: zero dependencies, no network requests, no storage. Pressing Enter inside a textarea inserts a line break; it never submits.</p>
+</footer>
+</main>
+</body>
+</html>

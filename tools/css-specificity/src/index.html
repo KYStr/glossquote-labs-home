@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS 選擇器 specificity 比較器</title>
+<meta id="meta-desc" name="description" content="在本機比較兩個 CSS 選擇器（限支援子集）的 specificity (A,B,C)，逐節點拆解貢獻；不執行選擇器、不預測 cascade 勝者。">
+<!--META-->
+<link rel="stylesheet" href="/assets/styles.css">
+<script type="module" src="/assets/app.mjs"></script>
+</head>
+<body>
+<main>
+<h1 data-i18n="h1">CSS 選擇器 specificity 比較器</h1>
+<p class="tagline" data-i18n="tagline">比較兩個選擇器的 specificity，逐節點看清每一分從哪裡來。</p>
+
+<section aria-labelledby="scope-h">
+<h2 id="scope-h" data-i18n="scopeH">這個工具做什麼</h2>
+<p data-i18n="scopeP1">輸入兩個選擇器，按「比較」得到各自的 (A,B,C) 三元組、先不同欄位，以及完整的節點貢獻樹。所有計算都在你的瀏覽器內完成，不傳送、不儲存。</p>
+<p data-i18n="scopeP2">注意：specificity 不是 cascade。本工具不執行選擇器、不比對 DOM，也不預測哪條規則會勝出；它只依下方支援子集計算 specificity 本身。</p>
+<details id="grammar">
+<summary data-i18n="grammarSummary">支援的語法子集（完整清單）</summary>
+<p data-i18n="gIntro">只支援以下語法；子集外一律回報為不支援或語法錯誤，不代表瀏覽器 CSS 的有效性。</p>
+<ul>
+<li data-i18n="gType">類型與萬用：ident（[A-Za-z_][A-Za-z0-9_-]*）或 *，只能在 compound 開頭。</li>
+<li data-i18n="gSimple">簡單選擇器：#id、.class、[attr]（僅屬性存在，括號內只有 ident）。</li>
+<li data-i18n="gOrdinary">一般偽類（單冒號）：hover、focus、focus-visible、focus-within、active、checked、disabled、enabled、root、empty、first-child、last-child、only-child。</li>
+<li data-i18n="gFunctions">函數偽類：:is(...)、:not(...)、:where(...)，引數為逗號分隔的複合選擇器清單（1–8 個分支，函數最多巢狀 4 層）。</li>
+<li data-i18n="gPseudoEl">偽元素（雙冒號）：before、after、first-line、first-letter，只能出現在最外層最後一個 compound 的結尾，前面必須先有類型、萬用或簡單選擇器。</li>
+<li data-i18n="gCombinators">組合子：空白（後代）、&gt;、+、~。最外層逗號不支援。</li>
+<li data-i18n="gLimits">每欄原始文字上限 1024 個 UTF-16 單位；核心不修剪、不正規化你的輸入，原文完整保留。</li>
+<li data-i18n="gScoring">計分：ID=(1,0,0)；class／屬性／一般偽類=(0,1,0)；類型／偽元素=(0,0,1)；*=(0,0,0)。:is/:not 取分支中字典序最大者（不逐欄取大、相同不加倍）；:where 貢獻恆為 0，但其子節點仍須合法且分數保留在樹中。比較先比 A、再 B、再 C，欄位間不進位。</li>
+</ul>
+</details>
+</section>
+
+<div class="field">
+<label for="left-input" data-i18n="leftLabel">左邊選擇器 (L)</label>
+<textarea id="left-input" rows="3" autocomplete="off" spellcheck="false">#card .title</textarea>
+</div>
+<div class="field">
+<label for="right-input" data-i18n="rightLabel">右邊選擇器 (R)</label>
+<textarea id="right-input" rows="3" autocomplete="off" spellcheck="false">.card h2.title</textarea>
+</div>
+
+<div class="actions">
+<button type="button" id="compare-btn" data-i18n="compare">比較</button>
+<button type="button" id="reset-btn" class="secondary" data-i18n="reset">重置</button>
+<a id="lang-link" href="/en/index.html">English</a>
+</div>
+
+<p id="status" role="status" aria-live="polite" data-i18n="statusIdle">尚未比較。</p>
+
+<section id="error-summary" hidden aria-labelledby="errors-h">
+<h2 id="errors-h" data-i18n="errorsH">錯誤摘要</h2>
+<ul id="error-list"></ul>
+</section>
+
+<section id="result" hidden aria-labelledby="result-h">
+<h2 id="result-h" data-i18n="resultH">比較結果</h2>
+<p id="cmp-prose"></p>
+<p><span data-i18n="firstDiffLabel">先不同欄位</span>: <span id="first-diff-value"></span></p>
+<div class="field">
+<label for="summary-text" data-i18n="summaryLabel">技術摘要（唯讀，可手動選取）</label>
+<textarea id="summary-text" rows="4" readonly></textarea>
+</div>
+<h3><span data-i18n="leftTreeH">左邊貢獻樹</span> <span id="left-triple"></span></h3>
+<div id="left-tree" class="trees"></div>
+<h3><span data-i18n="rightTreeH">右邊貢獻樹</span> <span id="right-triple"></span></h3>
+<div id="right-tree" class="trees"></div>
+<p data-i18n="treeNote">每行：節點種類、原文片段、該節點的 (A,B,C)。selector 與 compound 為其子節點貢獻總和。</p>
+</section>
+
+<footer>
+<p data-i18n="footerNote">純本機工具：零相依套件、無網路請求、無儲存。換行在 textarea 內按 Enter 即可輸入，不會送出。</p>
+</footer>
+</main>
+</body>
+</html>
