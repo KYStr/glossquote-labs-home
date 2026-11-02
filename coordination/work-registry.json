@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2026-10-29.1",
-  "revision": 778,
+  "revision": 779,
   "repository": "KYStr/glossquote-labs-home",
   "branch": "codex/initial-publication",
   "baseline": {
@@ -20449,7 +20449,7 @@
       "contributors": [
         "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
       ],
-      "status": "working",
+      "status": "reviewing",
       "owner": {
         "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
         "executor": "cloud-dot",
@@ -20461,81 +20461,22 @@
       "handoff": null,
       "submission": {
         "candidate": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "a2e9a467213ff47a78b976a672e693efae1cce8a",
-          "path": "docs/specs/morse-code-translator/SPEC.md"
+          "commit": "b612c14d1c69ea9366a3312a2ca60a8ae887481c",
+          "path": "docs/specs/morse-code-translator/SPEC.md",
+          "repository": "KYStr/glossquote-labs-home"
         },
         "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/45",
-        "evidence": "Complete eight-section specification and author check fixed at PR head a2e9a467213ff47a78b976a672e693efae1cce8a; SPEC.md 15870 bytes SHA256 435fe32575141a6db6dfa73a2c394972e15352f54a507f494fda0a0a8e5bb37b; AUTHOR-CHECK.md SHA256 e2aae900b505e324f09df3cd5e6e45a9d02548697349a62d6d81ed4b82c007a4. Product checks NOT_RUN; no self-review; independent eight-section review requested.",
+        "evidence": "Revised candidate after the local primary independent document review (oversight 2026-11-02, previous candidate a2e9a4672, verdict revision). Blocking fixes applied to the same task/spec IDs: (1) prosign collisions resolved by tagged form only - the author re-derived the collision set from the shipped table by script (the character table is internally collision-free; exactly AR/AS/KN collide with +/&/open-paren); prosigns now round-trip only as tagged tokens (<AR> -> <.-.-.> -> <AR>), a bare colliding token decodes to the punctuation character with the alternative prosign reading as an annotation note that is never decoded text, and sections 4/6/7 were rewritten so the character-bijection and prosign promises are jointly satisfiable (fixtures 4 and 8); (2) validation order pinned - the RAW input's characters are validated before any normalisation, unsupported characters are refused and listed by position and never silently expanded (fixture 7: A-sz-B refused at position 2; the author confirmed the hazard, sz uppercases to SS); (3) the section 3 playback/copy validity state was pinned per the review's user-flow note. SPEC.md 21075 bytes SHA256 a3d5b334988fb5743be410d0a735a453bddf1bc629d7a43125ed85bdc1318e4a; AUTHOR-CHECK.md SHA256 cd3e4027b9b6d8af06b382ab47b7af26e89cb0d2b66bf6b9ed1ad86ac4499472 (revision addendum names the review and each fix). Product checks NOT_RUN; no self-review; independent re-review requested.",
         "evidenceRef": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "a2e9a467213ff47a78b976a672e693efae1cce8a",
-          "path": "docs/specs/morse-code-translator/AUTHOR-CHECK.md"
+          "commit": "b612c14d1c69ea9366a3312a2ca60a8ae887481c",
+          "path": "docs/specs/morse-code-translator/AUTHOR-CHECK.md",
+          "repository": "KYStr/glossquote-labs-home"
         },
         "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
         "claimId": "muse-morse-claim-20261102T004918Z-e6f1b",
-        "submittedAt": "2026-11-02T00:50:50.262Z"
+        "submittedAt": "2026-11-02T01:51:03.906Z"
       },
-      "acceptance": {
-        "verdict": "revision",
-        "reviewerId": "local-codex:01a0c75e-24c2-76e1-8c70-536ae1ad1fbf",
-        "candidate": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "a2e9a467213ff47a78b976a672e693efae1cce8a",
-          "path": "docs/specs/morse-code-translator/SPEC.md"
-        },
-        "evidence": "Primary nonauthor document review only. Blocking fixes: define an unambiguous tagged/prosign mode or explicitly revise the promised inverse semantics while preserving honest user output; update fixtures accordingly. Pin unsupported-input validation before/after case normalization (ß counterexample). Do not hide collisions by selecting a lookup order while continuing to promise both round-trips. Product checks NOT_RUN; no product acceptance.",
-        "evidenceRef": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "ad1882107110eb6a384e9ddc85da3f89e8e37379",
-          "path": "docs/specs/morse-code-translator/INDEPENDENT-REVIEW.md"
-        },
-        "rubricComplete": true,
-        "requiredChecksComplete": false,
-        "aspects": [
-          {
-            "id": "goal",
-            "score": 95,
-            "evidence": "§1 defines a useful text/code/timing job, actual learners and a finite local-playback outcome."
-          },
-          {
-            "id": "scope",
-            "score": 93,
-            "evidence": "§2 distinguishes machine Base64, speech and recurring metronome clicks; translation and finite signal timing are separate."
-          },
-          {
-            "id": "userFlow",
-            "score": 82,
-            "evidence": "§3 covers edit direction, errors, audio fallback and stop, but playback/copy behavior for unknown or stale Morse should follow a fixed validity state."
-          },
-          {
-            "id": "inputsOutputs",
-            "score": 65,
-            "evidence": "§4 has unavoidable collisions: AR=. - . - . without spaces equals+, AS=.-... equals&, KN=-.--. equals(. Both punctuation bijection and all-prosign round-trip cannot hold for an untagged single code token."
-          },
-          {
-            "id": "implementation",
-            "score": 83,
-            "evidence": "Audio-clock scheduling and shared interval data are sound directions, but decode representation/precedence must first make the source semantics deterministic."
-          },
-          {
-            "id": "acceptance",
-            "score": 78,
-            "evidence": "§6 all five prosigns round-trip conflicts with §7 every punctuation code round-trip; both cannot be accepted under the current plain-token decoder."
-          },
-          {
-            "id": "tests",
-            "score": 75,
-            "evidence": "Primary independent counterexample reproduces the three exact collisions. Unicode uppercase expandsß→SS although the text promises unsupported input is refused; choose raw validation order explicitly."
-          },
-          {
-            "id": "handoff",
-            "score": 94,
-            "evidence": "BRIEF/SPEC/AUTHOR and PR candidate are fixed; same original author must repair and resubmit, without a product claim."
-          }
-        ],
-        "reviewedAt": "2026-11-02T01:16:10.000Z"
-      },
+      "acceptance": null,
       "publication": null,
       "registeredAt": "2026-11-02T00:49:12.327Z",
       "lastObservation": {
@@ -31057,6 +30998,17 @@
       "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
       "executor": "cloud-dot",
       "observedAt": "2026-11-02T01:49:21.766Z",
+      "taskId": "labs-morse-code-translator-spec-20261102",
+      "specId": null
+    },
+    {
+      "operationId": "muse-morse-submit2-20261102T023500Z-rv01",
+      "requestHash": "aa9f7788077b085cadf72e34457831369b76b2f82e483553e84d914b303726b5",
+      "revision": 779,
+      "action": "submit",
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "observedAt": "2026-11-02T01:51:03.906Z",
       "taskId": "labs-morse-code-translator-spec-20261102",
       "specId": null
     }
