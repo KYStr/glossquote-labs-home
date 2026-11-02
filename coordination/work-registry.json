@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2026-10-29.1",
-  "revision": 776,
+  "revision": 777,
   "repository": "KYStr/glossquote-labs-home",
   "branch": "codex/initial-publication",
   "baseline": {
@@ -19845,7 +19845,7 @@
       "contributors": [
         "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
       ],
-      "status": "working",
+      "status": "reviewing",
       "owner": {
         "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
         "executor": "cloud-dot",
@@ -19857,81 +19857,22 @@
       "handoff": null,
       "submission": {
         "candidate": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "9f982e692aeadbd9f0487fb81f11a6357f76a80e",
-          "path": "docs/specs/word-frequency/SPEC.md"
+          "commit": "6598ac51cddee252a83685d461589537d56fa3e0",
+          "path": "docs/specs/word-frequency/SPEC.md",
+          "repository": "KYStr/glossquote-labs-home"
         },
         "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/38",
-        "evidence": "Complete eight-section specification and author check fixed at PR head 9f982e692aeadbd9f0487fb81f11a6357f76a80e; SPEC.md 13624 bytes SHA256 33cc8c42ffa1db5414fa0a51fde841539d9b88606ca50704f1aa7bd6ecca09ae; AUTHOR-CHECK.md SHA256 ba499d03456b328bb81ae1d1ada8cffbea67f5a79ab99de345cb17bbe1fd0077. Product checks NOT_RUN; no self-review; independent eight-section review requested.",
+        "evidence": "Revised candidate after the local primary independent document review (oversight 2026-11-02, previous candidate 9f982e692, verdict revision). Blocking fixes applied to the same task/spec IDs: (1) the first table is renamed accurately without narrowing scope - it is now 'Words: Unicode letters/numbers outside the CJK classes' in sections 1/2/4 and the BRIEF, explicitly scoping Greek, Cyrillic and other scripts, with new expected-output fixtures 6 (Omega: folded key omega x3) and 7 (Zhe: folded key zhe x3), script-verified; (2) the fold is pinned to Unicode simple case folding (CaseFolding.txt C+F mappings, shipped as auditable data with a stated Unicode version) and toLowerCase substitution is expressly forbidden - under the pinned fold Sigma, final sigma and sigma all merge to sigma (fixture 4), plus fixture 5 for a Greek word casing tie; the author verified the divergence directly (JS toLowerCase leaves final sigma unmerged). Sections 6 and 7 aligned, including the sigma discriminator test. SPEC.md 16289 bytes SHA256 850fa83de2e44e2d6a9df921cbf1a4ec8609f9132f0742a56f0ee5eaf182f826; AUTHOR-CHECK.md SHA256 8016ed998e8316c00ec73584a802ed2c2a2d130cb809cbb282b0fe00353a2e82 (revision addendum names the review and each fix). Product checks NOT_RUN; no self-review; independent re-review requested.",
         "evidenceRef": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "9f982e692aeadbd9f0487fb81f11a6357f76a80e",
-          "path": "docs/specs/word-frequency/AUTHOR-CHECK.md"
+          "commit": "6598ac51cddee252a83685d461589537d56fa3e0",
+          "path": "docs/specs/word-frequency/AUTHOR-CHECK.md",
+          "repository": "KYStr/glossquote-labs-home"
         },
         "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
         "claimId": "muse-wordfreq-claim-20261101T182235Z-9e13c",
-        "submittedAt": "2026-11-01T18:23:41.186Z"
+        "submittedAt": "2026-11-02T01:48:53.995Z"
       },
-      "acceptance": {
-        "verdict": "revision",
-        "reviewerId": "local-codex:01a0c75e-24c2-76e1-8c70-536ae1ad1fbf",
-        "candidate": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "9f982e692aeadbd9f0487fb81f11a6357f76a80e",
-          "path": "docs/specs/word-frequency/SPEC.md"
-        },
-        "evidence": "Primary nonauthor document review only. Blocking fixes: rename the non-CJK Letter/Number category accurately or intentionally limit it to Latin; choose exact locale-independent lowercasing versus Unicode simple case folding and state testable expected outputs. This does not require adding a segmentation library or expanding product scope. Product checks NOT_RUN; no product acceptance.",
-        "evidenceRef": {
-          "repository": "KYStr/glossquote-labs-home",
-          "commit": "ad1882107110eb6a384e9ddc85da3f89e8e37379",
-          "path": "docs/specs/word-frequency/INDEPENDENT-REVIEW.md"
-        },
-        "rubricComplete": true,
-        "requiredChecksComplete": false,
-        "aspects": [
-          {
-            "id": "goal",
-            "score": 95,
-            "evidence": "§1 identifies writers/teachers and deterministic ranked frequency outcomes."
-          },
-          {
-            "id": "scope",
-            "score": 93,
-            "evidence": "§2 differs materially from Text Workbench transformations and Text Diff alignment; no main functional duplication was found."
-          },
-          {
-            "id": "userFlow",
-            "score": 90,
-            "evidence": "§3 input, filters, totals, display cap, full-table export and session-only stopword editing are described."
-          },
-          {
-            "id": "inputsOutputs",
-            "score": 75,
-            "evidence": "§2 says Latin-script tokens but §4 accepts every Unicode Letter/Number outside the named CJK blocks (e.g.Ω andЖ). It also equates simple case folding with toLowerCase; Σ/ς lower toσ/ς and do not merge."
-          },
-          {
-            "id": "implementation",
-            "score": 85,
-            "evidence": "Pure classifier/count/filter/CSV layers are feasible once the script category and exact case-normalization contract are fixed."
-          },
-          {
-            "id": "acceptance",
-            "score": 85,
-            "evidence": "Future identical-count requirements need the exact normalization contract; ambiguity can produce two conforming-looking incompatible products."
-          },
-          {
-            "id": "tests",
-            "score": 85,
-            "evidence": "Primary Node counterexample verifies the lowercase distinction; add Greek/Cyrillic and case-equivalence expected cases after choosing and naming the intended policy."
-          },
-          {
-            "id": "handoff",
-            "score": 94,
-            "evidence": "Fixed candidate, author check and BRIEF are present; original author retains the task and revises the same spec ID."
-          }
-        ],
-        "reviewedAt": "2026-11-02T01:16:10.000Z"
-      },
+      "acceptance": null,
       "publication": null,
       "registeredAt": "2026-11-01T18:22:30.430Z",
       "lastObservation": {
@@ -31094,6 +31035,17 @@
       "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
       "executor": "cloud-dot",
       "observedAt": "2026-11-02T01:47:59.440Z",
+      "taskId": "labs-word-frequency-spec-20261102",
+      "specId": null
+    },
+    {
+      "operationId": "muse-wordfreq-submit2-20261102T021500Z-rv01",
+      "requestHash": "287ee820740ae161d4d7f53fb9820b754e3380e4b2eeebac3ea2593673db4898",
+      "revision": 777,
+      "action": "submit",
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "observedAt": "2026-11-02T01:48:53.995Z",
       "taskId": "labs-word-frequency-spec-20261102",
       "specId": null
     }
