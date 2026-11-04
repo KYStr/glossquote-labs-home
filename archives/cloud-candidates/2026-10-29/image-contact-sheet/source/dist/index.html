@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在瀏覽器把最多 30 張 JPEG 或 PNG 整理成編號縮圖，下載 PNG 與完整檔名文字索引，不上傳圖片。">
+  <title>照片聯絡表｜縮圖總覽與檔名索引</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#tool">跳至工具</a>
+<header><a class="brand" data-leave href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a><nav aria-label="全部工具"><a data-leave href="https://glossquote.com/index.html">全部工具</a><a data-leave href="./en/index.html" lang="en">English</a></nav></header>
+<main id="tool">
+  <div class="intro"><h1>照片聯絡表</h1><p>把一批照片排成總覽，按編號找回原圖。</p></div>
+  <p class="privacy">圖片只在目前頁面處理，不會上傳。重新整理或切換語言會清除工作。</p>
+  <noscript><p class="error">此工具需要 JavaScript；圖片運算只在你的瀏覽器進行。</p></noscript>
+  <div class="workspace">
+    <section class="rail" aria-labelledby="settings-heading">
+      <h2 id="settings-heading">版面設定</h2>
+      <form id="settings">
+        <label for="columns">每列欄數</label><input id="columns" type="number" min="1" max="6" step="1" value="4" required disabled>
+        <label for="tile">縮圖最大邊長（px）</label><select id="tile" disabled><option>120</option><option>180</option><option selected>240</option><option>320</option></select>
+        <details><summary>間距與標籤</summary><div class="advanced">
+          <label for="gap">圖片間距（0–64 px）</label><input id="gap" type="number" min="0" max="64" step="1" value="16" required disabled>
+          <label for="margin">頁面邊距（0–96 px）</label><input id="margin" type="number" min="0" max="96" step="1" value="24" required disabled>
+          <label class="checkbox" for="labels"><input id="labels" type="checkbox" checked disabled>在 PNG 顯示檔名</label>
+        </div></details>
+        <p class="small">編號一律保留。PNG 檔名可能截短，完整原名請下載文字索引。檔名可能含個人資料，分享前請檢查。</p>
+        <p id="estimate" class="measure"></p>
+        <button id="build" class="primary" type="submit" disabled>建立總覽</button>
+      </form>
+      <button id="clear" type="button" disabled>清除全部</button>
+    </section>
+    <div class="canvas-region">
+      <section aria-labelledby="sources-heading">
+        <div class="section-heading"><h2 id="sources-heading">圖片與順序</h2><span id="count" class="measure">0 / 30</span></div>
+        <label class="file-label" for="files">加入 JPEG / PNG</label><input id="files" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" multiple disabled aria-describedby="file-note">
+        <p id="file-note" class="small">最多 30 張；每張 8 MiB、合計 64 MiB。以加入的順序開始排列。</p>
+        <ol id="items"></ol>
+      </section>
+      <p id="status" role="status" aria-live="polite" aria-atomic="true"></p><button id="cancel" type="button" hidden disabled>取消處理</button>
+      <section class="result" aria-labelledby="preview-heading">
+        <div class="section-heading"><h2 id="preview-heading">總覽預覽</h2></div>
+        <div class="actions"><button id="png" type="button" disabled>下載 PNG</button><button id="index" type="button" disabled>下載檔名索引</button></div>
+        <p id="empty" class="empty">加入圖片並建立總覽後，結果會顯示在這裡。</p><div id="preview"></div>
+      </section>
+    </div>
+  </div>
+  <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">使用說明</h2>
+    <details><summary>格式與使用限制</summary><p>最多 30 張；單檔 8 MiB，原始檔案合計 64 MiB。每張最多 1600 萬像素、單邊 8192 px。支援靜態 PNG 與 8-bit baseline / progressive JPEG；不支援 APNG、GIF、WebP、SVG、HEIC 或 CMYK JPEG。瀏覽器支援與可用記憶體不同，符合限制仍可能失敗。</p><p>總覽最多 1600 萬像素、單邊 8192 px、PNG 64 MiB。不裁切、不放大原圖；透明區域以白色呈現。這是縮圖總覽，不是保存原畫質的相簿。原檔不會被修改。</p></details>
+    <details><summary>完整檔名在哪裡？</summary><p>下載 PNG 之後，也請下載檔名索引。索引每行是編號、Tab 和完整檔名的 JSON 字串；換行與控制字元會跳脫表示。編號對應目前順序，檔名不必唯一。</p></details>
+    <details><summary>照片方向與色彩會完全相同嗎？</summary><p>工具讀取支援的 EXIF 方向，再由瀏覽器解碼；尺寸不符會停止。不同瀏覽器的方向、色彩與字型仍可能不同，請檢查預覽。輸出不複製原始照片 metadata，不保證色彩或 DPI 保真。</p></details>
+    <details><summary>取消或清除代表安全抹除嗎？</summary><p>不是。取消會停止後續工作，但不能立即打斷原生解碼；目前作業完成後丟棄結果。清除會釋放頁面的圖片引用，不會刪除已下載檔案，也不能保證瀏覽器或作業系統記憶體抹除。</p></details>
+  </section>
+</main>
+<dialog id="confirmation" aria-labelledby="confirm-heading" aria-describedby="confirm-note"><h2 id="confirm-heading">捨棄目前工作？</h2><p id="confirm-note">圖片與尚未下載的結果會清除，無法復原。若要保存，請先取消並下載。</p><div class="actions"><button id="keep" type="button">保留工作</button><button id="discard" type="button">捨棄並繼續</button></div></dialog>
+<footer>未發布候選 · 本機預覽不供搜尋引擎收錄</footer>
+</body>
+</html>

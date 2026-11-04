@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>多軌議程衝突檢查 · GlossQuote</title><meta name="description" content="檢查單日議程的場地、講者重疊與換場緩衝。資料只留在目前頁面；不連接行事曆或轉換時區。">
+<link rel="stylesheet" href="./styles.css"><script type="module" src="./js/app.mjs"></script>
+</head><body>
+<header><a href="https://glossquote.com/index.html" rel="noreferrer">返回 Gloss Tools 首頁</a><a id="language" href="./en/index.html">English</a></header>
+<main><p class="kicker">GLOSS TOOLS ／ 尚未發布的預覽</p><h1>先找出議程裡的時間衝突</h1><p>填入同一天、同一時間基準的議程，檢查場地或講者是否被重複安排。結果只作核對，不會幫你自動移動議程。</p>
+<p class="notice">資料只在本頁記憶體。初次載入仍需網站檔案；離頁、重新整理或切換語言會清除資料。需要保留時請先下載報告。</p><noscript><p>請啟用 JavaScript 才能操作；停用時欄位與提交均停用，不會將原文送出。</p></noscript>
+<form id="form" autocomplete="off" novalidate><fieldset id="workspace" disabled>
+<div class="settings"><label for="dateRaw">活動日期 YYYY-MM-DD（0001–9999 年）<input id="dateRaw" type="text" maxlength="10" autocomplete="off" spellcheck="false"></label><label for="timeBasisRaw">共同時間基準（1–60 字元；例如台北當地時間）<input id="timeBasisRaw" type="text" maxlength="256" autocomplete="off" spellcheck="false"></label><label for="roomBufferRaw">同一場地換場緩衝（0–180 分鐘）<input id="roomBufferRaw" type="text" maxlength="3" autocomplete="off" spellcheck="false" inputmode="numeric"></label><label for="speakerBufferRaw">講者跨不同場地緩衝（0–180 分鐘）<input id="speakerBufferRaw" type="text" maxlength="3" autocomplete="off" spellcheck="false" inputmode="numeric"></label></div><p id="identity-help">場地／講者名稱會修剪頭尾空白，再完全比對，大小寫有別、不合併別名。請統一同一人的寫法。字元上限以 UTF-16 計（常見 emoji 算 2）；講者姓名不可包含分號。</p><p>只支援同一天的 HH:MM，開始 00:00–23:59，結束另可 24:00。所有結束必須晚於開始。時區與夏令時間不轉換；跨午夜、跳時或重複時刻請勿使用。</p>
+<h2>議程列</h2><p id="count"></p><div id="rows"></div>
+<div class="actions"><button id="add" type="button">新增議程</button><button id="clear" type="button">清除全部</button><button id="calculate" type="submit" class="primary">檢查衝突</button></div>
+</fieldset></form>
+<p id="error" role="alert" tabindex="-1"></p><p id="status" role="status" aria-live="polite"></p>
+<section id="result" hidden aria-labelledby="result-title"><h2 id="result-title">核對結果與報告</h2><label for="report">純文字報告（可手動選取）</label><textarea id="report" readonly spellcheck="false"></textarea><div class="actions"><button id="download" type="button" disabled>下載 TXT 報告</button></div><p>UTF-8、無 BOM、無末尾換行；固定檔名 glossquote-agenda-conflicts.txt。每次修改會清除舊結果與新下載權。已開始下載的內容會保留最多 60 秒供瀏覽器取用；編輯或清除不撤回已開始的下載，離頁則立即釋放。</p></section>
+<section aria-labelledby="faq-title"><h2 id="faq-title">規則與常見問題</h2><details><summary>相接的議程算重疊嗎？</summary><p>不算。每段包含開始、不包含結束；09:00–10:00 與 10:00–11:00 沒有重疊。若同場地設有大於 0 的緩衝，兩段仍會被標為緩衝不足。</p></details><details><summary>兩種緩衝如何套用？</summary><p>場地緩衝只套同一場地。講者緩衝只套同一講者在不同場地的轉場，同場地不套此項。實際重疊直接標重疊，不再重複標緩衝；不重疊時，間隔小於設定值才算不足，剛好相等可接受。</p></details><details><summary>重複列會被移除嗎？</summary><p>不會。相同名稱、場地、起訖與講者集合會標為重複，並保留其他衝突原因。每一列配對只計一次，多個原因不重複增加配對數。</p></details><details><summary>能處理多少議程？</summary><p>1–60 列，每列 0–5 位講者，以半形分號分隔；同列講者不可重複。全部最多 1770 個配對，依原列號輸出，不靜默截斷。名稱 80、場地／每位講者 40 個 UTF-16 字元；每個原始欄位最多 256。</p></details><details><summary>沒有衝突就代表整份活動安排正確嗎？</summary><p>不代表。本頁只比較你填入的同日分鐘與名稱，不查旅行時間、場地容量、設備、別名、時區規則或行事曆；日期只是你提供的共同日期標籤。夏令時間跳過或重複的時刻不支援，也不會自動偵測。</p></details><details><summary>會上傳或保留我的議程嗎？</summary><p>應用程式不傳送議程、不使用分析或瀏覽器持久儲存。初次取得靜態頁面仍需要網路。資料只留在本頁，離頁會清除；你的瀏覽器歷史與已下載檔案不由本頁刪除。</p></details></section>
+<dialog id="confirmation" aria-labelledby="confirm-title" aria-describedby="confirmation-text"><h2 id="confirm-title">確認捨棄資料</h2><p id="confirmation-text"></p><div class="actions"><button id="confirm-cancel" type="button">取消，保留內容</button><button id="confirm-accept" type="button">確認繼續</button></div></dialog>
+</main><footer><p>本工具尚未發布。沒有帳戶、日曆連接、通知、後端或自動保存；下載由你自行管理。</p></footer>
+</body></html>
