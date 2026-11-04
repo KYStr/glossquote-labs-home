@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; object-src 'none'; connect-src 'none'; font-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>圖片敏感資訊遮蔽工具｜GlossQuote</title>
+  <meta name="description" content="在瀏覽器中以不透明黑色矩形遮住圖片區域，檢查扁平 PNG，再下載分享副本。由你手動選取；工具不會自動偵測敏感資訊。">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <header class="topbar"><a href="https://glossquote.com/index.html">Gloss Tools</a><span>圖片敏感資訊遮蔽</span><nav aria-label="語言"><a href="/en/index.html" lang="en">English</a></nav></header>
+  <main>
+    <div class="page-heading"><h1>遮住圖片中的敏感區域</h1><p>手動遮蔽 · 本機處理 · 扁平 PNG</p></div>
+    <p class="safety-note">你要手動畫出需要遮住的區域。工具不會自動偵測敏感資訊；下載前請檢查整張圖片。</p>
+    <div class="source-toolbar">
+      <input id="source-file" class="file-input" type="file" accept="image/png,image/jpeg" aria-describedby="file-help error" disabled>
+      <label for="source-file" class="button primary" id="source-label">選取圖片</label>
+      <button id="clear-source" type="button" disabled>清除圖片</button>
+      <span id="source-info" class="data"></span>
+    </div>
+    <p id="file-help" class="help">一張靜態 PNG 或 JPEG；最多 8 MiB，每邊最多 8,192 像素、總計 16,000,000 像素。</p>
+    <p id="source-name" class="source-name" hidden></p>
+    <section id="replace-confirm" class="confirmation" aria-labelledby="replace-question" hidden>
+      <p id="replace-question">取代圖片會清除目前遮罩和預覽。要繼續嗎？取消會保留目前圖片。</p>
+      <div class="button-row"><button id="replace-cancel" type="button">取消取代</button><button id="replace-accept" type="button">取代圖片</button></div>
+    </section>
+    <p id="status" role="status" aria-live="polite" aria-atomic="true">選取一張 PNG 或 JPEG。圖片只在此頁處理。</p>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="workspace">
+      <section class="canvas-column" aria-labelledby="canvas-heading">
+        <h2 id="canvas-heading">圖片畫布</h2>
+        <div id="canvas-region" class="canvas-region" role="region" aria-label="圖片畫布" tabindex="0" aria-describedby="canvas-help">
+          <p id="empty-state">選取圖片後，在這裡畫出黑色矩形。</p>
+          <div id="image-stage" class="image-stage" hidden>
+            <canvas id="editor-canvas" width="1" height="1" aria-label="圖片與黑色遮罩預覽；可用座標欄位完成相同操作" hidden></canvas>
+            <div id="draft-mask" class="draft-mask" aria-hidden="true" hidden></div>
+          </div>
+        </div>
+        <p id="canvas-help" class="help">拖曳畫出矩形。可用 x、y、寬、高欄位以鍵盤新增或調整遮罩。</p>
+      </section>
+      <aside class="mask-panel" aria-labelledby="mask-count">
+        <h2 id="mask-count">遮罩 0 / 50</h2>
+        <p id="coordinate-help" class="help">座標以圖片目前顯示方向的原圖像素計算，原點在左上角。</p>
+        <form id="mask-form" novalidate>
+          <fieldset id="coordinate-fields" disabled>
+            <legend id="coordinate-heading">用座標新增遮罩</legend>
+            <div class="coordinate-grid">
+              <div><label for="mask-x">x</label><input id="mask-x" name="x" type="number" inputmode="numeric" min="0" step="1" value="0" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-y">y</label><input id="mask-y" name="y" type="number" inputmode="numeric" min="0" step="1" value="0" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-width">寬</label><input id="mask-width" name="width" type="number" inputmode="numeric" min="1" step="1" value="1" aria-describedby="coordinate-help error"></div>
+              <div><label for="mask-height">高</label><input id="mask-height" name="height" type="number" inputmode="numeric" min="1" step="1" value="1" aria-describedby="coordinate-help error"></div>
+            </div>
+          </fieldset>
+          <div class="button-row"><button id="add-mask" type="submit" disabled>加入遮罩</button><button id="update-mask" type="button" disabled>更新所選遮罩</button></div>
+        </form>
+        <button id="delete-mask" type="button" disabled>刪除所選遮罩</button>
+        <p id="no-masks" class="help">還沒有遮罩。拖曳圖片或輸入座標新增。</p>
+        <ol id="mask-list" class="mask-list" aria-label="遮罩清單"></ol>
+        <div class="button-row"><button id="undo-mask" type="button" disabled>復原最後新增</button><button id="clear-masks" type="button" disabled>清除所有遮罩</button></div>
+        <section id="masks-confirm" class="confirmation" aria-labelledby="masks-question" hidden>
+          <p id="masks-question">清除所有遮罩會讓 PNG 無法產生，並移除目前預覽。要繼續嗎？</p>
+          <div class="button-row"><button id="masks-cancel" type="button">保留遮罩</button><button id="masks-accept" type="button">清除所有遮罩</button></div>
+        </section>
+      </aside>
+    </div>
+    <div class="export-bar">
+      <p>匯出會先把透明區域合成為白色，再畫上不透明黑色遮罩。</p>
+      <div class="button-row"><button id="cancel-generation" type="button" disabled>取消生成</button><button id="generate" class="primary" type="button" disabled>產生 PNG 預覽</button></div>
+    </div>
+    <section id="output-section" class="output-section" aria-labelledby="output-heading" hidden>
+      <div class="output-heading"><h2 id="output-heading">匯出 PNG 預覽</h2><button id="download" class="primary" type="button" disabled>下載 PNG 副本</button></div>
+      <p id="output-info" class="data"></p><p>請檢查整張輸出，包括所有未遮罩區域。</p>
+      <div class="output-preview" role="region" aria-label="實際匯出 PNG 預覽" tabindex="0"><img id="output-image" alt="實際匯出 PNG；請自行檢查所有敏感區域是否已遮住" hidden></div>
+    </section>
+    <section class="help-section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">使用說明</h2>
+      <p>支援目標為最新穩定桌面 Chrome 與 Edge。手機僅提供最佳努力預覽；若裝置無法處理，請改用桌面瀏覽器或較小圖片。工具不會自動縮圖或上傳處理。</p>
+      <details><summary>工具會自動找到 email 或訂單號嗎？</summary><p>不會。你必須手動畫出每個要遮住的區域。</p></details>
+      <details><summary>下載後還能移動遮罩嗎？</summary><p>不能。匯出 PNG 只有合成後的像素，不含可編輯圖層；來源圖片仍留在你的裝置。</p></details>
+      <details><summary>圖片會上傳嗎？</summary><p>圖片在目前瀏覽器頁面處理，不提供上傳或儲存功能。清除圖片或離頁會釋放程式持有的參照，但瀏覽器記憶體清理不等於安全抹除，也不會刪除裝置上的來源。</p></details>
+      <details><summary>為什麼透明區域變白？</summary><p>輸出先將圖片與白底合成，再加入黑色遮罩，避免不同檢視器為透明區域選擇不同背景。</p></details>
+      <details><summary>工具能保證圖片已安全匿名化嗎？</summary><p>不能。它只畫出你指定的矩形，請檢查整張輸出及未遮罩區域。</p></details>
+    </section>
+    <noscript><p class="error">需要啟用 JavaScript 才能在此頁處理圖片。</p></noscript>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">返回所有工具</a><span>Gloss Tools by GlossQuote · 本地候選預覽</span></footer>
+</body>
+</html>
