@@ -1,0 +1,20 @@
+// Independent arithmetic probes of the pinned proposal, not product acceptance.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const luminance=rgb=>rgb.map(v=>v/255).map(v=>v<=0.03928?v/12.92:((v+0.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[0.2126,0.7152,0.0722][i],0);
+const ratio=(a,b)=>{const x=luminance(a),y=luminance(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);};
+const over=(f,b)=>f.rgb.map((v,i)=>f.alpha*v+(1-f.alpha)*b[i]);
+const measure=(f,b)=>{const bg=over(b,[255,255,255]);return ratio(over(f,bg),bg);};
+const blackHalf={rgb:[0,0,0],alpha:0.5},red={rgb:[255,0,0],alpha:1};
+const forward=measure(blackHalf,red),swapped=measure(red,blackHalf);
+assert.ok(Math.abs(forward-swapped)>0.1);
+const foreground=[119,119,119],background=[255,255,255];
+const whiteCandidates=Array.from({length:100},(_,i)=>foreground.map(c=>Math.round(c+(255-c)*(i+1)/100)));
+const whiteHasSolution=whiteCandidates.some(c=>ratio(c,background)>=4.5);
+const blackCandidate=foreground.map(c=>Math.round(c*0.99));
+assert.equal(whiteHasSolution,false);assert.ok(ratio(blackCandidate,background)>=4.5);
+const describedWordClass=cp=>/[\p{L}\p{N}]/u.test(cp)&&!/[\u3400-\u4DBF\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]/u.test(cp);
+assert.equal(describedWordClass('Ω'),true);assert.equal(describedWordClass('Ж'),true);
+const report={status:'PASS_REPRODUCED_DOCUMENT_CONTRADICTIONS',scope:'Three deterministic proposal probes; no product/browser test',contrastCandidate:'2d8658e197ead0bd4884a3002fa3ea3f5ac1dca1',wordCandidate:'9f982e692aeadbd9f0487fb81f11a6357f76a80e',alphaSwap:{forward,swapped,claim:'Raw foreground/background swap is not symmetric when alpha compositing order changes'},suggestionDirection:{whiteHasSolution,blackCandidate,blackRatio:ratio(blackCandidate,background),claim:'Failure in chosen white direction does not mean no foreground-only solution'},wordClass:{greekOmegaAccepted:true,cyrillicZheAccepted:true,claim:'The proposed class is not limited to Latin-script letters'}};
+fs.writeFileSync(fileURLToPath(new URL('./proposal-repro.json',import.meta.url)),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
