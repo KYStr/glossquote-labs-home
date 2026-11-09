@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活動備用電池替換表｜Gloss Tools</title>
+<meta name="description" content="依設備實測續航與開機時段安排滿電組替換，找出活動電池缺口。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <p class="topbar"><a href="../../">← 回 GlossQuote Labs 首頁</a> · <a href="./en/index.html" hreflang="en">English</a> <span class="reset-note">離開本頁會重設輸入</span></p>
+  <h1>活動備用電池替換表</h1>
+  <p>為同規格電池組的設備備料：填入已滿電組數、各台實測續航與預計開機時段，排出全場按時序的裝入與替換清單，找出第一個缺口。計算只在這個頁面進行，不上傳、不儲存。</p>
+</header>
+<main>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">滿電組數與設備</h2>
+      <form id="plan-form" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="charged">現有滿電組數</label>
+          <input id="charged" name="charged" type="text" inputmode="numeric" maxlength="12" aria-describedby="charged-hint charged-error">
+          <p class="hint" id="charged-hint">例如手上有 3 組滿電就填 3。0 表示一組都沒有，仍可排出需求清單。</p>
+          <p class="error" id="charged-error"></p>
+        </div>
+
+        <fieldset>
+          <legend>設備及開機時段（1–8 台）</legend>
+          <ol class="devices" id="devices"></ol>
+          <p><button type="button" id="add-device">＋ 新增一台設備</button></p>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submit">排出裝入與替換</button>
+          <button type="button" id="cancel" hidden>取消</button>
+          <button type="button" id="load-example">載入範例</button>
+          <button type="button" id="clear-draft">清除草稿</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">時序裝入／替換及缺口</h2>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="result" hidden>
+        <div class="summary">
+          <dl>
+            <dt>全場需要組數</dt><dd id="sum-required"></dd>
+            <dt>超出庫存</dt><dd id="sum-extra"></dd>
+            <dt>未用庫存</dt><dd id="sum-unused"></dd>
+            <dt>首次缺口</dt><dd id="sum-first-missing"></dd>
+          </dl>
+        </div>
+        <p id="shortage-note" class="shortfall" hidden></p>
+        <p id="enough-note" class="exact" hidden></p>
+        <table id="result-table">
+          <thead>
+            <tr><th scope="col">時間</th><th scope="col">設備</th><th scope="col">類型</th><th scope="col">組號</th></tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="result-empty">還沒有結果。填好滿電組數與設備後，按「排出裝入與替換」。</p>
+    </section>
+  </div>
+</main>
+<footer>
+  <p>替換規則：每台第一個工作分鐘裝入一組，給滿實測續航；關閉間隔不扣分鐘；續航用完且還有接續工作時，在下一個需要運轉的分鐘替換。事件按時間排序，同分鐘依設備輸入序；第 i 個事件用第 i 組，超出庫存的事件標為缺組。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
