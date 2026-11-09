@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>摩斯碼翻譯器 | GlossQuote 工具</title>
+<meta name="description" content="在本機把文字與國際摩斯碼互相翻譯：支援字母、數字、標點與標記式通訊簡語，顯示訊號總時長並以 WebAudio 播放；不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1e3a5f">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>摩斯碼翻譯器</h1>
+  <p class="intro">把文字翻成國際摩斯碼（ITU），或把貼上的摩斯碼解回文字。這是翻譯工具，不是無線電：播放只在本機用音效產生，不會發送任何訊號。所有處理都在你的裝置上進行，不連網、不儲存、文字不會進到網址裡。</p>
+
+  <section aria-labelledby="converter-h">
+    <h2 id="converter-h">翻譯</h2>
+    <div class="field">
+      <label for="text-input">文字</label>
+      <p class="hint">支援 A–Z（不分大小寫）、0–9、規格內的標點，以及標記式通訊簡語 &lt;SOS&gt;、&lt;AR&gt;、&lt;AS&gt;、&lt;KN&gt;、&lt;SK&gt;。不支援的字元會指出位置並拒絕整段，不會默默跳過。</p>
+      <textarea id="text-input" rows="4" maxlength="2100">SOS</textarea>
+      <p id="text-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="direction" class="direction" aria-live="polite"></p>
+    <div class="field">
+      <label for="morse-input">摩斯碼</label>
+      <p class="hint">符號之間以一個空格分隔字母、以「 / 」或兩個以上空格分隔單詞。通訊簡語寫成標記形式，例如 &lt;...---...&gt;。無法辨識的符號會列出並以 � 標示，不會被丟掉。</p>
+      <textarea id="morse-input" rows="4" maxlength="21000">... --- ...</textarea>
+      <ul id="morse-messages" class="messages"></ul>
+    </div>
+    <div class="row">
+      <button type="button" id="copy-morse">複製摩斯碼</button>
+      <button type="button" id="copy-text">複製解碼文字</button>
+      <span id="copy-status" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section aria-labelledby="playback-h">
+    <h2 id="playback-h">播放與計時</h2>
+    <div class="controls">
+      <div class="control">
+        <label for="wpm-range">速度（WPM）</label>
+        <input type="range" id="wpm-range" min="5" max="60" step="1" value="20">
+        <input type="number" id="wpm-num" min="5" max="60" step="1" value="20" aria-label="速度 WPM 數值">
+      </div>
+      <div class="control">
+        <label for="tone-range">音高（Hz）</label>
+        <input type="range" id="tone-range" min="400" max="1000" step="10" value="600">
+        <input type="number" id="tone-num" min="400" max="1000" step="10" value="600" aria-label="音高 Hz 數值">
+      </div>
+    </div>
+    <p id="duration" class="duration"></p>
+    <div class="row">
+      <button type="button" id="play-btn">▶ 播放</button>
+      <button type="button" id="stop-btn" disabled>■ 停止</button>
+    </div>
+    <p id="play-reason" class="play-reason" aria-live="polite"></p>
+    <p id="audio-fallback" class="error" hidden>此瀏覽器不支援 WebAudio，無法播放聲音；翻譯與時長顯示不受影響。</p>
+    <div class="strip" aria-hidden="true">
+      <div class="strip-row"><span class="strip-label">文字</span><span id="strip-text"></span></div>
+      <div class="strip-row"><span class="strip-label">摩斯</span><span id="strip-morse"></span></div>
+    </div>
+    <p id="now-playing" class="now-playing" hidden></p>
+    <p class="hint">播放中修改速度或音高，會在下一次播放才生效，不會改到正在播的訊號。就算靜音，總時長與上方高亮進度也能讓你跟上播放。</p>
+  </section>
+
+  <section aria-labelledby="how-h">
+    <h2 id="how-h">計時方式與規則</h2>
+    <p>點 = 1 單位、劃 = 3 單位、同一字元內符號間隔 = 1 單位、字母間隔 = 3 單位、單詞間隔 = 7 單位；訊息結尾不計尾隨間隔。速度以 PARIS 標準校準：PARIS 一詞連同其後的單詞間隔共佔 50 單位，所以每單位 = 1200 ÷ WPM 毫秒（單獨計算 PARIS 本身、不含尾隨間隔時是 43 單位）。上方顯示的總時長與實際播放使用同一份計時表。</p>
+    <p>摩斯碼本身不分大小寫：小寫字母會以大寫編碼，解碼結果也是大寫。重音字母（如 É、ß）在此版本不受支援 — 它們會被指出位置並拒絕整段，不會被近似或展開（ß 不會變成 SS）。通訊簡語只有標記形式才算數：未標記的連送符號若與字元代碼相同，會解成該字元並附註提醒；若不對應任何字元，會列為無法辨識並提示對應的簡語。</p>
+  </section>
+
+  <section aria-labelledby="ref-h">
+    <h2 id="ref-h">字元對照表</h2>
+    <p class="hint">此表由程式實際使用的同一份資料產生，看到的就是程式在用的。</p>
+    <div class="tables">
+      <table>
+        <thead><tr><th scope="col">字元</th><th scope="col">代碼</th></tr></thead>
+        <tbody id="ref-table-body"></tbody>
+      </table>
+      <table>
+        <thead><tr><th scope="col">通訊簡語</th><th scope="col">標記形式</th></tr></thead>
+        <tbody id="prosign-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote 工具 · 完全在本機運作，不連網、不儲存使用者內容。</p>
+</footer>
+</body>
+</html>
