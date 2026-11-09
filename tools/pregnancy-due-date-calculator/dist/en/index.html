@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pregnancy Due Date Calculator - GlossQuote Labs</title>
+<meta name="description" content="Estimate a due date, today's gestational age and the start and end dates of all three trimesters from a last menstrual period date, a conception date or an ultrasound scan. Runs entirely on your device; no dates are stored or sent anywhere.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../../">GlossQuote Labs home</a>
+  <a class="lang-link" href="../index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Pregnancy Due Date Calculator</h1>
+  <p class="intro">Choose whichever date you know: your last menstrual period, the conception date, or an ultrasound scan date. The tool works out the estimated due date, the gestational age as of today, and the start and end dates of all three trimesters.</p>
+
+  <aside class="notice" id="medical-notice">
+    <h2>Important</h2>
+    <p>The due date from this tool is a statistical <strong>estimate</strong>, not a prediction and not medical advice. Only a small minority of babies are born on their due date. Dating from the menstrual cycle is less reliable than an early ultrasound measurement; if your clinician gives a different date, the clinical dating prevails.</p>
+  </aside>
+
+  <form id="calc-form" novalidate>
+    <fieldset class="mode-toggle">
+      <legend>Choose a dating method</legend>
+      <label><input type="radio" name="mode" value="lmp" checked> Last menstrual period (LMP)</label>
+      <label><input type="radio" name="mode" value="conception"> Conception date</label>
+      <label><input type="radio" name="mode" value="ultrasound"> Ultrasound</label>
+    </fieldset>
+
+    <section id="panel-lmp" class="panel">
+      <div class="field">
+        <label for="lmp-date">First day of your last menstrual period</label>
+        <input type="date" id="lmp-date" name="lmpDate">
+        <p class="error" id="err-lmpDate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="cycle-length">Menstrual cycle length (days)</label>
+        <input type="number" id="cycle-length" name="cycleLength" value="28" min="21" max="45" step="1" inputmode="numeric">
+        <p class="hint">The length of a full cycle, between 21 and 45 days; leave the default of 28 if you are not sure.</p>
+        <p class="error" id="err-cycleLength" hidden></p>
+      </div>
+    </section>
+
+    <section id="panel-conception" class="panel" hidden>
+      <div class="field">
+        <label for="conception-date">Conception date</label>
+        <input type="date" id="conception-date" name="conceptionDate">
+        <p class="error" id="err-conceptionDate" hidden></p>
+      </div>
+    </section>
+
+    <section id="panel-ultrasound" class="panel" hidden>
+      <div class="field">
+        <label for="scan-date">Ultrasound scan date</label>
+        <input type="date" id="scan-date" name="scanDate">
+        <p class="error" id="err-scanDate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="scan-weeks">Gestational age at the scan (weeks)</label>
+        <input type="number" id="scan-weeks" name="scanWeeks" min="4" max="42" step="1" inputmode="numeric">
+        <p class="hint">Between 4 and 42 weeks.</p>
+        <p class="error" id="err-scanWeeks" hidden></p>
+      </div>
+      <div class="field">
+        <label for="scan-days">Gestational age at the scan (extra days)</label>
+        <input type="number" id="scan-days" name="scanDays" min="0" max="6" step="1" inputmode="numeric">
+        <p class="hint">Between 0 and 6 days.</p>
+        <p class="error" id="err-scanDays" hidden></p>
+      </div>
+    </section>
+  </form>
+
+  <section class="results" aria-live="polite" aria-label="Results">
+    <h2>Results</h2>
+    <p id="result-empty">No date entered yet. Choose a dating method and enter a date to see the estimated due date, today's gestational age and the trimester dates.</p>
+    <div id="result-body" hidden>
+      <p id="result-stale" class="stale" hidden>The current input has a problem, so this is the last valid result and may be out of date.</p>
+      <dl>
+        <div>
+          <dt>Estimated due date</dt>
+          <dd id="out-edd"></dd>
+        </div>
+        <div>
+          <dt>Gestational age today (as of <span id="out-today"></span>)</dt>
+          <dd id="out-ga"></dd>
+        </div>
+        <div>
+          <dt>Current trimester</dt>
+          <dd id="out-trimester"></dd>
+        </div>
+      </dl>
+      <p id="out-beyond" class="beyond" hidden>These dates imply a gestational age of more than 42 weeks. Please check that the dates are right; a clinician's assessment prevails.</p>
+      <table class="trimester-table">
+        <caption>Start and end dates of the three trimesters</caption>
+        <thead>
+          <tr><th scope="col">Trimester</th><th scope="col">Start date</th><th scope="col">End date</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">First trimester</th><td id="t1-start"></td><td id="t1-end"></td></tr>
+          <tr><th scope="row">Second trimester</th><td id="t2-start"></td><td id="t2-end"></td></tr>
+          <tr><th scope="row">Third trimester</th><td id="t3-start"></td><td id="t3-end"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Everything is calculated on your device: nothing is sent over the network, the dates you enter are never stored, and they never appear in the URL or the page title.</p>
+    <p><a href="../../../">Back to the GlossQuote Labs home page</a></p>
+  </footer>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
