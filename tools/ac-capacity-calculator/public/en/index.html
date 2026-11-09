@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AC Capacity Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate the cooling capacity a room needs (kcal/h, BTU/h, kW) from its size in ping or square metres plus west sun, top floor, large windows, kitchen heat and occupants, and match it to common model sizes; tonnage is a Taiwan retail rule of thumb.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>AC Capacity Calculator</h1>
+  <p class="lede">Estimate the cooling capacity a room needs (kcal/h, BTU/h, kW) from its size in ping or square metres plus west sun, top floor, large windows, kitchen heat and occupants, and match it to common model sizes; tonnage is a Taiwan retail rule of thumb. The air-conditioner “ton” in Taiwan has no single definition and every shop computes it differently; this tool leads with capacity in kW, so size by kW.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Size unit and area</h2>
+      <form id="ac-form" novalidate>
+        <div class="field">
+          <label for="field-sizeUnit">Size unit</label>
+          <p class="help" id="help-sizeUnit">Builder data usually uses m²; a room you measured yourself is often in ping. Enter either one.</p>
+          <select id="field-sizeUnit" name="sizeUnit" aria-describedby="help-sizeUnit">
+            <option value="ping" selected>Ping （坪）</option>
+            <option value="m2">m² (square metres)</option>
+          </select>
+          <p class="field-error" id="error-sizeUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-area">Area</label>
+          <p class="help" id="help-area">Ping: 0.5–300; m²: 1–1000. At most two decimal places. m² converts at 1 ping = 3.3058 m².</p>
+          <input id="field-area" name="area" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-area">
+          <p class="field-error" id="error-area" role="alert"></p>
+        </div>
+        <h2>Occupants</h2>
+        <div class="field">
+          <label for="field-occupants">Occupants</label>
+          <p class="help" id="help-occupants">A whole number, range 1–30, default 2. Above 2 occupants, each extra person adds +3%.</p>
+          <input id="field-occupants" name="occupants" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="help-occupants">
+          <p class="field-error" id="error-occupants" role="alert"></p>
+        </div>
+        <h2>West-facing sun, top floor, large windows, kitchen / heat source</h2>
+        <div class="field switch-field">
+          <input id="field-westSun" name="westSun" type="checkbox" aria-describedby="help-westSun">
+          <label for="field-westSun">West-facing sun (+10%)</label>
+          <p class="help" id="help-westSun">The room has large west-facing windows and strong afternoon sun.</p>
+          <p class="field-error" id="error-westSun" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-topFloor" name="topFloor" type="checkbox" aria-describedby="help-topFloor">
+          <label for="field-topFloor">Top floor (+15%)</label>
+          <p class="help" id="help-topFloor">The room is on the building's top floor, with the roof in direct sun.</p>
+          <p class="field-error" id="error-topFloor" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-largeWindows" name="largeWindows" type="checkbox" aria-describedby="help-largeWindows">
+          <label for="field-largeWindows">Large windows (+10%)</label>
+          <p class="help" id="help-largeWindows">The room has large floor-to-ceiling windows with weaker insulation.</p>
+          <p class="field-error" id="error-largeWindows" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-kitchenHeat" name="kitchenHeat" type="checkbox" aria-describedby="help-kitchenHeat">
+          <label for="field-kitchenHeat">Kitchen / heat source (+10%)</label>
+          <p class="help" id="help-kitchenHeat">The room adjoins a kitchen, or contains a noticeable heat source.</p>
+          <p class="field-error" id="error-kitchenHeat" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the size and conditions, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate required capacity</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Recommended model size and required capacity</h2>
+      <p id="summary"></p>
+      <p class="overrange-note" id="overrange-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="Recommended model size and required capacity" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Value</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note" id="tonnage-note"></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>The base load is fixed at 500 kcal/h per ping (a Taiwan residential retail convention). An area entered in m² is first converted with the fixed divisor 1 ping = 3.3058 m², and the converted fraction is not rounded before use. Adjustments add onto the base, they never compound: west-facing sun +10%, top floor +15%, large windows +10%, kitchen / heat source +10%, and +3% for each occupant above 2; 2 occupants or fewer add nothing and never subtract.</p>
+    <p>Conversions are fixed: BTU/h = kcal/h × 3.968; kW = kcal/h ÷ 860. The model-size table is fixed at 2.2, 2.8, 3.6, 4.5, 5.0, 6.3, 7.1, 8.0, 9.0, 10.0 kW; the recommendation compares the exact unrounded kW and takes the smallest size at or above it, with the next size up alongside. An exact kW above 10.0 yields no recommendation and shows the over-range note instead. The displayed kW is rounded to two decimals and can differ from the exact value used for the comparison.</p>
+    <p>Tonnage is only a labelled estimate under the Taiwan retail rule of thumb 1 ton ≈ 2,500 kcal/h; the refrigeration ton (1 RT = 3,024 kcal/h) and mixed rules such as “tons ≈ kW × 0.355” are not used. The downloaded report is always named ac-capacity-report.json and holds the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline. This tool is a pre-purchase estimate, not an installation assessment.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Do I have to buy the recommended size?</dt>
+      <dd>It is the smallest common model size at or above the required kW; one size smaller may struggle on the hottest days.</dd>
+      <dt>Why not convert with the refrigeration ton?</dt>
+      <dd>One refrigeration ton (3,024 kcal/h) is a refrigeration-engineering unit; the air-conditioner “ton” in Taiwan retail is a rule of thumb — here 1 ton ≈ 2,500 kcal/h — so size by kW instead.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
