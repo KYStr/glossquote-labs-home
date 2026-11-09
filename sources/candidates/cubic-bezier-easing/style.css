@@ -1,0 +1,63 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #17332e; background: #f4f3eb; line-height: 1.6; } /* 固定淺色畫布與深色本文。 */
+* { box-sizing: border-box; } /* 外框尺寸包含內距以利窄幅重排。 */
+body { margin: 0; } /* 去除瀏覽器預設外距。 */
+nav, main, footer { max-width: 1180px; margin: auto; padding: 24px 32px; } /* 限制閱讀寬度並保留頁邊。 */
+nav { display: flex; justify-content: space-between; gap: 16px; align-items: center; border-bottom: 1px solid #c9d0c6; font-size: .875rem; } /* 導航保留同語主頁與語言連結。 */
+nav span, .eyebrow, h2, .mono { font-family: ui-monospace, monospace; } /* 技術數字與段號採系統等寬字體。 */
+a { color: #15563f; text-underline-offset: 4px; } /* 深綠連結不只用顏色辨識。 */
+header { max-width: 820px; padding: 38px 0 30px; } /* 首屏敘事保留明確層次。 */
+.eyebrow { letter-spacing: .12em; font-size: .75rem; font-weight: 700; } /* 小型章節眉標維持可讀對比。 */
+h1 { font-family: Georgia, 'Noto Serif', serif; font-size: clamp(2.3rem, 5.5vw, 4.7rem); line-height: 1.1; font-weight: 500; letter-spacing: -.04em; margin: 20px 0; } /* 大標題隨視窗縮放而不溢出。 */
+.intro { max-width: 700px; font-size: 1.1rem; } /* 說明保持適當行長。 */
+.navigation-note, .hint { color: #435950; font-size: .875rem; } /* 次要說明仍用深色正文。 */
+.workspace { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.4fr); gap: 24px; align-items: start; } /* 桌面編輯與結果並排。 */
+.panel { padding: 26px; border: 1px solid #b9c6b9; border-radius: 16px; background: #fffef8; min-width: 0; } /* 低噪音面板與可辨邊界。 */
+h2 { font-size: .875rem; letter-spacing: .035em; margin: 0 0 24px; text-transform: uppercase; } /* 固定章節標籤層級。 */
+h3 { font-size: 1.15rem; margin: 28px 0 10px; } /* 結果子區標題分隔。 */
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; } /* 四欄以兩個控制點排列。 */
+.field { min-width: 0; } /* 避免欄位最小內容寬度溢出。 */
+label { font-weight: 650; } /* 持久標籤不用 placeholder 代替。 */
+.field p { margin: 5px 0; font-size: .8rem; } /* 範圍與錯誤緊鄰各自輸入。 */
+input[type=text], textarea { width: 100%; min-width: 0; border: 1px solid #687b6f; border-radius: 6px; padding: 10px; color: #17332e; background: white; font: inherit; } /* 使用原生輸入並固定可辨邊框。 */
+input[type=text] { font: 1.35rem ui-monospace, monospace; } /* 數字輸入採清楚等寬字級。 */
+input[aria-invalid=true] { border: 2px solid #a21e2c; } /* 首錯邊框與文字同步而非只有顏色。 */
+.error { color: #a21e2c; min-height: 1.3em; } /* 深紅錯誤文字保持空間。 */
+.buttons { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; } /* 窄幅時按鈕自然換行。 */
+button { font: inherit; font-weight: 650; padding: 10px 16px; border: 1px solid #174f3f; border-radius: 7px; background: #174f3f; color: #fff; cursor: pointer; min-height: 44px; } /* 主按鈕具足夠點擊區及文字對比。 */
+button.secondary { background: #fffef8; color: #174f3f; } /* 次按鈕保留深色輪廓與文字。 */
+button:disabled { background: #e0e5dd; border-color: #687b6f; color: #4c5e53; cursor: default; } /* 停用狀態仍可讀，不用過低透明度。 */
+:focus-visible { outline: 3px solid #a74a0b; outline-offset: 4px; } /* 所有鍵盤焦點具有高辨識外框。 */
+.reduce { display: flex; gap: 9px; align-items: center; margin-top: 24px; } /* 減動選項保持原生 checkbox。 */
+input[type=checkbox], input[type=radio] { accent-color: #174f3f; width: 18px; height: 18px; flex: none; } /* 原生控制保留鍵盤與系統語義。 */
+#status { border-top: 1px solid #c9d0c6; padding-top: 16px; min-height: 4em; font-size: .9rem; } /* 狀態集中且不每幀宣告。 */
+#empty { min-height: 330px; display: grid; align-content: center; text-align: center; color: #435950; } /* 空結果不顯示看似有效的舊圖。 */
+#empty[hidden], [hidden] { display: none !important; } /* 明確隱藏失效結果及其互動控制。 */
+.empty-title { font-family: Georgia, serif; font-size: 2rem; margin-bottom: 0; } /* 初始空狀態有清楚指引。 */
+.empty-art { font: 2.5rem Georgia, serif; color: #577561; margin: 25px 0; } /* 純裝飾線不冒產品結果。 */
+svg { width: 100%; display: block; overflow: visible; } /* SVG 以固定 viewBox 等比縮放。 */
+#graph { background: #f5f6ef; border: 1px solid #c9d0c6; border-radius: 8px; } /* 圖面與背景可分辨。 */
+svg text { fill: #314b40; font: 14px system-ui, sans-serif; } /* 軸標籤不使用圖片文字。 */
+.grid-line { stroke: #bdc8bd; stroke-width: 1; } /* 輔助格線不取代文字資訊。 */
+.reference { stroke: #647d6b; stroke-dasharray: 4 4; stroke-width: 1.5; } /* 零一參考線使用虛線。 */
+.curve-line { fill: none; stroke: #17654a; stroke-width: 3; } /* 曲線使用高對比實線。 */
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin: 22px 0; } /* 九列表在窄幅仍完整可讀。 */
+caption { text-align: left; font-weight: 700; margin-bottom: 8px; } /* 表題提供圖的文字替代入口。 */
+th, td { text-align: right; border-bottom: 1px solid #d5dbd0; padding: 7px 10px; } /* 數字右對齊方便逐行比較。 */
+th:first-child, td:first-child { text-align: left; } /* 時間欄作每列索引。 */
+fieldset { border: 1px solid #9aab9b; border-radius: 8px; padding: 14px; margin: 24px 0; min-width: 0; } /* radio 群組有可見 legend。 */
+.radios { display: flex; flex-wrap: wrap; gap: 12px 16px; } /* 九時刻換行不需要水平捲動。 */
+.radios label { display: flex; align-items: center; gap: 5px; font-size: .875rem; min-height: 32px; } /* 標籤擴大選取區並維持鍵盤原生行為。 */
+.track-line { stroke: #718872; stroke-width: 3; } /* 軌道界線可辨識。 */
+.ticks { stroke: #314b40; stroke-width: 2; } /* 零與一的刻度明確標示。 */
+#linear-marker { fill: #17332e; } /* 線性以深色圓形標記。 */
+#curve-marker { fill: #a74a0b; stroke: #fffef8; stroke-width: 1; } /* 曲線以菱形及文字區別，不只顏色。 */
+#tracks p { margin: 12px 0 2px; font-weight: 650; } /* 每軌具持久名稱。 */
+textarea { font: .9rem/1.6 ui-monospace, monospace; resize: vertical; overflow-wrap: anywhere; } /* CSS 可手動選取而不需要剪貼簿權限。 */
+#copy-status { min-height: 1.6em; color: #17332e; } /* 複製結算訊息不閃爍消失。 */
+.faq { max-width: 780px; margin: 40px 0; } /* 頁內幫助不佔主要操作區。 */
+details { border-top: 1px solid #b9c6b9; padding: 16px 0; } /* FAQ 使用原生可展開元件。 */
+summary { cursor: pointer; font-weight: 650; } /* 可鍵盤展開的問題標題。 */
+footer { font-size: .8rem; color: #435950; border-top: 1px solid #c9d0c6; } /* 明示預覽與驗收界線。 */
+@media (max-width: 850px) { .workspace { grid-template-columns: minmax(0, 1fr); } header { padding-top: 18px; } } /* 中窄幅改單欄，不隱藏控制。 */
+@media (max-width: 420px) { nav, main, footer { padding: 18px 16px; } .panel { padding: 18px 14px; } nav span { display: none; } .fields { gap: 12px; } .field label { font-size: .85rem; } } /* 最窄基線保留必要內容與頁邊。 */
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } } /* 不另加裝飾動畫或平滑捲動。 */

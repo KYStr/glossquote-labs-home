@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="輸入 2–32 隊與場地數，產生單循環或雙循環賽程、輪空、分時場地和每隊對手表。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>循環賽賽程表｜Gloss Tools</title>
+  <link rel="stylesheet" href="styles/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到排程工作區</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">Gloss Tools</a>
+    <span class="product-name">循環賽賽程表</span>
+    <a href="en/index.html" lang="en" hreflang="en" title="切換語言會清空目前頁面">English</a>
+  </header>
+  <main>
+    <div class="intro"><h1>把每隊對戰排成完整循環賽</h1><p>先確認對戰與輪空，再依場地數分配每輪時段。</p></div>
+    <noscript><p class="notice">請啟用 JavaScript 以在此頁產生賽程；這個工具不提供伺服器排程。</p></noscript>
+    <nav class="mobile-nav" aria-label="排程工作區">
+      <button id="show-input" type="button" aria-controls="input-panel" aria-pressed="true">輸入與設定</button>
+      <button id="show-results" type="button" aria-controls="result-panel" aria-pressed="false">完整賽程</button>
+    </nav>
+    <div class="workspace" id="workspace" data-view="input">
+      <section id="input-panel" class="settings" aria-labelledby="input-heading">
+        <h2 id="input-heading">輸入與設定</h2>
+        <form id="schedule-form" novalidate autocomplete="off">
+          <div class="field">
+            <label for="teams">隊伍（每行一隊）</label>
+            <p class="help" id="teams-help">貼上 2–32 隊，每個隊名最多 80 字元。不可重名或有空白列；大小寫視為不同名稱。</p>
+            <textarea id="teams" name="teams" rows="4" maxlength="16384" spellcheck="false" aria-describedby="teams-help teams-error"></textarea>
+            <p class="field-error" id="teams-error"></p>
+          </div>
+          <div class="field"><label for="cycles">循環模式</label><select id="cycles" name="cycles" aria-describedby="cycles-error"><option value="1">單循環（每對交手一次）</option><option value="2">雙循環（每對交手兩次）</option></select><p class="field-error" id="cycles-error"></p></div>
+          <div class="field"><label for="courts">可用場地數</label><input id="courts" name="courts" type="text" inputmode="numeric" maxlength="2" value="2" aria-describedby="courts-help courts-error"><p class="help" id="courts-help">1–16 個場地。場地不足時會拆成多個時段，所有對戰都保留。</p><p class="field-error" id="courts-error"></p></div>
+          <details id="timing-details">
+            <summary>選配時間設定</summary>
+            <fieldset aria-describedby="timing-help timing-error"><legend>為時段排時間</legend><p class="help" id="timing-help">全部留白即可不排時間；要排時間，四欄都必須填寫。純民用時間，不換算時區、夏令時間或休息。</p>
+              <div class="field"><label for="startDate">起始日期</label><input id="startDate" name="startDate" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" aria-describedby="timing-help startDate-error"><p class="help">格式 YYYY-MM-DD，年份 2000–2099。</p><p class="field-error" id="startDate-error"></p></div>
+              <div class="field"><label for="startTime">起始時間</label><input id="startTime" name="startTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:mm" aria-describedby="startTime-error"><p class="help">24 小時制 HH:mm，例如 09:00。</p><p class="field-error" id="startTime-error"></p></div>
+              <div class="field"><label for="matchMinutes">每場分鐘數</label><input id="matchMinutes" name="matchMinutes" type="text" inputmode="numeric" maxlength="4" aria-describedby="matchMinutes-help matchMinutes-error"><p class="help" id="matchMinutes-help">整數 1–1440。</p><p class="field-error" id="matchMinutes-error"></p></div>
+              <div class="field"><label for="changeoverMinutes">時段間換場分鐘數</label><input id="changeoverMinutes" name="changeoverMinutes" type="text" inputmode="numeric" maxlength="3" aria-describedby="changeoverMinutes-help changeoverMinutes-error"><p class="help" id="changeoverMinutes-help">整數 0–120。含輪間，只加一次；最後一場後不加。</p><p class="field-error" id="changeoverMinutes-error"></p></div>
+              <p class="field-error" id="timing-error"></p>
+            </fieldset>
+          </details>
+          <div class="form-actions"><button id="create" class="primary" type="submit">產生賽程</button><button id="clear" type="button">清除全部</button></div>
+          <section id="clear-confirm" class="notice" hidden aria-label="確認清除"><p>清除全部隊伍、時間設定與賽程？已下載的檔案會保留。</p><div class="actions"><button id="confirm-clear" type="button">確認清除</button><button id="cancel-clear" type="button">保留內容</button></div></section>
+          <section id="errors" class="error-summary" hidden tabindex="-1" aria-labelledby="error-heading"><h3 id="error-heading">請修正後再產生賽程</h3><ul id="error-list"></ul></section>
+        </form>
+        <p class="privacy">賽程在此頁產生；只有按下載時，才由瀏覽器建立檔案。</p>
+        <p class="help">不使用帳號、上傳或瀏覽器儲存。重新整理或切換語言會清空目前內容；清除不會刪除已下載的檔案。</p>
+      </section>
+      <section id="result-panel" class="canvas" aria-labelledby="result-heading">
+        <div class="canvas-heading"><h2 id="result-heading" tabindex="-1">完整賽程</h2><p id="status" class="status" role="status" aria-live="polite">尚未產生</p></div>
+        <div id="result-empty" class="empty"><h3>先加入你的隊伍</h3><p>輸入隊伍並按「產生賽程」，即可查看完整輪次、輪空與場地。</p></div>
+        <div id="result-content" hidden>
+          <p id="result-summary" class="result-summary"></p><p id="time-summary" class="help"></p>
+          <p class="notice">主客僅為欄位標籤，不代表實際主場。依固定順序排程，不最佳化休息時間或裁判安排。</p>
+          <div id="schedule-list" class="schedule-list"></div>
+          <section class="team-view" aria-labelledby="team-heading"><h3 id="team-heading">每隊對手表</h3><label for="team-select">選隊伍查看對手</label><select id="team-select"><option value="">請選擇隊伍</option></select><div id="opponent-panel" hidden><h4 id="opponent-heading"></h4><ol id="opponent-list" class="matches"></ol></div></section>
+          <div class="download-area"><h3>下載完整賽程</h3><p class="help">兩種檔案都包含全部輪次與每隊對手表，不受上方選隊伍影響。TXT 與 JSON 合計上限 2 MiB。</p><div class="actions"><button id="download-txt" type="button" disabled>下載 TXT</button><button id="download-json" type="button" disabled>下載 JSON</button></div><p id="download-status" role="status" aria-live="polite"></p></div>
+        </div>
+      </section>
+    </div>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">排程前可以先知道</h2>
+      <details><summary>奇數隊會怎麼排？</summary><p>每一輪有一隊輪空；單循環中每隊恰好輪空一次。</p></details>
+      <details><summary>場地不夠會少掉比賽嗎？</summary><p>不會。每輪依固定次序拆成多個時段，完整保留所有對戰。</p></details>
+      <details><summary>雙循環的主場代表真的主場嗎？</summary><p>不代表。第二次對戰只交換賽程的主客欄位，工具不知道實際場地或優勢。</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">返回 Gloss Tools</a><span>Gloss Tools by GlossQuote · 預覽候選</span></footer>
+</body>
+</html>

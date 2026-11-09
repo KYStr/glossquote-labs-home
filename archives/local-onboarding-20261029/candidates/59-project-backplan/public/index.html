@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="輸入交件日、工作週、休假與任務依賴，計算最早/最晚日期、工作日餘裕和關鍵路徑。">
+  <title>專案期限倒排｜Gloss Tools</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body data-pane="input">
+  <a class="skip-link" href="#workspace">跳至工作區</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">Gloss Tools</a>
+    <span class="product-name">專案期限倒排</span>
+    <a href="./en/index.html" lang="en" hreflang="en" class="language">English</a>
+  </header>
+  <main id="workspace">
+    <div class="intro">
+      <h1>從交件日倒排一份可檢查的日程</h1>
+      <p>先用最長依賴工期決定全案起點，再查看每項工作可延後幾天。</p>
+      <p class="help">假日由你輸入；不提供人力容量或資源排程。</p>
+    </div>
+    <nav class="pane-switch" aria-label="工作區分頁">
+      <button id="input-tab" type="button" aria-controls="input-pane" aria-pressed="true">日曆與任務</button>
+      <button id="result-tab" type="button" aria-controls="results-pane" aria-pressed="false">日程結果</button>
+    </nav>
+    <div class="execution-feedback">
+      <p id="status" role="status" aria-live="polite">✎ 編輯中</p>
+      <p id="progress" class="help" aria-live="off"></p>
+      <button id="cancel" type="button" hidden>取消計算</button>
+    </div>
+    <div class="workspace">
+      <section id="input-pane" aria-labelledby="input-heading">
+        <h2 id="input-heading">日曆與任務</h2>
+        <form id="project-form" novalidate autocomplete="off">
+          <div class="field">
+            <label for="deadline">交件日（必填）</label>
+            <input id="deadline" name="deadline" type="text" maxlength="10" inputmode="numeric" placeholder="YYYY-MM-DD" aria-describedby="deadline-help" data-help="deadline-help" spellcheck="false">
+            <p id="deadline-help" class="help">西元 2000–2099；若不是工作日，往前調整並在結果說明。</p>
+          </div>
+          <fieldset id="workweek" tabindex="-1" aria-describedby="workweek-help" data-help="workweek-help">
+            <legend>每週工作日（至少選一天）</legend>
+            <div class="weekdays">
+              <label><input name="weekday" type="checkbox" value="1" checked>週一</label>
+              <label><input name="weekday" type="checkbox" value="2" checked>週二</label>
+              <label><input name="weekday" type="checkbox" value="3" checked>週三</label>
+              <label><input name="weekday" type="checkbox" value="4" checked>週四</label>
+              <label><input name="weekday" type="checkbox" value="5" checked>週五</label>
+              <label><input name="weekday" type="checkbox" value="6">週六</label>
+              <label><input name="weekday" type="checkbox" value="0">週日</label>
+            </div>
+            <p class="help" id="workweek-help">以日期運算，不轉換時區；工期的起迄日都計入。</p>
+          </fieldset>
+          <div class="field">
+            <label for="holidays">已確認的休假日期（選填）</label>
+            <textarea id="holidays" name="holidays" rows="3" maxlength="15000" placeholder="YYYY-MM-DD" spellcheck="false" aria-describedby="holidays-help" data-help="holidays-help"></textarea>
+            <p id="holidays-help" class="help">最多 366 個不重複日期；每行一個或用逗號分隔。非工作星期的休假不重複扣除。</p>
+          </div>
+          <div class="task-heading"><h3>任務與前置關係</h3><span id="task-count" class="help"></span></div>
+          <p class="help">工期 1–260 個工作日；前置完成後的下一工作日才能開始。全案最多 500 條依賴。</p>
+          <p id="dependency-help" class="help"></p>
+          <div id="task-rows" tabindex="-1"></div>
+          <button id="add-task" type="button">新增任務</button>
+          <div id="errors" class="errors" hidden></div>
+          <div class="actions">
+            <button id="calculate" class="primary" type="submit" aria-describedby="calculate-help" disabled>計算日程</button>
+            <button id="clear" type="button" class="quiet">清除全部</button>
+          </div>
+          <p id="calculate-help" class="help">先輸入交件日，才能計算日程。</p>
+        </form>
+      </section>
+      <section id="results-pane" aria-labelledby="results-heading" aria-busy="false">
+        <div class="result-heading"><h2 id="results-heading">日程結果</h2></div>
+        <div id="empty-result" class="empty-result"><h3 id="empty-title">尚未計算日程</h3><p id="empty-help">先輸入交件日與任務，日程會顯示於此。</p></div>
+        <div id="result-content"></div>
+        <div id="downloads" hidden>
+          <div class="actions"><a id="download-txt" class="button" download="project-backplan.txt">下載 TXT</a><a id="download-json" class="button" download="project-backplan.json">下載 JSON</a></div>
+          <p id="download-size" class="help"></p>
+        </div>
+        <p class="model-note">餘裕為可延後的工作日數。◆ 關鍵表示零餘裕；根任務的最早開始日皆為全案起點。任務可平行進行，工具不分配人力，也不保證準時。</p>
+      </section>
+    </div>
+    <section class="guidance" aria-labelledby="faq-title">
+      <h2 id="faq-title">使用說明</h2>
+      <details><summary>為什麼不用我輸入開始日？</summary><p>工具先求出 DAG 最長工期，再由截止日倒數，以該日作為所有根任務的最早起點。</p></details>
+      <details><summary>週末或假日截止會怎麼處理？</summary><p>截止日向前退到上一個你設定的工作日，並在結果中同時顯示原日期和調整後日期。</p></details>
+      <details><summary>關鍵路徑代表一定會延遲嗎？</summary><p>不代表。它只標示本模型中 slack 為 0 的工作；不估算人力、風險、任務中斷或其他資源限制。</p></details>
+    </section>
+    <p class="privacy">資料僅在此頁記憶體處理，不上傳、不自動儲存。修改輸入、取消、清除或離開頁面會撤下結果與下載。已下載檔案不會因此刪除；無法保證抹除瀏覽器程序記憶體。</p>
+    <noscript><p class="errors">請啟用 JavaScript 才能計算。沒有送出或儲存任何資料。</p></noscript>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">返回 Gloss Tools 首頁</a><span>Gloss Tools by GlossQuote · 本地預覽候選</span></footer>
+</body>
+</html>

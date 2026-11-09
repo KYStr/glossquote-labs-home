@@ -1,0 +1,55 @@
+<!doctype html> <!-- 宣告 HTML 文件 -->
+<html lang="en"> <!-- 指定頁面語言 -->
+<head> <!-- 開始頁面描述 -->
+<meta charset="utf-8"> <!-- 固定 UTF-8 編碼 -->
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 允許裝置寬度與正常縮放 -->
+<title>Cubic Bézier Easing Explorer | GlossQuote Labs</title> <!-- 固定英文介面結構與可及性內容。 -->
+<meta name="description" content="Explore time and progress with control points, sample values and CSS. Local calculation with no saved inputs."> <!-- 固定英文介面結構與可及性內容。 -->
+<meta name="robots" content="noindex, nofollow"> <!-- 固定英文介面結構與可及性內容。 -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"> <!-- 靜態預覽也限制資源；frame-ancestors 由正式預覽伺服器標頭提供。 -->
+<link rel="stylesheet" href="../style.css"> <!-- 固定英文介面結構與可及性內容。 -->
+<script type="module" src="../src/boot.mjs"></script> <!-- 固定英文介面結構與可及性內容。 -->
+</head> <!-- 固定英文介面結構與可及性內容。 -->
+<body>
+<noscript><p>JavaScript is required for this local calculator.</p></noscript> <!-- 無腳本時仍給可讀限制。 --> <!-- 固定英文介面結構與可及性內容。 -->
+<nav aria-label="Cubic Bézier Easing Explorer"><a href="https://glossquote.com/en/index.html">Back to home</a><span>GQ / LABS</span><a href="../index.html" lang="zh-Hant">繁體中文</a></nav> <!-- 固定英文介面結構與可及性內容。 -->
+<main> <!-- 固定英文介面結構與可及性內容。 -->
+<header><p class="eyebrow">GLOSSQUOTE LABS / MOTION STUDY 01</p><h1>Give time<br>a different rhythm.</h1><p class="intro">Four control values. One easing curve. x is time; y is progress, which can fall below 0% or exceed 100%. The output is a timing-function only, not a duration.</p><p class="navigation-note">Leaving or changing language does not retain inputs. Reloading restores the defaults.</p></header> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="workspace"> <!-- 固定英文介面結構與可及性內容。 -->
+<section class="panel controls" aria-labelledby="control-title"><h2 id="control-title">01 / Define the curve</h2><form id="form" novalidate><p id="number-help">Up to three decimal places. No spaces, plus signs or exponents. x1 may be greater than x2.</p> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="fields"> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="field"><label for="x1">Control point 1 · X1</label><p id="x1-help">Time range 0–1</p><input id="x1" name="x1" type="text" inputmode="decimal" value="0.25" autocomplete="off" spellcheck="false" aria-describedby="x1-help number-help x1-error"><p class="error" id="x1-error"></p></div> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="field"><label for="y1">Control point 1 · Y1</label><p id="y1-help">Progress range −1–2</p><input id="y1" name="y1" type="text" inputmode="decimal" value="0.1" autocomplete="off" spellcheck="false" aria-describedby="y1-help number-help y1-error"><p class="error" id="y1-error"></p></div> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="field"><label for="x2">Control point 2 · X2</label><p id="x2-help">Time range 0–1</p><input id="x2" name="x2" type="text" inputmode="decimal" value="0.25" autocomplete="off" spellcheck="false" aria-describedby="x2-help number-help x2-error"><p class="error" id="x2-error"></p></div> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="field"><label for="y2">Control point 2 · Y2</label><p id="y2-help">Progress range −1–2</p><input id="y2" name="y2" type="text" inputmode="decimal" value="1" autocomplete="off" spellcheck="false" aria-describedby="y2-help number-help y2-error"><p class="error" id="y2-error"></p></div> <!-- 固定英文介面結構與可及性內容。 -->
+</div> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="buttons"><button id="generate" type="submit">Generate curve</button><button id="clear" class="secondary" type="button">Clear</button></div></form> <!-- 固定英文介面結構與可及性內容。 -->
+<label class="reduce"><input id="reduced" type="checkbox"> Reduce motion</label><p id="reduced-reason" class="hint"></p><p id="status" role="status" aria-live="polite" aria-atomic="true"></p></section> <!-- 固定英文介面結構與可及性內容。 -->
+<section class="panel result" aria-labelledby="result-title"><h2 id="result-title">02 / Read the result</h2><div id="empty"><p class="empty-title">No result yet</p><p>Choose Generate curve to see the curve, nine samples and CSS here.</p><div class="empty-art" aria-hidden="true">0 ─────── 1</div></div><div id="result" hidden><p id="summary" class="mono"></p> <!-- 固定英文介面結構與可及性內容。 -->
+<p class="hint">Horizontal axis: time (x). Vertical axis: progress (y). Time is not the curve parameter t; the solver finds t before calculating progress.</p> <!-- 明確區分可見座標與內部參數。 -->
+<svg id="graph" viewBox="0 0 640 400" role="img" aria-labelledby="graph-title graph-desc"><title id="graph-title">Time → progress</title><desc id="graph-desc">A fixed time domain from 0 to 1 and progress domain from minus 1 to 2. The line contains 257 parametric points. The table below gives formatted progress at nine times.</desc><g id="plot"></g></svg> <!-- 固定英文介面結構與可及性內容。 -->
+<table><caption>Nine time samples</caption><thead><tr><th scope="col">Time</th><th scope="col">Curve progress</th><th scope="col">Linear reference</th></tr></thead><tbody id="samples"></tbody></table> <!-- 固定英文介面結構與可及性內容。 -->
+<fieldset id="times"><legend>Choose a static observation time</legend><div class="radios"> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="0" checked> 0%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="125000" > 12.5%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="250000" > 25%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="375000" > 37.5%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="500000" > 50%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="625000" > 62.5%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="750000" > 75%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="875000" > 87.5%</label> <!-- 固定英文介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="1000000" > 100%</label> <!-- 固定英文介面結構與可及性內容。 -->
+</div></fieldset> <!-- 固定英文介面結構與可及性內容。 -->
+<h3>One play. Two rhythms.</h3><p>The demonstration lasts 2 seconds. Both tracks span −100% to 200%; the circle is linear, the diamond follows your curve. Negative progress and overshoot are not clamped.</p><p id="position" class="mono"></p> <!-- 固定英文介面結構與可及性內容。 -->
+<div id="tracks"><p>● Linear</p><svg class="track" viewBox="0 0 600 62" role="img" aria-label="● Linear"><path d="M 12 24 H 588" class="track-line"/><path d="M 204 16 V 32 M 396 16 V 32" class="ticks"/><text x="12" y="56">−100%</text><text x="204" y="56" text-anchor="middle">0%</text><text x="396" y="56" text-anchor="middle">100%</text><text x="588" y="56" text-anchor="end">200%</text><circle id="linear-marker" cx="204" cy="24" r="8"/></svg><p>◆ Your curve</p><svg class="track" viewBox="0 0 600 62" role="img" aria-label="◆ Your curve"><path d="M 12 24 H 588" class="track-line"/><path d="M 204 16 V 32 M 396 16 V 32" class="ticks"/><text x="12" y="56">−100%</text><text x="204" y="56" text-anchor="middle">0%</text><text x="396" y="56" text-anchor="middle">100%</text><text x="588" y="56" text-anchor="end">200%</text><polygon id="curve-marker" points="204,14 214,24 204,34 194,24"/></svg></div> <!-- 固定英文介面結構與可及性內容。 -->
+<div class="buttons playback"><button id="play" type="button">Play once</button><button id="pause" class="secondary" type="button" disabled>Pause</button><button id="continue" class="secondary" type="button" disabled>Continue</button><button id="stop" class="secondary" type="button" disabled>Stop</button></div> <!-- 固定英文介面結構與可及性內容。 -->
+<h3>03 / Take the CSS</h3><label for="css">CSS</label><textarea id="css" readonly rows="4" spellcheck="false" aria-describedby="manual"></textarea><p id="manual">You can also select text in the read-only field and copy manually. The output does not include a duration.</p><button id="copy" type="button">Copy CSS</button><p id="copy-status" role="status" aria-live="polite"></p><p class="hint">An already-started system copy may finish. Editing or leaving only cancels this page’s success message; it does not clear the system clipboard.</p></div></section></div> <!-- 固定英文介面結構與可及性內容。 -->
+<section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Reading the curve</h2> <!-- 固定英文介面結構與可及性內容。 -->
+<details><summary>Why can progress exceed 100%?</summary><p>The y controls range from −1 to 2, so a curve may move backward or overshoot before returning to the end. This is not a physical spring simulation.</p></details> <!-- 固定英文介面結構與可及性內容。 -->
+<details><summary>Can x1 be greater than x2?</summary><p>Yes. Both x values must lie between 0 and 1. The tool uses exact bisection to invert time; it never swaps your control points.</p></details> <!-- 固定英文介面結構與可及性內容。 -->
+<details><summary>Where do my inputs go?</summary><p>Calculation stays in this page. Inputs are not stored, uploaded or put in the URL. There is no analytics. Copy writes only after an explicit click and never reads the clipboard.</p></details> <!-- 固定英文介面結構與可及性內容。 -->
+</section> <!-- 固定英文介面結構與可及性內容。 -->
+</main> <!-- 固定英文介面結構與可及性內容。 -->
+<footer>Preview candidate · Not independently accepted · Not a deployment or release claim.</footer> <!-- 固定英文介面結構與可及性內容。 -->
+</body> <!-- 固定英文介面結構與可及性內容。 -->
+</html> <!-- 固定英文介面結構與可及性內容。 -->

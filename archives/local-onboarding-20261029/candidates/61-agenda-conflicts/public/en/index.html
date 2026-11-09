@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Check a single-day multi-track agenda for room overlaps, speaker clashes, and short room transitions, with room and speaker schedules.">
+  <meta name="referrer" content="no-referrer">
+  <title>Multi-Track Agenda Conflict Checker | Gloss Tools</title>
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body data-workspace="source">
+  <a class="skip-link" href="#workspace">Skip to the agenda workspace</a>
+  <header class="topbar">
+    <a href="https://glossquote.com/en/index.html" class="brand">Gloss Tools</a>
+    <span>Agenda conflict checker</span>
+    <nav aria-label="Language"><a href="../index.html" lang="zh-Hant">繁體中文</a></nav>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>Find multi-track schedule clashes before publishing</h1>
+      <p>Compare every session pair. Unassigned rooms or speakers stay visible so they are not mistaken for checked.</p>
+      <p class="muted">Times use one local civil day and time zone. Sessions cannot cross midnight.</p>
+    </div>
+    <p id="script-notice" class="notice">JavaScript is needed. Data is processed only in this page’s memory. Open this page through a website preview.</p>
+    <noscript><p class="notice">Enable JavaScript and reopen this page to edit and check the agenda.</p></noscript>
+    <div id="app" hidden>
+      <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Not checked yet</p>
+      <div class="workspace-tabs" role="tablist" aria-label="Agenda workspace">
+        <button type="button" id="source-tab" role="tab" aria-controls="source-panel" aria-selected="true" data-workspace-tab="source">Sessions and resources</button>
+        <button type="button" id="results-tab" role="tab" aria-controls="results-panel" aria-selected="false" tabindex="-1" data-workspace-tab="results">Check results</button>
+      </div>
+      <div id="workspace" class="workspace" tabindex="-1">
+        <section id="source-panel" class="source-panel" aria-labelledby="source-heading">
+          <h2 id="source-heading">Sessions and resources</h2>
+          <form id="agenda-form" novalidate autocomplete="off">
+            <div class="field transition-field">
+              <label for="transition">Short room transition threshold (minutes)</label>
+              <input id="transition" type="text" inputmode="numeric" maxlength="3" value="10" aria-describedby="transition-help">
+              <p id="transition-help" class="help">An integer from 0 to 120; default 10. No transition is needed within one room. This does not estimate walking time.</p>
+            </div>
+            <section class="editor-section" aria-labelledby="rooms-heading">
+              <div class="section-heading"><h3 id="rooms-heading">Rooms</h3><span id="rooms-count" class="data">0 / 20</span></div>
+              <p class="help">Names use at most 80 characters. Removing a room unassigns it from the affected sessions.</p>
+              <div id="rooms-list"></div>
+              <button id="add-rooms" type="button">Add room</button>
+            </section>
+            <section class="editor-section" aria-labelledby="speakers-heading">
+              <div class="section-heading"><h3 id="speakers-heading">Speakers</h3><span id="speakers-count" class="data">0 / 100</span></div>
+              <p class="help">Names use at most 80 characters. A whole name is one speaker, including commas. Removing a speaker unassigns them from sessions.</p>
+              <div id="speakers-list"></div>
+              <button id="add-speakers" type="button">Add speaker</button>
+            </section>
+            <section class="editor-section" aria-labelledby="sessions-heading">
+              <div class="section-heading"><h3 id="sessions-heading">Sessions</h3><span id="session-count" class="data">0 / 200</span></div>
+              <p class="help">Unique ID: 1–32 ASCII letters, digits, or . _ -. Titles use at most 160 characters. Assign 0–5 distinct speakers per session. Times use HH:mm.</p>
+              <div id="session-list"></div>
+              <button id="add-session" type="button">Add session</button>
+            </section>
+            <section id="validation" class="validation" hidden tabindex="-1" aria-labelledby="validation-heading">
+              <h3 id="validation-heading">Correct the fields, then check again</h3>
+              <p>All sessions have been kept. The agenda has not been analyzed.</p>
+              <ul id="validation-list"></ul>
+            </section>
+            <div class="actionbar">
+              <button id="check" class="primary" type="submit">Check agenda</button>
+              <button id="cancel" type="button" disabled>Cancel check</button>
+            </div>
+          </form>
+          <div class="clear-area">
+            <button id="clear" class="quiet" type="button">Clear page data</button>
+            <section id="clear-confirm" hidden aria-labelledby="clear-heading">
+              <h3 id="clear-heading">Clear all sessions and resources?</h3>
+              <p>The page’s input, results, and download links will be cleared. This cannot be undone. Remove previously downloaded files yourself.</p>
+              <div class="actionbar"><button id="keep-data" type="button">Keep data</button><button id="confirm-clear" class="danger" type="button">Clear all data</button></div>
+            </section>
+          </div>
+        </section>
+        <section id="results-panel" class="results-panel" aria-labelledby="results-heading">
+          <h2 id="results-heading">Check results</h2>
+          <div id="progress-area" hidden>
+            <p>Checking assigned resources…</p>
+            <label for="pair-progress" id="progress-count">0 / 0 · Session pairs checked</label>
+            <progress id="pair-progress" value="0" max="1"></progress>
+            <p class="help">No partial findings are shown. Cancelling keeps your input.</p>
+            <button id="cancel-results" type="button" disabled>Cancel check</button>
+          </div>
+          <div id="result-empty" class="empty-result">
+            <p id="result-empty-message">Not checked yet</p>
+            <p class="muted">Create rooms, speakers, and sessions, then check the agenda. Every conflict pair and each resource’s full schedule will appear here.</p>
+          </div>
+          <div id="result-data" hidden>
+            <dl id="summary" class="summary"></dl>
+            <p id="coverage-notice" class="notice" hidden></p>
+            <p id="result-explanation"></p>
+            <section class="findings" aria-labelledby="overlap-heading"><h3 id="overlap-heading">! Overlap errors</h3><ol id="overlap-list" class="pair-list"></ol></section>
+            <section class="findings" aria-labelledby="warning-heading"><h3 id="warning-heading">! Short transition warnings</h3><ol id="warning-list" class="pair-list"></ol></section>
+            <section class="schedules" aria-labelledby="schedules-heading">
+              <h3 id="schedules-heading">Agenda schedules</h3>
+              <div class="resource-tabs" role="tablist" aria-label="Schedule grouping">
+                <button type="button" id="room-tab" role="tab" aria-controls="resource-content" aria-selected="true" data-resource-tab="rooms">By room</button>
+                <button type="button" id="speaker-tab" role="tab" aria-controls="resource-content" aria-selected="false" tabindex="-1" data-resource-tab="speakers">By speaker</button>
+                <button type="button" id="all-tab" role="tab" aria-controls="resource-content" aria-selected="false" tabindex="-1" data-resource-tab="all">All sessions</button>
+              </div>
+              <div id="resource-content" role="tabpanel" tabindex="0" aria-labelledby="room-tab"></div>
+            </section>
+          </div>
+          <div class="downloads">
+            <h3>Download corrections and schedules</h3>
+            <p class="help">TXT is a readable list; JSON preserves the full structure. The combined limit is 2 MiB; reports are never truncated. Check again after editing input.</p>
+            <div class="actionbar"><button id="download-txt" type="button" disabled>Download TXT</button><button id="download-json" type="button" disabled>Download JSON</button></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <section class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">Scope and data handling</h2>
+      <p>Check 1–200 sessions, up to 20 rooms and 100 speakers, within one local civil day and time zone. Every session pair is compared. The tool does not reschedule sessions, estimate walking distance, or assign staff. Midnight crossings, time zone conversions, and daylight saving changes are not supported.</p>
+      <p>Input and reports stay in this page’s memory. They are not uploaded, saved to browser storage, or put in the URL. A local file is created only when you press Download. Closing, leaving, or switching language clears the page, so download first. Clearing cannot remove downloaded files or securely erase memory.</p>
+      <h2>Frequently asked questions</h2>
+      <details><summary>Do back-to-back sessions count as overlapping?</summary><p>No. If one ends at 10:00 and the next starts at 10:00, their half-open intervals do not share a minute.</p></details>
+      <details><summary>What happens when a room or speaker is blank?</summary><p>It is marked unassigned. Conflicts for that resource cannot be determined; the tool does not report it as conflict-free.</p></details>
+      <details><summary>Will a transition warning duplicate a speaker clash?</summary><p>No. An overlapping pair appears once with all error reasons. A transition warning is only for a non-overlapping pair with a shared speaker and a gap below the configured threshold.</p></details>
+    </section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote · Local candidate preview</span><a href="https://glossquote.com/en/index.html">Back to tools</a></footer>
+</body>
+</html>

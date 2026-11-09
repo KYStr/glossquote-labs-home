@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="本機播放訪談或課程錄音，按一下記下目前時間與重點，點筆記回跳，下載或重新匯入筆記。">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; media-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>錄音時間戳筆記｜Gloss Tools</title>
+  <link rel="stylesheet" href="./css/app.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a href="https://glossquote.com/index.html">Gloss Tools</a><span class="product-name">錄音時間戳筆記</span><span class="badge">本地候選</span></header>
+  <nav class="language" aria-label="語言"><a href="./en/index.html" lang="en" aria-describedby="language-warning">English</a><span id="language-warning">切換語言會離開本頁，尚未匯出的筆記與播放工作區會遺失。</span></nav>
+  <main>
+    <h1>邊聽錄音，邊記下時間戳</h1>
+    <p class="intro">選一段本機錄音，在重點發生的當下記下文字。</p>
+    <p class="privacy">音訊與筆記只在本頁記憶體處理，不上傳、不自動儲存。重新整理或離開前請先匯出。</p>
+    <noscript><p>請啟用 JavaScript 才能使用本機工作區。</p></noscript>
+    <section class="source-area" aria-labelledby="source-heading">
+      <h2 id="source-heading">音訊來源</h2>
+      <label for="audio-file">選擇音訊</label>
+      <input id="audio-file" type="file" accept="audio/*" aria-describedby="audio-help error">
+      <p class="help" id="audio-help">一個本機檔案，最多 64 MiB。播放能力取決於瀏覽器；本工具不轉檔、不轉錄。</p>
+      <p id="source-info" class="source-info">尚未附加音訊</p>
+      <div id="metadata" hidden>
+        <form id="metadata-form" novalidate>
+          <div class="metadata-fields">
+            <div><label for="source-title">來源標題</label><input id="source-title" type="text" aria-describedby="metadata-help error" autocomplete="off"></div>
+            <div><label for="source-duration">來源時間軸長度</label><input id="source-duration" class="time-input" type="text" inputmode="text" aria-describedby="metadata-help error" autocomplete="off"></div>
+          </div>
+          <p id="metadata-help" class="help">標題最多 200 個 UTF-16 字元；長度格式 HH:MM:SS.mmm（小時 2–8 位），不得早於任何筆記。修改後按儲存。</p>
+          <button id="save-metadata" type="submit">儲存來源資訊</button>
+        </form>
+        <p id="duration-info" class="help"></p>
+        <p id="duration-mismatch" class="notice" hidden>來源時間軸與實際音訊長度不同。超出音訊範圍的筆記會保留，但無法回跳。</p>
+        <button id="adopt-duration" type="button" hidden>採用目前音訊長度</button>
+      </div>
+      <audio id="audio" controls preload="metadata" aria-label="本機音訊播放器"></audio>
+      <p id="playback-state" role="status">選擇音訊或匯入筆記以開始</p>
+      <div class="capture-bar"><button id="capture" class="primary" type="button" disabled>記下此刻</button><span>目前位置 <output id="position" class="time">—</output></span></div>
+      <p id="capture-help" class="help">先載入音訊，再用播放器的播放控制開始聆聽。回跳只移動位置，不自動播放。</p>
+      <p id="over-timeline" class="notice" hidden>播放位置超過來源時間軸長度。請先明確採用目前音訊長度，再記下此刻。</p>
+      <section id="editor" class="editor" aria-labelledby="editor-heading" hidden>
+        <h3 id="editor-heading">新筆記</h3><p id="draft-time" class="time"></p>
+        <form id="note-form" novalidate>
+          <label for="note-text">筆記文字</label><textarea id="note-text" rows="4" aria-describedby="note-help error"></textarea>
+          <p id="note-help" class="help">每筆最多 2,000 個 UTF-16 字元；文字需包含非空白內容。草稿不會匯出。</p>
+          <div class="actions"><button id="save-note" class="primary" type="submit">儲存筆記</button><button id="cancel-editor" type="button">取消</button></div>
+        </form>
+      </section>
+      <p id="error" class="error" role="alert" hidden></p>
+      <p id="feedback" role="status" class="help"></p>
+      <div class="file-actions"><div><label for="import-file">匯入 JSON</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="import-help error"><p id="import-help" class="help">最多 4 MiB。先檢查與預覽，再確認替換；不會從檔案中載入音訊。</p></div><button id="clear" class="quiet" type="button" disabled>清除全部</button></div>
+    </section>
+    <section id="confirmation" class="confirmation" aria-labelledby="confirmation-heading" tabindex="-1" hidden>
+      <h2 id="confirmation-heading"></h2><p id="confirmation-detail"></p><p id="confirmation-summary" class="plain-text"></p><p id="confirmation-mismatch" class="notice" hidden></p>
+      <div id="confirmation-actions" class="actions"></div>
+    </section>
+    <section class="notes-area" aria-labelledby="notes-heading">
+      <h2 id="notes-heading" tabindex="-1">時間戳筆記</h2><p id="quota" class="help">筆數 0 / 1,000 · UTF-8 文字量 0 / 1,048,576 bytes</p>
+      <p id="empty-notes">還沒有筆記。載入音訊後按「記下此刻」，或匯入先前的 JSON 筆記。</p><ol id="notes"></ol>
+    </section>
+    <section class="export-area" aria-labelledby="export-heading"><h2 id="export-heading">帶走筆記</h2><p class="help">Markdown 與 JSON 各最多 4 MiB，合計最多 8 MiB。JSON 可重新匯入；兩者均不含音訊。</p><div class="actions"><button id="export-markdown" type="button" disabled>下載 Markdown</button><button id="export-json" type="button" disabled>下載 JSON</button></div></section>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">使用說明</h2><details><summary>會把錄音上傳嗎？</summary><p>不會，候選只從本機選取檔案並用瀏覽器播放。</p></details><details><summary>所有音訊都能播放嗎？</summary><p>不一定；能否解碼取決於目前瀏覽器支援的格式，本工具不轉檔。</p></details><details><summary>筆記會自動轉錄嗎？</summary><p>不會，所有文字都由你輸入。</p></details><details><summary>匯出檔會包含音訊嗎？</summary><p>不會，JSON 僅含來源標題、長度 metadata 與筆記。</p></details><details><summary>匯出有大小限制嗎？</summary><p>Markdown 和 JSON 各最多 4 MiB；超出時不會建立部分下載檔。</p></details><details><summary>語言切換會保留目前工作嗎？</summary><p>不會；先匯出，否則切換後工作區會遺失。</p></details></section>
+  </main>
+  <footer><p>M1 本地候選：尚未完成真實瀏覽器、codec 與輔助科技驗收。</p><a href="https://glossquote.com/index.html">返回 Gloss Tools 首頁</a><span>Gloss Tools by GlossQuote</span></footer>
+</body>
+</html>
