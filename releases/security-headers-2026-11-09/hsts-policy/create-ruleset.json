@@ -1,0 +1,23 @@
+{
+  "name": "GlossQuote Labs audited HTTPS tool response headers",
+  "description": "Response header policy for GlossQuote Labs SEC-02",
+  "kind": "zone",
+  "phase": "http_response_headers_transform",
+  "rules": [
+    {
+      "ref": "glossquote_labs_sec02_https_hsts",
+      "description": "Set host-only HSTS for 39 audited GlossQuote tool hosts",
+      "action": "rewrite",
+      "expression": "(ssl and http.host in {\"agenda.glossquote.com\" \"bilingual-subs.glossquote.com\" \"bookmarks.glossquote.com\" \"boxfit.glossquote.com\" \"checksum.glossquote.com\" \"colors.glossquote.com\" \"csv.glossquote.com\" \"cuts.glossquote.com\" \"date.glossquote.com\" \"decide.glossquote.com\" \"diff.glossquote.com\" \"duplicates.glossquote.com\" \"file-bundles.glossquote.com\" \"focus.glossquote.com\" \"grades.glossquote.com\" \"groups.glossquote.com\" \"hours.glossquote.com\" \"image-pdf.glossquote.com\" \"images.glossquote.com\" \"json.glossquote.com\" \"labels.glossquote.com\" \"locale-check.glossquote.com\" \"media.glossquote.com\" \"meet.glossquote.com\" \"picklist.glossquote.com\" \"quote.glossquote.com\" \"reading.glossquote.com\" \"reconcile.glossquote.com\" \"restock.glossquote.com\" \"rota.glossquote.com\" \"shopping-list.glossquote.com\" \"split.glossquote.com\" \"subscriptions.glossquote.com\" \"subtitles.glossquote.com\" \"templates.glossquote.com\" \"text.glossquote.com\" \"tiles.glossquote.com\" \"units.glossquote.com\" \"urls.glossquote.com\"})",
+      "action_parameters": {
+        "headers": {
+          "strict-transport-security": {
+            "operation": "set",
+            "value": "max-age=31536000"
+          }
+        }
+      },
+      "enabled": true
+    }
+  ]
+}

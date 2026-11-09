@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>路由樣式交疊檢查｜Gloss Tools</title>
+<meta name="description" content="API 維護者新增一條靜態或參數路由前，想找同一方法下可能同時匹配的既有樣式，拿到實際可複算的 path witness。">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <nav aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <a href="../../">回 Gloss Tools 首頁</a>
+  </nav>
+</header>
+<main>
+  <h1>路由樣式交疊檢查</h1>
+  <p class="intro">API 維護者新增一條靜態或參數路由前，想找同一方法下可能同時匹配的既有樣式，拿到實際可複算的 path witness。</p>
+  <p class="draft-notice">切換語言或離開本頁會失去目前草稿。</p>
+
+  <div class="layout">
+    <section class="input-col" aria-labelledby="input-heading">
+      <h2 id="input-heading" hidden>輸入</h2>
+      <div class="field">
+        <label for="routes">方法與路由樣式（Tab 分隔）</label>
+        <p class="help" id="routes-help">每列一條路由：HTTP 方法、一個 Tab、再接路由樣式。例如 GET、一個 Tab、/users/:id。</p>
+        <textarea id="routes" rows="12" aria-describedby="routes-help" spellcheck="false"></textarea>
+      </div>
+
+      <details class="syntax">
+        <summary>允許的參數與尾段語法</summary>
+        <p>路由樣式以 / 開頭，最多 8 段，不可有尾斜線。literal 只能用小寫字母、數字、- 與 _（例如 users、new、v2）。參數寫成 :名稱（例如 :id），尾段寫成 *名稱且只能放在最後一段（例如 *rest，會匹配至少一段）。同一樣式內參數與尾段名稱不可重複。方法只接受大寫 GET、HEAD、POST、PUT、PATCH、DELETE、OPTIONS；GET 與 HEAD 不會互相交疊。</p>
+      </details>
+
+      <div class="actions">
+        <button type="button" id="run" class="primary">尋找交疊路由</button>
+        <button type="button" id="example">載入範例</button>
+        <button type="button" id="reset">重設</button>
+        <button type="button" id="cancel" hidden>取消</button>
+        <button type="button" id="download" hidden>下載報告</button>
+      </div>
+
+      <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未執行。請輸入路由或載入範例。</p>
+      <p class="error" id="error" role="alert" hidden></p>
+      <p class="notice" id="notice" aria-live="polite"></p>
+    </section>
+
+    <section class="results results-col" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">相交路由與範例路徑</h2>
+      <p class="hint">每一列都是一組可能同時匹配的路由，witness 是同時符合兩者的實際路徑。</p>
+      <p id="summary"></p>
+      <p id="no-overlaps" hidden>沒有交疊路由：同一方法的任兩條樣式都沒有共同可匹配的路徑。</p>
+      <div class="table-wrap" id="table-wrap" tabindex="0" aria-label="相交路由表">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">方法</th>
+              <th scope="col">第一條路由</th>
+              <th scope="col">第二條路由</th>
+              <th scope="col">範例路徑</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <button type="button" id="prev-page" hidden>上一頁</button>
+        <span id="page-label" aria-live="polite" hidden></span>
+        <button type="button" id="next-page" hidden>下一頁</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這會說哪條路由勝出嗎？</dt>
+      <dd>不會。報告提供同時符合兩個樣式的例子。優先順序由你的框架決定。</dd>
+      <dt>尾段可以吃掉零段嗎？</dt>
+      <dd>不可以。這個語法至少要匹配一段。</dd>
+    </dl>
+  </section>
+</main>
+<footer>
+  <p>本工具只在本機計算，不上傳、不儲存你的輸入。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

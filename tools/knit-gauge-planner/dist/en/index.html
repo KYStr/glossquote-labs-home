@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knit Gauge Pattern Planner | Gloss Tools</title>
+<meta name="description" content="Use your measured swatch and repeat counts to compare compatible stitch and row totals.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="../index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../en/">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching languages leaves this page; your draft will not be kept.</span></p>
+</header>
+<main>
+  <h1>Knit Gauge Pattern Planner</h1>
+  <p class="intro">Enter the stitches, rows and measured width and height of your swatch, then the target width and height, edge stitches per side and pattern repeats; press “Find stitch and row counts” to see the nearest compatible whole stitch and row totals on each side of the target.</p>
+
+  <form id="gauge-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Swatch</legend>
+          <p class="help">Count the stitches and rows on one rectangular swatch and measure its width and height.</p>
+          <div class="fields">
+            <div class="field">
+              <label for="field-swatchStitches">Swatch stitches (sts)</label>
+              <input type="text" id="field-swatchStitches" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–1000 sts</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchWidthMm">Swatch width (mm)</label>
+              <input type="text" id="field-swatchWidthMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–5000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchRows">Swatch rows (rows)</label>
+              <input type="text" id="field-swatchRows" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–1000 rows</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchHeightMm">Swatch height (mm)</label>
+              <input type="text" id="field-swatchHeightMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–5000 mm</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Target and pattern</legend>
+          <p class="help">The target is the finished width and height you want. Use 1 for a repeat with no restriction.</p>
+          <div class="fields">
+            <div class="field">
+              <label for="field-targetWidthMm">Target width (mm)</label>
+              <input type="text" id="field-targetWidthMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–10000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-targetHeightMm">Target height (mm)</label>
+              <input type="text" id="field-targetHeightMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–10000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-edgeEach">Edge stitches per side (sts)</label>
+              <input type="text" id="field-edgeEach" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+              <p class="hint">0–200 sts, default 0</p>
+            </div>
+            <div class="field">
+              <label for="field-repeatStitches">Stitch repeat (sts)</label>
+              <input type="text" id="field-repeatStitches" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+              <p class="hint">1–200, default 1</p>
+            </div>
+            <div class="field">
+              <label for="field-repeatRows">Row repeat (rows)</label>
+              <input type="text" id="field-repeatRows" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+              <p class="hint">1–200, default 1</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="find" class="primary">Find stitch and row counts</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (about 5 mm per stitch, 2 edge stitches per side, stitch repeat 6); press “Find stitch and row counts” after loading to calculate.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Compatible stitch and row counts"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

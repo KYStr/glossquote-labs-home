@@ -1,0 +1,68 @@
+diff --git a/tools/gift-exchange-match/BUILD-MANIFEST.json b/tools/gift-exchange-match/BUILD-MANIFEST.json
+index b230f7c..ca109f3 100644
+--- a/tools/gift-exchange-match/BUILD-MANIFEST.json
++++ b/tools/gift-exchange-match/BUILD-MANIFEST.json
+@@ -3,8 +3,8 @@
+   "files": [
+     {
+       "path": "en/index.html",
+-      "bytes": 3086,
+-      "sha256": "570725869a3b2ddc56d57b1037400bf2cf2a4748325efc4b4c0b76dd78adf7c2"
++      "bytes": 3083,
++      "sha256": "d7bb6e60d6aad72b8fd6e0a7e4a201998deac61a6b04a1fc652c66480a0419d6"
+     },
+     {
+       "path": "index.html",
+diff --git a/tools/gift-exchange-match/dist/en/index.html b/tools/gift-exchange-match/dist/en/index.html
+index 442e0e4..f43759b 100644
+--- a/tools/gift-exchange-match/dist/en/index.html
++++ b/tools/gift-exchange-match/dist/en/index.html
+@@ -8,7 +8,7 @@
+ <meta name="robots" content="noindex, nofollow">
+ <link rel="canonical" href="./index.html">
+ <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+-<link rel="alternate" hreflang="en" href="./en/index.html">
++<link rel="alternate" hreflang="en" href="./index.html">
+ <link rel="alternate" hreflang="x-default" href="../index.html">
+ <link rel="stylesheet" href="../styles/app.css">
+ </head>
+diff --git a/tools/gift-exchange-match/public/en/index.html b/tools/gift-exchange-match/public/en/index.html
+index 442e0e4..f43759b 100644
+--- a/tools/gift-exchange-match/public/en/index.html
++++ b/tools/gift-exchange-match/public/en/index.html
+@@ -8,7 +8,7 @@
+ <meta name="robots" content="noindex, nofollow">
+ <link rel="canonical" href="./index.html">
+ <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+-<link rel="alternate" hreflang="en" href="./en/index.html">
++<link rel="alternate" hreflang="en" href="./index.html">
+ <link rel="alternate" hreflang="x-default" href="../index.html">
+ <link rel="stylesheet" href="../styles/app.css">
+ </head>
+diff --git a/tools/gift-exchange-match/test/page-links.test.mjs b/tools/gift-exchange-match/test/page-links.test.mjs
+new file mode 100644
+index 0000000..f08903b
+--- /dev/null
++++ b/tools/gift-exchange-match/test/page-links.test.mjs
+@@ -0,0 +1,21 @@
++import assert from 'node:assert/strict';
++import { readFile } from 'node:fs/promises';
++import test from 'node:test';
++
++test('canonical and alternate links resolve to the intended language pages', async () => {
++  const zh = new URL('../public/index.html', import.meta.url);
++  const en = new URL('../public/en/index.html', import.meta.url);
++
++  for (const page of [zh, en]) {
++    const html = await readFile(page, 'utf8');
++    const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)">/g)];
++    assert.deepEqual(canonicals.map(([, href]) => new URL(href, page).href), [page.href]);
++    const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)];
++    assert.equal(alternates.length, 3);
++    assert.deepEqual(Object.fromEntries(alternates.map(([, lang, href]) => [lang, new URL(href, page).href])), {
++      'zh-Hant': zh.href,
++      en: en.href,
++      'x-default': zh.href,
++    });
++  }
++});

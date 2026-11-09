@@ -1,0 +1,5 @@
+# User update — direct delegated repairs
+
+On 2026-11-09 after this milestone began, the user explicitly removed the requirement to return fixes to original author chats and instructed the primary to delegate repairs to a new subagent configured as gpt-6.1-sol with medium reasoning, independently verify, then push GitHub. This current direction supersedes the original-author-only preference for this work.
+
+Preserve historical owners, source snapshots and review records rather than forging their acknowledgements. Repairs are new maintenance work under the primary's verified claim. Use isolated copies and separately recorded corrected versions; do not rewrite immutable sources/legacy snapshots. Include confirmed audit defects (file-bundler framing headers and host-specific HSTS) within this maintenance scope and record actual changed paths. No deployment bypass, no desktop/browser focus interference, no credentials or persistent Git/system changes. Product acceptance is still separate from a safe public inspection release.

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="工程師維護少量 build modules 時，要看哪一條直接依賴已有間接路徑可覆蓋，並找到阻止任何排序的循環。">
+<title>模組依賴冗餘檢查｜Gloss Tools</title>
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <a href="../../">回首頁</a>
+  <a href="en/index.html" lang="en">English</a>
+  <span class="lang-note">切換語言或離開頁面會失去目前草稿。</span>
+</header>
+<main>
+  <h1>模組依賴冗餘檢查</h1>
+  <p class="lede">工程師維護少量 build modules 時，要看哪一條直接依賴已有間接路徑可覆蓋，並找到阻止任何排序的循環。資料只保留在目前頁面草稿，不會上傳或儲存。</p>
+  <div class="layout">
+    <section class="panel" id="audit-form" aria-label="輸入">
+      <div class="field">
+        <label for="modules">模組名稱</label>
+        <p class="help" id="modules-help">每列一個模組，最多 100 個。名稱以英文字母開頭，僅含英文字母、數字、底線、連字號或句點，最多 32 字元；大小寫視為不同模組。</p>
+        <textarea id="modules" rows="8" aria-describedby="modules-help" spellcheck="false"></textarea>
+      </div>
+      <div class="field">
+        <label for="edges">前置 &gt; 後續（不含空格）</label>
+        <p class="help" id="edges-help">每列一條邊，格式為「前置&gt;後續」，兩端都必須是已登記的模組，不可重複，最多 400 條。空白表示沒有邊。自環是合法輸入，但會被報為循環。</p>
+        <textarea id="edges" rows="8" aria-describedby="edges-help" spellcheck="false"></textarea>
+      </div>
+      <details>
+        <summary>格式說明</summary>
+        <p>模組最多 3,300 字元、100 列；邊最多 26,400 字元、400 列。輸入尾端的一個換行會被忽略。驗證順序：先檢查大小與字元，再檢查空內容、列數、名稱格式與重名；邊依序檢查格式、未知端點與重邊。第一個錯誤會指出欄位與列號。</p>
+        <p>檢查結果會顯示依賴層（同一層的模組彼此沒有依賴先後）、每條冗餘邊的替代路徑，或阻止排序的循環。報告下載為 JSON 檔案。</p>
+      </details>
+      <div class="actions">
+        <button type="button" id="audit" class="primary">檢查依賴邊</button>
+        <button type="button" id="cancel" hidden>取消</button>
+        <button type="button" id="example">載入範例</button>
+        <button type="button" id="reset">重設</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite">尚未輸入。請輸入模組與依賴邊，或載入範例。</p>
+      <div class="error" id="error" role="alert" hidden></div>
+    </section>
+    <section class="panel" id="results" aria-label="檢查結果" hidden></section>
+  </div>
+  <div class="actions" style="margin-top: 1rem;">
+    <button type="button" id="download" hidden disabled>下載報告</button>
+  </div>
+  <section class="faq" aria-label="常見問題">
+    <h2>常見問題</h2>
+    <details>
+      <summary>替代路徑出現就可以刪邊嗎？</summary>
+      <p>它只證明依賴關係仍可達，模組的其他語意由維護者判斷。</p>
+    </details>
+    <details>
+      <summary>循環會顯示部分建置層嗎？</summary>
+      <p>先修正列出的循環，再重新計算。</p>
+    </details>
+  </section>
+  <footer>
+    <p>本工具完全在你的瀏覽器內運算，不傳送、不儲存任何輸入。切換語言或離開頁面會失去目前草稿。</p>
+  </footer>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

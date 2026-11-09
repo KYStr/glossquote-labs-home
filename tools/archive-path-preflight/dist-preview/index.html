@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="發布工程師準備把一組相對檔名交給打包流程，先找路徑逃逸、保守跨平台命名衝突，以及檔案占用了其他成員的祖先目錄。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>封存成員路徑預檢｜Gloss Tools</title>
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="spacer"></span>
+  <p class="draft-note">切換語言或離開頁面會遺失草稿。</p>
+  <a href="en/index.html" lang="en">English</a>
+</header>
+<main>
+  <h1>封存成員路徑預檢</h1>
+  <p class="lede">發布工程師準備把一組相對檔名交給打包流程，先找路徑逃逸、保守跨平台命名衝突，以及檔案占用了其他成員的祖先目錄。只檢查你貼入的清單，不讀取壓縮檔、不改名、不上傳。</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">輸入</h2>
+      <label for="entries-input">封存 manifest（F 或 D、Tab、路徑）</label>
+      <p class="help" id="entries-help">每列一個成員：先寫 F（檔案）或 D（目錄），接一個 Tab，再寫相對路徑。最多 500 列；路徑 1–240 個字元、最多 16 段。</p>
+      <textarea id="entries-input" rows="12" aria-describedby="entries-help" spellcheck="false"></textarea>
+
+      <details class="rules" id="rules">
+        <summary>可攜式相對路徑規則</summary>
+        <ul>
+          <li>每列：F 或 D，接一個 Tab，再接路徑。路徑沒有尾斜線，目錄由種類表示。</li>
+          <li>路徑 1–240 個字元、最多 16 段；每段 1–64 個字元，只接受 <code>A–Z a–z 0–9 . _ -</code>。</li>
+          <li>不接受絕對路徑、磁碟代號、反斜線、<code>.</code> 或 <code>..</code> 段、空段、尾點。</li>
+          <li>保留設備名不接受：<code>CON PRN AUX NUL COM1–COM9 LPT1–LPT9</code>（不分大小寫，副檔名前比對）。</li>
+          <li>比較時以 ASCII 小寫為準：大小寫不同的同名路徑視為衝突。</li>
+          <li>同一成員出現兩次以上，或檔案占用了其他成員的祖先目錄，都是衝突。</li>
+          <li>不讀取壓縮檔、不解壓、不改名、不產生修復命令。</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">預檢成員路徑</button>
+        <button type="button" id="example-button">載入範例</button>
+        <button type="button" id="reset-button">重設</button>
+        <button type="button" id="cancel-button" hidden>取消</button>
+        <button type="button" id="download-button" hidden>下載報告</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <p id="status-text">請貼入 manifest，或載入範例。</p>
+      </div>
+      <p class="example-note" id="example-note" hidden>已載入範例，這是示範資料，不是你的檔案。</p>
+      <div class="error-box" id="error-box" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="result-section" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">不合規列與目錄樹衝突</h2>
+      <p id="result-summary"></p>
+
+      <h3 id="unsafe-heading">不合規列</h3>
+      <p class="empty-note" id="unsafe-empty" hidden>沒有不合規列。</p>
+      <div class="table-region" id="unsafe-region" role="region" aria-labelledby="unsafe-heading" tabindex="0">
+        <table id="unsafe-table">
+          <caption>不合規列：每列只報第一個不合規原因</caption>
+          <thead>
+            <tr><th scope="col">列</th><th scope="col">代碼</th><th scope="col">段</th><th scope="col">說明</th></tr>
+          </thead>
+          <tbody id="unsafe-table-body"></tbody>
+        </table>
+      </div>
+      <div class="pager" id="unsafe-pager" hidden>
+        <button type="button" id="unsafe-prev">上一頁</button>
+        <p id="unsafe-page-info"></p>
+        <button type="button" id="unsafe-next">下一頁</button>
+      </div>
+
+      <h3 id="conflicts-heading">目錄樹衝突</h3>
+      <p class="empty-note" id="conflicts-empty" hidden>沒有目錄樹衝突。</p>
+      <div class="table-region" id="conflicts-region" role="region" aria-labelledby="conflicts-heading" tabindex="0">
+        <table id="conflicts-table">
+          <caption>目錄樹衝突：依正規化路徑排序</caption>
+          <thead>
+            <tr><th scope="col">種類</th><th scope="col">正規化路徑</th><th scope="col">來源列</th><th scope="col">說明</th></tr>
+          </thead>
+          <tbody id="conflicts-table-body"></tbody>
+        </table>
+      </div>
+      <div class="pager" id="conflicts-pager" hidden>
+        <button type="button" id="conflicts-prev">上一頁</button>
+        <p id="conflicts-page-info"></p>
+        <button type="button" id="conflicts-next">下一頁</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>預檢通過能保證安全解壓嗎？</dt>
+      <dd>它只檢查這份清單與列出的命名政策。</dd>
+      <dt>為何不同大小寫也衝突？</dt>
+      <dd>保守的可攜政策以 ASCII 小寫比較。</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p>本工具完全在瀏覽器本機運作，不上傳、不儲存輸入，離開頁面即丟棄草稿。</p>
+  </footer>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

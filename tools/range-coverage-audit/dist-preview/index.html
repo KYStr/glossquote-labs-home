@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>數值區間覆蓋檢查｜Gloss Tools</title>
+<meta name="description" content="資料工程師在切分資料處理責任、掃描門檻或連續索引區段前，想核對整個定義域內有沒有漏段或重複工作，並指回原列。">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="spacer"></span>
+  <span class="status-badge" id="status-badge" data-state="empty">尚未檢查</span>
+  <nav aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <a href="../../">首頁</a>
+  </nav>
+</header>
+<main>
+  <h1>數值區間覆蓋檢查</h1>
+  <p class="lede">資料工程師在切分資料處理責任、掃描門檻或連續索引區段前，想核對整個定義域內有沒有漏段或重複工作，並指回原列。所有計算都在本機完成，資料不會離開這個頁面；切換語言或離開頁面會失去草稿。</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">輸入</h2>
+      <div id="audit-form">
+        <div class="domain-row">
+          <div class="field">
+            <label for="domain-start">覆蓋域起點</label>
+            <p class="help" id="domain-start-help">十進數，最多 3 位小數。</p>
+            <input type="text" id="domain-start" value="0" inputmode="decimal" autocomplete="off"
+              aria-describedby="domain-start-help domain-start-error" aria-errormessage="domain-start-error">
+            <p class="field-error" id="domain-start-error"></p>
+          </div>
+          <div class="field">
+            <label for="domain-end">覆蓋域終點</label>
+            <p class="help" id="domain-end-help">十進數，最多 3 位小數，大於起點。</p>
+            <input type="text" id="domain-end" value="10" inputmode="decimal" autocomplete="off"
+              aria-describedby="domain-end-help domain-end-error" aria-errormessage="domain-end-error">
+            <p class="field-error" id="domain-end-error"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="intervals">區間起訖（Tab 分隔）</label>
+          <p class="help" id="intervals-help">每列一個區間：「起點 Tab 終點」，半開區間 [起點, 終點)，右端不含。最多 200 列。</p>
+          <textarea id="intervals" rows="10" spellcheck="false"
+            aria-describedby="intervals-help intervals-error" aria-errormessage="intervals-error"></textarea>
+          <p class="field-error" id="intervals-error"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="run-btn">檢查區間覆蓋</button>
+          <button type="button" id="load-example-btn">載入範例</button>
+          <button type="button" id="reset-btn">重設</button>
+          <button type="button" id="cancel-btn" hidden>取消</button>
+          <button type="button" id="download-btn" hidden>下載報告</button>
+        </div>
+      </div>
+      <p class="notice info" id="example-note" hidden>已載入範例（同時有一個重疊及一個空段），請按「檢查區間覆蓋」執行。</p>
+      <div id="status-text" role="status" aria-live="polite" aria-busy="false">請輸入覆蓋域與區間，或載入範例。</div>
+      <div class="notice error" id="error-box" role="alert" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">缺口、覆蓋與重疊來源</h2>
+      <p class="empty-state" id="empty-state">還沒有結果。輸入區間並執行檢查後，這裡會先顯示摘要，再列出每個區段的來源列。</p>
+      <div id="results" hidden>
+        <div class="summary-grid">
+          <div class="summary-card"><div class="value" id="summary-covered">—</div><div class="label">已覆蓋長度</div></div>
+          <div class="summary-card"><div class="value" id="summary-uncovered">—</div><div class="label">缺口長度</div></div>
+          <div class="summary-card"><div class="value" id="summary-overlapped">—</div><div class="label">重疊長度</div></div>
+        </div>
+        <p class="help">長度單位與輸入相同；區間右端不含。重疊長度只計一次，不因深度重複相加。</p>
+        <div class="table-scroll" id="spans-region" aria-label="區段明細表">
+          <table>
+            <thead>
+              <tr><th scope="col" class="num">起點</th><th scope="col" class="num">終點</th><th scope="col" class="num">深度</th><th scope="col">來源列</th></tr>
+            </thead>
+            <tbody id="spans-body"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <button type="button" id="prev-page">上一頁</button>
+          <span id="page-info"></span>
+          <button type="button" id="next-page">下一頁</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <details>
+    <summary>格式與限制</summary>
+    <div class="panel">
+      <ul>
+        <li>數字格式：<code>-?(0|[1-9][0-9]{0,9})(\.[0-9]{1,3})?</code>，無前後空白、加號或指數，範圍在 -1,000,000,000 至 1,000,000,000 之間。</li>
+        <li>區間文字最多 16,384 個字元、200 列；每列恰好是「起點 Tab 終點」，且起點小於終點、不得超出覆蓋域（不會自動裁切）。</li>
+        <li>區間為半開 <code>[起點, 終點)</code>：相接的端點不重疊，同一區間出現兩次時深度為 2。</li>
+        <li>報告為 <code>range-coverage-audit-report.json</code>，上限 2,097,152 bytes；超過上限時不提供下載。</li>
+        <li>輸入不會上傳、不會儲存、不會出現在網址或紀錄中；離開頁面即丟棄。</li>
+      </ul>
+    </div>
+  </details>
+
+  <section aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl class="faq">
+      <dt>相接端點算重疊嗎？</dt>
+      <dd>區間右端不含，兩段相接不重疊。</dd>
+      <dt>三段重合會乘三嗎？</dt>
+      <dd>該區段長度只計一次，深度另列 3。</dd>
+    </dl>
+  </section>
+</main>
+<footer>
+  <p>本工具為預覽版本：計算在本機進行，不傳送、不儲存任何輸入。切換語言或離開頁面會失去草稿。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

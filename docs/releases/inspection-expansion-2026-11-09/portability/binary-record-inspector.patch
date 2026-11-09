@@ -1,0 +1,13 @@
+diff --git a/tools/binary-record-inspector/scripts/check-generated.mjs b/tools/binary-record-inspector/scripts/check-generated.mjs
+index 99a4477..0a1e65c 100644
+--- a/tools/binary-record-inspector/scripts/check-generated.mjs
++++ b/tools/binary-record-inspector/scripts/check-generated.mjs
+@@ -51,7 +51,7 @@ const expected = [
+   'js/core/inspector.mjs',
+   'js/worker-source.js',
+ ];
+-const builtRelative = built.map((file) => path.relative(outDir, file)).sort();
++const builtRelative = built.map((file) => path.relative(outDir, file).split(path.sep).join('/')).sort();
+ check(
+   JSON.stringify(builtRelative) === JSON.stringify([...expected].sort()),
+   `dist-preview file set matches source (got: ${builtRelative.join(', ')})`,

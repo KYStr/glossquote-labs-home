@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Route Pattern Overlap Audit | Gloss Tools</title>
+<meta name="description" content="Find pairs of supported route patterns with a matching method and show a path that fits both.">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <nav aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <a href="../../en/">Back to Gloss Tools home</a>
+  </nav>
+</header>
+<main>
+  <h1>Route Pattern Overlap Audit</h1>
+  <p class="intro">Find pairs of supported route patterns with a matching method and show a path that fits both.</p>
+  <p class="draft-notice">Switching language or leaving this page discards the current draft.</p>
+
+  <div class="layout">
+    <section class="input-col" aria-labelledby="input-heading">
+      <h2 id="input-heading" hidden>Input</h2>
+      <div class="field">
+        <label for="routes">HTTP method and path pattern, separated by Tab</label>
+        <p class="help" id="routes-help">One route per line: HTTP method, one Tab, then the path pattern. For example GET, one Tab, /users/:id.</p>
+        <textarea id="routes" rows="12" aria-describedby="routes-help" spellcheck="false"></textarea>
+      </div>
+
+      <details class="syntax">
+        <summary>Supported parameter and tail syntax</summary>
+        <p>A pattern starts with / and has at most 8 segments, with no trailing slash. Literals use lowercase letters, digits, - and _ only (for example users, new, v2). A parameter is written :name (for example :id); a tail is written *name and may only be the last segment (for example *rest, which matches at least one segment). Parameter and tail names must be unique within one pattern. Methods must be uppercase GET, HEAD, POST, PUT, PATCH, DELETE, or OPTIONS; GET and HEAD never overlap.</p>
+      </details>
+
+      <div class="actions">
+        <button type="button" id="run" class="primary">Find overlapping routes</button>
+        <button type="button" id="example">Load example</button>
+        <button type="button" id="reset">Reset</button>
+        <button type="button" id="cancel" hidden>Cancel</button>
+        <button type="button" id="download" hidden>Download report</button>
+      </div>
+
+      <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Not run yet. Enter routes or load the example.</p>
+      <p class="error" id="error" role="alert" hidden></p>
+      <p class="notice" id="notice" aria-live="polite"></p>
+    </section>
+
+    <section class="results results-col" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Overlapping pairs and example paths</h2>
+      <p class="hint">Each row is a pair of routes that can match the same path; the witness is a path that fits both.</p>
+      <p id="summary"></p>
+      <p id="no-overlaps" hidden>No overlapping routes: no two patterns with the same method share a matching path.</p>
+      <div class="table-wrap" id="table-wrap" tabindex="0" aria-label="Overlapping routes table">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Method</th>
+              <th scope="col">First route</th>
+              <th scope="col">Second route</th>
+              <th scope="col">Example path</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <button type="button" id="prev-page" hidden>Previous page</button>
+        <span id="page-label" aria-live="polite" hidden></span>
+        <button type="button" id="next-page" hidden>Next page</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Does this say which route wins?</dt>
+      <dd>No. It provides a path that fits both patterns. Your framework determines precedence.</dd>
+      <dt>Can a tail match zero segments?</dt>
+      <dd>No. This profile requires at least one segment.</dd>
+    </dl>
+  </section>
+</main>
+<footer>
+  <p>This tool computes locally only. It does not upload or store your input.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
