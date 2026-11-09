@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time Zone Converter | GlossQuote Labs</title>
+<meta name="description" content="Convert one date-time from a source time zone to up to 20 target zones: local times, UTC offsets and day shifts, with daylight-saving gap and overlap times flagged and the resolved UTC instant always shown.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../../en/">← GlossQuote Labs home</a>
+</header>
+<main>
+  <h1>Time Zone Converter</h1>
+  <p class="intro">Enter one date, time and source time zone, then pick up to 20 target zones: every row is derived from a single resolved UTC instant and shows the local time, the UTC offset and the day shift. If the source time falls in a daylight-saving gap or overlap, the page says so in words — it never quietly prints a plausible-looking answer for a time that never happens.</p>
+
+  <form id="converter" novalidate>
+    <div class="field-row">
+      <div class="field">
+        <label for="date">Source date</label>
+        <input id="date" name="date" type="date" min="2000-01-01" max="2099-12-31" value="2026-01-15" required>
+      </div>
+      <div class="field">
+        <label for="time">Source time</label>
+        <input id="time" name="time" type="time" value="09:00" required>
+      </div>
+      <div class="field">
+        <label for="source-zone">Source time zone</label>
+        <select id="source-zone" name="source-zone"></select>
+      </div>
+    </div>
+    <p id="field-error" class="field-error" role="alert" hidden></p>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="target-zone">Add a target zone</label>
+        <select id="target-zone" name="target-zone"></select>
+      </div>
+      <div class="field field-action">
+        <button id="add-target" type="button">Add</button>
+      </div>
+    </div>
+    <p id="target-note" class="target-note" aria-live="polite"></p>
+    <ul id="target-list" class="target-list" aria-label="Chosen target zones"></ul>
+  </form>
+
+  <p class="instant-line">Resolved UTC instant: <output id="utc-instant">—</output></p>
+  <div id="banner" class="banner" hidden></div>
+  <p id="stale-note" class="stale-note" hidden>The input has an error, so the table below is the last valid result and is out of date.</p>
+
+  <div id="table-wrap">
+    <table id="results">
+      <thead>
+        <tr>
+          <th scope="col">Time zone</th>
+          <th scope="col">Local date</th>
+          <th scope="col">Local time</th>
+          <th scope="col">UTC offset</th>
+          <th scope="col">Day shift</th>
+        </tr>
+      </thead>
+      <tbody id="result-rows"></tbody>
+    </table>
+  </div>
+  <p id="empty-prompt" class="empty-prompt" hidden>No target zones are chosen yet. Add at least one from the list above and the conversion will appear here.</p>
+
+  <p class="provenance">Conversions use the time-zone database built into your browser/device. If a government changes a zone's rules, devices with an older database can show different results until they are updated.</p>
+  <p class="local-note">This tool runs entirely on your device: nothing is sent anywhere and the date-time you enter is never stored.</p>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
