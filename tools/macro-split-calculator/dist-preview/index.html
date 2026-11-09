@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>三大營養素分配計算機｜Gloss Tools</title>
+<meta name="description" content="輸入每日熱量目標與飲食比例（均衡、高蛋白、低碳、生酮或自訂），換算蛋白質、碳水化合物與脂肪的每日克數、回算熱量與每餐分配。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>三大營養素分配計算機</h1>
+  <p class="lede">把你已有的每日熱量目標，依飲食比例換算成蛋白質、碳水化合物、脂肪各要吃幾克。克數取整數克後，捨入差由占比最大的營養素按固定規則吸收，剩下的回算差會明示；也可以把全日克數平均分到 1–6 餐。本工具不計算熱量需求，熱量目標由你輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">每日熱量目標與飲食比例</h2>
+      <form id="macro-form" novalidate>
+        <div class="field">
+          <label for="field-calories">每日熱量目標（kcal）</label>
+          <p class="help" id="help-calories">800–10,000 kcal，整數。熱量目標由你或你的教練、營養師給定，本工具不估算需求。</p>
+          <input id="field-calories" name="calories" type="text" inputmode="numeric" autocomplete="off" value="2000" aria-describedby="help-calories">
+          <p class="field-error" id="error-calories" role="alert"></p>
+        </div>
+        <fieldset class="field preset-group">
+          <legend>飲食比例</legend>
+          <p class="help" id="help-preset">比例為蛋白質／碳水化合物／脂肪的熱量百分比。選「自訂」時才需要填下一節的三個百分比。</p>
+          <label class="radio-row" for="field-preset-balanced">
+            <input id="field-preset-balanced" name="preset" type="radio" value="balanced" checked>
+            均衡（30／40／30）
+          </label>
+          <label class="radio-row" for="field-preset-high-protein">
+            <input id="field-preset-high-protein" name="preset" type="radio" value="high-protein">
+            高蛋白（40／30／30）
+          </label>
+          <label class="radio-row" for="field-preset-low-carb">
+            <input id="field-preset-low-carb" name="preset" type="radio" value="low-carb">
+            低碳（35／25／40）
+          </label>
+          <label class="radio-row" for="field-preset-keto">
+            <input id="field-preset-keto" name="preset" type="radio" value="keto">
+            生酮（20／5／75）
+          </label>
+          <label class="radio-row" for="field-preset-custom">
+            <input id="field-preset-custom" name="preset" type="radio" value="custom">
+            自訂
+          </label>
+          <p class="field-error" id="error-preset" role="alert"></p>
+        </fieldset>
+
+        <h2 id="custom-heading">自訂百分比與每餐分配</h2>
+        <fieldset class="field pct-group">
+          <legend>自訂百分比（%）</legend>
+          <p class="help" id="help-pct">只有選「自訂」時才讀取這三欄，三欄合計須恰為 100；選其他預設時這三欄完全忽略。</p>
+          <div class="field">
+            <label for="field-proteinPct">蛋白質（%）</label>
+            <input id="field-proteinPct" name="proteinPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-proteinPct" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-carbsPct">碳水化合物（%）</label>
+            <input id="field-carbsPct" name="carbsPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-carbsPct" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-fatPct">脂肪（%）</label>
+            <input id="field-fatPct" name="fatPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-fatPct" role="alert"></p>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="field-meals">餐數（選填）</label>
+          <p class="help" id="help-meals">留空表示不分餐；填 1–6，把調整後的每日克數分到各餐，餘數克配給較前面的餐。</p>
+          <input id="field-meals" name="meals" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-meals">
+          <p class="field-error" id="error-meals" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算三大營養素克數</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每種營養素克數與回算熱量</h2>
+      <p id="summary"></p>
+      <p class="adjusted-note" id="adjusted-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="三大營養素克數表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">營養素</th><th scope="col">比例</th><th scope="col">目標熱量（kcal）</th><th scope="col">每日克數（g）</th><th scope="col">回算熱量（kcal）</th></tr>
+          </thead>
+          <tbody id="macro-rows"></tbody>
+        </table>
+      </div>
+      <div id="meals-block" hidden>
+        <h3>每餐分配</h3>
+        <div class="table-scroll" role="region" aria-label="每餐分配表" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">餐次</th><th scope="col">蛋白質（g）</th><th scope="col">碳水化合物（g）</th><th scope="col">脂肪（g）</th><th scope="col">熱量（kcal）</th></tr>
+            </thead>
+            <tbody id="meal-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>換算係數固定為蛋白質 4、碳水化合物 4、脂肪 9 kcal/g。每種營養素先以「熱量目標 × 百分比 ÷ 係數」算出精確克數，再四捨五入為整數克（.5 進位）。整數克回算的熱量與目標的差（殘差）由熱量占比最大的營養素吸收：以殘差除以該營養素的係數、四捨五入到整數克調整；占比同值時依蛋白質、碳水化合物、脂肪的順序取先者。調整量為 0 時不調整，剩餘差額以回算差明示。</p>
+    <p>表中的「目標熱量」是每種營養素的精確熱量四捨五入後的顯示值，僅供對照，不參與克數計算，三者相加不保證等於熱量目標。分餐時以調整後的每日克數逐種分配，各餐克數合計恆等於每日克數。下載的報告是固定格式的 JSON 檔，內容與畫面上的結果相同。</p>
+  </details>
+
+  <p class="nutrition-note">本工具依一般營養通則換算：蛋白質與碳水化合物每克 4 大卡、脂肪每克 9 大卡。結果僅供一般飲食規劃參考，不構成醫療或營養處方；有疾病、懷孕或特殊飲食需求時，請諮詢醫師或營養師。</p>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>克數回算的熱量為什麼和目標不完全相等？</dt>
+      <dd>克數取整數克，最大營養素已按固定規則吸收捨入差，剩餘差額以回算差明示。</dd>
+      <dt>熱量目標從哪裡來？</dt>
+      <dd>由你輸入，本工具不計算熱量需求。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
