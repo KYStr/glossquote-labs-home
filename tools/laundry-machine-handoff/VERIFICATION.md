@@ -7,8 +7,10 @@ Base: `codex/initial-publication` at `fb55ef262642744147d01db9b2fcbc82cc8b76e1`.
 ## Candidate
 
 - Branch: `muse/laundry-machine-handoff-production-20261109`
-- Candidate commit: (filled in after the PR is opened; see the PR head)
-- Draft PR: (filled in after the PR is opened)
+- Candidate commit: `9e964be1925382254c492cf0c4356384de8feed0` (tool commit; the
+  follow-up commit only records this SHA and the PR URL in HANDOFF.md /
+  VERIFICATION.md)
+- Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/132
 - Scope: only `tools/laundry-machine-handoff/` added (see file list below).
 
 ## Commands run
