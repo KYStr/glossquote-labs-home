@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, lstat, realpath, rename } from 'node:fs/promises';
+import { link, lstat, mkdir, mkdtemp, readFile, realpath, rename, unlink, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,11 @@ import { validateManifest } from '../public/js/core/manifest.mjs';
 const modelRoot = `/models/whisper-base/${selectedModel.revision}/`;
 const hubRoot = `https://huggingface.co/${selectedModel.modelId}/resolve/${selectedModel.revision}/`;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+const publicRoot = path.join(root, 'public');
+const fixedManifest = {
+  bytes: 4687,
+  sha256: '0eec37ebd321925e4c75332e6e7987fd36a8bd29260fe9fd9ed761eb6fd3edc0',
+};
 const mime = name => name.endsWith('.json') ? 'application/json' : name.endsWith('.onnx') ? 'application/octet-stream' : 'text/plain';
 const modelSources = [
   ['config.json', 2248, 'd1d347fdb422e6347c2f843a90d375aa67ea3f4b3e20d2c3075f9a9f6243685b'],
@@ -37,6 +42,17 @@ const noticeSources = [
 ].map(([assetPath, url, bytes, sha256]) => ({ path: assetPath, url, bytes, sha256, mime: 'text/plain' }));
 
 export const pinnedSources = Object.freeze([...modelSources, ...vendorSources, ...noticeSources]);
+
+export async function createRuntimePrepDirectory(kind) {
+  if (!['stage', 'decoder'].includes(kind)) throw new Error('INVALID_PREPARATION_KIND');
+  const directory = path.join(root, '.runtime-prep');
+  await mkdir(directory, { recursive: true });
+  const info = await lstat(directory);
+  if (!info.isDirectory() || info.isSymbolicLink() || await realpath(directory) !== directory) {
+    throw new Error('PREPARATION_ROOT_INVALID');
+  }
+  return mkdtemp(path.join(directory, `${kind}-`));
+}
 
 export function allowedDownloadUrl(value) {
   const url = new URL(value);
@@ -97,8 +113,8 @@ async function saveAsset(temporaryRoot, source, bytes) {
   await writeFile(target, bytes, { flag: 'wx' });
 }
 
-async function publishStagedFile(temporaryRoot, assetPath) {
-  const publicRoot = path.join(root, 'public');
+async function publishStagedFile(temporaryRoot, record, atomic) {
+  const assetPath = record.path;
   if ((await lstat(publicRoot)).isSymbolicLink() || await realpath(publicRoot) !== publicRoot) throw new Error('PUBLIC_ROOT_INVALID');
   const target = path.resolve(publicRoot, assetPath.slice(1));
   let directory = publicRoot;
@@ -107,7 +123,18 @@ async function publishStagedFile(temporaryRoot, assetPath) {
     try { await mkdir(directory); } catch (error) { if (error.code !== 'EEXIST') throw error; }
     if ((await lstat(directory)).isSymbolicLink() || !(await lstat(directory)).isDirectory()) throw new Error('PUBLIC_ROOT_INVALID');
   }
-  const staged = await readFile(path.resolve(temporaryRoot, assetPath.slice(1)));
+  const stagedPath = path.resolve(temporaryRoot, assetPath.slice(1));
+  if (atomic) {
+    // Publish a complete file on the same volume without replacing any existing file.
+    try { await link(stagedPath, target); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      await verifyFile(target, record, publicRoot);
+    }
+    await unlink(stagedPath);
+    return;
+  }
+  const staged = await readFile(stagedPath);
   try {
     if ((await lstat(target)).isSymbolicLink()) throw new Error('PUBLIC_ROOT_INVALID');
     const existing = await readFile(target);
@@ -118,32 +145,57 @@ async function publishStagedFile(temporaryRoot, assetPath) {
   }
 }
 
-export async function stageModel({ reuseRoot } = {}) {
+export async function stageModel({ reuseRoot, fromVerifiedPublic, fromPinnedSources = false } = {}) {
+  if ([reuseRoot, fromVerifiedPublic, fromPinnedSources].filter(Boolean).length > 1 || fromVerifiedPublic === '') {
+    throw new Error('STAGE_ARGUMENT_INVALID');
+  }
+  const fixed = fromVerifiedPublic !== undefined || fromPinnedSources;
+  if (fixed) await verifyFile(path.join(publicRoot, 'model-manifest.json'), fixedManifest, publicRoot);
+  if (fromVerifiedPublic !== undefined) {
+    fromVerifiedPublic = path.resolve(fromVerifiedPublic);
+    try {
+      await verifyFile(path.join(fromVerifiedPublic, 'model-manifest.json'), fixedManifest, fromVerifiedPublic);
+      await verifyAssets(fromVerifiedPublic);
+    } catch (error) {
+      if (error.code === 'ENOENT') throw new Error('VERIFIED_LOCAL_ASSET_MISSING');
+      throw error;
+    }
+  }
   const evidenceRoot = path.resolve(root, '../../.runs/audio-transcription/20261011-unblock');
-  await mkdir(evidenceRoot, { recursive: true });
   if (reuseRoot) {
     reuseRoot = path.resolve(reuseRoot);
     const relative = path.relative(evidenceRoot, reuseRoot);
     if (!/^stage-[a-zA-Z\d-]+$/u.test(relative) || await realpath(reuseRoot) !== reuseRoot || (await lstat(reuseRoot)).isSymbolicLink()) throw new Error('REUSE_ROOT_INVALID');
   }
-  const temporaryRoot = path.join(evidenceRoot, `stage-${new Date().toISOString().replaceAll(/[:.]/gu, '-')}`);
-  await mkdir(temporaryRoot);
+  const temporaryRoot = fixed
+    ? await createRuntimePrepDirectory('stage')
+    : path.join(evidenceRoot, `stage-${new Date().toISOString().replaceAll(/[:.]/gu, '-')}`);
+  if (!fixed) {
+    await mkdir(evidenceRoot, { recursive: true });
+    await mkdir(temporaryRoot);
+  }
   const records = [];
   const acquisitions = [];
   for (const source of pinnedSources) {
     let bytes;
-    if (reuseRoot) {
+    let acquisition = source.url ? 'fixed-public-download' : 'locked-npm-package';
+    if (fromVerifiedPublic !== undefined) {
+      bytes = await readFile(path.resolve(fromVerifiedPublic, source.path.slice(1)));
+      acquisition = 'verified-local-public';
+    } else if (reuseRoot) {
       try {
         const previous = path.resolve(reuseRoot, source.path.slice(1));
         await verifyFile(previous, source, reuseRoot);
         bytes = await readFile(previous);
+        acquisition = 'verified-task-stage';
       } catch (error) { if (error.code !== 'ENOENT') throw error; }
     }
-    const reused = bytes !== undefined;
     bytes ??= source.url ? await downloadPinned(source) : await installedAsset(source);
+    const sha256 = hash(bytes);
+    if (bytes.length !== source.bytes || sha256 !== source.sha256) throw new Error('SOURCE_INTEGRITY_FAILED');
     await saveAsset(temporaryRoot, source, bytes);
-    acquisitions.push({ path: source.path, method: reused ? 'verified-task-stage' : source.url ? 'fixed-public-download' : 'locked-npm-package' });
-    records.push({ path: source.path, bytes: bytes.length, sha256: hash(bytes), mime: source.mime });
+    acquisitions.push({ path: source.path, method: acquisition });
+    records.push({ path: source.path, bytes: bytes.length, sha256, mime: source.mime });
     console.log(`VERIFIED ${source.path}`);
   }
   const notice = Buffer.from(`GlossQuote local transcription distribution notices\n\nConverted model: ${selectedModel.modelId}@${selectedModel.revision}\nIts immutable model card explicitly declares Apache-2.0 for this ONNX repository. MODEL-CARD.txt preserves that statement; LICENSE-APACHE.txt contains the complete Apache-2.0 license text. The original OpenAI Whisper code and weights have an MIT statement; OPENAI-LICENSE.txt preserves its copyright and license. UPSTREAM-MODEL-CARD.txt preserves the separate Hugging Face upstream model declaration. We distribute the selected converted q8 files unchanged. This provenance record is not an independent legal certification.\n\nTransformers.js 3.8.1: Apache-2.0; /vendor/transformers/LICENSE.txt. Its bundled Jinja dependency: MIT; /vendor/transformers/JINJA-LICENSE.txt. ONNX Runtime 1.22.0-dev.20250409-89f8206ba4: MIT; /vendor/onnx/LICENSE.txt, with the complete upstream ThirdPartyNotices.txt from that fixed runtime commit. No native sharp, libvips, or onnxruntime-node files are distributed in public.\n`, 'utf8');
@@ -151,12 +203,16 @@ export async function stageModel({ reuseRoot } = {}) {
   await saveAsset(temporaryRoot, noticeSource, notice);
   records.push(noticeSource);
   const manifest = validateManifest({ schemaVersion: 1, ...selectedModel, dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' }, files: records }, selectedModel);
-  await writeFile(path.join(temporaryRoot, 'model-manifest.json'), JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
+  const manifestText = JSON.stringify(manifest, null, 2) + '\n';
+  if (fixed && hash(manifestText) !== fixedManifest.sha256) throw new Error('FIXED_MANIFEST_MISMATCH');
+  await writeFile(path.join(temporaryRoot, 'model-manifest.json'), manifestText, { flag: 'wx' });
   await verifyAssets(temporaryRoot);
-  for (const record of records) await publishStagedFile(temporaryRoot, record.path);
-  const manifestTemporary = path.join(root, 'public', `manifest-stage-${randomUUID()}.tmp`);
-  await writeFile(manifestTemporary, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
-  await rename(manifestTemporary, path.join(root, 'public', 'model-manifest.json'));
+  for (const record of records) await publishStagedFile(temporaryRoot, record, fixed);
+  if (!fixed) {
+    const manifestTemporary = path.join(publicRoot, `manifest-stage-${randomUUID()}.tmp`);
+    await writeFile(manifestTemporary, manifestText, { flag: 'wx' });
+    await rename(manifestTemporary, path.join(publicRoot, 'model-manifest.json'));
+  }
   const result = await verifyAssets();
   await writeFile(path.join(temporaryRoot, 'stage-result.json'), JSON.stringify({ ...result, sources: pinnedSources, notice: noticeSource, acquisitions }, null, 2) + '\n', { flag: 'wx' });
   return { ...result, evidence: temporaryRoot };
@@ -164,9 +220,14 @@ export async function stageModel({ reuseRoot } = {}) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    if (process.argv.length > 3 || (process.argv[2] && !process.argv[2].startsWith('--reuse-stage='))) throw new Error('STAGE_ARGUMENT_INVALID');
-    const reuseRoot = process.argv[2]?.slice('--reuse-stage='.length);
-    console.log(`STAGE PASS: ${JSON.stringify(await stageModel({ reuseRoot }))}`);
+    const [argument, extra] = process.argv.slice(2);
+    const options = {};
+    if (extra !== undefined) throw new Error('STAGE_ARGUMENT_INVALID');
+    if (argument === '--from-pinned-sources') options.fromPinnedSources = true;
+    else if (argument?.startsWith('--from-verified-public=')) options.fromVerifiedPublic = argument.slice('--from-verified-public='.length);
+    else if (argument?.startsWith('--reuse-stage=')) options.reuseRoot = argument.slice('--reuse-stage='.length);
+    else if (argument !== undefined) throw new Error('STAGE_ARGUMENT_INVALID');
+    console.log(`STAGE PASS: ${JSON.stringify(await stageModel(options))}`);
   }
   catch (error) { console.error(`STAGE FAIL: ${error.message}`); process.exitCode = 1; }
 }

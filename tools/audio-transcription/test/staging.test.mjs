@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, rmdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { allowedDownloadUrl, downloadPinned, pinnedSources } from '../scripts/stage-model.mjs';
+import { allowedDownloadUrl, downloadPinned, pinnedSources, stageModel } from '../scripts/stage-model.mjs';
 import { root, verifyAssets } from '../scripts/verify-assets.mjs';
 
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -38,6 +38,21 @@ test('rejects unapproved redirect destinations without retrieving them', async (
   assert.equal(allowedDownloadUrl('https://token@huggingface.co/model'), false);
   assert.equal(allowedDownloadUrl('http://huggingface.co/model'), false);
   assert(pinnedSources.every(item => Number.isSafeInteger(item.bytes) && item.bytes > 0 && /^[a-f\d]{64}$/u.test(item.sha256)));
+});
+
+test('fixed offline staging rejects missing assets without falling back to a download', async context => {
+  const temporary = path.join(root, 'test', '.tmp');
+  await mkdir(temporary, { recursive: true });
+  const directory = await mkdtemp(path.join(temporary, 'fixed-stage-'));
+  const manifest = path.join(directory, 'model-manifest.json');
+  context.after(async () => {
+    await unlink(manifest);
+    await rmdir(directory);
+  });
+  await writeFile(manifest, await readFile(path.join(root, 'public', 'model-manifest.json')), { flag: 'wx' });
+  const fetchMock = context.mock.method(globalThis, 'fetch', () => { throw new Error('UNEXPECTED_DOWNLOAD'); });
+  await assert.rejects(stageModel({ fromVerifiedPublic: directory }), { message: 'VERIFIED_LOCAL_ASSET_MISSING' });
+  assert.equal(fetchMock.mock.callCount(), 0);
 });
 
 test('offline staged-tree verification detects corruption, missing and unlisted files', async () => {
