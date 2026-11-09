@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-game-night-scorecard-20261109",
+  "cases": [
+    {
+      "id": "game-night-scorecard.high-tiebreak",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C"
+        ],
+        "mode": "high",
+        "drop": 1,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              10,
+              8,
+              7
+            ]
+          },
+          {
+            "name": "R2",
+            "scores": [
+              -2,
+              8,
+              2
+            ]
+          },
+          {
+            "name": "R3",
+            "scores": [
+              6,
+              4,
+              7
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "standings": [
+            {
+              "name": "A",
+              "rank": 1,
+              "total": 16,
+              "best": 10,
+              "dropped": [
+                "R2"
+              ]
+            },
+            {
+              "name": "B",
+              "rank": 2,
+              "total": 16,
+              "best": 8,
+              "dropped": [
+                "R3"
+              ]
+            },
+            {
+              "name": "C",
+              "rank": 3,
+              "total": 14,
+              "best": 7,
+              "dropped": [
+                "R2"
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "A、B 各保留 16，A 的最佳 10 勝過 B 的 8。"
+    },
+    {
+      "id": "game-night-scorecard.low-tiebreak",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B"
+        ],
+        "mode": "low",
+        "drop": 1,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              2,
+              1
+            ]
+          },
+          {
+            "name": "R2",
+            "scores": [
+              2,
+              3
+            ]
+          },
+          {
+            "name": "R3",
+            "scores": [
+              9,
+              8
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "standings": [
+            {
+              "name": "B",
+              "rank": 1,
+              "total": 4,
+              "best": 1,
+              "dropped": [
+                "R3"
+              ]
+            },
+            {
+              "name": "A",
+              "rank": 2,
+              "total": 4,
+              "best": 2,
+              "dropped": [
+                "R3"
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "低分勝，兩人棄最高局，總分同 4，B 的最佳 1 較小。"
+    },
+    {
+      "id": "game-night-scorecard.tied-ranks",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C"
+        ],
+        "mode": "high",
+        "drop": 0,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              5,
+              5,
+              3
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "standings": [
+            {
+              "name": "A",
+              "rank": 1,
+              "total": 5,
+              "best": 5,
+              "dropped": []
+            },
+            {
+              "name": "B",
+              "rank": 1,
+              "total": 5,
+              "best": 5,
+              "dropped": []
+            },
+            {
+              "name": "C",
+              "rank": 3,
+              "total": 3,
+              "best": 3,
+              "dropped": []
+            }
+          ]
+        }
+      },
+      "derivation": "前兩人完全同分，各排 1，C 前有兩人排 3。"
+    },
+    {
+      "id": "game-night-scorecard.drop-earlier",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B"
+        ],
+        "mode": "high",
+        "drop": 1,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              -999,
+              0
+            ]
+          },
+          {
+            "name": "R2",
+            "scores": [
+              -999,
+              0
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "standings": [
+            {
+              "name": "B",
+              "rank": 1,
+              "total": 0,
+              "best": 0,
+              "dropped": [
+                "R1"
+              ]
+            },
+            {
+              "name": "A",
+              "rank": 2,
+              "total": -999,
+              "best": -999,
+              "dropped": [
+                "R1"
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "兩人的最差都同分，均棄原序最早的 R1。"
+    },
+    {
+      "id": "game-night-scorecard.too-many-drops",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B"
+        ],
+        "mode": "high",
+        "drop": 1,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "ORDER",
+          "path": "/drop"
+        }
+      },
+      "derivation": "只有一局時棄一局將使最佳分未定義。"
+    },
+    {
+      "id": "game-night-scorecard.score-shape",
+      "kind": "solve",
+      "input": {
+        "players": [
+          "A",
+          "B"
+        ],
+        "mode": "high",
+        "drop": 0,
+        "rounds": [
+          {
+            "name": "R1",
+            "scores": [
+              0
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "RANGE",
+          "path": "/rounds/0/scores"
+        }
+      },
+      "derivation": "兩位玩家需要兩個明確分數。"
+    },
+    {
+      "id": "game-night-scorecard.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "players": [
+              "A",
+              "B",
+              "C"
+            ],
+            "mode": "high",
+            "drop": 1,
+            "rounds": [
+              {
+                "name": "R1",
+                "scores": [
+                  10,
+                  8,
+                  7
+                ]
+              },
+              {
+                "name": "R2",
+                "scores": [
+                  -2,
+                  8,
+                  2
+                ]
+              },
+              {
+                "name": "R3",
+                "scores": [
+                  6,
+                  4,
+                  7
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "players": [
+              "A",
+              "B"
+            ],
+            "mode": "low",
+            "drop": 1,
+            "rounds": [
+              {
+                "name": "R1",
+                "scores": [
+                  2,
+                  1
+                ]
+              },
+              {
+                "name": "R2",
+                "scores": [
+                  2,
+                  3
+                ]
+              },
+              {
+                "name": "R3",
+                "scores": [
+                  9,
+                  8
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "game-night-scorecard.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "players": [
+              "A",
+              "B",
+              "C"
+            ],
+            "mode": "high",
+            "drop": 1,
+            "rounds": [
+              {
+                "name": "R1",
+                "scores": [
+                  10,
+                  8,
+                  7
+                ]
+              },
+              {
+                "name": "R2",
+                "scores": [
+                  -2,
+                  8,
+                  2
+                ]
+              },
+              {
+                "name": "R3",
+                "scores": [
+                  6,
+                  4,
+                  7
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "players": [
+              "A",
+              "B"
+            ],
+            "mode": "low",
+            "drop": 1,
+            "rounds": [
+              {
+                "name": "R1",
+                "scores": [
+                  2,
+                  1
+                ]
+              },
+              {
+                "name": "R2",
+                "scores": [
+                  2,
+                  3
+                ]
+              },
+              {
+                "name": "R3",
+                "scores": [
+                  9,
+                  8
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "standings": [
+            {
+              "name": "B",
+              "rank": 1,
+              "total": 4,
+              "best": 1,
+              "dropped": [
+                "R3"
+              ]
+            },
+            {
+              "name": "A",
+              "rank": 2,
+              "total": 4,
+              "best": 2,
+              "dropped": [
+                "R3"
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

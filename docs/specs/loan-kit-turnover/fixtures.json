@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-loan-kit-turnover-20261109",
+  "cases": [
+    {
+      "id": "loan-kit-turnover.turnover-overlap",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 4,
+            "turnMin": 10
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "K",
+            "start": 10,
+            "end": 30,
+            "qty": 2
+          },
+          {
+            "name": "B",
+            "kit": "K",
+            "start": 30,
+            "end": 50,
+            "qty": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "kits": [
+            {
+              "name": "K",
+              "peak": 5,
+              "minExtra": 1,
+              "shortages": [
+                {
+                  "from": 30,
+                  "to": 40,
+                  "demand": 5,
+                  "extra": 1,
+                  "loans": [
+                    "A",
+                    "B"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "A 直到 40 才釋出，所以 30–40 需求 2+3。"
+    },
+    {
+      "id": "loan-kit-turnover.touching",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 3,
+            "turnMin": 0
+          },
+          {
+            "name": "L",
+            "count": 0,
+            "turnMin": 4
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "K",
+            "start": 10,
+            "end": 30,
+            "qty": 3
+          },
+          {
+            "name": "B",
+            "kit": "K",
+            "start": 30,
+            "end": 50,
+            "qty": 2
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "kits": [
+            {
+              "name": "K",
+              "peak": 3,
+              "minExtra": 0,
+              "shortages": []
+            },
+            {
+              "name": "L",
+              "peak": 0,
+              "minExtra": 0,
+              "shortages": []
+            }
+          ]
+        }
+      },
+      "derivation": "A 與 B 在 30 相接，L 無借用。"
+    },
+    {
+      "id": "loan-kit-turnover.after-midnight",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 0,
+            "turnMin": 120
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "K",
+            "start": 1439,
+            "end": 1440,
+            "qty": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "kits": [
+            {
+              "name": "K",
+              "peak": 1,
+              "minExtra": 1,
+              "shortages": [
+                {
+                  "from": 1439,
+                  "to": 1560,
+                  "demand": 1,
+                  "extra": 1,
+                  "loans": [
+                    "A"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "整理延伸到隔日 02:00，整段需求 1。"
+    },
+    {
+      "id": "loan-kit-turnover.split-shortage",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 1,
+            "turnMin": 0
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "K",
+            "start": 0,
+            "end": 30,
+            "qty": 2
+          },
+          {
+            "name": "B",
+            "kit": "K",
+            "start": 10,
+            "end": 20,
+            "qty": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "kits": [
+            {
+              "name": "K",
+              "peak": 3,
+              "minExtra": 2,
+              "shortages": [
+                {
+                  "from": 0,
+                  "to": 10,
+                  "demand": 2,
+                  "extra": 1,
+                  "loans": [
+                    "A"
+                  ]
+                },
+                {
+                  "from": 10,
+                  "to": 20,
+                  "demand": 3,
+                  "extra": 2,
+                  "loans": [
+                    "A",
+                    "B"
+                  ]
+                },
+                {
+                  "from": 20,
+                  "to": 30,
+                  "demand": 2,
+                  "extra": 1,
+                  "loans": [
+                    "A"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "10 和 20 活動借用集合改變，保留三段。"
+    },
+    {
+      "id": "loan-kit-turnover.unknown-kit",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 1,
+            "turnMin": 0
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "L",
+            "start": 0,
+            "end": 30,
+            "qty": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "REF",
+          "path": "/loans/0/kit"
+        }
+      },
+      "derivation": "借用引用了尚未存在的道具類型。"
+    },
+    {
+      "id": "loan-kit-turnover.zero-length",
+      "kind": "solve",
+      "input": {
+        "kits": [
+          {
+            "name": "K",
+            "count": 1,
+            "turnMin": 0
+          }
+        ],
+        "loans": [
+          {
+            "name": "A",
+            "kit": "K",
+            "start": 30,
+            "end": 30,
+            "qty": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "ORDER",
+          "path": "/loans/0/end"
+        }
+      },
+      "derivation": "歸還必須嚴格晚於領取。"
+    },
+    {
+      "id": "loan-kit-turnover.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "kits": [
+              {
+                "name": "K",
+                "count": 4,
+                "turnMin": 10
+              }
+            ],
+            "loans": [
+              {
+                "name": "A",
+                "kit": "K",
+                "start": 10,
+                "end": 30,
+                "qty": 2
+              },
+              {
+                "name": "B",
+                "kit": "K",
+                "start": 30,
+                "end": 50,
+                "qty": 3
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "kits": [
+              {
+                "name": "K",
+                "count": 3,
+                "turnMin": 0
+              },
+              {
+                "name": "L",
+                "count": 0,
+                "turnMin": 4
+              }
+            ],
+            "loans": [
+              {
+                "name": "A",
+                "kit": "K",
+                "start": 10,
+                "end": 30,
+                "qty": 3
+              },
+              {
+                "name": "B",
+                "kit": "K",
+                "start": 30,
+                "end": 50,
+                "qty": 2
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "loan-kit-turnover.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "kits": [
+              {
+                "name": "K",
+                "count": 4,
+                "turnMin": 10
+              }
+            ],
+            "loans": [
+              {
+                "name": "A",
+                "kit": "K",
+                "start": 10,
+                "end": 30,
+                "qty": 2
+              },
+              {
+                "name": "B",
+                "kit": "K",
+                "start": 30,
+                "end": 50,
+                "qty": 3
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "kits": [
+              {
+                "name": "K",
+                "count": 3,
+                "turnMin": 0
+              },
+              {
+                "name": "L",
+                "count": 0,
+                "turnMin": 4
+              }
+            ],
+            "loans": [
+              {
+                "name": "A",
+                "kit": "K",
+                "start": 10,
+                "end": 30,
+                "qty": 3
+              },
+              {
+                "name": "B",
+                "kit": "K",
+                "start": 30,
+                "end": 50,
+                "qty": 2
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "kits": [
+            {
+              "name": "K",
+              "peak": 3,
+              "minExtra": 0,
+              "shortages": []
+            },
+            {
+              "name": "L",
+              "peak": 0,
+              "minExtra": 0,
+              "shortages": []
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

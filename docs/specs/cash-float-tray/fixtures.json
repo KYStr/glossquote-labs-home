@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-cash-float-tray-20261109",
+  "cases": [
+    {
+      "id": "cash-float-tray.exact",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 10,
+        "denominations": [
+          {
+            "valueMinor": 6,
+            "count": 1
+          },
+          {
+            "valueMinor": 4,
+            "count": 2
+          },
+          {
+            "valueMinor": 3,
+            "count": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "totalMinor": 23,
+          "keptMinor": 10,
+          "removedMinor": 13,
+          "shortfallMinor": 0,
+          "rows": [
+            {
+              "valueMinor": 6,
+              "kept": 1,
+              "removed": 0
+            },
+            {
+              "valueMinor": 4,
+              "kept": 1,
+              "removed": 1
+            },
+            {
+              "valueMinor": 3,
+              "kept": 0,
+              "removed": 3
+            }
+          ]
+        }
+      },
+      "derivation": "6+4 用兩件即可足額。總值 6+8+9=23。"
+    },
+    {
+      "id": "cash-float-tray.non-greedy",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 9,
+        "denominations": [
+          {
+            "valueMinor": 4,
+            "count": 1
+          },
+          {
+            "valueMinor": 8,
+            "count": 1
+          },
+          {
+            "valueMinor": 5,
+            "count": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "totalMinor": 17,
+          "keptMinor": 9,
+          "removedMinor": 8,
+          "shortfallMinor": 0,
+          "rows": [
+            {
+              "valueMinor": 8,
+              "kept": 0,
+              "removed": 1
+            },
+            {
+              "valueMinor": 5,
+              "kept": 1,
+              "removed": 0
+            },
+            {
+              "valueMinor": 4,
+              "kept": 1,
+              "removed": 0
+            }
+          ]
+        }
+      },
+      "derivation": "單留 8 不足，5+4 恰達 9。結果依面額排序。"
+    },
+    {
+      "id": "cash-float-tray.tie",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 8,
+        "denominations": [
+          {
+            "valueMinor": 3,
+            "count": 1
+          },
+          {
+            "valueMinor": 5,
+            "count": 1
+          },
+          {
+            "valueMinor": 4,
+            "count": 2
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "totalMinor": 16,
+          "keptMinor": 8,
+          "removedMinor": 8,
+          "shortfallMinor": 0,
+          "rows": [
+            {
+              "valueMinor": 5,
+              "kept": 1,
+              "removed": 0
+            },
+            {
+              "valueMinor": 4,
+              "kept": 0,
+              "removed": 2
+            },
+            {
+              "valueMinor": 3,
+              "kept": 1,
+              "removed": 0
+            }
+          ]
+        }
+      },
+      "derivation": "5+3 與 4+4 都兩件，留 5 的向量先勝。"
+    },
+    {
+      "id": "cash-float-tray.zero-target",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 0,
+        "denominations": [
+          {
+            "valueMinor": 5,
+            "count": 3
+          },
+          {
+            "valueMinor": 1,
+            "count": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "totalMinor": 15,
+          "keptMinor": 0,
+          "removedMinor": 15,
+          "shortfallMinor": 0,
+          "rows": [
+            {
+              "valueMinor": 5,
+              "kept": 0,
+              "removed": 3
+            },
+            {
+              "valueMinor": 1,
+              "kept": 0,
+              "removed": 0
+            }
+          ]
+        }
+      },
+      "derivation": "只保留金額 0 的狀態，所有 3 件移出。"
+    },
+    {
+      "id": "cash-float-tray.inexact",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 5,
+        "denominations": [
+          {
+            "valueMinor": 4,
+            "count": 2
+          },
+          {
+            "valueMinor": 3,
+            "count": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "totalMinor": 11,
+          "keptMinor": 4,
+          "removedMinor": 7,
+          "shortfallMinor": 1,
+          "rows": [
+            {
+              "valueMinor": 4,
+              "kept": 1,
+              "removed": 1
+            },
+            {
+              "valueMinor": 3,
+              "kept": 0,
+              "removed": 1
+            }
+          ]
+        }
+      },
+      "derivation": "總盤 11，但不高於 5 的可達額只有 0、3、4。"
+    },
+    {
+      "id": "cash-float-tray.duplicate",
+      "kind": "solve",
+      "input": {
+        "targetMinor": 5,
+        "denominations": [
+          {
+            "valueMinor": 5,
+            "count": 1
+          },
+          {
+            "valueMinor": 5,
+            "count": 2
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "DUPLICATE",
+          "path": "/denominations/1/valueMinor"
+        }
+      },
+      "derivation": "相同面額須先合成同一實點列，第二列被拒絕。"
+    },
+    {
+      "id": "cash-float-tray.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "targetMinor": 10,
+            "denominations": [
+              {
+                "valueMinor": 6,
+                "count": 1
+              },
+              {
+                "valueMinor": 4,
+                "count": 2
+              },
+              {
+                "valueMinor": 3,
+                "count": 3
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "targetMinor": 9,
+            "denominations": [
+              {
+                "valueMinor": 4,
+                "count": 1
+              },
+              {
+                "valueMinor": 8,
+                "count": 1
+              },
+              {
+                "valueMinor": 5,
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "cash-float-tray.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "targetMinor": 10,
+            "denominations": [
+              {
+                "valueMinor": 6,
+                "count": 1
+              },
+              {
+                "valueMinor": 4,
+                "count": 2
+              },
+              {
+                "valueMinor": 3,
+                "count": 3
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "targetMinor": 9,
+            "denominations": [
+              {
+                "valueMinor": 4,
+                "count": 1
+              },
+              {
+                "valueMinor": 8,
+                "count": 1
+              },
+              {
+                "valueMinor": 5,
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "totalMinor": 17,
+          "keptMinor": 9,
+          "removedMinor": 8,
+          "shortfallMinor": 0,
+          "rows": [
+            {
+              "valueMinor": 8,
+              "kept": 0,
+              "removed": 1
+            },
+            {
+              "valueMinor": 5,
+              "kept": 1,
+              "removed": 0
+            },
+            {
+              "valueMinor": 4,
+              "kept": 1,
+              "removed": 0
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

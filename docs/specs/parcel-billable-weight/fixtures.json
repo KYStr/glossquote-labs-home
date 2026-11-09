@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-parcel-billable-weight-20261109",
+  "cases": [
+    {
+      "id": "parcel-billable-weight.two-services",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              300,
+              200,
+              100
+            ],
+            "actualG": 1000
+          },
+          {
+            "name": "Q",
+            "sidesMm": [
+              100,
+              200,
+              100
+            ],
+            "actualG": 750
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 5000,
+            "stepG": 500,
+            "minG": 0,
+            "maxLengthMm": null,
+            "maxWrapMm": null,
+            "maxActualG": null
+          },
+          {
+            "name": "B",
+            "divisor": 6000,
+            "stepG": 100,
+            "minG": 0,
+            "maxLengthMm": 299,
+            "maxWrapMm": null,
+            "maxActualG": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": 2500,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 6000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 900,
+                  "reasons": [],
+                  "chargeG": 1500
+                },
+                {
+                  "name": "Q",
+                  "volumeNumerator": 2000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 600,
+                  "reasons": [],
+                  "chargeG": 1000
+                }
+              ]
+            },
+            {
+              "name": "B",
+              "totalChargeG": null,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 6000000,
+                  "volumeDenominator": 6000,
+                  "wrapMm": 900,
+                  "reasons": [
+                    "LENGTH"
+                  ],
+                  "chargeG": null
+                },
+                {
+                  "name": "Q",
+                  "volumeNumerator": 2000000,
+                  "volumeDenominator": 6000,
+                  "wrapMm": 600,
+                  "reasons": [],
+                  "chargeG": 800
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "P 在 A 按 1200 進位，Q 按實重 750。B 最長邊 299 拒 P，Q 進位到 800。"
+    },
+    {
+      "id": "parcel-billable-weight.minimum",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              100,
+              100,
+              100
+            ],
+            "actualG": 200
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 5000,
+            "stepG": 100,
+            "minG": 250,
+            "maxLengthMm": null,
+            "maxWrapMm": null,
+            "maxActualG": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": 300,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 1000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 500,
+                  "reasons": [],
+                  "chargeG": 300
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "實重及材積重都是 200 g，最低 250 g 按 100 級距進位為 300 g。"
+    },
+    {
+      "id": "parcel-billable-weight.exact-limits",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              100,
+              100,
+              100
+            ],
+            "actualG": 200
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 5000,
+            "stepG": 100,
+            "minG": 0,
+            "maxLengthMm": 100,
+            "maxWrapMm": 500,
+            "maxActualG": 200
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": 200,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 1000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 500,
+                  "reasons": [],
+                  "chargeG": 200
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "等於全部上限合法，200 恰為兩個 100 的級距。"
+    },
+    {
+      "id": "parcel-billable-weight.fractional-gram",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              1,
+              1,
+              3
+            ],
+            "actualG": 1
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 2,
+            "stepG": 1,
+            "minG": 0,
+            "maxLengthMm": null,
+            "maxWrapMm": null,
+            "maxActualG": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": 2,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 3,
+                  "volumeDenominator": 2,
+                  "wrapMm": 7,
+                  "reasons": [],
+                  "chargeG": 2
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "精確材積 3/2 g 高於實重 1，進位至 2。"
+    },
+    {
+      "id": "parcel-billable-weight.all-reasons",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              300,
+              200,
+              100
+            ],
+            "actualG": 1000
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 5000,
+            "stepG": 1,
+            "minG": 0,
+            "maxLengthMm": 299,
+            "maxWrapMm": 899,
+            "maxActualG": 999
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": null,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 6000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 900,
+                  "reasons": [
+                    "LENGTH",
+                    "WRAP",
+                    "MASS"
+                  ],
+                  "chargeG": null
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "三個量各比限制多一個單位，輸出固定順序的三原因。"
+    },
+    {
+      "id": "parcel-billable-weight.zero-divisor",
+      "kind": "solve",
+      "input": {
+        "parcels": [
+          {
+            "name": "P",
+            "sidesMm": [
+              300,
+              200,
+              100
+            ],
+            "actualG": 1000
+          }
+        ],
+        "services": [
+          {
+            "name": "A",
+            "divisor": 0,
+            "stepG": 1,
+            "minG": 0,
+            "maxLengthMm": null,
+            "maxWrapMm": null,
+            "maxActualG": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "RANGE",
+          "path": "/services/0/divisor"
+        }
+      },
+      "derivation": "材積除數必須為正整數。"
+    },
+    {
+      "id": "parcel-billable-weight.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "parcels": [
+              {
+                "name": "P",
+                "sidesMm": [
+                  300,
+                  200,
+                  100
+                ],
+                "actualG": 1000
+              },
+              {
+                "name": "Q",
+                "sidesMm": [
+                  100,
+                  200,
+                  100
+                ],
+                "actualG": 750
+              }
+            ],
+            "services": [
+              {
+                "name": "A",
+                "divisor": 5000,
+                "stepG": 500,
+                "minG": 0,
+                "maxLengthMm": null,
+                "maxWrapMm": null,
+                "maxActualG": null
+              },
+              {
+                "name": "B",
+                "divisor": 6000,
+                "stepG": 100,
+                "minG": 0,
+                "maxLengthMm": 299,
+                "maxWrapMm": null,
+                "maxActualG": null
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "parcels": [
+              {
+                "name": "P",
+                "sidesMm": [
+                  100,
+                  100,
+                  100
+                ],
+                "actualG": 200
+              }
+            ],
+            "services": [
+              {
+                "name": "A",
+                "divisor": 5000,
+                "stepG": 100,
+                "minG": 250,
+                "maxLengthMm": null,
+                "maxWrapMm": null,
+                "maxActualG": null
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "parcel-billable-weight.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "parcels": [
+              {
+                "name": "P",
+                "sidesMm": [
+                  300,
+                  200,
+                  100
+                ],
+                "actualG": 1000
+              },
+              {
+                "name": "Q",
+                "sidesMm": [
+                  100,
+                  200,
+                  100
+                ],
+                "actualG": 750
+              }
+            ],
+            "services": [
+              {
+                "name": "A",
+                "divisor": 5000,
+                "stepG": 500,
+                "minG": 0,
+                "maxLengthMm": null,
+                "maxWrapMm": null,
+                "maxActualG": null
+              },
+              {
+                "name": "B",
+                "divisor": 6000,
+                "stepG": 100,
+                "minG": 0,
+                "maxLengthMm": 299,
+                "maxWrapMm": null,
+                "maxActualG": null
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "parcels": [
+              {
+                "name": "P",
+                "sidesMm": [
+                  100,
+                  100,
+                  100
+                ],
+                "actualG": 200
+              }
+            ],
+            "services": [
+              {
+                "name": "A",
+                "divisor": 5000,
+                "stepG": 100,
+                "minG": 250,
+                "maxLengthMm": null,
+                "maxWrapMm": null,
+                "maxActualG": null
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "services": [
+            {
+              "name": "A",
+              "totalChargeG": 300,
+              "pieces": [
+                {
+                  "name": "P",
+                  "volumeNumerator": 1000000,
+                  "volumeDenominator": 5000,
+                  "wrapMm": 500,
+                  "reasons": [],
+                  "chargeG": 300
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

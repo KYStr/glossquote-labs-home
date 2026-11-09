@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-curtain-repeat-cut-20261109",
+  "cases": [
+    {
+      "id": "curtain-repeat-cut.matched",
+      "kind": "solve",
+      "input": {
+        "stockMm": 4000,
+        "repeatMm": 320,
+        "headPhaseMm": 80,
+        "motifPhaseMm": 0,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 1500,
+            "topMm": 50,
+            "bottomMm": 70
+          },
+          {
+            "name": "B",
+            "finishedMm": 1500,
+            "topMm": 50,
+            "bottomMm": 70
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "cuts": [
+            {
+              "name": "A",
+              "skipMm": 190,
+              "startMm": 190,
+              "endMm": 1810
+            },
+            {
+              "name": "B",
+              "skipMm": 300,
+              "startMm": 2110,
+              "endMm": 3730
+            }
+          ],
+          "neededMm": 3730,
+          "wasteMm": 490,
+          "spareMm": 270,
+          "shortageMm": 0
+        }
+      },
+      "derivation": "成品頂線相位各為 320、2240 的整週。片長各 1620，跳花為 190+300。"
+    },
+    {
+      "id": "curtain-repeat-cut.plain",
+      "kind": "solve",
+      "input": {
+        "stockMm": 1800,
+        "repeatMm": 0,
+        "headPhaseMm": 0,
+        "motifPhaseMm": 0,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 800,
+            "topMm": 50,
+            "bottomMm": 50
+          },
+          {
+            "name": "B",
+            "finishedMm": 700,
+            "topMm": 20,
+            "bottomMm": 30
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "cuts": [
+            {
+              "name": "A",
+              "skipMm": 0,
+              "startMm": 0,
+              "endMm": 900
+            },
+            {
+              "name": "B",
+              "skipMm": 0,
+              "startMm": 900,
+              "endMm": 1650
+            }
+          ],
+          "neededMm": 1650,
+          "wasteMm": 0,
+          "spareMm": 150,
+          "shortageMm": 0
+        }
+      },
+      "derivation": "素布跳花為零，兩片總長 900+750。"
+    },
+    {
+      "id": "curtain-repeat-cut.exact-stock",
+      "kind": "solve",
+      "input": {
+        "stockMm": 2100,
+        "repeatMm": 500,
+        "headPhaseMm": 100,
+        "motifPhaseMm": 0,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 800,
+            "topMm": 100,
+            "bottomMm": 100
+          },
+          {
+            "name": "B",
+            "finishedMm": 600,
+            "topMm": 100,
+            "bottomMm": 100
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "cuts": [
+            {
+              "name": "A",
+              "skipMm": 300,
+              "startMm": 300,
+              "endMm": 1300
+            },
+            {
+              "name": "B",
+              "skipMm": 0,
+              "startMm": 1300,
+              "endMm": 2100
+            }
+          ],
+          "neededMm": 2100,
+          "wasteMm": 300,
+          "spareMm": 0,
+          "shortageMm": 0
+        }
+      },
+      "derivation": "第二片未裁前的摺後頂線相位為 1500 mod 500=0，無額外跳花。"
+    },
+    {
+      "id": "curtain-repeat-cut.short",
+      "kind": "solve",
+      "input": {
+        "stockMm": 899,
+        "repeatMm": 0,
+        "headPhaseMm": 0,
+        "motifPhaseMm": 0,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 800,
+            "topMm": 50,
+            "bottomMm": 50
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "cuts": [
+            {
+              "name": "A",
+              "skipMm": 0,
+              "startMm": 0,
+              "endMm": 900
+            }
+          ],
+          "neededMm": 900,
+          "wasteMm": 0,
+          "spareMm": 0,
+          "shortageMm": 1
+        }
+      },
+      "derivation": "一片總長 900，布卷少 1 mm。"
+    },
+    {
+      "id": "curtain-repeat-cut.phase-edge",
+      "kind": "solve",
+      "input": {
+        "stockMm": 1000,
+        "repeatMm": 300,
+        "headPhaseMm": 0,
+        "motifPhaseMm": 300,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 100,
+            "topMm": 0,
+            "bottomMm": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "PHASE",
+          "path": "/motifPhaseMm"
+        }
+      },
+      "derivation": "合法相位的上限為 299 mm，300 是下一週的零點。"
+    },
+    {
+      "id": "curtain-repeat-cut.zero-repeat-phase",
+      "kind": "solve",
+      "input": {
+        "stockMm": 1000,
+        "repeatMm": 0,
+        "headPhaseMm": 1,
+        "motifPhaseMm": 0,
+        "panels": [
+          {
+            "name": "A",
+            "finishedMm": 100,
+            "topMm": 0,
+            "bottomMm": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "PHASE",
+          "path": "/headPhaseMm"
+        }
+      },
+      "derivation": "素布無花距，兩相位固定零。"
+    },
+    {
+      "id": "curtain-repeat-cut.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "stockMm": 4000,
+            "repeatMm": 320,
+            "headPhaseMm": 80,
+            "motifPhaseMm": 0,
+            "panels": [
+              {
+                "name": "A",
+                "finishedMm": 1500,
+                "topMm": 50,
+                "bottomMm": 70
+              },
+              {
+                "name": "B",
+                "finishedMm": 1500,
+                "topMm": 50,
+                "bottomMm": 70
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "stockMm": 1800,
+            "repeatMm": 0,
+            "headPhaseMm": 0,
+            "motifPhaseMm": 0,
+            "panels": [
+              {
+                "name": "A",
+                "finishedMm": 800,
+                "topMm": 50,
+                "bottomMm": 50
+              },
+              {
+                "name": "B",
+                "finishedMm": 700,
+                "topMm": 20,
+                "bottomMm": 30
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "curtain-repeat-cut.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "stockMm": 4000,
+            "repeatMm": 320,
+            "headPhaseMm": 80,
+            "motifPhaseMm": 0,
+            "panels": [
+              {
+                "name": "A",
+                "finishedMm": 1500,
+                "topMm": 50,
+                "bottomMm": 70
+              },
+              {
+                "name": "B",
+                "finishedMm": 1500,
+                "topMm": 50,
+                "bottomMm": 70
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "stockMm": 1800,
+            "repeatMm": 0,
+            "headPhaseMm": 0,
+            "motifPhaseMm": 0,
+            "panels": [
+              {
+                "name": "A",
+                "finishedMm": 800,
+                "topMm": 50,
+                "bottomMm": 50
+              },
+              {
+                "name": "B",
+                "finishedMm": 700,
+                "topMm": 20,
+                "bottomMm": 30
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "cuts": [
+            {
+              "name": "A",
+              "skipMm": 0,
+              "startMm": 0,
+              "endMm": 900
+            },
+            {
+              "name": "B",
+              "skipMm": 0,
+              "startMm": 900,
+              "endMm": 1650
+            }
+          ],
+          "neededMm": 1650,
+          "wasteMm": 0,
+          "spareMm": 150,
+          "shortageMm": 0
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

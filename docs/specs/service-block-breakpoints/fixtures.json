@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-service-block-breakpoints-20261109",
+  "cases": [
+    {
+      "id": "service-block-breakpoints.multiple-crossings",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 4,
+        "plans": [
+          {
+            "name": "A",
+            "type": "blocks",
+            "baseMinor": 0,
+            "included": 0,
+            "blockSize": 2,
+            "blockMinor": 600
+          },
+          {
+            "name": "B",
+            "type": "progressive",
+            "baseMinor": 0,
+            "included": 0,
+            "bands": [
+              {
+                "upTo": null,
+                "rateMinor": 350
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "visits": [
+            {
+              "count": 0,
+              "aMinor": 0,
+              "bMinor": 0,
+              "relation": "equal"
+            },
+            {
+              "count": 1,
+              "aMinor": 600,
+              "bMinor": 350,
+              "relation": "B"
+            },
+            {
+              "count": 2,
+              "aMinor": 600,
+              "bMinor": 700,
+              "relation": "A"
+            },
+            {
+              "count": 3,
+              "aMinor": 1200,
+              "bMinor": 1050,
+              "relation": "B"
+            },
+            {
+              "count": 4,
+              "aMinor": 1200,
+              "bMinor": 1400,
+              "relation": "A"
+            }
+          ],
+          "spans": [
+            {
+              "from": 0,
+              "to": 0,
+              "relation": "equal"
+            },
+            {
+              "from": 1,
+              "to": 1,
+              "relation": "B"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "relation": "A"
+            },
+            {
+              "from": 3,
+              "to": 3,
+              "relation": "B"
+            },
+            {
+              "from": 4,
+              "to": 4,
+              "relation": "A"
+            }
+          ]
+        }
+      },
+      "derivation": "A 1–2 次一包、3–4 次兩包。B 每次 350，跨越不只一次。"
+    },
+    {
+      "id": "service-block-breakpoints.allowance",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 4,
+        "plans": [
+          {
+            "name": "A",
+            "type": "progressive",
+            "baseMinor": 100,
+            "included": 1,
+            "bands": [
+              {
+                "upTo": 2,
+                "rateMinor": 40
+              },
+              {
+                "upTo": null,
+                "rateMinor": 75
+              }
+            ]
+          },
+          {
+            "name": "B",
+            "type": "blocks",
+            "baseMinor": 130,
+            "included": 0,
+            "blockSize": 2,
+            "blockMinor": 45
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "visits": [
+            {
+              "count": 0,
+              "aMinor": 100,
+              "bMinor": 130,
+              "relation": "A"
+            },
+            {
+              "count": 1,
+              "aMinor": 100,
+              "bMinor": 175,
+              "relation": "A"
+            },
+            {
+              "count": 2,
+              "aMinor": 140,
+              "bMinor": 175,
+              "relation": "A"
+            },
+            {
+              "count": 3,
+              "aMinor": 180,
+              "bMinor": 220,
+              "relation": "A"
+            },
+            {
+              "count": 4,
+              "aMinor": 255,
+              "bMinor": 220,
+              "relation": "B"
+            }
+          ],
+          "spans": [
+            {
+              "from": 0,
+              "to": 3,
+              "relation": "A"
+            },
+            {
+              "from": 4,
+              "to": 4,
+              "relation": "B"
+            }
+          ]
+        }
+      },
+      "derivation": "A 一次內含，再兩次各 40。第四次總計 100+80+75。"
+    },
+    {
+      "id": "service-block-breakpoints.zero-visits",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 0,
+        "plans": [
+          {
+            "name": "A",
+            "type": "blocks",
+            "baseMinor": 5,
+            "included": 0,
+            "blockSize": 1,
+            "blockMinor": 100
+          },
+          {
+            "name": "B",
+            "type": "progressive",
+            "baseMinor": 2,
+            "included": 0,
+            "bands": [
+              {
+                "upTo": null,
+                "rateMinor": 10
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "visits": [
+            {
+              "count": 0,
+              "aMinor": 5,
+              "bMinor": 2,
+              "relation": "B"
+            }
+          ],
+          "spans": [
+            {
+              "from": 0,
+              "to": 0,
+              "relation": "B"
+            }
+          ]
+        }
+      },
+      "derivation": "0 次仍計固定額 5 與 2。"
+    },
+    {
+      "id": "service-block-breakpoints.tie-range",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 2,
+        "plans": [
+          {
+            "name": "A",
+            "type": "blocks",
+            "baseMinor": 1,
+            "included": 2,
+            "blockSize": 1,
+            "blockMinor": 100
+          },
+          {
+            "name": "B",
+            "type": "progressive",
+            "baseMinor": 1,
+            "included": 0,
+            "bands": [
+              {
+                "upTo": null,
+                "rateMinor": 0
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "visits": [
+            {
+              "count": 0,
+              "aMinor": 1,
+              "bMinor": 1,
+              "relation": "equal"
+            },
+            {
+              "count": 1,
+              "aMinor": 1,
+              "bMinor": 1,
+              "relation": "equal"
+            },
+            {
+              "count": 2,
+              "aMinor": 1,
+              "bMinor": 1,
+              "relation": "equal"
+            }
+          ],
+          "spans": [
+            {
+              "from": 0,
+              "to": 2,
+              "relation": "equal"
+            }
+          ]
+        }
+      },
+      "derivation": "A 未超包含量，B 單價 0。三個值合成一段。"
+    },
+    {
+      "id": "service-block-breakpoints.ascending",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 2,
+        "plans": [
+          {
+            "name": "A",
+            "type": "progressive",
+            "baseMinor": 0,
+            "included": 0,
+            "bands": [
+              {
+                "upTo": 2,
+                "rateMinor": 5
+              },
+              {
+                "upTo": 2,
+                "rateMinor": 6
+              },
+              {
+                "upTo": null,
+                "rateMinor": 7
+              }
+            ]
+          },
+          {
+            "name": "B",
+            "type": "blocks",
+            "baseMinor": 1,
+            "included": 0,
+            "blockSize": 1,
+            "blockMinor": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "BAND_ORDER",
+          "path": "/plans/0/bands/1/upTo"
+        }
+      },
+      "derivation": "兩個相等上界會造成零長級距，拒第二列。"
+    },
+    {
+      "id": "service-block-breakpoints.closed-tail",
+      "kind": "solve",
+      "input": {
+        "maxVisits": 2,
+        "plans": [
+          {
+            "name": "A",
+            "type": "progressive",
+            "baseMinor": 0,
+            "included": 0,
+            "bands": [
+              {
+                "upTo": 2,
+                "rateMinor": 5
+              }
+            ]
+          },
+          {
+            "name": "B",
+            "type": "blocks",
+            "baseMinor": 1,
+            "included": 0,
+            "blockSize": 1,
+            "blockMinor": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "BAND_ORDER",
+          "path": "/plans/0/bands/0/upTo"
+        }
+      },
+      "derivation": "末級距必為開放上界，避免最大次數變更後沒有對應費率。"
+    },
+    {
+      "id": "service-block-breakpoints.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "maxVisits": 4,
+            "plans": [
+              {
+                "name": "A",
+                "type": "blocks",
+                "baseMinor": 0,
+                "included": 0,
+                "blockSize": 2,
+                "blockMinor": 600
+              },
+              {
+                "name": "B",
+                "type": "progressive",
+                "baseMinor": 0,
+                "included": 0,
+                "bands": [
+                  {
+                    "upTo": null,
+                    "rateMinor": 350
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "maxVisits": 4,
+            "plans": [
+              {
+                "name": "A",
+                "type": "progressive",
+                "baseMinor": 100,
+                "included": 1,
+                "bands": [
+                  {
+                    "upTo": 2,
+                    "rateMinor": 40
+                  },
+                  {
+                    "upTo": null,
+                    "rateMinor": 75
+                  }
+                ]
+              },
+              {
+                "name": "B",
+                "type": "blocks",
+                "baseMinor": 130,
+                "included": 0,
+                "blockSize": 2,
+                "blockMinor": 45
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "service-block-breakpoints.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "maxVisits": 4,
+            "plans": [
+              {
+                "name": "A",
+                "type": "blocks",
+                "baseMinor": 0,
+                "included": 0,
+                "blockSize": 2,
+                "blockMinor": 600
+              },
+              {
+                "name": "B",
+                "type": "progressive",
+                "baseMinor": 0,
+                "included": 0,
+                "bands": [
+                  {
+                    "upTo": null,
+                    "rateMinor": 350
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "maxVisits": 4,
+            "plans": [
+              {
+                "name": "A",
+                "type": "progressive",
+                "baseMinor": 100,
+                "included": 1,
+                "bands": [
+                  {
+                    "upTo": 2,
+                    "rateMinor": 40
+                  },
+                  {
+                    "upTo": null,
+                    "rateMinor": 75
+                  }
+                ]
+              },
+              {
+                "name": "B",
+                "type": "blocks",
+                "baseMinor": 130,
+                "included": 0,
+                "blockSize": 2,
+                "blockMinor": 45
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "visits": [
+            {
+              "count": 0,
+              "aMinor": 100,
+              "bMinor": 130,
+              "relation": "A"
+            },
+            {
+              "count": 1,
+              "aMinor": 100,
+              "bMinor": 175,
+              "relation": "A"
+            },
+            {
+              "count": 2,
+              "aMinor": 140,
+              "bMinor": 175,
+              "relation": "A"
+            },
+            {
+              "count": 3,
+              "aMinor": 180,
+              "bMinor": 220,
+              "relation": "A"
+            },
+            {
+              "count": 4,
+              "aMinor": 255,
+              "bMinor": 220,
+              "relation": "B"
+            }
+          ],
+          "spans": [
+            {
+              "from": 0,
+              "to": 3,
+              "relation": "A"
+            },
+            {
+              "from": 4,
+              "to": 4,
+              "relation": "B"
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

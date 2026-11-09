@@ -1,0 +1,399 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-knit-gauge-planner-20261109",
+  "cases": [
+    {
+      "id": "knit-gauge-planner.repeats",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 20,
+        "swatchWidthMm": 100,
+        "swatchRows": 24,
+        "swatchHeightMm": 120,
+        "targetWidthMm": 103,
+        "targetHeightMm": 52,
+        "edgeEach": 2,
+        "repeatStitches": 6,
+        "repeatRows": 4
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 16,
+              "sizeTenthsMm": 800
+            },
+            "upper": {
+              "count": 22,
+              "sizeTenthsMm": 1100
+            },
+            "chosen": {
+              "count": 22,
+              "sizeTenthsMm": 1100
+            }
+          },
+          "rows": {
+            "lower": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "upper": {
+              "count": 12,
+              "sizeTenthsMm": 600
+            },
+            "chosen": {
+              "count": 12,
+              "sizeTenthsMm": 600
+            }
+          }
+        }
+      },
+      "derivation": "兩軸每單位 5 mm。寬 80/110 選 110，高 40/60 選 60。"
+    },
+    {
+      "id": "knit-gauge-planner.exact",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 20,
+        "swatchWidthMm": 100,
+        "swatchRows": 20,
+        "swatchHeightMm": 100,
+        "targetWidthMm": 100,
+        "targetHeightMm": 40,
+        "edgeEach": 1,
+        "repeatStitches": 6,
+        "repeatRows": 4
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            },
+            "upper": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            },
+            "chosen": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            }
+          },
+          "rows": {
+            "lower": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "upper": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "chosen": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            }
+          }
+        }
+      },
+      "derivation": "20=2+3×6，8=2×4，兩軸都恰達。"
+    },
+    {
+      "id": "knit-gauge-planner.tie-up",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 20,
+        "swatchWidthMm": 100,
+        "swatchRows": 20,
+        "swatchHeightMm": 100,
+        "targetWidthMm": 95,
+        "targetHeightMm": 50,
+        "edgeEach": 2,
+        "repeatStitches": 6,
+        "repeatRows": 4
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 16,
+              "sizeTenthsMm": 800
+            },
+            "upper": {
+              "count": 22,
+              "sizeTenthsMm": 1100
+            },
+            "chosen": {
+              "count": 22,
+              "sizeTenthsMm": 1100
+            }
+          },
+          "rows": {
+            "lower": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "upper": {
+              "count": 12,
+              "sizeTenthsMm": 600
+            },
+            "chosen": {
+              "count": 12,
+              "sizeTenthsMm": 600
+            }
+          }
+        }
+      },
+      "derivation": "寬差各 15 mm、高差各 10 mm，皆取較大整數。"
+    },
+    {
+      "id": "knit-gauge-planner.fraction-and-min",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 30,
+        "swatchWidthMm": 100,
+        "swatchRows": 30,
+        "swatchHeightMm": 100,
+        "targetWidthMm": 5,
+        "targetHeightMm": 1,
+        "edgeEach": 0,
+        "repeatStitches": 1,
+        "repeatRows": 1
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 1,
+              "sizeTenthsMm": 33
+            },
+            "upper": {
+              "count": 2,
+              "sizeTenthsMm": 67
+            },
+            "chosen": {
+              "count": 2,
+              "sizeTenthsMm": 67
+            }
+          },
+          "rows": {
+            "lower": null,
+            "upper": {
+              "count": 1,
+              "sizeTenthsMm": 33
+            },
+            "chosen": {
+              "count": 1,
+              "sizeTenthsMm": 33
+            }
+          }
+        }
+      },
+      "derivation": "100/30 與 200/30 的精確中點為 5。一行 10/3 mm，已高於 1 mm。"
+    },
+    {
+      "id": "knit-gauge-planner.count-cap",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 1000,
+        "swatchWidthMm": 1,
+        "swatchRows": 1000,
+        "swatchHeightMm": 1,
+        "targetWidthMm": 5000,
+        "targetHeightMm": 5000,
+        "edgeEach": 0,
+        "repeatStitches": 1,
+        "repeatRows": 1
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 10000,
+              "sizeTenthsMm": 100
+            },
+            "upper": null,
+            "chosen": {
+              "count": 10000,
+              "sizeTenthsMm": 100
+            }
+          },
+          "rows": {
+            "lower": {
+              "count": 10000,
+              "sizeTenthsMm": 100
+            },
+            "upper": null,
+            "chosen": {
+              "count": 10000,
+              "sizeTenthsMm": 100
+            }
+          }
+        }
+      },
+      "derivation": "上限 10000×1/1000 為 10 mm，兩軸都只有較小可行數。"
+    },
+    {
+      "id": "knit-gauge-planner.zero-swatch",
+      "kind": "solve",
+      "input": {
+        "swatchStitches": 0,
+        "swatchWidthMm": 100,
+        "swatchRows": 20,
+        "swatchHeightMm": 100,
+        "targetWidthMm": 100,
+        "targetHeightMm": 40,
+        "edgeEach": 1,
+        "repeatStitches": 6,
+        "repeatRows": 4
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "RANGE",
+          "path": "/swatchStitches"
+        }
+      },
+      "derivation": "試片至少有一針才能形成有意義的寬度比例。"
+    },
+    {
+      "id": "knit-gauge-planner.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "swatchStitches": 20,
+            "swatchWidthMm": 100,
+            "swatchRows": 24,
+            "swatchHeightMm": 120,
+            "targetWidthMm": 103,
+            "targetHeightMm": 52,
+            "edgeEach": 2,
+            "repeatStitches": 6,
+            "repeatRows": 4
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "swatchStitches": 20,
+            "swatchWidthMm": 100,
+            "swatchRows": 20,
+            "swatchHeightMm": 100,
+            "targetWidthMm": 100,
+            "targetHeightMm": 40,
+            "edgeEach": 1,
+            "repeatStitches": 6,
+            "repeatRows": 4
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "knit-gauge-planner.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "swatchStitches": 20,
+            "swatchWidthMm": 100,
+            "swatchRows": 24,
+            "swatchHeightMm": 120,
+            "targetWidthMm": 103,
+            "targetHeightMm": 52,
+            "edgeEach": 2,
+            "repeatStitches": 6,
+            "repeatRows": 4
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "swatchStitches": 20,
+            "swatchWidthMm": 100,
+            "swatchRows": 20,
+            "swatchHeightMm": 100,
+            "targetWidthMm": 100,
+            "targetHeightMm": 40,
+            "edgeEach": 1,
+            "repeatStitches": 6,
+            "repeatRows": 4
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "stitches": {
+            "lower": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            },
+            "upper": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            },
+            "chosen": {
+              "count": 20,
+              "sizeTenthsMm": 1000
+            }
+          },
+          "rows": {
+            "lower": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "upper": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            },
+            "chosen": {
+              "count": 8,
+              "sizeTenthsMm": 400
+            }
+          }
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

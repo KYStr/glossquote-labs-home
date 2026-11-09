@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-frame-row-marking-20261109",
+  "cases": [
+    {
+      "id": "frame-row-marking.center",
+      "kind": "solve",
+      "input": {
+        "spanMm": 1000,
+        "minGapMm": 100,
+        "align": "center",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 200,
+            "hMm": 300,
+            "hookLeftMm": 100,
+            "hookTopMm": 40
+          },
+          {
+            "name": "B",
+            "wMm": 300,
+            "hMm": 200,
+            "hookLeftMm": 150,
+            "hookTopMm": 20
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "feasible": true,
+          "deficitMm": 0,
+          "gapTenths": 1667,
+          "marks": [
+            {
+              "name": "A",
+              "leftTenths": 1667,
+              "topTenths": 0,
+              "hookXTenths": 2667,
+              "hookYTenths": 400
+            },
+            {
+              "name": "B",
+              "leftTenths": 5333,
+              "topTenths": 500,
+              "hookXTenths": 6833,
+              "hookYTenths": 700
+            }
+          ]
+        }
+      },
+      "derivation": "剩 500 mm 分三段。B 左緣 200+1000/3，頂緣較高框下移 50 mm。"
+    },
+    {
+      "id": "frame-row-marking.top",
+      "kind": "solve",
+      "input": {
+        "spanMm": 600,
+        "minGapMm": 0,
+        "align": "top",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 200,
+            "hMm": 100,
+            "hookLeftMm": 25,
+            "hookTopMm": 10
+          },
+          {
+            "name": "B",
+            "wMm": 100,
+            "hMm": 200,
+            "hookLeftMm": 80,
+            "hookTopMm": 15
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "feasible": true,
+          "deficitMm": 0,
+          "gapTenths": 1000,
+          "marks": [
+            {
+              "name": "A",
+              "leftTenths": 1000,
+              "topTenths": 0,
+              "hookXTenths": 1250,
+              "hookYTenths": 100
+            },
+            {
+              "name": "B",
+              "leftTenths": 4000,
+              "topTenths": 0,
+              "hookXTenths": 4800,
+              "hookYTenths": 150
+            }
+          ]
+        }
+      },
+      "derivation": "剩 300 mm，三段各 100。兩框頂為 0，掛點各自加框內偏移。"
+    },
+    {
+      "id": "frame-row-marking.exact-gap",
+      "kind": "solve",
+      "input": {
+        "spanMm": 360,
+        "minGapMm": 20,
+        "align": "top",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 0,
+            "hookTopMm": 0
+          },
+          {
+            "name": "B",
+            "wMm": 200,
+            "hMm": 100,
+            "hookLeftMm": 200,
+            "hookTopMm": 100
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "feasible": true,
+          "deficitMm": 0,
+          "gapTenths": 200,
+          "marks": [
+            {
+              "name": "A",
+              "leftTenths": 200,
+              "topTenths": 0,
+              "hookXTenths": 200,
+              "hookYTenths": 0
+            },
+            {
+              "name": "B",
+              "leftTenths": 1400,
+              "topTenths": 0,
+              "hookXTenths": 3400,
+              "hookYTenths": 1000
+            }
+          ]
+        }
+      },
+      "derivation": "300+3×20 正好 360。左右端點掛位合法。"
+    },
+    {
+      "id": "frame-row-marking.short",
+      "kind": "solve",
+      "input": {
+        "spanMm": 359,
+        "minGapMm": 20,
+        "align": "top",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 50,
+            "hookTopMm": 0
+          },
+          {
+            "name": "B",
+            "wMm": 200,
+            "hMm": 100,
+            "hookLeftMm": 100,
+            "hookTopMm": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "feasible": false,
+          "deficitMm": 1,
+          "gapTenths": null,
+          "marks": []
+        }
+      },
+      "derivation": "至少 360 mm，差 1 mm，無放置座標。"
+    },
+    {
+      "id": "frame-row-marking.hook-out",
+      "kind": "solve",
+      "input": {
+        "spanMm": 500,
+        "minGapMm": 0,
+        "align": "top",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 101,
+            "hookTopMm": 0
+          },
+          {
+            "name": "B",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 30,
+            "hookTopMm": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "OFFSET",
+          "path": "/frames/0/hookLeftMm"
+        }
+      },
+      "derivation": "A 掛點水平偏移 101 mm 超出寬 100 mm。"
+    },
+    {
+      "id": "frame-row-marking.fractional-wall",
+      "kind": "solve",
+      "input": {
+        "spanMm": 500.5,
+        "minGapMm": 0,
+        "align": "top",
+        "frames": [
+          {
+            "name": "A",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 20,
+            "hookTopMm": 0
+          },
+          {
+            "name": "B",
+            "wMm": 100,
+            "hMm": 100,
+            "hookLeftMm": 20,
+            "hookTopMm": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "TYPE",
+          "path": "/spanMm"
+        }
+      },
+      "derivation": "牆寬核心只接受整數毫米。"
+    },
+    {
+      "id": "frame-row-marking.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "spanMm": 1000,
+            "minGapMm": 100,
+            "align": "center",
+            "frames": [
+              {
+                "name": "A",
+                "wMm": 200,
+                "hMm": 300,
+                "hookLeftMm": 100,
+                "hookTopMm": 40
+              },
+              {
+                "name": "B",
+                "wMm": 300,
+                "hMm": 200,
+                "hookLeftMm": 150,
+                "hookTopMm": 20
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "spanMm": 600,
+            "minGapMm": 0,
+            "align": "top",
+            "frames": [
+              {
+                "name": "A",
+                "wMm": 200,
+                "hMm": 100,
+                "hookLeftMm": 25,
+                "hookTopMm": 10
+              },
+              {
+                "name": "B",
+                "wMm": 100,
+                "hMm": 200,
+                "hookLeftMm": 80,
+                "hookTopMm": 15
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "frame-row-marking.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "spanMm": 1000,
+            "minGapMm": 100,
+            "align": "center",
+            "frames": [
+              {
+                "name": "A",
+                "wMm": 200,
+                "hMm": 300,
+                "hookLeftMm": 100,
+                "hookTopMm": 40
+              },
+              {
+                "name": "B",
+                "wMm": 300,
+                "hMm": 200,
+                "hookLeftMm": 150,
+                "hookTopMm": 20
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "spanMm": 600,
+            "minGapMm": 0,
+            "align": "top",
+            "frames": [
+              {
+                "name": "A",
+                "wMm": 200,
+                "hMm": 100,
+                "hookLeftMm": 25,
+                "hookTopMm": 10
+              },
+              {
+                "name": "B",
+                "wMm": 100,
+                "hMm": 200,
+                "hookLeftMm": 80,
+                "hookTopMm": 15
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "feasible": true,
+          "deficitMm": 0,
+          "gapTenths": 1000,
+          "marks": [
+            {
+              "name": "A",
+              "leftTenths": 1000,
+              "topTenths": 0,
+              "hookXTenths": 1250,
+              "hookYTenths": 100
+            },
+            {
+              "name": "B",
+              "leftTenths": 4000,
+              "topTenths": 0,
+              "hookXTenths": 4800,
+              "hookYTenths": 150
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}
