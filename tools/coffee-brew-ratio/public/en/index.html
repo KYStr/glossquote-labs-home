@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Coffee Brew Ratio Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a coffee dose or total water with a brew ratio to get the other amount, bloom water, and a four-step pour schedule with cumulative targets.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Coffee Brew Ratio Calculator</h1>
+  <p class="lede">Start from a coffee dose or a total water amount, enter the brew ratio, and get the other amount, the bloom water, and a bloom-plus-three-pours schedule with per-pour amounts and cumulative targets to follow on your scale. Water is counted as 1 ml ≈ 1 g.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Brew setup</h2>
+      <form id="brew-form" novalidate>
+        <fieldset class="field mode-group">
+          <legend>Calculation mode</legend>
+          <label class="radio-row" for="field-mode-dose">
+            <input id="field-mode-dose" name="mode" type="radio" value="dose" checked>
+            By coffee dose
+          </label>
+          <label class="radio-row" for="field-mode-water">
+            <input id="field-mode-water" name="mode" type="radio" value="water">
+            By water amount
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-amount" id="amount-label">Coffee dose (g)</label>
+          <p class="help" id="help-amount">1.0 to 200.0 g, at most one decimal place.</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="20" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ratio">Brew ratio</label>
+          <p class="help" id="help-ratio">1:10.0 to 1:20.0. A preset button writes its ratio into the field, or type a custom ratio directly.</p>
+          <div class="preset-row" role="group" aria-label="Ratio presets">
+            <button type="button" class="button-secondary preset" data-ratio-preset="12">1:12</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="13">1:13</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="14">1:14</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="15">1:15</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="16">1:16</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="17">1:17</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="18">1:18</button>
+          </div>
+          <input id="field-ratio" name="ratio" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-ratio">
+          <p class="field-error" id="error-ratio" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bloomMultiplier">Bloom multiplier</label>
+          <p class="help" id="help-bloomMultiplier">Bloom water = dose × multiplier, 0.0 to 5.0.</p>
+          <input id="field-bloomMultiplier" name="bloomMultiplier" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-bloomMultiplier">
+          <p class="field-error" id="error-bloomMultiplier" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter values or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate brew plan</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Dose, water and pour schedule</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Pour schedule" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Step</th><th scope="col">This pour</th><th scope="col">Cumulative target</th></tr>
+          </thead>
+          <tbody id="step-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated and formatted</summary>
+    <p>A ratio of 1:R means R grams of water for every 1 gram of coffee. From a dose, total water = dose × R; from total water, dose = total water ÷ R. Both results are rounded to the nearest 0.1 (halves round up). Bloom water is the solved dose times the bloom multiplier.</p>
+    <p>The water left after blooming is split into three equal pours; leftover 0.1 ml units go to the earlier pours. Each step shows its own pour amount and the cumulative target, and the final cumulative target always equals the total water exactly. Grams and millilitres always show one decimal place. This tool creates no export file; the results are plain selectable text on the page.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What does 1:15 mean?</dt>
+      <dd>1 g of coffee to 15 g of water; this tool treats 1 ml of water as 1 g.</dd>
+      <dt>How is bloom water calculated?</dt>
+      <dd>Dose × the bloom multiplier (default 2×, adjustable from 0 to 5×).</dd>
+      <dt>How are the pours split?</dt>
+      <dd>The water left after blooming is split into three equal pours; leftover 0.1 ml units go to the earlier pours, so the final cumulative target equals the total exactly.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
