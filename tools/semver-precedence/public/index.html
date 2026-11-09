@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SemVer 版本順位比較｜Gloss Tools</title>
+<meta name="description" content="工程師面對兩個發布版本及 prerelease 標籤時，需要核對哪個順位在先、差異出在哪一個識別符。">
+<link rel="canonical" href="index.html">
+<link rel="alternate" hreflang="zh-Hant" href="index.html">
+<link rel="alternate" hreflang="en" href="en/index.html">
+<link rel="alternate" hreflang="x-default" href="index.html">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="status"><span class="status-badge" id="status-badge" data-tone="info">尚未開始</span></span>
+  <nav class="lang-nav" aria-label="語言">
+    <a id="lang-link" href="en/index.html" lang="en">English</a>
+    <span aria-hidden="true">·</span>
+    <a id="home-link" href="../../">回首頁</a>
+  </nav>
+</header>
+
+<main>
+  <h1>SemVer 版本順位比較</h1>
+  <p class="lede">比較兩個 Semantic Versioning 2.0.0 版本，看哪一個順位在先、差異出在哪一個識別符。全部計算都在本機進行，不會上傳或儲存你輸入的內容。</p>
+
+  <div class="notice" role="note">
+    <p>切換語言或離開頁面會失去草稿。比較結果只對目前輸入的快照有效；輸入一改，舊結果與下載立即失效。</p>
+  </div>
+
+  <form id="compare-form" novalidate>
+    <div class="fields">
+      <div class="field">
+        <label for="left-input">左側版本
+          <span class="hint">例如 1.0.0-rc.10；不加 v 前綴，不留空白。</span>
+        </label>
+        <input id="left-input" name="left" type="text" inputmode="text" autocomplete="off"
+          spellcheck="false" maxlength="256" aria-describedby="left-error">
+        <p class="field-error" id="left-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="right-input">右側版本
+          <span class="hint">例如 1.0.0-rc.2；不加 v 前綴，不留空白。</span>
+        </label>
+        <input id="right-input" name="right" type="text" inputmode="text" autocomplete="off"
+          spellcheck="false" maxlength="256" aria-describedby="right-error">
+        <p class="field-error" id="right-error" hidden></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="compare-button" class="primary">比較版本順位</button>
+      <button type="button" id="example-button">載入範例</button>
+      <button type="button" id="cancel-button" hidden>取消</button>
+      <button type="button" id="reset-button">重設</button>
+    </div>
+
+    <p class="status-line" id="status-line" role="status" aria-live="polite">請輸入兩個版本，或載入範例。</p>
+  </form>
+
+  <section class="result" id="result" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">順位與決定它的識別符</h2>
+    <p class="summary" id="result-summary"></p>
+    <p class="deciding" id="result-deciding"></p>
+    <table class="breakdown">
+      <caption>逐欄比對</caption>
+      <thead>
+        <tr><th scope="col">欄位</th><th scope="col">左側版本</th><th scope="col">右側版本</th><th scope="col">說明</th></tr>
+      </thead>
+      <tbody id="breakdown-body"></tbody>
+    </table>
+    <div class="download-row">
+      <button type="button" id="download-button">下載報告</button>
+    </div>
+  </section>
+
+  <details>
+    <summary>輸入限制</summary>
+    <ul>
+      <li>每個版本最多 256 個字元；不修剪空白，開頭或結尾的空白都會被拒絕。</li>
+      <li>格式為 <code>主版本.次版本.修訂版本</code>，可選 <code>-prerelease</code> 與 <code>+build</code>；不接受 <code>v</code> 前綴。</li>
+      <li>主欄每欄最多 32 位數字，不可有前導零（0 本身除外）。</li>
+      <li>prerelease 與 build 各最多 16 個識別符，每個識別符最多 32 個字元，僅可含 <code>0-9 A-Z a-z -</code>。</li>
+      <li>純數字的 prerelease 識別符不可有前導零；build 識別符可以。</li>
+      <li>build metadata 不參與順位比較。</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>常見問題</summary>
+    <p><strong>rc.10 和 rc.2 哪個較新順位？</strong><br>相同前綴下，10 依數值大於 2。</p>
+    <p><strong>+build.2 會比 +build.1 順位高嗎？</strong><br>build metadata 不參與順位比較。</p>
+  </details>
+</main>
+
+<footer>
+  <p>純本地工具：沒有帳號、沒有上傳、不留紀錄。報告檔名固定為 <code>semver-precedence-report.json</code>。</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
