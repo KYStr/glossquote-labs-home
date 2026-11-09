@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>烘焙百分比計算機 — GlossQuote Labs</title>
+<meta name="description" content="以麵粉總重為 100% 基準，把烘焙百分比配方換算成克數、由克數反推百分比與含水量，三種模式互相一致，全程在本機計算。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <nav>
+    <a href="../../">← GlossQuote Labs 首頁</a>
+    <a href="./en/index.html" hreflang="en">English</a>
+  </nav>
+  <h1>烘焙百分比計算機</h1>
+  <p>烘焙百分比一律以<strong>全部麵粉的總重</strong>為 100% 基準，不是麵糰總重，也不是每一種麵粉各自為 100%。輸入一次配方，就能用目標總重或麵粉重換算每種材料的克數，或由實際克數反推百分比與含水量。</p>
+</header>
+<main>
+  <fieldset id="mode-fieldset">
+    <legend>計算模式</legend>
+    <label><input type="radio" name="mode" value="A" checked> 模式 A：由麵糰總重換算</label>
+    <label><input type="radio" name="mode" value="B"> 模式 B：由麵粉重換算</label>
+    <label><input type="radio" name="mode" value="C"> 模式 C：由克數反推百分比</label>
+  </fieldset>
+
+  <div id="basis-input-a" class="basis-input">
+    <label for="target-weight">目標麵糰總重（克，1–100,000）</label>
+    <input id="target-weight" type="text" inputmode="decimal" value="840" autocomplete="off">
+  </div>
+  <div id="basis-input-b" class="basis-input" hidden>
+    <label for="flour-weight">麵粉總重（克，1–100,000）</label>
+    <input id="flour-weight" type="text" inputmode="decimal" value="500" autocomplete="off">
+  </div>
+  <p id="mode-c-note" class="note" hidden></p>
+
+  <p id="basis-indicator" class="basis-indicator"></p>
+  <div id="errors" class="errors" aria-live="polite"></div>
+
+  <table id="formula-table">
+    <caption>配方（百分比一律相對全部麵粉總重）</caption>
+    <thead>
+      <tr>
+        <th scope="col">材料名稱</th>
+        <th scope="col" id="value-header">百分比（%）</th>
+        <th scope="col">麵粉</th>
+        <th scope="col">水</th>
+        <th scope="col" id="result-header">重量（克）</th>
+        <th scope="col">操作</th>
+      </tr>
+    </thead>
+    <tbody id="rows-body"></tbody>
+  </table>
+  <p>
+    <button id="add-row" type="button">新增一列</button>
+    <span id="row-note" class="note"></span>
+  </p>
+
+  <section id="results" aria-label="計算結果">
+    <p id="stale-badge" class="stale" hidden></p>
+    <p>麵糰總重：<strong id="result-total">—</strong> 克</p>
+    <p>含水量：<strong id="result-hydration">—</strong>%（含水量 = 勾選為「水」的材料 ÷ 全部麵粉；牛奶、蛋等材料只有在你勾選為水時才計入，本工具不會依名稱猜測。）</p>
+    <p id="total-note" class="note">模式 A 顯示的總重是你輸入的目標總重本身；每一列的克數是各自獨立四捨五入到 0.1 克的結果，所以各列加總可能與總重差幾分之幾克。</p>
+  </section>
+
+  <noscript><p class="errors">這個工具需要 JavaScript 才能計算；所有計算都在你的瀏覽器本機進行，不會傳送或儲存任何資料。</p></noscript>
+</main>
+<footer>
+  <p>所有計算都在本機完成：不連網、不儲存、不追蹤。百分比四捨五入與克數一樣採 0.1 單位、五入。配方不會出現在網址或頁面標題裡。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
