@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>School Entry Year Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a child's birth date to derive the Taiwan elementary entry September, school year, age at entry, kindergarten entry years and a 12-year grade projection from the September 1 age-six rule.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>School Entry Year Calculator</h1>
+  <p class="lede">Enter a child's birth date and an as-of date. Under Taiwan's rule — children who have turned six on or before September 1 enter elementary school that September — the tool derives the elementary entry September and school year, the age at entry, the entry years of all four kindergarten classes, the current class or grade for the school year containing the as-of date, and a 12-year projection from elementary grade 1 to senior high grade 3. One day of difference can mean a whole cohort, so there is no need to count year by year.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Birth date and as-of date</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-birthDate">Birth date</label>
+          <p class="help" id="help-birthDate">Gregorian date in YYYY-MM-DD format, from 1912-01-01 to 2199-12-31. Only Gregorian input is accepted; ROC years appear in the results only.</p>
+          <input id="field-birthDate" name="birthDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-birthDate">
+          <p class="field-error" id="error-birthDate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-asOfDate">As-of date</label>
+          <p class="help" id="help-asOfDate">The current school year and class are judged as of this day; same format and range as above. Use “Use today” to fill in today's date.</p>
+          <input id="field-asOfDate" name="asOfDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-asOfDate">
+          <p class="field-error" id="error-asOfDate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a birth date and an as-of date, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate entry &amp; grade</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="today-btn" class="button-secondary">Use today</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Elementary entry</h2>
+      <dl class="summary-list" id="entry-rows"></dl>
+      <h3>Current status</h3>
+      <dl class="summary-list" id="current-rows"></dl>
+      <h3>Kindergarten entry years</h3>
+      <div class="table-scroll" role="region" aria-label="Kindergarten entry years table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Class</th><th scope="col">Entry year</th><th scope="col">School year (ROC)</th></tr>
+          </thead>
+          <tbody id="kindergarten-rows"></tbody>
+        </table>
+      </div>
+      <h3>12-year school projection</h3>
+      <div class="table-scroll" role="region" aria-label="12-year school projection table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Grade</th><th scope="col">Entry year</th><th scope="col">School year (ROC)</th><th scope="col">Period</th></tr>
+          </thead>
+          <tbody id="projection-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">Public kindergarten classes and elementary entry years are divided by age reached on September 1. Private kindergarten admission ages, early entry and delayed entry rules may differ; check the school and local government announcements.</p>
+      <p class="disclaimer">公立幼兒園與國小依 9 月 1 日足歲劃分班級與入學年度；私立幼兒園收托月齡、提早入學與緩讀規定可能不同，實際請以各校及地方政府公告為準。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>The division rule is fixed: a child who has turned six on or before September 1 of a school year enters elementary grade 1 that September. When the birth (month, day) falls on or before September 1, the entry year is the birth year plus 6; from September 2 onward it is the birth year plus 7. The age at entry is always 6 years plus a number of months counted from the observed sixth birthday to September 1 of the entry year.</p>
+    <p>A school year runs from September 1 to the next August 31 and is named by its starting year; the ROC year is the Gregorian year minus 1911. Kindergarten classes are divided by age reached on September 1: age 2 enters the toddler class, age 3 the junior class, age 4 the middle class, and age 5 the senior class, so the four entry years are 4, 3, 2, and 1 years before the elementary entry year. A February 29 birthday is observed on March 1 in non-leap years. The projection always lists all twelve years from elementary grade 1 to senior high grade 3, regardless of the as-of date.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why does one day change the cohort?</dt>
+      <dd>Children who have turned six on or before September 1 enter that September; a September 2 birthday waits until the next September.</dd>
+      <dt>Born on February 29?</dt>
+      <dd>In non-leap years the birthday is observed on March 1; entry still turns on being six by September 1 of the entry year.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally on this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

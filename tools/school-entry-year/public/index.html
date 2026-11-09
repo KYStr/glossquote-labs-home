@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>入學年度與年級推算｜Gloss Tools</title>
+<meta name="description" content="輸入孩子出生日期，依 9 月 1 日前足六歲的規則推算小一入學年月、學年度、入學時年齡、幼兒園入學年與十二年就學對照表。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>入學年度與年級推算</h1>
+  <p class="lede">輸入孩子的出生日期與查詢日期，依臺灣「9 月 1 日（含）前足六歲者當年 9 月入國小一年級」的劃分規則，一次推出小一入學年月與學年度、入學時年齡、幼兒園四個班別的入學年、查詢日所屬學年度的目前班級／年級，以及從小一到高三的十二年就學對照表。相差一天就可能差一整屆，不必再逐年手算。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">出生日期與查詢日期</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-birthDate">出生日期</label>
+          <p class="help" id="help-birthDate">西元日期，格式 YYYY-MM-DD，範圍 1912-01-01 至 2199-12-31。只接受西元輸入，民國年只出現在結果顯示。</p>
+          <input id="field-birthDate" name="birthDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-birthDate">
+          <p class="field-error" id="error-birthDate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-asOfDate">查詢日期</label>
+          <p class="help" id="help-asOfDate">以這一天判斷所屬學年度與目前班級，格式與範圍同上。可用「使用今天」填入今天日期。</p>
+          <input id="field-asOfDate" name="asOfDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-asOfDate">
+          <p class="field-error" id="error-asOfDate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入出生日期與查詢日期，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算入學與年級</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="today-btn" class="button-secondary">使用今天</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">小一入學</h2>
+      <dl class="summary-list" id="entry-rows"></dl>
+      <h3>目前狀態</h3>
+      <dl class="summary-list" id="current-rows"></dl>
+      <h3>幼兒園入學年</h3>
+      <div class="table-scroll" role="region" aria-label="幼兒園入學年表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">班別</th><th scope="col">入學年（西元）</th><th scope="col">學年度（民國）</th></tr>
+          </thead>
+          <tbody id="kindergarten-rows"></tbody>
+        </table>
+      </div>
+      <h3>十二年就學對照表</h3>
+      <div class="table-scroll" role="region" aria-label="十二年就學對照表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">年級</th><th scope="col">入學年（西元）</th><th scope="col">學年度（民國）</th><th scope="col">期間</th></tr>
+          </thead>
+          <tbody id="projection-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">公立幼兒園與國小依 9 月 1 日足歲劃分班級與入學年度；私立幼兒園收托月齡、提早入學與緩讀規定可能不同，實際請以各校及地方政府公告為準。</p>
+      <p class="disclaimer">Public kindergarten classes and elementary entry years are divided by age reached on September 1. Private kindergarten admission ages, early entry and delayed entry rules may differ; check the school and local government announcements.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與規則出處</summary>
+    <p>劃分規則固定為：學年度 9 月 1 日（含）前足六歲者，當年 9 月入國小一年級。出生日期的（月，日）在 9 月 1 日或之前，入學年為出生年加 6；在 9 月 2 日或之後，入學年為出生年加 7。入學時年齡恆為 6 歲又若干個月，月數自滿六歲的生日屆滿日起算至入學年 9 月 1 日。</p>
+    <p>學年度以 9 月 1 日起、次年 8 月 31 日止，並以起始年命名；民國年等於西元年減 1911。幼兒園依學年度 9 月 1 日足歲分班：足 2 歲入幼幼班、足 3 歲入小班、足 4 歲入中班、足 5 歲入大班，因此四個班別的入學年依序為小一入學年前 4、3、2、1 年。2 月 29 日出生者，非閏年以 3 月 1 日為生日屆滿日。十二年對照表固定列出國小一年級至高中三年級，不隨查詢日期增減。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>差一天為什麼差一屆？</dt>
+      <dd>9 月 1 日（含）前出生、當年 9 月 1 日已足六歲者當年入學；9 月 2 日出生者要等下一個 9 月。</dd>
+      <dt>2 月 29 日出生怎麼算？</dt>
+      <dd>非閏年以 3 月 1 日為生日屆滿日；入學仍以入學年 9 月 1 日前是否足六歲判定。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
