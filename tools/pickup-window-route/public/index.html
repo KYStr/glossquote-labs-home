@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多站取件時窗路線｜Gloss Tools</title>
+<meta name="description" content="用自行估算的有向旅時與取件窗口找出同日可完成的訪站順序。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>多站取件時窗路線</h1>
+  <p class="intro">設定同日出發與最晚返回時間，填入各站的取件窗口與取件耗時，再填寫各方向的旅時分鐘；按下「找出可完成的取件順序」，就得到最早返回的訪站順序與每站的等候時間。</p>
+
+  <form id="route-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>出發與返回</legend>
+          <p class="help">格式 HH:MM，例如 08:00。24:00 只可用於最晚返回或關閉時間。</p>
+          <div class="field-row">
+            <div class="field field-time">
+              <label for="start">出發時間</label>
+              <input type="text" id="start" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="HH:MM">
+            </div>
+            <div class="field field-time">
+              <label for="deadline">最晚返回時間</label>
+              <input type="text" id="deadline" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="HH:MM">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>取件站</legend>
+          <p class="help">1–8 站。每站都要有代號、可取件起迄與取件耗時。</p>
+          <div id="stops-body" class="rows"></div>
+          <button type="button" id="add-stop" class="secondary">新增一站</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>有向旅時矩陣（分鐘）</legend>
+          <p class="help">列是出發來源，欄是目的地；0 是出發處，1…n 依站序。對角固定 0。無法直達的方向請勾選「不可直達」。</p>
+          <div class="field">
+            <label for="matrix-source">顯示來源</label>
+            <select id="matrix-source"></select>
+          </div>
+          <div id="matrix-wrap" class="matrix-wrap">
+            <table id="matrix-table" class="matrix-table"></table>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="find" class="primary">找出可完成的取件順序</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（先去 B 再去 A，可在 08:50 返回）；載入後仍需按「找出可完成的取件順序」才會計算。</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="取件結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
