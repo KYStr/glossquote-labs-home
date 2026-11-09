@@ -1,0 +1,840 @@
+diff --git a/tools/text-to-speech-reader/ERRATA.md b/tools/text-to-speech-reader/ERRATA.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa773ff8f33e06b7135a918d38e166bba2c69cca
+--- /dev/null
++++ b/tools/text-to-speech-reader/ERRATA.md
+@@ -0,0 +1,16 @@
++# Text-to-speech reader specification errata
++
++The 2026-11-09 [maintenance decision](../../docs/repairs/blocked-four-2026-11-09/SPEC-ERRATA.md)
++supersedes the [frozen specification](https://github.com/KYStr/glossquote-labs-home/blob/1b8dac4bb3369cec073ff2b7d637ed47e54f86f4/docs/specs/text-to-speech-reader/SPEC.md)'s
++network and implicit voice fallback rules.
++
++- Only voices currently enumerated by the browser with `localService === true`
++  can be selected or used for playback. Choose an initial local voice that
++  matches the interface language when available.
++- Before each chunk, use the fresh local voice object for the selected URI.
++  Before resume, verify that both the selected voice and the already queued
++  utterance's voice still qualify. A voice-list update that invalidates playback
++  stops the reader. After a selection disappears, choose another available local
++  voice or wait for the same voice to return.
++- The local label reflects the browser's report. Device speech and network
++  behavior require separate observation.
+diff --git a/tools/text-to-speech-reader/README.md b/tools/text-to-speech-reader/README.md
+index 7afaf6623bb49458274996613dac573275825645..5d911ab99c5a8dabf3f7e04d487761c759c496e9 100644
+--- a/tools/text-to-speech-reader/README.md
++++ b/tools/text-to-speech-reader/README.md
+@@ -1,16 +1,18 @@
+ # 文字朗讀 · Text-to-Speech Reader
+ 
+-把貼上的文字用瀏覽器提供的聲音朗讀出來的工具：逐句分段、逐句標示，播放／
+-暫停／繼續／停止齊全，可點任一句從該句開始，也可調語速與音高。文字只留在
+-分頁記憶體——不儲存、不上傳；唯一的例外是使用者自己選的「網路聲音」，頁面
+-在選到時會先明示。零 runtime 依賴。
++用瀏覽器標示為本機的聲音朗讀文字。頁面支援逐句標示、暫停、繼續、停止，
++也可選一句開始朗讀，並調整語速及音高。頁面不儲存或上傳文字。
++零執行階段依賴。
+ 
+-A reader that speaks pasted text with the voices your browser offers:
+-rule-based sentence segmentation and highlighting, play / pause / resume /
+-stop, play-from-any-sentence, and rate and pitch controls. Text lives only
+-in the tab's memory — never stored, never uploaded; the single exception is
+-a network voice you pick yourself, which the page discloses the moment you
+-pick it. Zero runtime dependencies.
++A reader that speaks pasted text with voices the browser identifies as local.
++It segments and highlights sentences, supports pausing, resuming and stopping,
++and can start from a chosen sentence. Rate and pitch are adjustable. The page
++does not store or upload text. Zero runtime dependencies.
++
++本次維護的聲音規則見 [規格勘誤](ERRATA.md)。原候選的狀態與驗證紀錄屬歷史證據。
++
++See the [specification errata](ERRATA.md) for the voice policy.
++The original candidate's status and verification files record its historical evidence.
+ 
+ ## 功能 · Features
+ 
+@@ -43,13 +45,15 @@ pick it. Zero runtime dependencies.
+   Progress: sentence k of N and a character percentage both derive from
+   the chunk list (percentage rounds down), never from boundary events, so
+   progress is identical across browsers for the same text
+-- 聲音清單：名稱、語言標籤與本機／網路標籤並列；預設先選與介面語言
+-  相符的聲音，其次瀏覽器預設，其次第一個；清單晚到（voiceschanged）
+-  與 1 秒備援重查都處理
+-  Voices: name, language tag and a local/network label side by side; the
+-  default is the first voice matching the UI language, else the browser
+-  default, else the first; late lists (voiceschanged) and a 1-second
+-  fallback re-poll are both handled
++- 聲音清單僅列出瀏覽器標示為本機的聲音，並顯示名稱和語言。初次選擇
++  優先取介面語言相符的本機聲音，其次取第一個本機聲音。朗讀時若所用或所選
++  聲音失去資格，會停止並提示。清單會回應 voiceschanged 事件，空清單會在
++  1 秒後再查一次。
++  The list shows each browser-reported local voice with its name and language.
++  The initial selection prefers a local voice matching the interface language,
++  then the first local voice. If the active or selected voice becomes unavailable
++  during playback, the reader stops and explains why. The list updates on
++  voiceschanged and an empty list is checked again after one second.
+ - 誠實的界線：本工具不能匯出音檔（平台 API 無法擷取自己的語音輸出，
+   頁面明說，不做假按鈕）；暫停在某些平台聲音上可能被忽略，頁面在
+   使用須知中明說
+@@ -70,14 +74,15 @@ npm run build  # copy public/ to dist/ byte-identically (preview only; productio
+ 
+ 文字只以文字節點呈現（句子清單逐一 createElement 與 textContent），貼上的
+ 標籤不存在任何 innerHTML 路徑；不寫入 URL、標題、任何儲存或日誌。開啟的
+-.txt 檔案只在本機以 UTF-8 嚴格解碼（解碼失敗是具名錯誤）。工具本身不發出
+-任何網路請求；只有使用者選定的網路聲音會把文字送給其提供者，且送出前已
+-在頁面揭露。
++.txt 檔案只在本機以 UTF-8 嚴格解碼（解碼失敗是具名錯誤）。頁面只將文字
++交給瀏覽器當下列為本機的聲音。每段送出前及繼續播放前都會重新查詢。
++本機標籤來自瀏覽器，裝置語音引擎的網路行為尚未實測。
+ 
+ Text renders only as text nodes (the sentence list is built element by
+ element with textContent); pasted markup has no innerHTML path anywhere.
+ Nothing is written to the URL, the title, any storage, or any log. A picked
+ .txt file is decoded locally as strict UTF-8 (a decode failure is a named
+-error). The tool itself makes no network requests; only a network voice the
+-user selected sends text to its provider, disclosed on the page before it
+-speaks.
++error). The page passes text to the browser speech engine only with a currently
++listed voice whose `localService` is exactly `true`. It rechecks before each
++chunk and before resume. The local label comes from the browser. The device
++speech engine's network behavior has yet to be verified.
+diff --git a/tools/text-to-speech-reader/public/en/index.html b/tools/text-to-speech-reader/public/en/index.html
+index 0157e71b3f75ef4b6218860afc4b2ac3718d3a8a..b381ec97e09c0c76c2e2f64879179688170a8b0f 100644
+--- a/tools/text-to-speech-reader/public/en/index.html
++++ b/tools/text-to-speech-reader/public/en/index.html
+@@ -4,7 +4,7 @@
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Text-to-Speech Reader | GlossQuote Tools</title>
+-<meta name="description" content="Have pasted text read aloud by the voices your browser offers: sentence-by-sentence highlight, play and pause, rate and pitch controls. Your text never leaves this device; network voices are disclosed before they speak.">
++<meta name="description" content="Read text aloud with voices your browser identifies as local, with sentence highlighting, play and pause, and rate and pitch controls.">
+ <meta name="robots" content="noindex, nofollow">
+ <meta name="theme-color" content="#14532d">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+@@ -24,7 +24,7 @@
+ </header>
+ <main class="page">
+   <h1>Text-to-Speech Reader</h1>
+-  <p class="intro">Paste text, pick one of the voices your browser offers, and hear it read aloud: the current sentence is highlighted as it is spoken, with play, pause, resume and stop, and playback from any sentence you click. Your text lives only in this tab's memory — it is never stored or uploaded. The one exception is a network voice: reading with one sends the text to that voice's provider, and the page says so as soon as you pick one.</p>
++  <p class="intro">Paste text and choose a voice your browser identifies as local. Follow the highlighted sentence, pause, resume, stop, or choose a sentence to start there. This page does not store or upload your text.</p>
+   <p class="warning">This tool cannot record the reading to an audio file: the platform API cannot capture its own speech output, so there is deliberately no download button. Use recording or TTS software with export when you need a file.</p>
+ 
+   <section id="unsupported-panel" class="card" hidden>
+@@ -46,9 +46,8 @@
+ 
+     <div class="field">
+       <label for="voice-select">Voice</label>
+-      <select id="voice-select"></select>
+-      <p id="voices-status" class="note"></p>
+-      <p id="network-notice" class="warning" hidden>You picked a network voice: when this voice reads, the text is sent to that voice's provider. The tool itself sends your text nowhere.</p>
++      <select id="voice-select" aria-describedby="voices-status" disabled></select>
++      <p id="voices-status" class="note" role="status"></p>
+     </div>
+ 
+     <div class="field">
+@@ -64,7 +63,7 @@
+     <div class="field">
+       <span class="field-label">Transport</span>
+       <div class="preset-row">
+-        <button type="button" id="play-button">Play</button>
++        <button type="button" id="play-button" disabled>Play</button>
+         <button type="button" id="pause-button" hidden>Pause</button>
+         <button type="button" id="resume-button" hidden>Resume</button>
+         <button type="button" id="stop-button">Stop</button>
+@@ -86,6 +85,7 @@
+     <ul>
+       <li>Changing the voice, rate or pitch during playback takes effect from the next chunk of text; Stop takes effect immediately.</li>
+       <li>Pause behaviour varies by platform: some local voices may ignore pause. Progress is computed per chunk, so the highlight and progress stay correct.</li>
++      <li>The local label comes from the browser. The reader checks the voice before playback and resume. The device speech engine’s network behavior has yet to be verified.</li>
+       <li>Whether reading continues when the tab is in the background is decided by the browser and OS; this tool cannot guarantee it.</li>
+       <li>Sentence splitting is a rule-based heuristic for highlight and chunking: an occasional over- or under-split changes only the highlight granularity, never the words read or their order.</li>
+       <li>The voice list is provided by your browser and operating system; this tool cannot add voices. If the list is empty, check that your system has voices installed.</li>
+diff --git a/tools/text-to-speech-reader/public/index.html b/tools/text-to-speech-reader/public/index.html
+index ebf1696e8651cc10dc17425e4e00f9fd6698c86d..047896852e6703f20bb2980d016e7c9a1b058552 100644
+--- a/tools/text-to-speech-reader/public/index.html
++++ b/tools/text-to-speech-reader/public/index.html
+@@ -4,7 +4,7 @@
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>文字朗讀 | GlossQuote 工具</title>
+-<meta name="description" content="把貼上的文字用瀏覽器提供的聲音朗讀出來：逐句標示、播放與暫停、語速與音高調整。文字不離開你的裝置；選用網路聲音時會先明示。">
++<meta name="description" content="使用瀏覽器標示為本機的聲音朗讀文字，支援逐句標示、播放與暫停、語速與音高調整。">
+ <meta name="robots" content="noindex, nofollow">
+ <meta name="theme-color" content="#14532d">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+@@ -24,7 +24,7 @@
+ </header>
+ <main class="page">
+   <h1>文字朗讀</h1>
+-  <p class="intro">貼上文字、挑一個瀏覽器提供的聲音，就能把文字讀給你聽：逐句標示目前讀到哪一句，可以播放、暫停、繼續與停止，也能點任何一句從那句開始。文字只留在這個分頁的記憶體裡——不儲存、不上傳；唯一的例外是「網路聲音」：選到這種聲音時，文字會傳給該聲音的提供者，頁面會在你選到時先提醒。</p>
++  <p class="intro">貼上文字，再選擇瀏覽器標示為本機的聲音。朗讀時會標示目前的句子，你也能暫停、繼續、停止，或選一句開始朗讀。這個頁面不儲存或上傳文字。</p>
+   <p class="warning">本工具不能把朗讀錄成音檔：瀏覽器平台本身無法擷取語音合成的輸出，所以這裡不提供下載按鈕。需要音檔時，請改用能匯出的錄音或 TTS 軟體。</p>
+ 
+   <section id="unsupported-panel" class="card" hidden>
+@@ -46,9 +46,8 @@
+ 
+     <div class="field">
+       <label for="voice-select">聲音</label>
+-      <select id="voice-select"></select>
+-      <p id="voices-status" class="note"></p>
+-      <p id="network-notice" class="warning" hidden>你選的是網路聲音：以這個聲音朗讀時，文字會傳送給該聲音的提供者。本工具本身不會把文字傳到任何地方。</p>
++      <select id="voice-select" aria-describedby="voices-status" disabled></select>
++      <p id="voices-status" class="note" role="status"></p>
+     </div>
+ 
+     <div class="field">
+@@ -64,7 +63,7 @@
+     <div class="field">
+       <span class="field-label">播放控制</span>
+       <div class="preset-row">
+-        <button type="button" id="play-button">播放</button>
++        <button type="button" id="play-button" disabled>播放</button>
+         <button type="button" id="pause-button" hidden>暫停</button>
+         <button type="button" id="resume-button" hidden>繼續</button>
+         <button type="button" id="stop-button">停止</button>
+@@ -85,6 +84,7 @@
+     <h2>使用須知</h2>
+     <ul>
+       <li>播放中修改聲音、語速或音高，會從下一段文字開始生效；停止則立即生效。</li>
++      <li>本機標籤依瀏覽器回報。播放與繼續前會重新確認聲音，裝置語音引擎的網路行為尚未實測。</li>
+       <li>暫停行為因平台而異：某些本機聲音可能忽略暫停。進度以「段」為單位計算，因此標示與進度仍正確。</li>
+       <li>把分頁切到背景時是否繼續朗讀，由瀏覽器與系統決定，本工具無法保證。</li>
+       <li>分句是為了標示與分段的規則化切分：偶爾多切或少切，只影響標示的粒度，不會改變朗讀的文字內容與順序。</li>
+diff --git a/tools/text-to-speech-reader/public/js/app.mjs b/tools/text-to-speech-reader/public/js/app.mjs
+index d8c0f15276db1357acf0b26d11e692987b8d01e9..7ee8dcd2dfcb68cdc352e20de6276b236ebc1e8e 100644
+--- a/tools/text-to-speech-reader/public/js/app.mjs
++++ b/tools/text-to-speech-reader/public/js/app.mjs
+@@ -12,7 +12,7 @@ import {
+   segmentText,
+   TEXT_LIMIT,
+ } from "./core/tts.mjs";
+-import { createSpeechController } from "./controller.mjs";
++import { createSpeechController, localVoices } from "./controller.mjs";
+ import { errorMessage, translate } from "./i18n.mjs";
+ 
+ const LANG = document.documentElement.lang === "en" ? "en" : "zh-Hant";
+@@ -37,7 +37,6 @@ function initReader(synth) {
+   const charCount = $("char-count");
+   const voiceSelect = $("voice-select");
+   const voicesStatus = $("voices-status");
+-  const networkNotice = $("network-notice");
+   const rateInput = $("rate-input");
+   const rateValue = $("rate-value");
+   const pitchInput = $("pitch-input");
+@@ -55,6 +54,7 @@ function initReader(synth) {
+ 
+   let voices = [];
+   let selectedVoice = null;
++  let preferredVoiceURI = null;
+   let built = { sentences: [], chunks: [] };
+   let lastAnnouncedSentence = 0;
+   let previousState = "idle";
+@@ -73,19 +73,26 @@ function initReader(synth) {
+       showError(t("UTTERANCE_ERROR", { name }));
+       announce(t("UTTERANCE_ERROR", { name }));
+     },
++    onLocalVoiceUnavailable: () => {
++      renderVoices();
++      showError(t("LOCAL_VOICE_UNAVAILABLE"), "LOCAL_VOICE_UNAVAILABLE");
++      announce(t("LOCAL_VOICE_UNAVAILABLE"));
++    },
+   });
+ 
+   function announce(message) {
+     liveRegion.textContent = message;
+   }
+ 
+-  function showError(message) {
++  function showError(message, code = "") {
+     errorBox.textContent = message;
++    errorBox.dataset.code = code;
+     errorBox.hidden = false;
+   }
+ 
+   function clearError() {
+     errorBox.textContent = "";
++    errorBox.dataset.code = "";
+     errorBox.hidden = true;
+   }
+ 
+@@ -98,7 +105,11 @@ function initReader(synth) {
+ 
+   function renderTransport(state) {
+     const idle = state === "idle";
+-    playButton.disabled = !idle || !hasPlayableText() || !selectedVoice;
++    const canPlay = idle && hasPlayableText() && selectedVoice !== null;
++    playButton.disabled = !canPlay;
++    sentenceList.querySelectorAll("button").forEach((button) => {
++      button.disabled = !canPlay;
++    });
+     pauseButton.hidden = state !== "speaking";
+     resumeButton.hidden = state !== "paused";
+     stopButton.disabled = idle;
+@@ -108,10 +119,6 @@ function initReader(synth) {
+         total: built.sentences.length,
+       }));
+     }
+-    if (state === "idle" && previousState !== "idle") {
+-      // Finished vs stopped is distinguished in renderProgress/announce
+-      // by the completion percentage; the stop button announces itself.
+-    }
+     previousState = state;
+   }
+ 
+@@ -168,7 +175,7 @@ function initReader(synth) {
+       button.addEventListener("click", () => {
+         // SPEC section 3: clicking a sentence while idle starts
+         // playback from that sentence.
+-        if (controller.state !== "idle") return;
++        if (controller.state !== "idle" || !selectedVoice) return;
+         clearError();
+         controller.playFromSentence(index);
+       });
+@@ -192,8 +199,7 @@ function initReader(synth) {
+       built = { sentences: segmentText(text), chunks: [] };
+       controller.load([], 0);
+       if (error && error.code === "TEXT_TOO_LONG") {
+-        errorBox.dataset.code = "TEXT_TOO_LONG";
+-        showError(errorMessage(LANG, error));
++        showError(errorMessage(LANG, error), "TEXT_TOO_LONG");
+       }
+     }
+     renderTransport(controller.state);
+@@ -206,49 +212,54 @@ function initReader(synth) {
+         (voice) =>
+           voice.lang && voice.lang.toLowerCase().startsWith(primary),
+       ) ??
+-      voices.find((voice) => voice.default) ??
+       voices[0] ??
+       null
+     );
+   }
+ 
+   function refreshVoices() {
+-    const list = synth.getVoices();
+-    if (!list || list.length === 0) {
+-      voicesStatus.textContent =
+-        voices.length === 0 ? t("VOICES_LOADING") : voicesStatus.textContent;
+-      return;
+-    }
+-    const previousURI = selectedVoice ? selectedVoice.voiceURI : null;
+-    voices = list;
+-    const options = voices.map((voice, index) => {
++    if (controller.validateVoices()) renderVoices();
++  }
++
++  function renderVoices() {
++    voices = localVoices(synth);
++    selectedVoice = preferredVoiceURI === null
++      ? pickDefaultVoice()
++      : voices.find((voice) => voice.voiceURI === preferredVoiceURI) ?? null;
++    if (selectedVoice) preferredVoiceURI = selectedVoice.voiceURI;
++    const options = voices.map((voice) => {
+       const option = document.createElement("option");
+-      option.value = String(index);
+-      option.textContent = `${voice.name} — ${voice.lang} · ${
+-        voice.localService ? t("LOCAL") : t("NETWORK")
+-      }`;
++      option.value = voice.voiceURI;
++      option.textContent = `${voice.name} — ${voice.lang} · ${t("LOCAL")}`;
+       return option;
+     });
++    if (!selectedVoice && options.length > 0) {
++      const placeholder = document.createElement("option");
++      placeholder.value = "";
++      placeholder.textContent = t("CHOOSE_LOCAL_VOICE");
++      placeholder.disabled = true;
++      options.unshift(placeholder);
++    }
+     voiceSelect.replaceChildren(...options);
+-    selectedVoice =
+-      voices.find((voice) => voice.voiceURI === previousURI) ??
+-      pickDefaultVoice();
+-    voiceSelect.value = String(voices.indexOf(selectedVoice));
+-    voicesStatus.textContent = "";
+-    updateNetworkNotice();
++    voiceSelect.value = selectedVoice?.voiceURI ?? "";
++    voiceSelect.disabled = voices.length === 0;
++    voicesStatus.textContent = voices.length === 0 ? t("NO_LOCAL_VOICES") : "";
++    clearVoiceErrorIfReady();
+     renderTransport(controller.state);
+   }
+ 
+-  function updateNetworkNotice() {
+-    // SPEC section 3/6: the disclosure shows when the selected voice
+-    // is a network voice, so it is always seen before such a voice
+-    // first speaks.
+-    networkNotice.hidden = !(selectedVoice && !selectedVoice.localService);
++  function clearVoiceErrorIfReady() {
++    if (selectedVoice && errorBox.dataset.code === "LOCAL_VOICE_UNAVAILABLE") clearError();
+   }
+ 
+   voiceSelect.addEventListener("change", () => {
+-    selectedVoice = voices[Number(voiceSelect.value)] ?? null;
+-    updateNetworkNotice();
++    selectedVoice = localVoices(synth).find((voice) => voice.voiceURI === voiceSelect.value) ?? null;
++    if (!selectedVoice) {
++      refreshVoices();
++      return;
++    }
++    preferredVoiceURI = selectedVoice.voiceURI;
++    clearVoiceErrorIfReady();
+     renderTransport(controller.state);
+   });
+ 
+diff --git a/tools/text-to-speech-reader/public/js/controller.mjs b/tools/text-to-speech-reader/public/js/controller.mjs
+index 5a7e99d91699547066a33b8c8a03d6bfe6e46a41..54cb03eaa307b091fcbe644f4c404f088491e889 100644
+--- a/tools/text-to-speech-reader/public/js/controller.mjs
++++ b/tools/text-to-speech-reader/public/js/controller.mjs
+@@ -15,6 +15,17 @@
+ 
+ import { codePointLength, totalCharacters } from "./core/tts.mjs";
+ 
++export function localVoices(synth) {
++  try {
++    return (synth.getVoices() ?? []).filter((voice) =>
++      voice?.localService === true &&
++      typeof voice.voiceURI === "string" && voice.voiceURI !== ""
++    );
++  } catch {
++    return [];
++  }
++}
++
+ export function createSpeechController({
+   synth,
+   createUtterance,
+@@ -22,6 +33,7 @@ export function createSpeechController({
+   onStateChange,
+   onProgress,
+   onError,
++  onLocalVoiceUnavailable,
+ }) {
+   let state = "idle";
+   let generation = 0;
+@@ -29,6 +41,7 @@ export function createSpeechController({
+   let totalSentences = 0;
+   let current = -1; // chunk index in flight; -1 when nothing is queued
+   let spokenChars = 0; // characters in chunks fully spoken in this run
++  let activeVoice = null;
+ 
+   function emitProgress() {
+     if (!onProgress) return;
+@@ -50,16 +63,40 @@ export function createSpeechController({
+     emitProgress();
+   }
+ 
++  function stop() {
++    generation += 1;
++    activeVoice = null;
++    synth.cancel();
++    current = -1;
++    spokenChars = 0;
++    setState("idle");
++  }
++
++  function voiceUnavailable() {
++    stop();
++    onLocalVoiceUnavailable?.();
++    return false;
++  }
++
++  function validateVoices() {
++    if (state === "idle") return true;
++    const selected = getSettings().voice;
++    const available = localVoices(synth);
++    if (
++      selected?.localService !== true ||
++      !available.some((voice) => voice.voiceURI === selected.voiceURI) ||
++      activeVoice?.localService !== true ||
++      !available.some((voice) => voice.voiceURI === activeVoice.voiceURI)
++    ) return voiceUnavailable();
++    return true;
++  }
++
+   function enqueue(index) {
+     current = index;
+     const gen = generation;
+     const chunk = chunks[index];
+     const settings = getSettings(); // snapshot at enqueue time (SPEC 4)
+     const utterance = createUtterance(chunk.text);
+-    utterance.voice = settings.voice ?? null;
+-    if (settings.voice && settings.voice.lang) {
+-      utterance.lang = settings.voice.lang;
+-    }
+     utterance.rate = settings.rate;
+     utterance.pitch = settings.pitch;
+     utterance.volume = 1.0; // fixed in this version (SPEC section 4)
+@@ -68,9 +105,9 @@ export function createSpeechController({
+       spokenChars += codePointLength(chunk.text);
+       if (index + 1 < chunks.length) {
+         enqueue(index + 1);
+-        emitProgress();
+       } else {
+         // Natural completion: idle, progress shows N of N at 100%.
++        activeVoice = null;
+         setState("idle");
+       }
+     };
+@@ -79,13 +116,23 @@ export function createSpeechController({
+       // SPEC section 3: an utterance error stops playback, returns to
+       // idle and surfaces the error name; it never loops retries.
+       generation += 1;
++      activeVoice = null;
+       current = -1;
+       spokenChars = 0;
+       setState("idle");
+       if (onError) onError((event && event.error) || "unknown");
+     };
++    // Use the current engine object for this URI. A stale or missing
++    // selection must never become an utterance with a default voice.
++    const selected = settings.voice;
++    const voice = localVoices(synth).find((entry) => entry.voiceURI === selected?.voiceURI);
++    if (selected?.localService !== true || !voice) return voiceUnavailable();
++    utterance.voice = voice;
++    if (voice.lang) utterance.lang = voice.lang;
++    activeVoice = voice;
+     synth.speak(utterance);
+     emitProgress();
++    return true;
+   }
+ 
+   return {
+@@ -111,8 +158,7 @@ export function createSpeechController({
+       synth.cancel();
+       spokenChars = 0;
+       setState("speaking");
+-      enqueue(fromChunkIndex);
+-      return true;
++      return enqueue(fromChunkIndex);
+     },
+     playFromSentence(sentenceIndex) {
+       const index = chunks.findIndex(
+@@ -128,18 +174,14 @@ export function createSpeechController({
+     },
+     resume() {
+       if (state !== "paused") return;
++      if (!validateVoices()) return;
+       synth.resume();
+       setState("speaking");
+     },
+     // Stop cancels the queue and returns to idle with progress reset
+     // to the start sentence (SPEC section 3). Also the response to a
+     // text edit during playback: a stale queue must never keep reading.
+-    stop() {
+-      generation += 1;
+-      synth.cancel();
+-      current = -1;
+-      spokenChars = 0;
+-      setState("idle");
+-    },
++    stop,
++    validateVoices,
+   };
+ }
+diff --git a/tools/text-to-speech-reader/public/js/i18n.mjs b/tools/text-to-speech-reader/public/js/i18n.mjs
+index 4078f89926b74839a6c388d117f20cfdf6298ad6..aecbb02ac0fd8735c5b82084799a0c149601a03b 100644
+--- a/tools/text-to-speech-reader/public/js/i18n.mjs
++++ b/tools/text-to-speech-reader/public/js/i18n.mjs
+@@ -11,11 +11,10 @@ export const DICTIONARIES = Object.freeze({
+     }),
+     ui: Object.freeze({
+       LOCAL: "本機",
+-      NETWORK: "網路",
+-      VOICES_LOADING: "正在載入聲音清單…",
+-      VOICES_NONE: "這個瀏覽器目前沒有提供任何聲音。",
+-      NETWORK_NOTICE:
+-        "你選的是網路聲音：以這個聲音朗讀時，文字會傳送給該聲音的提供者。本工具本身不會把文字傳到任何地方。",
++      CHOOSE_LOCAL_VOICE: "請選擇可用的本機聲音",
++      NO_LOCAL_VOICES: "瀏覽器目前未提供本機聲音，暫時無法朗讀。",
++      LOCAL_VOICE_UNAVAILABLE:
++        "本機聲音已無法使用。請在聲音可用時再試，或選擇另一個本機聲音。",
+       PROGRESS: "第 {current} 句，共 {total} 句 · 已朗讀 {percent}%",
+       PROGRESS_IDLE: "尚未開始朗讀",
+       ANNOUNCE_PLAYING: "正在朗讀：第 {current} 句，共 {total} 句。",
+@@ -38,17 +37,18 @@ export const DICTIONARIES = Object.freeze({
+     }),
+     ui: Object.freeze({
+       LOCAL: "local",
+-      NETWORK: "network",
+-      VOICES_LOADING: "Loading the voice list…",
+-      VOICES_NONE: "This browser currently offers no voices.",
+-      NETWORK_NOTICE:
+-        "You picked a network voice: when this voice reads, the text is sent to that voice's provider. The tool itself sends your text nowhere.",
++      CHOOSE_LOCAL_VOICE: "Choose an available local voice",
++      NO_LOCAL_VOICES: "The browser currently lists no local voices. Reading is unavailable.",
++      LOCAL_VOICE_UNAVAILABLE:
++        "A local voice became unavailable. Try again when it returns or choose another local voice.",
+       PROGRESS: "Sentence {current} of {total} · {percent}% read",
+       PROGRESS_IDLE: "Not started",
+       ANNOUNCE_PLAYING: "Playing: sentence {current} of {total}.",
+       ANNOUNCE_PAUSED: "Paused: sentence {current} of {total}.",
+       ANNOUNCE_FINISHED: "Finished reading: {total} sentence(s).",
+       ANNOUNCE_STOPPED: "Reading stopped.",
++      UTTERANCE_ERROR:
++        "Reading stopped after a speech error ({name}). Choose another local voice and try again.",
+       CLEARED: "Text cleared.",
+       CHAR_COUNT: "{count} / 20000 characters",
+     }),
+diff --git a/tools/text-to-speech-reader/test/controller.test.mjs b/tools/text-to-speech-reader/test/controller.test.mjs
+index 90410a7f74a47d562f53215ca3a0e7f8e855d7f6..8511de5b9937d55271f1fbdb84363941c0ff5593 100644
+--- a/tools/text-to-speech-reader/test/controller.test.mjs
++++ b/tools/text-to-speech-reader/test/controller.test.mjs
+@@ -7,12 +7,18 @@ import test from "node:test";
+ 
+ import { createSpeechController } from "../public/js/controller.mjs";
+ 
+-function makeRig(settings = { voice: { name: "Fake", lang: "en-US", localService: true }, rate: 1, pitch: 1 }) {
++const LOCAL = { voiceURI: "fake-local", name: "Fake", lang: "en-US", localService: true };
++const OTHER = { voiceURI: "fake-other", name: "Other", lang: "zh-TW", localService: true };
++const REMOTE = { ...LOCAL, localService: false, default: true };
++
++function makeRig(settings = { voice: LOCAL, rate: 1, pitch: 1 }) {
+   const calls = { speak: [], cancel: 0, pause: 0, resume: 0 };
+-  const events = { states: [], progress: [], errors: [] };
++  const events = { states: [], progress: [], errors: [], voiceUnavailable: 0 };
+   let currentSettings = settings;
++  let voices = [LOCAL, OTHER];
+   const controller = createSpeechController({
+     synth: {
++      getVoices: () => voices,
+       speak: (utterance) => calls.speak.push(utterance),
+       cancel: () => { calls.cancel += 1; },
+       pause: () => { calls.pause += 1; },
+@@ -26,10 +32,12 @@ function makeRig(settings = { voice: { name: "Fake", lang: "en-US", localService
+     onStateChange: (state) => events.states.push(state),
+     onProgress: (progress) => events.progress.push(progress),
+     onError: (name) => events.errors.push(name),
++    onLocalVoiceUnavailable: () => { events.voiceUnavailable += 1; },
+   });
+   return {
+     calls, events, controller,
+     setSettings: (next) => { currentSettings = next; },
++    setVoices: (next) => { voices = next; },
+     lastProgress: () => events.progress[events.progress.length - 1],
+   };
+ }
+@@ -67,7 +75,7 @@ test("rate changes mid-playback apply from the next chunk (snapshot)", () => {
+   rig.controller.load(THREE, 3);
+   rig.controller.play(0);
+   assert.equal(rig.calls.speak[0].rate, 1);
+-  rig.setSettings({ voice: { name: "Other", lang: "zh-TW", localService: false }, rate: 1.6, pitch: 0.5 });
++  rig.setSettings({ voice: OTHER, rate: 1.6, pitch: 0.5 });
+   rig.calls.speak[0].onend();
+   assert.equal(rig.calls.speak[1].rate, 1.6);
+   assert.equal(rig.calls.speak[1].pitch, 0.5);
+@@ -153,3 +161,84 @@ test("play with no playlist is refused without touching the engine", () => {
+   assert.equal(rig.calls.speak.length, 0);
+   assert.equal(rig.calls.cancel, 0);
+ });
++
++test("play refuses remote, unconfirmed, missing, null, and unenumerated choices", () => {
++  const unconfirmed = { ...LOCAL, localService: "true" };
++  for (const [selection, listed] of [
++    [REMOTE, [REMOTE]],
++    [unconfirmed, [unconfirmed]],
++    [LOCAL, [REMOTE]],
++    [LOCAL, [OTHER]],
++    [LOCAL, []],
++    [LOCAL, null],
++    [null, [LOCAL]],
++  ]) {
++    const rig = makeRig({ voice: selection, rate: 1, pitch: 1 });
++    rig.setVoices(listed);
++    rig.controller.load(THREE, 3);
++    assert.equal(rig.controller.play(), false);
++    assert.equal(rig.controller.state, "idle");
++    assert.equal(rig.events.voiceUnavailable, 1);
++    assert.equal(rig.calls.speak.length, 0);
++  }
++});
++
++test("enqueue uses the fresh local object for the selected URI on every chunk", () => {
++  const rig = makeRig();
++  const fresh = { ...LOCAL };
++  rig.setVoices([fresh]);
++  rig.controller.load(THREE, 3);
++  assert.equal(rig.controller.play(), true);
++  assert.equal(rig.calls.speak[0].voice, fresh);
++
++  const newer = { ...LOCAL };
++  rig.setVoices([newer]);
++  rig.calls.speak[0].onend();
++  assert.equal(rig.calls.speak[1].voice, newer);
++  assert.equal(rig.lastProgress().sentence, 2);
++
++  rig.setVoices([REMOTE]);
++  rig.calls.speak[1].onend();
++  assert.equal(rig.calls.speak.length, 2);
++  assert.equal(rig.controller.state, "idle");
++  assert.equal(rig.lastProgress().percent, 0);
++  assert.equal(rig.events.voiceUnavailable, 1);
++});
++
++test("resume checks the latest selected and active voice before releasing the queue", () => {
++  for (const listed of [[], [REMOTE, OTHER], [LOCAL]]) {
++    const rig = makeRig();
++    rig.controller.load(THREE, 3);
++    rig.controller.play();
++    const stale = rig.calls.speak[0];
++    rig.controller.pause();
++    rig.setSettings({ voice: OTHER, rate: 1, pitch: 1 });
++    rig.setVoices(listed);
++    rig.controller.resume();
++    assert.equal(rig.calls.resume, 0);
++    assert.equal(rig.controller.state, "idle");
++    assert.equal(rig.events.voiceUnavailable, 1);
++    stale.onend();
++    stale.onerror({ error: "canceled" });
++    assert.equal(rig.calls.speak.length, 1);
++    assert.deepEqual(rig.events.errors, []);
++  }
++});
++
++test("checking a changed voice list stops playback and a restored local voice can play", () => {
++  const rig = makeRig();
++  const initial = { ...LOCAL };
++  rig.setVoices([initial]);
++  rig.controller.load(THREE, 3);
++  rig.controller.play();
++  initial.localService = false;
++  assert.equal(rig.controller.validateVoices(), false);
++  assert.equal(rig.controller.state, "idle");
++  assert.equal(rig.calls.cancel, 2);
++  assert.equal(rig.events.voiceUnavailable, 1);
++
++  const restored = { ...LOCAL };
++  rig.setVoices([restored]);
++  assert.equal(rig.controller.play(), true);
++  assert.equal(rig.calls.speak[1].voice, restored);
++});
+diff --git a/tools/text-to-speech-reader/test/voice-ui.test.mjs b/tools/text-to-speech-reader/test/voice-ui.test.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b66934b8fbf68273ffe3c7da1b64e3217403908
+--- /dev/null
++++ b/tools/text-to-speech-reader/test/voice-ui.test.mjs
+@@ -0,0 +1,124 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++class Element extends EventTarget {
++  constructor(tag = "") {
++    super();
++    this.tag = tag;
++    this.children = [];
++    this.dataset = {};
++    this.classList = { toggle() {} };
++    this.hidden = false;
++    this.disabled = false;
++    this.value = "";
++    this.textContent = "";
++  }
++  append(child) { this.children.push(child); }
++  replaceChildren(...children) { this.children = children; }
++  querySelectorAll(tag) {
++    return this.children.flatMap((child) => [
++      ...(child.tag === tag ? [child] : []),
++      ...child.querySelectorAll(tag),
++    ]);
++  }
++  setAttribute() {}
++  removeAttribute() {}
++}
++
++test("the voice selector and all playback entry points follow live voice availability", async (t) => {
++  for (const lang of ["zh-Hant", "en"]) {
++    await t.test(lang, async (context) => {
++      const local = { voiceURI: "local", name: "Local", lang: "en-US", localService: true };
++      const other = { voiceURI: "other", name: "Other", lang: "fr-FR", localService: true };
++      const remote = { voiceURI: "remote", name: "Remote default", lang: "en-US", localService: false, default: true };
++      let voices = [remote];
++      let canceled = 0;
++      const utterances = [];
++      const synth = Object.assign(new EventTarget(), {
++        getVoices: () => voices,
++        cancel: () => { canceled += 1; },
++        speak: (utterance) => utterances.push(utterance),
++      });
++      const page = Object.assign(new EventTarget(), {
++        speechSynthesis: synth,
++        SpeechSynthesisUtterance: class {
++          constructor(text) { this.text = text; }
++        },
++        setTimeout() {},
++      });
++      const elements = new Map();
++      const element = (id) => {
++        if (!elements.has(id)) elements.set(id, new Element());
++        return elements.get(id);
++      };
++      const restore = ["document", "window", "SpeechSynthesisUtterance"].map(
++        (key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)],
++      );
++      context.after(() => {
++        for (const [key, descriptor] of restore) {
++          if (descriptor) Object.defineProperty(globalThis, key, descriptor);
++          else delete globalThis[key];
++        }
++      });
++      Object.assign(globalThis, {
++        window: page,
++        SpeechSynthesisUtterance: page.SpeechSynthesisUtterance,
++        document: {
++          documentElement: { lang },
++          querySelector: (selector) => element(selector.slice(1)),
++          createElement: (tag) => new Element(tag),
++        },
++      });
++      await import(`../public/js/app.mjs?test-language=${lang}`);
++
++      const input = element("text-input");
++      input.value = "One. Two.";
++      input.dispatchEvent(new Event("input"));
++      const voiceSelect = element("voice-select");
++      const play = element("play-button");
++      const sentenceButtons = element("sentence-list").querySelectorAll("button");
++      assert.equal(voiceSelect.disabled, true);
++      assert.equal(play.disabled, true);
++      assert.ok(sentenceButtons.every((button) => button.disabled));
++      assert.match(element("voices-status").textContent, lang === "en" ? /no local voices/ : /未提供本機聲音/);
++      sentenceButtons[0].dispatchEvent(new Event("click"));
++      assert.equal(utterances.length, 0);
++
++      function changeVoices(next) {
++        voices = next;
++        synth.dispatchEvent(new Event("voiceschanged"));
++      }
++      changeVoices([local, remote]);
++      assert.equal(voiceSelect.disabled, false);
++      assert.deepEqual(voiceSelect.children.map((option) => option.value), ["local"]);
++      assert.equal(play.disabled, false);
++      sentenceButtons[0].dispatchEvent(new Event("click"));
++      assert.equal(utterances[0].voice, local);
++      assert.equal(utterances[0].text, "One.");
++
++      changeVoices([other, remote]);
++      assert.equal(canceled, 2);
++      assert.equal(voiceSelect.value, "");
++      assert.equal(play.disabled, true);
++      assert.ok(sentenceButtons.every((button) => button.disabled));
++      assert.match(element("error-box").textContent, lang === "en" ? /became unavailable/ : /已無法使用/);
++      utterances[0].onend();
++      assert.equal(utterances.length, 1);
++
++      const restored = { ...local };
++      changeVoices([restored, other, remote]);
++      assert.equal(voiceSelect.value, "local");
++      assert.equal(play.disabled, false);
++      assert.equal(element("error-box").hidden, true);
++      sentenceButtons[1].dispatchEvent(new Event("click"));
++      assert.equal(utterances[1].voice, restored);
++      assert.equal(utterances[1].text, "Two.");
++
++      input.value = "Changed.";
++      input.dispatchEvent(new Event("input"));
++      assert.equal(canceled, 4);
++      utterances[1].onend();
++      assert.equal(utterances.length, 2);
++    });
++  }
++});

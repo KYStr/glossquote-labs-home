@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>詞彙與字元頻率計數 | GlossQuote 工具</title>
+<meta name="description" content="在本機計算文字頻率：非漢字類的字母／數字詞彙（含希臘與西里爾字母）、漢字與漢字雙字元組，規則固定且公開，含停用詞、最小次數與 CSV 匯出。不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>詞彙與字元頻率計數</h1>
+  <p class="intro">貼上文字，立刻看到三張頻率表：詞彙（漢字類以外的字母與數字組成的詞，含希臘、西里爾等所有文字系統）、字元（漢字、假名、諺文逐字計）、雙字元組（相鄰漢字對）。中文不做中文斷詞——斷詞是研究問題，本工具改用逐字與雙字元組，數字保證能用手按規則重算。詞彙比對用 Unicode 簡單摺疊（simple case folding），不是一般的轉小寫。</p>
+
+  <section class="card" aria-labelledby="tool-heading">
+    <h2 id="tool-heading">計數</h2>
+    <div class="field">
+      <label for="input-text">輸入文字（上限 200,000 字元）</label>
+      <textarea id="input-text" rows="8" spellcheck="false"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label><input id="opt-stopwords" type="checkbox"> 啟用停用詞</label>
+      <label><input id="opt-numbers" type="checkbox" checked> 計入純數字詞</label>
+      <label><input id="opt-showall" type="checkbox"> 顯示全部列（預設前 100）</label>
+    </div>
+    <div class="field">
+      <label for="opt-mincount">最低出現次數（篩選結果列）</label>
+      <input id="opt-mincount" type="number" min="1" step="1" value="1" aria-describedby="mincount-note">
+      <p id="mincount-note" class="note">只保留達到門檻的結果列。總數、不重複項目數及百分比的分母照原計數。</p>
+      <label for="opt-minlength">最短詞長（詞彙表，折疊後字元數）</label>
+      <input id="opt-minlength" type="number" min="1" step="1" value="1">
+    </div>
+    <div class="field">
+      <label for="stopwords-text">停用詞（每行一項，可編輯；只在本頁面有效）</label>
+      <textarea id="stopwords-text" rows="6" spellcheck="false"></textarea>
+      <button type="button" id="stopwords-restore">還原預設停用詞</button>
+    </div>
+    <div class="field">
+      <button type="button" id="tab-words">詞彙</button>
+      <button type="button" id="tab-chars">字元</button>
+      <button type="button" id="tab-bigrams">雙字元組</button>
+      <button type="button" id="export-csv">匯出 CSV（目前表格）</button>
+    </div>
+    <p id="totals-line" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>名次</th><th>項目</th><th>次數</th><th>百分比</th></tr></thead>
+      <tbody id="result-body"></tbody>
+    </table>
+    <p id="rows-note" class="note"></p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <details class="card">
+    <summary>計數規則（與結果並列，保證可重算）</summary>
+    <ul>
+      <li>分類：漢字（U+4E00–U+9FFF、U+3400–U+4DBF）、假名（U+3040–U+30FF）、諺文（U+AC00–U+D7AF）逐字計；其餘所有 Unicode 字母與數字組成詞彙——所以希臘、西里爾、阿拉伯等文字的詞都進詞彙表，它不是拉丁專用表。</li>
+      <li>詞彙：內部撇號兩邊都是詞字元才連接（don't 算一個詞；'tis 算 tis）；連字號與其他標點都是分隔符。比對用 Unicode 簡單摺疊（CaseFolding.txt 的簡單摺疊條目（C 與 S），Unicode 16.0.0）：Σ 與 ς 都摺成 σ；這與轉小寫不同，ς 在轉小寫時不會變 σ。顯示形式取最常見的原始寫法，同次數取先出現者。</li>
+      <li>雙字元組：只在連續漢字段內取相鄰對，標點會斷段；假名與諺文不組雙字元。字元表不做正規化，不同 Unicode 正規形式的同形字會分開計，敬請注意。</li>
+      <li>啟用的停用詞在計數前排除。雙字元組只要任一字是停用字就會排除。詞彙表也會依純數字詞與最短詞長設定先篩選再計數。</li>
+      <li>各列百分比以該表計入的總數為分母，四捨五入至一位小數。最低出現次數只篩選結果列。例如 alpha alpha beta 設最低 2 次，總數仍為 3，alpha 為 2 次（66.7%）。依次數由高到低排序，同次數依首次出現順序。</li>
+      <li>預設停用詞（英文）：a, about, above, after, again, against, all, am, an, and, any, are, as, at, be, because, been, before, being, below, between, both, but, by, could, did, do, does, doing, down, during, each, few, for, from, further, had, has, have, having, he, her, here, hers, herself, him, himself, his, how, i, if, in, into, is, it, its, itself, just, me, more, most, my, no, nor, not, now, of, off, on, once, only, or, other, our, ours, out, over, own, same, she, should, so, some, such, than, that, the, their, theirs, them, themselves, then, there, these, they, this, those, through, to, too, under, until, up, very, was, we, were, what, when, where, which, while, who, whom, why, will, with, you, your, yours, yourself</li>
+      <li>預設停用詞（中文字元）：的了是在和也不這我你他她它們就都而及與或個中有被把從到對為以於其之者嗎呢吧啊所將但若如因由向跟給讓只</li>
+      <li>預設只顯示前 100 列。frequency.csv 會匯出目前表格中達到最低出現次數的所有列。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

@@ -1,0 +1,699 @@
+diff --git a/tools/fluid-typography/BUILD-MANIFEST.json b/tools/fluid-typography/BUILD-MANIFEST.json
+index 79b60da..d892a0c 100644
+--- a/tools/fluid-typography/BUILD-MANIFEST.json
++++ b/tools/fluid-typography/BUILD-MANIFEST.json
+@@ -1,18 +1,23 @@
+ [
+   {
+     "path": "index.html",
+-    "bytes": 3910,
+-    "sha256": "60a2a865af9ad9e6cf69661f95d1461a87cdffd02f6e4297f91c3f0ed2f280f6"
++    "bytes": 6962,
++    "sha256": "4e32f67654c555176a5be3584dd3c031bc5a4df2a5bd93c4a5ae3eaa287a9c80"
++  },
++  {
++    "path": "en/index.html",
++    "bytes": 7139,
++    "sha256": "f659427a33be7af4a8f674b592ddb64204633a9f6d4e896cc9262374f0565a0d"
+   },
+   {
+     "path": "style.css",
+-    "bytes": 4506,
+-    "sha256": "5cf342ff1874e960fc571c8261e113f8605e70390a6058d64e72656b80f8b852"
++    "bytes": 4602,
++    "sha256": "3c8d199c9c0ac2c24c2322b51f764cf238cb083109a1964d5b8edc8dfd42bbfb"
+   },
+   {
+     "path": "src/app.mjs",
+-    "bytes": 4556,
+-    "sha256": "a65f0cf7ea7f394060c3372057d00291c23cba31d6325384d5b279385a3bdf14"
++    "bytes": 6335,
++    "sha256": "d56e1843ca70d9e9179625f058aa1f7386a8f1b8b1a2ca38a61ede60b56b8ab6"
+   },
+   {
+     "path": "src/core.mjs",
+@@ -21,8 +26,8 @@
+   },
+   {
+     "path": "src/messages.mjs",
+-    "bytes": 4781,
+-    "sha256": "80250bab01a7efca85e650d4e432ff24b269d212eb1a114bd560d84734b391fe"
++    "bytes": 4839,
++    "sha256": "172e7b6c11206e97abc942b243c4c3ca68d64f963f5e16d02847f0dea69cbc69"
+   },
+   {
+     "path": "src/state.mjs",
+diff --git a/tools/fluid-typography/README.md b/tools/fluid-typography/README.md
+index adf0c5f..7258bb0 100644
+--- a/tools/fluid-typography/README.md
++++ b/tools/fluid-typography/README.md
+@@ -13,7 +13,7 @@ npm test
+ npm run check
+ npm run build
+ ```
+-Build copies index.html, style.css and four src modules to dist and writes BUILD-MANIFEST.json outside dist. Serve dist via the environment's already-authorized ordinary static preview. It uses relative assets and no external service. Local .openai/hosting.json only names dist; it contains no Site ID and does not authorize site creation/deployment. No custom server or native/DevTools workaround is required or permitted by this delivery.
++Build copies the Traditional Chinese and English pages, shared stylesheet and four source modules to dist and writes BUILD-MANIFEST.json outside dist. Both pages have localized HTML labels, metadata and relative asset paths. Serve dist via the environment's already-authorized ordinary static preview. Local .openai/hosting.json names dist and carries no Site ID.
+ No bundled framework, webfont, image, analytics, third-party script or runtime package.
+ 
+ ## Use
+@@ -30,6 +30,6 @@ Read AUTHOR-CHECK.md for A01–22 coverage and exact NOT_RUN facets. Fifteen aut
+ Source arithmetic does not prove native CSS precision, accessibility, runtime privacy or product quality. Existing ordinary UI evidence is author evidence; a nonauthor must evaluate this candidate. Source availability, independent acceptance and deployment are separate states, recorded outside this source document.
+ 
+ ## Recovery
+-No storage or URL state is implemented. Reset/pagehide/pageshow clear ephemeral app state; actual BFCache behavior still requires recorded observation. Browser/OS cache and forensic erasure are not promised.
++The URL identifies the language. The app keeps calculation state in memory during an ordinary language switch and same-document back or forward navigation. Reloading, opening the other language in a new tab, Reset and page lifecycle resets start a fresh calculation. Actual browser history and BFCache behavior still require recorded observation.
+ To discard this candidate, stop its authorized preview and use the frozen source snapshot manifest; no deployment change is implied. If a later revision is needed, copy the frozen candidate to a new revision, preserve its manifest/history, and recheck affected cases. Never overwrite another owner's work.
+ 
+diff --git a/tools/fluid-typography/dist/en/index.html b/tools/fluid-typography/dist/en/index.html
+new file mode 100644
+index 0000000..7b6bac6
+--- /dev/null
++++ b/tools/fluid-typography/dist/en/index.html
+@@ -0,0 +1,44 @@
++<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="Generate fluid typography CSS from two rem endpoints and preview how font size changes with viewport width."><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>Fluid type · GlossQuote Labs</title>
++<link rel="canonical" href="./">
++<link rel="alternate" hreflang="zh-TW" href="../">
++<link rel="alternate" hreflang="en" href="./">
++<link rel="alternate" hreflang="x-default" href="../"><link rel="stylesheet" href="../style.css"><script type="module" src="../src/app.mjs"></script></head><body>
++<header><a id="labs-home" class="wordmark" href="../../../en/" aria-label="GlossQuote Labs home">GQ<span>LABS</span><span class="sr-only" data-t="home">GlossQuote Labs home</span></a><a id="language" href="../" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></header>
++<main id="main"><div class="heading"><p class="eyebrow" data-t="eyebrow">GLOSSQUOTE LABS · CSS TOOL</p><h1 data-t="title">Fluid type</h1><p class="intro" data-t="intro">One line of CSS. Type that grows naturally between two endpoints.</p></div>
++<noscript><p class="notice">This calculator requires JavaScript. No result is generated while it is disabled.</p></noscript>
++<div class="workspace"><section class="panel settings" aria-labelledby="inputTitle"><div class="section-head"><span class="step">01</span><h2 id="inputTitle" data-t="inputTitle">Set your endpoints</h2></div><p class="muted" data-t="inputHint">Design endpoints use rem, not fixed pixel breakpoints.</p>
++<form id="form" novalidate><div class="field-grid" id="numeric-fields">
++<div class="field">
++  <label for="vmin" data-field-label="vmin">Minimum viewport (rem)</label>
++  <input id="vmin" name="vmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmin-range vmin-error">
++  <span id="vmin-range" class="range">6–240 rem</span><p id="vmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="vmax" data-field-label="vmax">Maximum viewport (rem)</label>
++  <input id="vmax" name="vmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmax-range vmax-error">
++  <span id="vmax-range" class="range">6–240 rem</span><p id="vmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmin" data-field-label="fmin">Minimum font size (rem)</label>
++  <input id="fmin" name="fmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmin-range fmin-error">
++  <span id="fmin-range" class="range">0.5–10 rem</span><p id="fmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmax" data-field-label="fmax">Maximum font size (rem)</label>
++  <input id="fmax" name="fmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmax-range fmax-error">
++  <span id="fmax-range" class="range">0.5–10 rem</span><p id="fmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="root" data-field-label="root">Reference root size (px/rem)</label>
++  <input id="root" name="root" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="root-range root-error root-hint">
++  <span id="root-range" class="range">8–32 px/rem</span><p id="root-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="width" data-field-label="width">Simulated viewport width (px)</label>
++  <input id="width" name="width" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="width-range width-error">
++  <span id="width-range" class="range">48–7680 px</span><p id="width-error" class="error" hidden></p>
++</div>
++</div><p id="root-hint" class="muted small" data-t="rootHint">Only changes the pixel explanations and simulation below, never the page root size or CSS.</p><div class="field"><label for="sample" data-t="sample">Sample text</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint">Plain text, up to 240 Unicode code points. Never stored or uploaded.</p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">Generate CSS</button></div></form></section>
++<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">Your type rule</h2></div><p id="empty" class="empty" data-t="empty">Set the endpoints, then generate your first CSS rule.</p><div id="result-content" hidden><label for="css" data-t="cssLabel">CSS for manual copying</label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">Select CSS</button><button id="reset" type="button" data-t="reset">Reset</button></div><p id="select-hint" class="muted small" data-t="selectHint">After selecting, use your system Copy shortcut. No automatic clipboard access.</p><div id="details" hidden><div class="metrics"><div><span data-t="state">Current state</span><strong id="state"></strong></div><div><span data-t="font">Font size</span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design">Design breakpoints</caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport">Viewport</th><th scope="col" data-t="font">Font size</th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote">Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.</p></div></section></div>
++<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">Read and compare</h2></div><p class="muted" data-t="previewHint">Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.</p><div class="preview-frame"><p id="preview"></p></div></section>
++<details class="help"><summary data-t="helpTitle">How do I use it?</summary><p data-t="help">Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.</p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">Calculated on this page · No accounts, tracking, storage or downloads</footer></body></html>
+diff --git a/tools/fluid-typography/dist/index.html b/tools/fluid-typography/dist/index.html
+index 59a020b..77d9c54 100644
+--- a/tools/fluid-typography/dist/index.html
++++ b/tools/fluid-typography/dist/index.html
+@@ -1,9 +1,44 @@
+-<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="以兩個 rem 端點計算流動字級 CSS。A private fluid typography calculator preview."><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>流動字級 · Fluid type</title><link rel="stylesheet" href="./style.css"><script type="module" src="./src/app.mjs"></script></head><body>
+-<header><a class="wordmark" href="#main">GQ<span>LABS</span></a><button id="language" type="button">English</button></header>
++<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="以兩個 rem 端點計算流動字級 CSS，並預覽字級在不同視窗寬度下的變化。"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>流動字級 · GlossQuote Labs</title>
++<link rel="canonical" href="./">
++<link rel="alternate" hreflang="zh-TW" href="./">
++<link rel="alternate" hreflang="en" href="en/">
++<link rel="alternate" hreflang="x-default" href="./"><link rel="stylesheet" href="./style.css"><script type="module" src="./src/app.mjs"></script></head><body>
++<header><a id="labs-home" class="wordmark" href="../../" aria-label="GlossQuote Labs 首頁">GQ<span>LABS</span><span class="sr-only" data-t="home">GlossQuote Labs 首頁</span></a><a id="language" href="en/" lang="en" hreflang="en">English</a></header>
+ <main id="main"><div class="heading"><p class="eyebrow" data-t="eyebrow">GLOSSQUOTE LABS · CSS 小工具</p><h1 data-t="title">流動字級</h1><p class="intro" data-t="intro">一行 CSS，讓字級在兩個端點之間自然成長。</p></div>
+-<noscript><p class="notice">此計算器需要 JavaScript。未啟用時不會產生結果。 This calculator requires JavaScript; no result is generated while disabled.</p></noscript>
++<noscript><p class="notice">此計算器需要 JavaScript。未啟用時不會產生結果。</p></noscript>
+ <div class="workspace"><section class="panel settings" aria-labelledby="inputTitle"><div class="section-head"><span class="step">01</span><h2 id="inputTitle" data-t="inputTitle">設定兩端的尺寸</h2></div><p class="muted" data-t="inputHint">以 rem 定義設計端點，不是固定像素斷點。</p>
+-<form id="form" novalidate><div class="field-grid" id="numeric-fields"></div><p id="root-hint" class="muted small" data-t="rootHint"></p><div class="field"><label for="sample" data-t="sample">試讀文字</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint"></p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">產生 CSS</button></div></form></section>
+-<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">你的字級規則</h2></div><p id="empty" class="empty" data-t="empty"></p><div id="result-content" hidden><label for="css" data-t="cssLabel"></label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">選取 CSS</button><button id="reset" type="button" data-t="reset">重設</button></div><p id="select-hint" class="muted small" data-t="selectHint"></p><div id="details" hidden><div class="metrics"><div><span data-t="state"></span><strong id="state"></strong></div><div><span data-t="font"></span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design"></caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport"></th><th scope="col" data-t="font"></th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote"></p></div></section></div>
+-<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">試讀與換算</h2></div><p class="muted" data-t="previewHint"></p><div class="preview-frame"><p id="preview"></p></div></section>
+-<details class="help"><summary data-t="helpTitle">怎麼使用？</summary><p data-t="help"></p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">只在此頁計算 · 無帳號、追蹤、儲存或下載</footer></body></html>
++<form id="form" novalidate><div class="field-grid" id="numeric-fields">
++<div class="field">
++  <label for="vmin" data-field-label="vmin">最小視窗 (rem)</label>
++  <input id="vmin" name="vmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmin-range vmin-error">
++  <span id="vmin-range" class="range">6–240 rem</span><p id="vmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="vmax" data-field-label="vmax">最大視窗 (rem)</label>
++  <input id="vmax" name="vmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmax-range vmax-error">
++  <span id="vmax-range" class="range">6–240 rem</span><p id="vmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmin" data-field-label="fmin">最小字級 (rem)</label>
++  <input id="fmin" name="fmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmin-range fmin-error">
++  <span id="fmin-range" class="range">0.5–10 rem</span><p id="fmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmax" data-field-label="fmax">最大字級 (rem)</label>
++  <input id="fmax" name="fmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmax-range fmax-error">
++  <span id="fmax-range" class="range">0.5–10 rem</span><p id="fmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="root" data-field-label="root">參考根字級 (px/rem)</label>
++  <input id="root" name="root" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="root-range root-error root-hint">
++  <span id="root-range" class="range">8–32 px/rem</span><p id="root-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="width" data-field-label="width">模擬視窗寬度 (px)</label>
++  <input id="width" name="width" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="width-range width-error">
++  <span id="width-range" class="range">48–7680 px</span><p id="width-error" class="error" hidden></p>
++</div>
++</div><p id="root-hint" class="muted small" data-t="rootHint">只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。</p><div class="field"><label for="sample" data-t="sample">試讀文字</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint">純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。</p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">產生 CSS</button></div></form></section>
++<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">你的字級規則</h2></div><p id="empty" class="empty" data-t="empty">填好尺寸後，產生第一行 CSS。</p><div id="result-content" hidden><label for="css" data-t="cssLabel">可自行複製的 CSS</label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">選取 CSS</button><button id="reset" type="button" data-t="reset">重設</button></div><p id="select-hint" class="muted small" data-t="selectHint">選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。</p><div id="details" hidden><div class="metrics"><div><span data-t="state">目前狀態</span><strong id="state"></strong></div><div><span data-t="font">字級</span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design">設計斷點</caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport">視窗</th><th scope="col" data-t="font">字級</th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote">係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。</p></div></section></div>
++<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">試讀與換算</h2></div><p class="muted" data-t="previewHint">數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。</p><div class="preview-frame"><p id="preview"></p></div></section>
++<details class="help"><summary data-t="helpTitle">怎麼使用？</summary><p data-t="help">在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。</p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">只在此頁計算 · 無帳號、追蹤、儲存或下載</footer></body></html>
+diff --git a/tools/fluid-typography/dist/src/app.mjs b/tools/fluid-typography/dist/src/app.mjs
+index 9b65898..3716910 100644
+--- a/tools/fluid-typography/dist/src/app.mjs
++++ b/tools/fluid-typography/dist/src/app.mjs
+@@ -1,9 +1,73 @@
+ import{fields,decimal,number,sampleValid}from'./core.mjs';import{initial,transition,canPreview}from'./state.mjs';import{messages}from'./messages.mjs';
+-const $=id=>document.getElementById(id);let state=initial();
+-const units={vmin:'rem',vmax:'rem',fmin:'rem',fmax:'rem',root:'px/rem',width:'px'};const ranges={vmin:'6–240',vmax:'6–240',fmin:'0.5–10',fmax:'0.5–10',root:'8–32',width:'48–7680'};
+-for(const k of fields){const wrap=document.createElement('div');wrap.className='field';const label=document.createElement('label');label.htmlFor=k;label.dataset.fieldLabel=k;const input=document.createElement('input');input.id=k;input.name=k;input.type='text';input.inputMode='decimal';input.autocomplete='off';input.spellcheck=false;input.setAttribute('aria-describedby',`${k}-range ${k}-error${k==='root'?' root-hint':''}`);const hint=document.createElement('span');hint.id=k+'-range';hint.className='range';hint.textContent=ranges[k]+' '+units[k];const error=document.createElement('p');error.id=k+'-error';error.className='error';error.hidden=true;wrap.append(label,input,hint,error);$('numeric-fields').append(wrap);input.addEventListener('input',()=>dispatch({type:'number',field:k,value:input.value}));}
++const $ = id => document.getElementById(id);
++const initialLanguage = document.documentElement.lang;
++let state = initial(initialLanguage);
++const languageLink = $('language');
++const homeLink = $('labs-home');
++const canonical = document.querySelector('link[rel="canonical"]');
++const description = document.querySelector('meta[name="description"]');
++const alternates = {
++  'zh-Hant': document.querySelector('link[hreflang="zh-Hant"]') ?? document.querySelector('link[hreflang="zh-TW"]'),
++  en: document.querySelector('link[hreflang="en"]'),
++};
++const defaultAlternate = document.querySelector('link[hreflang="x-default"]');
++const canonicalUrls = { 'zh-Hant': alternates['zh-Hant'].href, en: alternates.en.href };
++const routes = { 'zh-Hant': new URL(canonicalUrls['zh-Hant']), en: new URL(canonicalUrls.en) };
++const homeFilename = new URL(homeLink.href).pathname.endsWith('/index.html') ? 'index.html' : '';
++const homes = initialLanguage === 'en'
++  ? { en: homeLink.href, 'zh-Hant': new URL('../' + homeFilename, homeLink.href).href }
++  : { 'zh-Hant': homeLink.href, en: new URL('en/' + homeFilename, homeLink.href).href };
++const descriptions = {
++  'zh-Hant': '以兩個 rem 端點計算流動字級 CSS，並預覽字級在不同視窗寬度下的變化。',
++  en: 'Generate fluid typography CSS from two rem endpoints and preview how font size changes with viewport width.',
++};
++
++function otherLanguage(lang) {
++  return lang === 'en' ? 'zh-Hant' : 'en';
++}
++
++function switchLanguage(lang) {
++  const next = otherLanguage(lang);
++  languageLink.href = routes[next].href;
++  languageLink.lang = next;
++  languageLink.hreflang = next;
++  homeLink.href = homes[lang];
++  homeLink.setAttribute('aria-label', messages[lang].home);
++  canonical.href = canonicalUrls[lang];
++  alternates.en.href = canonicalUrls.en;
++  alternates['zh-Hant'].href = canonicalUrls['zh-Hant'];
++  defaultAlternate.href = canonicalUrls['zh-Hant'];
++  description.content = descriptions[lang];
++  dispatch({ type: 'language', lang });
++  $('live').textContent = '';
++}
++const units={vmin:'rem',vmax:'rem',fmin:'rem',fmax:'rem',root:'px/rem',width:'px'};
++for (const key of fields) {
++  const input = $(key);
++  input.addEventListener('input', () => dispatch({ type: 'number', field: key, value: input.value }));
++}
+ function dispatch(e){state=transition(state,e);render();if(e.type==='number')$('live').textContent='';}
+ function render(){const t=messages[state.lang];document.documentElement.lang=state.lang;document.title=t.title+' · GlossQuote Labs';for(const e of document.querySelectorAll('[data-t]'))e.textContent=t[e.dataset.t];$('language').textContent=t.language;for(const k of fields){document.querySelector(`[data-field-label="${k}"]`).textContent=t[k]+' ('+units[k]+')';if($(k).value!==state.raw[k])$(k).value=state.raw[k];const error=state.errors[k];$(k).setAttribute('aria-invalid',String(Boolean(error)));$(k+'-error').hidden=!error;$(k+'-error').textContent=error?t[error]:'';}$('sample').value=state.sample;const textOK=sampleValid(state.sample);$('sample').setAttribute('aria-invalid',String(!textOK));$('sample-error').hidden=textOK;$('sample-error').textContent=textOK?'':t.sampleError;$('sample-count').textContent=Array.from(state.sample).length+' / 240';$('select').disabled=!state.result;$('empty').hidden=Boolean(state.result);$('empty').textContent=state.dirty?t.dirty:t.empty;$('result-content').hidden=!state.result;$('details').hidden=!state.result;$('css').value=state.result?.css??'';$('preview').textContent=canPreview(state)?state.sample:'';$('preview').style.fontSize=canPreview(state)?number(state.result.size)+'px':'';$('table-body').replaceChildren();$('state').textContent='';$('size').textContent='';$('root-note').textContent='';if(state.result){const r=state.result;$('state').textContent=t[r.state];$('size').textContent=t.approx+' '+decimal(r.size,2,false)+' px';$('root-note').textContent=t.rootNote+state.raw.root+' px/rem';for(const [label,v,f,vpx,fpx]of[[t.lower,state.raw.vmin,state.raw.fmin,r.vminPx,r.min],[t.upper,state.raw.vmax,state.raw.fmax,r.vmaxPx,r.max]]){const tr=document.createElement('tr');const th=document.createElement('th');th.scope='row';th.textContent=label;tr.append(th);for(const [rem,px]of[[v,vpx],[f,fpx]]){const td=document.createElement('td');td.textContent=rem+' rem';const sub=document.createElement('span');sub.textContent=t.approx+' '+decimal(px,2,false)+' px';td.append(sub);tr.append(td);}$('table-body').append(tr);}}}
+ $('form').addEventListener('submit',e=>{e.preventDefault();const start=performance.now();dispatch({type:'generate'});const bad=fields.find(k=>state.errors[k]);if(bad)$(bad).focus();$('live').textContent=bad?messages[state.lang][state.errors[bad]]:messages[state.lang].generated;requestAnimationFrame(()=>{const duration=performance.now()-start;document.dispatchEvent(new CustomEvent('fluid-generation-rendered',{detail:{duration}}));});});
+-$('sample').addEventListener('input',()=>dispatch({type:'sample',value:$('sample').value}));$('reset').addEventListener('click',()=>{dispatch({type:'reset'});$('live').textContent='';$('vmin').focus();});$('language').addEventListener('click',()=>{dispatch({type:'language',lang:state.lang==='en'?'zh-Hant':'en'});$('live').textContent='';});$('select').addEventListener('click',()=>{if(!state.result)return;$('css').focus();$('css').select();$('live').textContent=messages[state.lang].selected;});
++$('sample').addEventListener('input',()=>dispatch({type:'sample',value:$('sample').value}));$('reset').addEventListener('click',()=>{dispatch({type:'reset'});$('live').textContent='';$('vmin').focus();});
++languageLink.addEventListener('click', event => {
++  if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
++  const lang = otherLanguage(state.lang);
++  const url = routes[lang];
++  if (url.origin !== location.origin) return;
++  try {
++    history.pushState(null, '', url);
++  } catch {
++    return; // Leave the link's native navigation available.
++  }
++  event.preventDefault();
++  switchLanguage(lang);
++});
++addEventListener('popstate', () => {
++  const directory = new URL('./', location.href);
++  for (const lang of ['zh-Hant', 'en']) {
++    if (directory.pathname === new URL('./', routes[lang]).pathname && lang !== state.lang) switchLanguage(lang);
++  }
++});
++$('select').addEventListener('click',()=>{if(!state.result)return;$('css').focus();$('css').select();$('live').textContent=messages[state.lang].selected;});
+ addEventListener('pagehide',()=>{state=initial(state.lang);render();$('live').textContent='';});addEventListener('pageshow',e=>{if(e.persisted){state=initial(state.lang);render();$('live').textContent='';}});render();
+diff --git a/tools/fluid-typography/dist/src/messages.mjs b/tools/fluid-typography/dist/src/messages.mjs
+index a4e9166..8431bd0 100644
+--- a/tools/fluid-typography/dist/src/messages.mjs
++++ b/tools/fluid-typography/dist/src/messages.mjs
+@@ -1,3 +1,3 @@
+ export const messages={
+-'zh-Hant':{title:'流動字級',eyebrow:'GLOSSQUOTE LABS · CSS 小工具',intro:'一行 CSS，讓字級在兩個端點之間自然成長。',language:'English',inputTitle:'設定兩端的尺寸',inputHint:'以 rem 定義設計端點，不是固定像素斷點。',vmin:'最小視窗',vmax:'最大視窗',fmin:'最小字級',fmax:'最大字級',root:'參考根字級',width:'模擬視窗寬度',rootHint:'只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。',sample:'試讀文字',sampleHint:'純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。',generate:'產生 CSS',select:'選取 CSS',reset:'重設',outputTitle:'你的字級規則',empty:'填好尺寸後，產生第一行 CSS。',dirty:'尺寸已變更，請重新產生。舊結果已清除。',cssLabel:'可自行複製的 CSS',selectHint:'選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。',selected:'CSS 已選取；請使用系統複製快捷鍵。',generated:'CSS 已產生，下方有公式與模擬結果。',previewTitle:'試讀與換算',previewHint:'數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。',rootNote:'參考根字級：',approx:'約',unit:'px',design:'設計斷點',viewport:'視窗',font:'字級',lower:'下限',upper:'上限',state:'目前狀態',minimum:'下限',fluid:'流動區間',maximum:'上限',constant:'固定字級',sampleError:'文字超過 240 個碼點。請縮短文字；CSS 與數值結果仍保留。',grammar:'請輸入 ASCII 十進位數，最多 4 位小數；不可有正負號、單位、前導零或科學記號。',range:'數值超出此欄標示的範圍。',viewportOrder:'最大視窗必須至少比最小視窗大 0.25 rem。',fontOrder:'最大字級不能小於最小字級。',helpTitle:'怎麼使用？',help:'在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。',privacy:'只在此頁計算 · 無帳號、追蹤、儲存或下載',roundNote:'係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。',noscript:'此計算器需要 JavaScript。未啟用時不會產生結果。'},
+-en:{title:'Fluid type',eyebrow:'GLOSSQUOTE LABS · CSS TOOL',intro:'One line of CSS. Type that grows naturally between two endpoints.',language:'繁體中文',inputTitle:'Set your endpoints',inputHint:'Design endpoints use rem, not fixed pixel breakpoints.',vmin:'Minimum viewport',vmax:'Maximum viewport',fmin:'Minimum font size',fmax:'Maximum font size',root:'Reference root size',width:'Simulated viewport width',rootHint:'Only changes the pixel explanations and simulation below, never the page root size or CSS.',sample:'Sample text',sampleHint:'Plain text, up to 240 Unicode code points. Never stored or uploaded.',generate:'Generate CSS',select:'Select CSS',reset:'Reset',outputTitle:'Your type rule',empty:'Set the endpoints, then generate your first CSS rule.',dirty:'Sizes changed. Generate again; the previous result was cleared.',cssLabel:'CSS for manual copying',selectHint:'After selecting, use your system Copy shortcut. No automatic clipboard access.',selected:'CSS selected. Use your system Copy shortcut.',generated:'CSS generated. Formula and simulation are available below.',previewTitle:'Read and compare',previewHint:"Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.",rootNote:'Reference root: ',approx:'approx.',unit:'px',design:'Design breakpoints',viewport:'Viewport',font:'Font size',lower:'Minimum',upper:'Maximum',state:'Current state',minimum:'Minimum',fluid:'Fluid',maximum:'Maximum',constant:'Constant size',sampleError:'Text exceeds 240 code points. Shorten it; CSS and numerical results are preserved.',grammar:'Use ASCII decimal digits with up to 4 decimal places; no sign, units, leading zeroes or exponent.',range:'Outside the range shown for this field.',viewportOrder:'Maximum viewport must exceed minimum by at least 0.25 rem.',fontOrder:'Maximum font size must not be smaller than minimum.',helpTitle:'How do I use it?',help:'Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.',privacy:'Calculated on this page · No accounts, tracking, storage or downloads',roundNote:'Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.',noscript:'This calculator requires JavaScript. No result is generated while it is disabled.'}}
++'zh-Hant':{title:'流動字級',eyebrow:'GLOSSQUOTE LABS · CSS 小工具',intro:'一行 CSS，讓字級在兩個端點之間自然成長。',home:'GlossQuote Labs 首頁',language:'English',inputTitle:'設定兩端的尺寸',inputHint:'以 rem 定義設計端點，不是固定像素斷點。',vmin:'最小視窗',vmax:'最大視窗',fmin:'最小字級',fmax:'最大字級',root:'參考根字級',width:'模擬視窗寬度',rootHint:'只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。',sample:'試讀文字',sampleHint:'純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。',generate:'產生 CSS',select:'選取 CSS',reset:'重設',outputTitle:'你的字級規則',empty:'填好尺寸後，產生第一行 CSS。',dirty:'尺寸已變更，請重新產生。舊結果已清除。',cssLabel:'可自行複製的 CSS',selectHint:'選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。',selected:'CSS 已選取；請使用系統複製快捷鍵。',generated:'CSS 已產生，下方有公式與模擬結果。',previewTitle:'試讀與換算',previewHint:'數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。',rootNote:'參考根字級：',approx:'約',unit:'px',design:'設計斷點',viewport:'視窗',font:'字級',lower:'下限',upper:'上限',state:'目前狀態',minimum:'下限',fluid:'流動區間',maximum:'上限',constant:'固定字級',sampleError:'文字超過 240 個碼點。請縮短文字；CSS 與數值結果仍保留。',grammar:'請輸入 ASCII 十進位數，最多 4 位小數；不可有正負號、單位、前導零或科學記號。',range:'數值超出此欄標示的範圍。',viewportOrder:'最大視窗必須至少比最小視窗大 0.25 rem。',fontOrder:'最大字級不能小於最小字級。',helpTitle:'怎麼使用？',help:'在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。',privacy:'只在此頁計算 · 無帳號、追蹤、儲存或下載',roundNote:'係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。',noscript:'此計算器需要 JavaScript。未啟用時不會產生結果。'},
++en:{title:'Fluid type',eyebrow:'GLOSSQUOTE LABS · CSS TOOL',intro:'One line of CSS. Type that grows naturally between two endpoints.',home:'GlossQuote Labs home',language:'繁體中文',inputTitle:'Set your endpoints',inputHint:'Design endpoints use rem, not fixed pixel breakpoints.',vmin:'Minimum viewport',vmax:'Maximum viewport',fmin:'Minimum font size',fmax:'Maximum font size',root:'Reference root size',width:'Simulated viewport width',rootHint:'Only changes the pixel explanations and simulation below, never the page root size or CSS.',sample:'Sample text',sampleHint:'Plain text, up to 240 Unicode code points. Never stored or uploaded.',generate:'Generate CSS',select:'Select CSS',reset:'Reset',outputTitle:'Your type rule',empty:'Set the endpoints, then generate your first CSS rule.',dirty:'Sizes changed. Generate again; the previous result was cleared.',cssLabel:'CSS for manual copying',selectHint:'After selecting, use your system Copy shortcut. No automatic clipboard access.',selected:'CSS selected. Use your system Copy shortcut.',generated:'CSS generated. Formula and simulation are available below.',previewTitle:'Read and compare',previewHint:"Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.",rootNote:'Reference root: ',approx:'approx.',unit:'px',design:'Design breakpoints',viewport:'Viewport',font:'Font size',lower:'Minimum',upper:'Maximum',state:'Current state',minimum:'Minimum',fluid:'Fluid',maximum:'Maximum',constant:'Constant size',sampleError:'Text exceeds 240 code points. Shorten it; CSS and numerical results are preserved.',grammar:'Use ASCII decimal digits with up to 4 decimal places; no sign, units, leading zeroes or exponent.',range:'Outside the range shown for this field.',viewportOrder:'Maximum viewport must exceed minimum by at least 0.25 rem.',fontOrder:'Maximum font size must not be smaller than minimum.',helpTitle:'How do I use it?',help:'Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.',privacy:'Calculated on this page · No accounts, tracking, storage or downloads',roundNote:'Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.',noscript:'This calculator requires JavaScript. No result is generated while it is disabled.'}}
+diff --git a/tools/fluid-typography/dist/style.css b/tools/fluid-typography/dist/style.css
+index 0b87cb1..21688fd 100644
+--- a/tools/fluid-typography/dist/style.css
++++ b/tools/fluid-typography/dist/style.css
+@@ -1 +1 @@
+-:root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2925;background:#f4f5f0;line-height:1.6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main,footer{width:min(1120px,calc(100% - 48px));margin-inline:auto}header{display:flex;justify-content:space-between;align-items:center;padding:26px 0;border-bottom:1px solid #cbd3c9}.wordmark{font-size:1.5rem;font-weight:800;letter-spacing:-.06em;color:inherit;text-decoration:none}.wordmark span{font-size:.65rem;letter-spacing:.14em;margin-left:10px;color:#526158}.heading{padding:48px 0 32px;max-width:760px}.eyebrow{font-size:.72rem;letter-spacing:.18em;font-weight:700;color:#496453;margin:0 0 12px}h1{font-size:clamp(2.3rem,4vw,3.5rem);line-height:1.18;letter-spacing:-.035em;margin:0 0 16px}h2{font-size:1.15rem;margin:0;line-height:1.4}.intro{font-size:1.1rem;margin:0;color:#526158}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{background:#fff;border:1px solid #d7ded3;border-radius:18px;padding:28px;min-width:0;box-shadow:0 3px 0 #e6ebe1}.section-head{display:flex;align-items:center;gap:12px}.step{font-family:ui-monospace,monospace;color:#42694f;background:#edf3e9;border:1px solid #dae5d4;font-size:.75rem;padding:4px 8px;border-radius:7px}.muted{color:#536159}.small{font-size:.79rem;line-height:1.65}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;margin-top:26px}.field{min-width:0;position:relative}label{display:block;font-size:.86rem;font-weight:650;margin-bottom:7px}input,textarea,button{font:inherit}input,textarea{border:1px solid #839284;border-radius:8px;background:#fff;color:#1c2925;padding:11px 12px;width:100%;min-width:0}input{font-variant-numeric:tabular-nums}textarea{resize:vertical}input[aria-invalid=true],textarea[aria-invalid=true]{border:2px solid #a22928}button{cursor:pointer;border:1px solid #879788;border-radius:8px;background:#fff;color:#254532;padding:10px 16px;font-size:.88rem;font-weight:650;min-height:44px}button:hover:not(:disabled){background:#ecf2e8}button.primary{background:#254e37;color:#fff;border-color:#254e37}button.primary:hover{background:#173d28}button:disabled{cursor:not-allowed;opacity:1;background:#edf0eb;color:#657164;border-color:#bdc8b9}:focus-visible{outline:3px solid #b66410;outline-offset:3px}.actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}.error{font-size:.78rem;line-height:1.5;color:#9b2524;margin:6px 0 0}.range{font-size:.72rem;color:#5b685d;display:block;margin-top:5px}.count{font-size:.72rem;color:#5b685d;display:block;text-align:right}.results{background:#fafff6}.empty{color:#536159;border:1px dashed #aab9a3;border-radius:10px;padding:32px 18px;margin-top:26px;min-height:128px}#result-content{margin-top:26px}#css{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem;background:#173629;color:#eff9e9;line-height:1.8;border-color:#173629;white-space:pre;overflow:auto;resize:vertical;min-height:126px}#select{margin-top:0}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 0;border-top:1px solid #d5dfce;margin-top:26px}.metrics span{display:block;font-size:.76rem;color:#536159}.metrics strong{display:block;font-size:1.2rem;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed}caption{text-align:left;font-weight:700;margin-bottom:8px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid #d5dfce;overflow-wrap:anywhere}td span{display:block;color:#536159}.preview-section{margin-top:24px}.preview-frame{background:#f4f6ef;border-radius:10px;padding:22px;min-height:130px;max-height:320px;overflow:auto;border:1px solid #d7ded3}.preview-frame p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35;font-family:Georgia,"Noto Serif TC",serif}.help{margin:30px 0;color:#46554a}.help summary{cursor:pointer;font-weight:650;padding:12px 0}.help p{max-width:780px}footer{font-size:.76rem;color:#536159;border-top:1px solid #cbd3c9;padding:20px 0 32px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}[hidden]{display:none!important}.notice{padding:20px;border:2px solid #a22928}@media(max-width:760px){.workspace{grid-template-columns:1fr}.heading{padding-top:32px}}@media(max-width:420px){header,main,footer{width:calc(100% - 28px)}.panel{padding:20px}.field-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.heading{padding-bottom:24px}.preview-frame{padding:14px}}
++:root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2925;background:#f4f5f0;line-height:1.6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main,footer{width:min(1120px,calc(100% - 48px));margin-inline:auto}header{display:flex;justify-content:space-between;align-items:center;padding:26px 0;border-bottom:1px solid #cbd3c9}.wordmark{font-size:1.5rem;font-weight:800;letter-spacing:-.06em;color:inherit;text-decoration:none}.wordmark span{font-size:.65rem;letter-spacing:.14em;margin-left:10px;color:#526158}.heading{padding:48px 0 32px;max-width:760px}.eyebrow{font-size:.72rem;letter-spacing:.18em;font-weight:700;color:#496453;margin:0 0 12px}h1{font-size:clamp(2.3rem,4vw,3.5rem);line-height:1.18;letter-spacing:-.035em;margin:0 0 16px}h2{font-size:1.15rem;margin:0;line-height:1.4}.intro{font-size:1.1rem;margin:0;color:#526158}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{background:#fff;border:1px solid #d7ded3;border-radius:18px;padding:28px;min-width:0;box-shadow:0 3px 0 #e6ebe1}.section-head{display:flex;align-items:center;gap:12px}.step{font-family:ui-monospace,monospace;color:#42694f;background:#edf3e9;border:1px solid #dae5d4;font-size:.75rem;padding:4px 8px;border-radius:7px}.muted{color:#536159}.small{font-size:.79rem;line-height:1.65}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;margin-top:26px}.field{min-width:0;position:relative}label{display:block;font-size:.86rem;font-weight:650;margin-bottom:7px}input,textarea,button{font:inherit}input,textarea{border:1px solid #839284;border-radius:8px;background:#fff;color:#1c2925;padding:11px 12px;width:100%;min-width:0}input{font-variant-numeric:tabular-nums}textarea{resize:vertical}input[aria-invalid=true],textarea[aria-invalid=true]{border:2px solid #a22928}button,#language{cursor:pointer;border:1px solid #879788;border-radius:8px;background:#fff;color:#254532;padding:10px 16px;font-size:.88rem;font-weight:650;min-height:44px}#language{display:inline-flex;align-items:center;text-decoration:none}button:hover:not(:disabled),#language:hover{background:#ecf2e8}button.primary{background:#254e37;color:#fff;border-color:#254e37}button.primary:hover{background:#173d28}button:disabled{cursor:not-allowed;opacity:1;background:#edf0eb;color:#657164;border-color:#bdc8b9}:focus-visible{outline:3px solid #b66410;outline-offset:3px}.actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}.error{font-size:.78rem;line-height:1.5;color:#9b2524;margin:6px 0 0}.range{font-size:.72rem;color:#5b685d;display:block;margin-top:5px}.count{font-size:.72rem;color:#5b685d;display:block;text-align:right}.results{background:#fafff6}.empty{color:#536159;border:1px dashed #aab9a3;border-radius:10px;padding:32px 18px;margin-top:26px;min-height:128px}#result-content{margin-top:26px}#css{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem;background:#173629;color:#eff9e9;line-height:1.8;border-color:#173629;white-space:pre;overflow:auto;resize:vertical;min-height:126px}#select{margin-top:0}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 0;border-top:1px solid #d5dfce;margin-top:26px}.metrics span{display:block;font-size:.76rem;color:#536159}.metrics strong{display:block;font-size:1.2rem;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed}caption{text-align:left;font-weight:700;margin-bottom:8px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid #d5dfce;overflow-wrap:anywhere}td span{display:block;color:#536159}.preview-section{margin-top:24px}.preview-frame{background:#f4f6ef;border-radius:10px;padding:22px;min-height:130px;max-height:320px;overflow:auto;border:1px solid #d7ded3}.preview-frame p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35;font-family:Georgia,"Noto Serif TC",serif}.help{margin:30px 0;color:#46554a}.help summary{cursor:pointer;font-weight:650;padding:12px 0}.help p{max-width:780px}footer{font-size:.76rem;color:#536159;border-top:1px solid #cbd3c9;padding:20px 0 32px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}[hidden]{display:none!important}.notice{padding:20px;border:2px solid #a22928}@media(max-width:760px){.workspace{grid-template-columns:1fr}.heading{padding-top:32px}}@media(max-width:420px){header,main,footer{width:calc(100% - 28px)}.panel{padding:20px}.field-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.heading{padding-bottom:24px}.preview-frame{padding:14px}}
+diff --git a/tools/fluid-typography/en/index.html b/tools/fluid-typography/en/index.html
+new file mode 100644
+index 0000000..7b6bac6
+--- /dev/null
++++ b/tools/fluid-typography/en/index.html
+@@ -0,0 +1,44 @@
++<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="Generate fluid typography CSS from two rem endpoints and preview how font size changes with viewport width."><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>Fluid type · GlossQuote Labs</title>
++<link rel="canonical" href="./">
++<link rel="alternate" hreflang="zh-TW" href="../">
++<link rel="alternate" hreflang="en" href="./">
++<link rel="alternate" hreflang="x-default" href="../"><link rel="stylesheet" href="../style.css"><script type="module" src="../src/app.mjs"></script></head><body>
++<header><a id="labs-home" class="wordmark" href="../../../en/" aria-label="GlossQuote Labs home">GQ<span>LABS</span><span class="sr-only" data-t="home">GlossQuote Labs home</span></a><a id="language" href="../" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></header>
++<main id="main"><div class="heading"><p class="eyebrow" data-t="eyebrow">GLOSSQUOTE LABS · CSS TOOL</p><h1 data-t="title">Fluid type</h1><p class="intro" data-t="intro">One line of CSS. Type that grows naturally between two endpoints.</p></div>
++<noscript><p class="notice">This calculator requires JavaScript. No result is generated while it is disabled.</p></noscript>
++<div class="workspace"><section class="panel settings" aria-labelledby="inputTitle"><div class="section-head"><span class="step">01</span><h2 id="inputTitle" data-t="inputTitle">Set your endpoints</h2></div><p class="muted" data-t="inputHint">Design endpoints use rem, not fixed pixel breakpoints.</p>
++<form id="form" novalidate><div class="field-grid" id="numeric-fields">
++<div class="field">
++  <label for="vmin" data-field-label="vmin">Minimum viewport (rem)</label>
++  <input id="vmin" name="vmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmin-range vmin-error">
++  <span id="vmin-range" class="range">6–240 rem</span><p id="vmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="vmax" data-field-label="vmax">Maximum viewport (rem)</label>
++  <input id="vmax" name="vmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmax-range vmax-error">
++  <span id="vmax-range" class="range">6–240 rem</span><p id="vmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmin" data-field-label="fmin">Minimum font size (rem)</label>
++  <input id="fmin" name="fmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmin-range fmin-error">
++  <span id="fmin-range" class="range">0.5–10 rem</span><p id="fmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmax" data-field-label="fmax">Maximum font size (rem)</label>
++  <input id="fmax" name="fmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmax-range fmax-error">
++  <span id="fmax-range" class="range">0.5–10 rem</span><p id="fmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="root" data-field-label="root">Reference root size (px/rem)</label>
++  <input id="root" name="root" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="root-range root-error root-hint">
++  <span id="root-range" class="range">8–32 px/rem</span><p id="root-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="width" data-field-label="width">Simulated viewport width (px)</label>
++  <input id="width" name="width" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="width-range width-error">
++  <span id="width-range" class="range">48–7680 px</span><p id="width-error" class="error" hidden></p>
++</div>
++</div><p id="root-hint" class="muted small" data-t="rootHint">Only changes the pixel explanations and simulation below, never the page root size or CSS.</p><div class="field"><label for="sample" data-t="sample">Sample text</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint">Plain text, up to 240 Unicode code points. Never stored or uploaded.</p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">Generate CSS</button></div></form></section>
++<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">Your type rule</h2></div><p id="empty" class="empty" data-t="empty">Set the endpoints, then generate your first CSS rule.</p><div id="result-content" hidden><label for="css" data-t="cssLabel">CSS for manual copying</label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">Select CSS</button><button id="reset" type="button" data-t="reset">Reset</button></div><p id="select-hint" class="muted small" data-t="selectHint">After selecting, use your system Copy shortcut. No automatic clipboard access.</p><div id="details" hidden><div class="metrics"><div><span data-t="state">Current state</span><strong id="state"></strong></div><div><span data-t="font">Font size</span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design">Design breakpoints</caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport">Viewport</th><th scope="col" data-t="font">Font size</th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote">Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.</p></div></section></div>
++<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">Read and compare</h2></div><p class="muted" data-t="previewHint">Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.</p><div class="preview-frame"><p id="preview"></p></div></section>
++<details class="help"><summary data-t="helpTitle">How do I use it?</summary><p data-t="help">Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.</p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">Calculated on this page · No accounts, tracking, storage or downloads</footer></body></html>
+diff --git a/tools/fluid-typography/index.html b/tools/fluid-typography/index.html
+index 59a020b..77d9c54 100644
+--- a/tools/fluid-typography/index.html
++++ b/tools/fluid-typography/index.html
+@@ -1,9 +1,44 @@
+-<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="以兩個 rem 端點計算流動字級 CSS。A private fluid typography calculator preview."><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>流動字級 · Fluid type</title><link rel="stylesheet" href="./style.css"><script type="module" src="./src/app.mjs"></script></head><body>
+-<header><a class="wordmark" href="#main">GQ<span>LABS</span></a><button id="language" type="button">English</button></header>
++<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="以兩個 rem 端點計算流動字級 CSS，並預覽字級在不同視窗寬度下的變化。"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>流動字級 · GlossQuote Labs</title>
++<link rel="canonical" href="./">
++<link rel="alternate" hreflang="zh-TW" href="./">
++<link rel="alternate" hreflang="en" href="en/">
++<link rel="alternate" hreflang="x-default" href="./"><link rel="stylesheet" href="./style.css"><script type="module" src="./src/app.mjs"></script></head><body>
++<header><a id="labs-home" class="wordmark" href="../../" aria-label="GlossQuote Labs 首頁">GQ<span>LABS</span><span class="sr-only" data-t="home">GlossQuote Labs 首頁</span></a><a id="language" href="en/" lang="en" hreflang="en">English</a></header>
+ <main id="main"><div class="heading"><p class="eyebrow" data-t="eyebrow">GLOSSQUOTE LABS · CSS 小工具</p><h1 data-t="title">流動字級</h1><p class="intro" data-t="intro">一行 CSS，讓字級在兩個端點之間自然成長。</p></div>
+-<noscript><p class="notice">此計算器需要 JavaScript。未啟用時不會產生結果。 This calculator requires JavaScript; no result is generated while disabled.</p></noscript>
++<noscript><p class="notice">此計算器需要 JavaScript。未啟用時不會產生結果。</p></noscript>
+ <div class="workspace"><section class="panel settings" aria-labelledby="inputTitle"><div class="section-head"><span class="step">01</span><h2 id="inputTitle" data-t="inputTitle">設定兩端的尺寸</h2></div><p class="muted" data-t="inputHint">以 rem 定義設計端點，不是固定像素斷點。</p>
+-<form id="form" novalidate><div class="field-grid" id="numeric-fields"></div><p id="root-hint" class="muted small" data-t="rootHint"></p><div class="field"><label for="sample" data-t="sample">試讀文字</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint"></p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">產生 CSS</button></div></form></section>
+-<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">你的字級規則</h2></div><p id="empty" class="empty" data-t="empty"></p><div id="result-content" hidden><label for="css" data-t="cssLabel"></label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">選取 CSS</button><button id="reset" type="button" data-t="reset">重設</button></div><p id="select-hint" class="muted small" data-t="selectHint"></p><div id="details" hidden><div class="metrics"><div><span data-t="state"></span><strong id="state"></strong></div><div><span data-t="font"></span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design"></caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport"></th><th scope="col" data-t="font"></th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote"></p></div></section></div>
+-<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">試讀與換算</h2></div><p class="muted" data-t="previewHint"></p><div class="preview-frame"><p id="preview"></p></div></section>
+-<details class="help"><summary data-t="helpTitle">怎麼使用？</summary><p data-t="help"></p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">只在此頁計算 · 無帳號、追蹤、儲存或下載</footer></body></html>
++<form id="form" novalidate><div class="field-grid" id="numeric-fields">
++<div class="field">
++  <label for="vmin" data-field-label="vmin">最小視窗 (rem)</label>
++  <input id="vmin" name="vmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmin-range vmin-error">
++  <span id="vmin-range" class="range">6–240 rem</span><p id="vmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="vmax" data-field-label="vmax">最大視窗 (rem)</label>
++  <input id="vmax" name="vmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmax-range vmax-error">
++  <span id="vmax-range" class="range">6–240 rem</span><p id="vmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmin" data-field-label="fmin">最小字級 (rem)</label>
++  <input id="fmin" name="fmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmin-range fmin-error">
++  <span id="fmin-range" class="range">0.5–10 rem</span><p id="fmin-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="fmax" data-field-label="fmax">最大字級 (rem)</label>
++  <input id="fmax" name="fmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmax-range fmax-error">
++  <span id="fmax-range" class="range">0.5–10 rem</span><p id="fmax-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="root" data-field-label="root">參考根字級 (px/rem)</label>
++  <input id="root" name="root" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="root-range root-error root-hint">
++  <span id="root-range" class="range">8–32 px/rem</span><p id="root-error" class="error" hidden></p>
++</div>
++<div class="field">
++  <label for="width" data-field-label="width">模擬視窗寬度 (px)</label>
++  <input id="width" name="width" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="width-range width-error">
++  <span id="width-range" class="range">48–7680 px</span><p id="width-error" class="error" hidden></p>
++</div>
++</div><p id="root-hint" class="muted small" data-t="rootHint">只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。</p><div class="field"><label for="sample" data-t="sample">試讀文字</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint">純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。</p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">產生 CSS</button></div></form></section>
++<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">你的字級規則</h2></div><p id="empty" class="empty" data-t="empty">填好尺寸後，產生第一行 CSS。</p><div id="result-content" hidden><label for="css" data-t="cssLabel">可自行複製的 CSS</label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">選取 CSS</button><button id="reset" type="button" data-t="reset">重設</button></div><p id="select-hint" class="muted small" data-t="selectHint">選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。</p><div id="details" hidden><div class="metrics"><div><span data-t="state">目前狀態</span><strong id="state"></strong></div><div><span data-t="font">字級</span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design">設計斷點</caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport">視窗</th><th scope="col" data-t="font">字級</th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote">係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。</p></div></section></div>
++<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">試讀與換算</h2></div><p class="muted" data-t="previewHint">數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。</p><div class="preview-frame"><p id="preview"></p></div></section>
++<details class="help"><summary data-t="helpTitle">怎麼使用？</summary><p data-t="help">在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。</p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">只在此頁計算 · 無帳號、追蹤、儲存或下載</footer></body></html>
+diff --git a/tools/fluid-typography/scripts/build.mjs b/tools/fluid-typography/scripts/build.mjs
+index ab385f9..2d40cc4 100644
+--- a/tools/fluid-typography/scripts/build.mjs
++++ b/tools/fluid-typography/scripts/build.mjs
+@@ -1,2 +1,22 @@
+-import{mkdir,copyFile,readdir,writeFile,readFile}from'node:fs/promises';import{createHash}from'node:crypto';import{join}from'node:path';
+-const files=['index.html','style.css',...(await readdir('src')).filter(x=>x.endsWith('.mjs')).map(x=>'src/'+x)];await mkdir('dist/src',{recursive:true});for(const f of files)await copyFile(f,join('dist',f));const manifest=[];for(const f of files){const b=await readFile(join('dist',f));manifest.push({path:f,bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}await writeFile('BUILD-MANIFEST.json',JSON.stringify(manifest,null,2)+'\n');console.log(JSON.stringify({files:files.length,bytes:manifest.reduce((n,x)=>n+x.bytes,0),output:'dist',dependencies:0}));
++import { mkdir, copyFile, readdir, writeFile, readFile } from 'node:fs/promises';
++import { createHash } from 'node:crypto';
++import { join } from 'node:path';
++
++const modules = (await readdir('src')).filter(name => name.endsWith('.mjs')).sort();
++const files = ['index.html', 'en/index.html', 'style.css', ...modules.map(name => 'src/' + name)];
++await mkdir('dist/src', { recursive: true });
++await mkdir('dist/en', { recursive: true });
++const manifest = [];
++for (const file of files) {
++  const target = join('dist', file);
++  await copyFile(file, target);
++  const bytes = await readFile(target);
++  manifest.push({ path: file, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') });
++}
++await writeFile('BUILD-MANIFEST.json', JSON.stringify(manifest, null, 2) + '\n');
++console.log(JSON.stringify({
++  files: files.length,
++  bytes: manifest.reduce((total, file) => total + file.bytes, 0),
++  output: 'dist',
++  dependencies: 0,
++}));
+diff --git a/tools/fluid-typography/scripts/check.mjs b/tools/fluid-typography/scripts/check.mjs
+index a9e0aa9..fcae0d7 100644
+--- a/tools/fluid-typography/scripts/check.mjs
++++ b/tools/fluid-typography/scripts/check.mjs
+@@ -1,4 +1,57 @@
+-import{readFile,readdir}from'node:fs/promises';import{spawnSync}from'node:child_process';import assert from'node:assert/strict';
+-for(const f of(await readdir('src')).filter(x=>x.endsWith('.mjs'))){const r=spawnSync(process.execPath,['--check','src/'+f],{encoding:'utf8'});assert.equal(r.status,0,r.stderr);}
+-const html=await readFile('index.html','utf8'),app=await readFile('src/app.mjs','utf8'),css=await readFile('style.css','utf8');
+-assert.ok(html.includes('Content-Security-Policy'));assert.ok(html.includes("connect-src 'none'"));assert.ok(html.includes('<noscript>'));assert.ok(!/https?:\/\//.test(html+app+css));assert.ok(!/innerHTML|outerHTML|eval\(|new Function|localStorage|sessionStorage|fetch\(|XMLHttpRequest|clipboard|serviceWorker/.test(app));assert.ok(app.includes('textContent'));assert.ok(app.includes("input.type='text'"));assert.ok(app.includes("addEventListener('pagehide'"));assert.ok(app.includes("addEventListener('pageshow'"));assert.ok(html.includes('aria-live="polite"'));assert.ok(!html.includes('maxlength='));assert.ok(html.indexOf('id="generate"')<html.indexOf('id="select"'));assert.ok(html.indexOf('id="select"')<html.indexOf('id="reset"'));assert.ok(css.includes(':focus-visible'));console.log('Syntax and finite static security/semantics checks PASS; not runtime privacy/AT/native evidence.');
++import { readFile, readdir } from 'node:fs/promises';
++import { spawnSync } from 'node:child_process';
++import assert from 'node:assert/strict';
++import { fields } from '../src/core.mjs';
++import { messages } from '../src/messages.mjs';
++
++for (const name of (await readdir('src')).filter(name => name.endsWith('.mjs'))) {
++  const result = spawnSync(process.execPath, ['--check', 'src/' + name], { encoding: 'utf8' });
++  assert.equal(result.status, 0, result.stderr);
++}
++const app = await readFile('src/app.mjs', 'utf8');
++const css = await readFile('style.css', 'utf8');
++assert.doesNotMatch(app + css, /https?:\/\//);
++assert.doesNotMatch(app, /innerHTML|outerHTML|eval\(|new Function|localStorage|sessionStorage|fetch\(|XMLHttpRequest|clipboard|serviceWorker/);
++assert.match(app, /textContent/);
++assert.match(app, /addEventListener\('pagehide'/);
++assert.match(app, /addEventListener\('pageshow'/);
++assert.match(css, /:focus-visible/);
++
++const zh = 'https://preview.invalid/tools/fluid-typography/';
++const en = zh + 'en/';
++for (const [file, lang, canonical, home, alternate] of [
++  ['index.html', 'zh-Hant', zh, 'https://preview.invalid/', en],
++  ['en/index.html', 'en', en, 'https://preview.invalid/en/', zh],
++]) {
++  const html = await readFile(file, 'utf8');
++  const resolved = value => new URL(value, new URL(file, zh)).href;
++  assert.ok(html.includes(`<html lang="${lang}">`), file);
++  assert.ok(html.includes(`<title>${messages[lang].title} · GlossQuote Labs</title>`), file);
++  assert.match(html, /<meta name="description" content="[^"]{20,}">/, file);
++  assert.match(html, /name="robots" content="noindex,nofollow"/, file);
++  assert.equal(resolved(html.match(/rel="canonical" href="([^"]+)"/)[1]), canonical, file);
++  for (const [alternateLang, expected] of [['zh-TW', zh], ['en', en], ['x-default', zh]]) {
++    const match = html.match(new RegExp(`hreflang="${alternateLang}" href="([^"]+)"`));
++    assert.equal(resolved(match[1]), expected, file);
++  }
++  assert.equal(resolved(html.match(/id="labs-home"[^>]+href="([^"]+)"/)[1]), home, file);
++  assert.equal(resolved(html.match(/id="language" href="([^"]+)"/)[1]), alternate, file);
++  const assets = [...html.matchAll(/<(?:link rel="stylesheet"|script type="module") (?:href|src)="([^"]+)"/g)];
++  assert.deepEqual(assets.map(([, resource]) => resolved(resource)), [zh + 'style.css', zh + 'src/app.mjs']);
++  for (const [, resource] of assets) await readFile(new URL(resource, new URL('../' + file, import.meta.url)));
++  assert.doesNotMatch(html, /https?:\/\/|maxlength=/, file);
++  assert.match(html, /Content-Security-Policy/, file);
++  assert.ok(html.includes("connect-src 'none'"), file);
++  assert.match(html, /<noscript>/, file);
++  assert.match(html, /aria-live="polite"/, file);
++  assert.ok(html.indexOf('id="generate"') < html.indexOf('id="select"'), file);
++  assert.ok(html.indexOf('id="select"') < html.indexOf('id="reset"'), file);
++  for (const [, key, content] of html.matchAll(/data-t="(\w+)">([^<]*)<\//g)) {
++    assert.equal(content, messages[lang][key], `${file} ${key}`);
++  }
++  for (const key of fields) {
++    assert.ok(html.includes(`data-field-label="${key}">${messages[lang][key]} (`), file);
++    assert.match(html, new RegExp(`id="${key}" name="${key}" type="text".*aria-describedby="${key}-range ${key}-error`), file);
++  }
++}
++console.log('Syntax, static safety, bilingual metadata, field labels and resource paths PASS.');
+diff --git a/tools/fluid-typography/src/app.mjs b/tools/fluid-typography/src/app.mjs
+index 9b65898..3716910 100644
+--- a/tools/fluid-typography/src/app.mjs
++++ b/tools/fluid-typography/src/app.mjs
+@@ -1,9 +1,73 @@
+ import{fields,decimal,number,sampleValid}from'./core.mjs';import{initial,transition,canPreview}from'./state.mjs';import{messages}from'./messages.mjs';
+-const $=id=>document.getElementById(id);let state=initial();
+-const units={vmin:'rem',vmax:'rem',fmin:'rem',fmax:'rem',root:'px/rem',width:'px'};const ranges={vmin:'6–240',vmax:'6–240',fmin:'0.5–10',fmax:'0.5–10',root:'8–32',width:'48–7680'};
+-for(const k of fields){const wrap=document.createElement('div');wrap.className='field';const label=document.createElement('label');label.htmlFor=k;label.dataset.fieldLabel=k;const input=document.createElement('input');input.id=k;input.name=k;input.type='text';input.inputMode='decimal';input.autocomplete='off';input.spellcheck=false;input.setAttribute('aria-describedby',`${k}-range ${k}-error${k==='root'?' root-hint':''}`);const hint=document.createElement('span');hint.id=k+'-range';hint.className='range';hint.textContent=ranges[k]+' '+units[k];const error=document.createElement('p');error.id=k+'-error';error.className='error';error.hidden=true;wrap.append(label,input,hint,error);$('numeric-fields').append(wrap);input.addEventListener('input',()=>dispatch({type:'number',field:k,value:input.value}));}
++const $ = id => document.getElementById(id);
++const initialLanguage = document.documentElement.lang;
++let state = initial(initialLanguage);
++const languageLink = $('language');
++const homeLink = $('labs-home');
++const canonical = document.querySelector('link[rel="canonical"]');
++const description = document.querySelector('meta[name="description"]');
++const alternates = {
++  'zh-Hant': document.querySelector('link[hreflang="zh-Hant"]') ?? document.querySelector('link[hreflang="zh-TW"]'),
++  en: document.querySelector('link[hreflang="en"]'),
++};
++const defaultAlternate = document.querySelector('link[hreflang="x-default"]');
++const canonicalUrls = { 'zh-Hant': alternates['zh-Hant'].href, en: alternates.en.href };
++const routes = { 'zh-Hant': new URL(canonicalUrls['zh-Hant']), en: new URL(canonicalUrls.en) };
++const homeFilename = new URL(homeLink.href).pathname.endsWith('/index.html') ? 'index.html' : '';
++const homes = initialLanguage === 'en'
++  ? { en: homeLink.href, 'zh-Hant': new URL('../' + homeFilename, homeLink.href).href }
++  : { 'zh-Hant': homeLink.href, en: new URL('en/' + homeFilename, homeLink.href).href };
++const descriptions = {
++  'zh-Hant': '以兩個 rem 端點計算流動字級 CSS，並預覽字級在不同視窗寬度下的變化。',
++  en: 'Generate fluid typography CSS from two rem endpoints and preview how font size changes with viewport width.',
++};
++
++function otherLanguage(lang) {
++  return lang === 'en' ? 'zh-Hant' : 'en';
++}
++
++function switchLanguage(lang) {
++  const next = otherLanguage(lang);
++  languageLink.href = routes[next].href;
++  languageLink.lang = next;
++  languageLink.hreflang = next;
++  homeLink.href = homes[lang];
++  homeLink.setAttribute('aria-label', messages[lang].home);
++  canonical.href = canonicalUrls[lang];
++  alternates.en.href = canonicalUrls.en;
++  alternates['zh-Hant'].href = canonicalUrls['zh-Hant'];
++  defaultAlternate.href = canonicalUrls['zh-Hant'];
++  description.content = descriptions[lang];
++  dispatch({ type: 'language', lang });
++  $('live').textContent = '';
++}
++const units={vmin:'rem',vmax:'rem',fmin:'rem',fmax:'rem',root:'px/rem',width:'px'};
++for (const key of fields) {
++  const input = $(key);
++  input.addEventListener('input', () => dispatch({ type: 'number', field: key, value: input.value }));
++}
+ function dispatch(e){state=transition(state,e);render();if(e.type==='number')$('live').textContent='';}
+ function render(){const t=messages[state.lang];document.documentElement.lang=state.lang;document.title=t.title+' · GlossQuote Labs';for(const e of document.querySelectorAll('[data-t]'))e.textContent=t[e.dataset.t];$('language').textContent=t.language;for(const k of fields){document.querySelector(`[data-field-label="${k}"]`).textContent=t[k]+' ('+units[k]+')';if($(k).value!==state.raw[k])$(k).value=state.raw[k];const error=state.errors[k];$(k).setAttribute('aria-invalid',String(Boolean(error)));$(k+'-error').hidden=!error;$(k+'-error').textContent=error?t[error]:'';}$('sample').value=state.sample;const textOK=sampleValid(state.sample);$('sample').setAttribute('aria-invalid',String(!textOK));$('sample-error').hidden=textOK;$('sample-error').textContent=textOK?'':t.sampleError;$('sample-count').textContent=Array.from(state.sample).length+' / 240';$('select').disabled=!state.result;$('empty').hidden=Boolean(state.result);$('empty').textContent=state.dirty?t.dirty:t.empty;$('result-content').hidden=!state.result;$('details').hidden=!state.result;$('css').value=state.result?.css??'';$('preview').textContent=canPreview(state)?state.sample:'';$('preview').style.fontSize=canPreview(state)?number(state.result.size)+'px':'';$('table-body').replaceChildren();$('state').textContent='';$('size').textContent='';$('root-note').textContent='';if(state.result){const r=state.result;$('state').textContent=t[r.state];$('size').textContent=t.approx+' '+decimal(r.size,2,false)+' px';$('root-note').textContent=t.rootNote+state.raw.root+' px/rem';for(const [label,v,f,vpx,fpx]of[[t.lower,state.raw.vmin,state.raw.fmin,r.vminPx,r.min],[t.upper,state.raw.vmax,state.raw.fmax,r.vmaxPx,r.max]]){const tr=document.createElement('tr');const th=document.createElement('th');th.scope='row';th.textContent=label;tr.append(th);for(const [rem,px]of[[v,vpx],[f,fpx]]){const td=document.createElement('td');td.textContent=rem+' rem';const sub=document.createElement('span');sub.textContent=t.approx+' '+decimal(px,2,false)+' px';td.append(sub);tr.append(td);}$('table-body').append(tr);}}}
+ $('form').addEventListener('submit',e=>{e.preventDefault();const start=performance.now();dispatch({type:'generate'});const bad=fields.find(k=>state.errors[k]);if(bad)$(bad).focus();$('live').textContent=bad?messages[state.lang][state.errors[bad]]:messages[state.lang].generated;requestAnimationFrame(()=>{const duration=performance.now()-start;document.dispatchEvent(new CustomEvent('fluid-generation-rendered',{detail:{duration}}));});});
+-$('sample').addEventListener('input',()=>dispatch({type:'sample',value:$('sample').value}));$('reset').addEventListener('click',()=>{dispatch({type:'reset'});$('live').textContent='';$('vmin').focus();});$('language').addEventListener('click',()=>{dispatch({type:'language',lang:state.lang==='en'?'zh-Hant':'en'});$('live').textContent='';});$('select').addEventListener('click',()=>{if(!state.result)return;$('css').focus();$('css').select();$('live').textContent=messages[state.lang].selected;});
++$('sample').addEventListener('input',()=>dispatch({type:'sample',value:$('sample').value}));$('reset').addEventListener('click',()=>{dispatch({type:'reset'});$('live').textContent='';$('vmin').focus();});
++languageLink.addEventListener('click', event => {
++  if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
++  const lang = otherLanguage(state.lang);
++  const url = routes[lang];
++  if (url.origin !== location.origin) return;
++  try {
++    history.pushState(null, '', url);
++  } catch {
++    return; // Leave the link's native navigation available.
++  }
++  event.preventDefault();
++  switchLanguage(lang);
++});
++addEventListener('popstate', () => {
++  const directory = new URL('./', location.href);
++  for (const lang of ['zh-Hant', 'en']) {
++    if (directory.pathname === new URL('./', routes[lang]).pathname && lang !== state.lang) switchLanguage(lang);
++  }
++});
++$('select').addEventListener('click',()=>{if(!state.result)return;$('css').focus();$('css').select();$('live').textContent=messages[state.lang].selected;});
+ addEventListener('pagehide',()=>{state=initial(state.lang);render();$('live').textContent='';});addEventListener('pageshow',e=>{if(e.persisted){state=initial(state.lang);render();$('live').textContent='';}});render();
+diff --git a/tools/fluid-typography/src/messages.mjs b/tools/fluid-typography/src/messages.mjs
+index a4e9166..8431bd0 100644
+--- a/tools/fluid-typography/src/messages.mjs
++++ b/tools/fluid-typography/src/messages.mjs
+@@ -1,3 +1,3 @@
+ export const messages={
+-'zh-Hant':{title:'流動字級',eyebrow:'GLOSSQUOTE LABS · CSS 小工具',intro:'一行 CSS，讓字級在兩個端點之間自然成長。',language:'English',inputTitle:'設定兩端的尺寸',inputHint:'以 rem 定義設計端點，不是固定像素斷點。',vmin:'最小視窗',vmax:'最大視窗',fmin:'最小字級',fmax:'最大字級',root:'參考根字級',width:'模擬視窗寬度',rootHint:'只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。',sample:'試讀文字',sampleHint:'純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。',generate:'產生 CSS',select:'選取 CSS',reset:'重設',outputTitle:'你的字級規則',empty:'填好尺寸後，產生第一行 CSS。',dirty:'尺寸已變更，請重新產生。舊結果已清除。',cssLabel:'可自行複製的 CSS',selectHint:'選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。',selected:'CSS 已選取；請使用系統複製快捷鍵。',generated:'CSS 已產生，下方有公式與模擬結果。',previewTitle:'試讀與換算',previewHint:'數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。',rootNote:'參考根字級：',approx:'約',unit:'px',design:'設計斷點',viewport:'視窗',font:'字級',lower:'下限',upper:'上限',state:'目前狀態',minimum:'下限',fluid:'流動區間',maximum:'上限',constant:'固定字級',sampleError:'文字超過 240 個碼點。請縮短文字；CSS 與數值結果仍保留。',grammar:'請輸入 ASCII 十進位數，最多 4 位小數；不可有正負號、單位、前導零或科學記號。',range:'數值超出此欄標示的範圍。',viewportOrder:'最大視窗必須至少比最小視窗大 0.25 rem。',fontOrder:'最大字級不能小於最小字級。',helpTitle:'怎麼使用？',help:'在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。',privacy:'只在此頁計算 · 無帳號、追蹤、儲存或下載',roundNote:'係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。',noscript:'此計算器需要 JavaScript。未啟用時不會產生結果。'},
+-en:{title:'Fluid type',eyebrow:'GLOSSQUOTE LABS · CSS TOOL',intro:'One line of CSS. Type that grows naturally between two endpoints.',language:'繁體中文',inputTitle:'Set your endpoints',inputHint:'Design endpoints use rem, not fixed pixel breakpoints.',vmin:'Minimum viewport',vmax:'Maximum viewport',fmin:'Minimum font size',fmax:'Maximum font size',root:'Reference root size',width:'Simulated viewport width',rootHint:'Only changes the pixel explanations and simulation below, never the page root size or CSS.',sample:'Sample text',sampleHint:'Plain text, up to 240 Unicode code points. Never stored or uploaded.',generate:'Generate CSS',select:'Select CSS',reset:'Reset',outputTitle:'Your type rule',empty:'Set the endpoints, then generate your first CSS rule.',dirty:'Sizes changed. Generate again; the previous result was cleared.',cssLabel:'CSS for manual copying',selectHint:'After selecting, use your system Copy shortcut. No automatic clipboard access.',selected:'CSS selected. Use your system Copy shortcut.',generated:'CSS generated. Formula and simulation are available below.',previewTitle:'Read and compare',previewHint:"Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.",rootNote:'Reference root: ',approx:'approx.',unit:'px',design:'Design breakpoints',viewport:'Viewport',font:'Font size',lower:'Minimum',upper:'Maximum',state:'Current state',minimum:'Minimum',fluid:'Fluid',maximum:'Maximum',constant:'Constant size',sampleError:'Text exceeds 240 code points. Shorten it; CSS and numerical results are preserved.',grammar:'Use ASCII decimal digits with up to 4 decimal places; no sign, units, leading zeroes or exponent.',range:'Outside the range shown for this field.',viewportOrder:'Maximum viewport must exceed minimum by at least 0.25 rem.',fontOrder:'Maximum font size must not be smaller than minimum.',helpTitle:'How do I use it?',help:'Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.',privacy:'Calculated on this page · No accounts, tracking, storage or downloads',roundNote:'Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.',noscript:'This calculator requires JavaScript. No result is generated while it is disabled.'}}
++'zh-Hant':{title:'流動字級',eyebrow:'GLOSSQUOTE LABS · CSS 小工具',intro:'一行 CSS，讓字級在兩個端點之間自然成長。',home:'GlossQuote Labs 首頁',language:'English',inputTitle:'設定兩端的尺寸',inputHint:'以 rem 定義設計端點，不是固定像素斷點。',vmin:'最小視窗',vmax:'最大視窗',fmin:'最小字級',fmax:'最大字級',root:'參考根字級',width:'模擬視窗寬度',rootHint:'只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。',sample:'試讀文字',sampleHint:'純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。',generate:'產生 CSS',select:'選取 CSS',reset:'重設',outputTitle:'你的字級規則',empty:'填好尺寸後，產生第一行 CSS。',dirty:'尺寸已變更，請重新產生。舊結果已清除。',cssLabel:'可自行複製的 CSS',selectHint:'選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。',selected:'CSS 已選取；請使用系統複製快捷鍵。',generated:'CSS 已產生，下方有公式與模擬結果。',previewTitle:'試讀與換算',previewHint:'數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。',rootNote:'參考根字級：',approx:'約',unit:'px',design:'設計斷點',viewport:'視窗',font:'字級',lower:'下限',upper:'上限',state:'目前狀態',minimum:'下限',fluid:'流動區間',maximum:'上限',constant:'固定字級',sampleError:'文字超過 240 個碼點。請縮短文字；CSS 與數值結果仍保留。',grammar:'請輸入 ASCII 十進位數，最多 4 位小數；不可有正負號、單位、前導零或科學記號。',range:'數值超出此欄標示的範圍。',viewportOrder:'最大視窗必須至少比最小視窗大 0.25 rem。',fontOrder:'最大字級不能小於最小字級。',helpTitle:'怎麼使用？',help:'在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。',privacy:'只在此頁計算 · 無帳號、追蹤、儲存或下載',roundNote:'係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。',noscript:'此計算器需要 JavaScript。未啟用時不會產生結果。'},
++en:{title:'Fluid type',eyebrow:'GLOSSQUOTE LABS · CSS TOOL',intro:'One line of CSS. Type that grows naturally between two endpoints.',home:'GlossQuote Labs home',language:'繁體中文',inputTitle:'Set your endpoints',inputHint:'Design endpoints use rem, not fixed pixel breakpoints.',vmin:'Minimum viewport',vmax:'Maximum viewport',fmin:'Minimum font size',fmax:'Maximum font size',root:'Reference root size',width:'Simulated viewport width',rootHint:'Only changes the pixel explanations and simulation below, never the page root size or CSS.',sample:'Sample text',sampleHint:'Plain text, up to 240 Unicode code points. Never stored or uploaded.',generate:'Generate CSS',select:'Select CSS',reset:'Reset',outputTitle:'Your type rule',empty:'Set the endpoints, then generate your first CSS rule.',dirty:'Sizes changed. Generate again; the previous result was cleared.',cssLabel:'CSS for manual copying',selectHint:'After selecting, use your system Copy shortcut. No automatic clipboard access.',selected:'CSS selected. Use your system Copy shortcut.',generated:'CSS generated. Formula and simulation are available below.',previewTitle:'Read and compare',previewHint:"Mathematical simulation, not this panel’s native vw rendering. Real CSS depends on browser viewport, root size and zoom.",rootNote:'Reference root: ',approx:'approx.',unit:'px',design:'Design breakpoints',viewport:'Viewport',font:'Font size',lower:'Minimum',upper:'Maximum',state:'Current state',minimum:'Minimum',fluid:'Fluid',maximum:'Maximum',constant:'Constant size',sampleError:'Text exceeds 240 code points. Shorten it; CSS and numerical results are preserved.',grammar:'Use ASCII decimal digits with up to 4 decimal places; no sign, units, leading zeroes or exponent.',range:'Outside the range shown for this field.',viewportOrder:'Maximum viewport must exceed minimum by at least 0.25 rem.',fontOrder:'Maximum font size must not be smaller than minimum.',helpTitle:'How do I use it?',help:'Add the generated font-size declaration to your stylesheet. The browser uses its actual viewport and root size, then clamps between the bounds. Reference pixels are explanations, not a promise for every device.',privacy:'Calculated on this page · No accounts, tracking, storage or downloads',roundNote:'Coefficients use 8 decimal places. Design breakpoints may differ slightly from the exported formula’s exact transitions.',noscript:'This calculator requires JavaScript. No result is generated while it is disabled.'}}
+diff --git a/tools/fluid-typography/style.css b/tools/fluid-typography/style.css
+index 0b87cb1..21688fd 100644
+--- a/tools/fluid-typography/style.css
++++ b/tools/fluid-typography/style.css
+@@ -1 +1 @@
+-:root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2925;background:#f4f5f0;line-height:1.6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main,footer{width:min(1120px,calc(100% - 48px));margin-inline:auto}header{display:flex;justify-content:space-between;align-items:center;padding:26px 0;border-bottom:1px solid #cbd3c9}.wordmark{font-size:1.5rem;font-weight:800;letter-spacing:-.06em;color:inherit;text-decoration:none}.wordmark span{font-size:.65rem;letter-spacing:.14em;margin-left:10px;color:#526158}.heading{padding:48px 0 32px;max-width:760px}.eyebrow{font-size:.72rem;letter-spacing:.18em;font-weight:700;color:#496453;margin:0 0 12px}h1{font-size:clamp(2.3rem,4vw,3.5rem);line-height:1.18;letter-spacing:-.035em;margin:0 0 16px}h2{font-size:1.15rem;margin:0;line-height:1.4}.intro{font-size:1.1rem;margin:0;color:#526158}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{background:#fff;border:1px solid #d7ded3;border-radius:18px;padding:28px;min-width:0;box-shadow:0 3px 0 #e6ebe1}.section-head{display:flex;align-items:center;gap:12px}.step{font-family:ui-monospace,monospace;color:#42694f;background:#edf3e9;border:1px solid #dae5d4;font-size:.75rem;padding:4px 8px;border-radius:7px}.muted{color:#536159}.small{font-size:.79rem;line-height:1.65}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;margin-top:26px}.field{min-width:0;position:relative}label{display:block;font-size:.86rem;font-weight:650;margin-bottom:7px}input,textarea,button{font:inherit}input,textarea{border:1px solid #839284;border-radius:8px;background:#fff;color:#1c2925;padding:11px 12px;width:100%;min-width:0}input{font-variant-numeric:tabular-nums}textarea{resize:vertical}input[aria-invalid=true],textarea[aria-invalid=true]{border:2px solid #a22928}button{cursor:pointer;border:1px solid #879788;border-radius:8px;background:#fff;color:#254532;padding:10px 16px;font-size:.88rem;font-weight:650;min-height:44px}button:hover:not(:disabled){background:#ecf2e8}button.primary{background:#254e37;color:#fff;border-color:#254e37}button.primary:hover{background:#173d28}button:disabled{cursor:not-allowed;opacity:1;background:#edf0eb;color:#657164;border-color:#bdc8b9}:focus-visible{outline:3px solid #b66410;outline-offset:3px}.actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}.error{font-size:.78rem;line-height:1.5;color:#9b2524;margin:6px 0 0}.range{font-size:.72rem;color:#5b685d;display:block;margin-top:5px}.count{font-size:.72rem;color:#5b685d;display:block;text-align:right}.results{background:#fafff6}.empty{color:#536159;border:1px dashed #aab9a3;border-radius:10px;padding:32px 18px;margin-top:26px;min-height:128px}#result-content{margin-top:26px}#css{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem;background:#173629;color:#eff9e9;line-height:1.8;border-color:#173629;white-space:pre;overflow:auto;resize:vertical;min-height:126px}#select{margin-top:0}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 0;border-top:1px solid #d5dfce;margin-top:26px}.metrics span{display:block;font-size:.76rem;color:#536159}.metrics strong{display:block;font-size:1.2rem;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed}caption{text-align:left;font-weight:700;margin-bottom:8px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid #d5dfce;overflow-wrap:anywhere}td span{display:block;color:#536159}.preview-section{margin-top:24px}.preview-frame{background:#f4f6ef;border-radius:10px;padding:22px;min-height:130px;max-height:320px;overflow:auto;border:1px solid #d7ded3}.preview-frame p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35;font-family:Georgia,"Noto Serif TC",serif}.help{margin:30px 0;color:#46554a}.help summary{cursor:pointer;font-weight:650;padding:12px 0}.help p{max-width:780px}footer{font-size:.76rem;color:#536159;border-top:1px solid #cbd3c9;padding:20px 0 32px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}[hidden]{display:none!important}.notice{padding:20px;border:2px solid #a22928}@media(max-width:760px){.workspace{grid-template-columns:1fr}.heading{padding-top:32px}}@media(max-width:420px){header,main,footer{width:calc(100% - 28px)}.panel{padding:20px}.field-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.heading{padding-bottom:24px}.preview-frame{padding:14px}}
++:root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2925;background:#f4f5f0;line-height:1.6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main,footer{width:min(1120px,calc(100% - 48px));margin-inline:auto}header{display:flex;justify-content:space-between;align-items:center;padding:26px 0;border-bottom:1px solid #cbd3c9}.wordmark{font-size:1.5rem;font-weight:800;letter-spacing:-.06em;color:inherit;text-decoration:none}.wordmark span{font-size:.65rem;letter-spacing:.14em;margin-left:10px;color:#526158}.heading{padding:48px 0 32px;max-width:760px}.eyebrow{font-size:.72rem;letter-spacing:.18em;font-weight:700;color:#496453;margin:0 0 12px}h1{font-size:clamp(2.3rem,4vw,3.5rem);line-height:1.18;letter-spacing:-.035em;margin:0 0 16px}h2{font-size:1.15rem;margin:0;line-height:1.4}.intro{font-size:1.1rem;margin:0;color:#526158}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{background:#fff;border:1px solid #d7ded3;border-radius:18px;padding:28px;min-width:0;box-shadow:0 3px 0 #e6ebe1}.section-head{display:flex;align-items:center;gap:12px}.step{font-family:ui-monospace,monospace;color:#42694f;background:#edf3e9;border:1px solid #dae5d4;font-size:.75rem;padding:4px 8px;border-radius:7px}.muted{color:#536159}.small{font-size:.79rem;line-height:1.65}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;margin-top:26px}.field{min-width:0;position:relative}label{display:block;font-size:.86rem;font-weight:650;margin-bottom:7px}input,textarea,button{font:inherit}input,textarea{border:1px solid #839284;border-radius:8px;background:#fff;color:#1c2925;padding:11px 12px;width:100%;min-width:0}input{font-variant-numeric:tabular-nums}textarea{resize:vertical}input[aria-invalid=true],textarea[aria-invalid=true]{border:2px solid #a22928}button,#language{cursor:pointer;border:1px solid #879788;border-radius:8px;background:#fff;color:#254532;padding:10px 16px;font-size:.88rem;font-weight:650;min-height:44px}#language{display:inline-flex;align-items:center;text-decoration:none}button:hover:not(:disabled),#language:hover{background:#ecf2e8}button.primary{background:#254e37;color:#fff;border-color:#254e37}button.primary:hover{background:#173d28}button:disabled{cursor:not-allowed;opacity:1;background:#edf0eb;color:#657164;border-color:#bdc8b9}:focus-visible{outline:3px solid #b66410;outline-offset:3px}.actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}.error{font-size:.78rem;line-height:1.5;color:#9b2524;margin:6px 0 0}.range{font-size:.72rem;color:#5b685d;display:block;margin-top:5px}.count{font-size:.72rem;color:#5b685d;display:block;text-align:right}.results{background:#fafff6}.empty{color:#536159;border:1px dashed #aab9a3;border-radius:10px;padding:32px 18px;margin-top:26px;min-height:128px}#result-content{margin-top:26px}#css{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem;background:#173629;color:#eff9e9;line-height:1.8;border-color:#173629;white-space:pre;overflow:auto;resize:vertical;min-height:126px}#select{margin-top:0}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 0;border-top:1px solid #d5dfce;margin-top:26px}.metrics span{display:block;font-size:.76rem;color:#536159}.metrics strong{display:block;font-size:1.2rem;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed}caption{text-align:left;font-weight:700;margin-bottom:8px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid #d5dfce;overflow-wrap:anywhere}td span{display:block;color:#536159}.preview-section{margin-top:24px}.preview-frame{background:#f4f6ef;border-radius:10px;padding:22px;min-height:130px;max-height:320px;overflow:auto;border:1px solid #d7ded3}.preview-frame p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35;font-family:Georgia,"Noto Serif TC",serif}.help{margin:30px 0;color:#46554a}.help summary{cursor:pointer;font-weight:650;padding:12px 0}.help p{max-width:780px}footer{font-size:.76rem;color:#536159;border-top:1px solid #cbd3c9;padding:20px 0 32px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}[hidden]{display:none!important}.notice{padding:20px;border:2px solid #a22928}@media(max-width:760px){.workspace{grid-template-columns:1fr}.heading{padding-top:32px}}@media(max-width:420px){header,main,footer{width:calc(100% - 28px)}.panel{padding:20px}.field-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.heading{padding-bottom:24px}.preview-frame{padding:14px}}
+diff --git a/tools/fluid-typography/tests/language.test.mjs b/tools/fluid-typography/tests/language.test.mjs
+new file mode 100644
+index 0000000..d74d55c
+--- /dev/null
++++ b/tools/fluid-typography/tests/language.test.mjs
+@@ -0,0 +1,122 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { readFile } from 'node:fs/promises';
++import { fields } from '../src/core.mjs';
++
++const root = 'https://preview.invalid/tools/fluid-typography/';
++const english = root + 'en/';
++
++function fakeNode(properties = {}) {
++  const listeners = new Map();
++  return {
++    ...properties,
++    style: {},
++    setAttribute(name, value) { this[name] = value; },
++    addEventListener(name, fn) { listeners.set(name, fn); },
++    emit(name, event) { listeners.get(name)(event); },
++    replaceChildren() {},
++    append() {},
++    focus() { this.focused = true; },
++  };
++}
++
++async function boot(pathname, nonce, overlay = html => html) {
++  const html = overlay(await readFile(new URL('../' + pathname, import.meta.url), 'utf8'));
++  let current = new URL(pathname, root);
++  const resolve = href => new URL(href, current).href;
++  const ids = new Map([...html.matchAll(/id="([^"]+)"/g)].map(([, id]) => [id, fakeNode()]));
++  const selectors = new Map();
++  const byId = id => ids.get(id);
++  byId('language').href = resolve(html.match(/id="language" href="([^"]+)"/)[1]);
++  byId('labs-home').href = resolve(html.match(/id="labs-home"[^>]*href="([^"]+)"/)[1]);
++  for (const key of fields) selectors.set(`[data-field-label="${key}"]`, fakeNode());
++  for (const [, lang, href] of html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)) {
++    selectors.set(`link[hreflang="${lang}"]`, fakeNode({ href: resolve(href) }));
++  }
++  const canonical = fakeNode({ href: resolve(html.match(/rel="canonical" href="([^"]+)"/)[1]) });
++  selectors.set('link[rel="canonical"]', canonical);
++  selectors.set('meta[name="description"]', fakeNode());
++  const rendered = [...html.matchAll(/data-t="([^"]+)"/g)].map(([, t]) => fakeNode({ dataset: { t } }));
++  const fakeWindow = fakeNode();
++  const historyWrites = [];
++  globalThis.document = {
++    documentElement: { lang: html.match(/<html lang="([^"]+)"/)[1] },
++    getElementById: byId,
++    querySelector: selector => selectors.get(selector),
++    querySelectorAll: () => rendered,
++    createElement: () => fakeNode(),
++  };
++  globalThis.location = { get href() { return current.href; }, get origin() { return current.origin; } };
++  globalThis.history = { pushState(_data, _title, url) { historyWrites.push(url.href); current = new URL(url); } };
++  globalThis.requestAnimationFrame = () => {};
++  globalThis.addEventListener = fakeWindow.addEventListener;
++  await import(`../src/app.mjs?${nonce}`);
++  return {
++    byId, canonical, historyWrites, lang: () => document.documentElement.lang,
++    pop(url) { current = new URL(url); fakeWindow.emit('popstate', {}); },
++  };
++}
++
++function click(link, props = {}) {
++  const event = { button: 0, preventDefault() { this.defaultPrevented = true; }, ...props };
++  link.emit('click', event);
++  return Boolean(event.defaultPrevented);
++}
++
++test('static deep link and reload boot in English and keep normal link semantics', async () => {
++  for (const bootId of ['first', 'reload']) {
++    const app = await boot('en/index.html', bootId);
++    assert.equal(app.lang(), 'en');
++    assert.equal(app.byId('sample').value, 'Type that grows with your ideas.');
++    assert.equal(app.byId('language').href, root);
++    assert.equal(app.byId('labs-home').href, 'https://preview.invalid/en/');
++    for (const modifier of [{ button: 1 }, { ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }]) {
++      assert.equal(click(app.byId('language'), modifier), false);
++    }
++    assert.deepEqual(app.historyWrites, []);
++  }
++});
++
++test('language navigation and history restore preserve generated CSS, field errors and focus', async () => {
++  const app = await boot('index.html', 'history');
++  const link = app.byId('language');
++  app.byId('form').emit('submit', { preventDefault() {} });
++  const css = app.byId('css').value;
++  assert.match(css, /clamp/);
++  link.focus();
++  assert.equal(click(link), true);
++  assert.deepEqual(app.historyWrites, [english]);
++  assert.equal(app.lang(), 'en');
++  assert.equal(app.canonical.href, english);
++  assert.equal(app.byId('labs-home').href, 'https://preview.invalid/en/');
++  assert.equal(app.byId('css').value, css);
++  assert.equal(link.focused, true);
++  const minimum = app.byId('vmin');
++  minimum.value = 'bad';
++  minimum.emit('input', {});
++  assert.equal(app.byId('css').value, '');
++  app.byId('form').emit('submit', { preventDefault() {} });
++  app.pop(root + 'index.html');
++  assert.equal(app.lang(), 'zh-Hant');
++  assert.equal(app.canonical.href, root);
++  assert.equal(app.byId('labs-home').href, 'https://preview.invalid/');
++  assert.equal(minimum.value, 'bad');
++  assert.equal(minimum['aria-invalid'], 'true');
++  app.pop(english);
++  assert.equal(app.lang(), 'en');
++  assert.equal(minimum.value, 'bad');
++  assert.equal(minimum['aria-invalid'], 'true');
++  assert.deepEqual(app.historyWrites, [english]);
++});
++
++test('published canonical paths and home links are used without switching host', async () => {
++  const app = await boot('index.html', 'overlay', html => html
++    .replace('hreflang="zh-TW" href="./"', 'hreflang="zh-Hant" href="' + root + 'index.html"')
++    .replace('hreflang="en" href="en/"', 'hreflang="en" href="' + english + 'index.html"')
++    .replace('href="../../" aria-label=', 'href="https://glossquote.invalid/index.html" aria-label='));
++  assert.equal(click(app.byId('language')), true);
++  assert.deepEqual(app.historyWrites, [english + 'index.html']);
++  assert.equal(app.byId('labs-home').href, 'https://glossquote.invalid/en/index.html');
++  app.pop(root + 'index.html');
++  assert.equal(app.byId('labs-home').href, 'https://glossquote.invalid/index.html');
++});

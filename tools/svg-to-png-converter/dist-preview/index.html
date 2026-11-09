@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SVG 轉 PNG 轉換器 — Glossquote Labs</title>
+<meta name="description" content="在瀏覽器本機把 SVG 標記或 .svg 檔轉成指定像素尺寸的 PNG：先以封閉式規則淨化不信任的標記並逐項報告移除內容，再依寬度、高度或比例輸出。不上傳、無浮水印。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-TW" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<header class="site-header">
+  <a href="../../">Glossquote Labs 首頁</a>
+  <a href="en/" hreflang="en">English</a>
+</header>
+<main>
+  <h1>SVG 轉 PNG 轉換器</h1>
+  <p class="intro">貼上 SVG 標記或放入 .svg 檔，先淨化、再預覽，最後下載你指定尺寸的 PNG。全程在本機瀏覽器完成，圖稿不會上傳到任何伺服器。</p>
+  <p class="note" id="font-note">請注意：SVG 以圖片方式渲染時無法載入網頁或網路字型，圖稿中的文字會以你裝置上可用的字型繪製，可能與原設計工具裡的樣子不同。</p>
+
+  <section aria-labelledby="input-heading">
+    <h2 id="input-heading">輸入 SVG</h2>
+    <label for="paste-input">貼上 SVG 標記（最多 200,000 字元）</label>
+    <textarea id="paste-input" rows="8" spellcheck="false" placeholder="&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; …&gt;"></textarea>
+    <div class="input-actions">
+      <label class="drop-zone" id="drop-zone">
+        <input type="file" id="file-input" accept=".svg,image/svg+xml">
+        <span>選擇 .svg 檔（最多 2,000,000 位元組），或把檔案拖放到這裡</span>
+      </label>
+      <button type="button" id="sample-button">載入範例</button>
+      <button type="button" id="clear-button">清除</button>
+    </div>
+  </section>
+
+  <p id="status" role="status" aria-live="polite"></p>
+  <p id="error" role="alert" hidden></p>
+
+  <section aria-labelledby="facts-heading">
+    <h2 id="facts-heading">圖稿事實</h2>
+    <ul class="facts">
+      <li id="intrinsic-text"></li>
+      <li id="sanitized-size-text"></li>
+      <li id="removed-text"></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="controls-heading">
+    <h2 id="controls-heading">輸出設定</h2>
+    <fieldset>
+      <legend>尺寸模式（三選一）</legend>
+      <label><input type="radio" name="size-mode" value="width" checked> 依寬度</label>
+      <label><input type="radio" name="size-mode" value="height"> 依高度</label>
+      <label><input type="radio" name="size-mode" value="scale"> 依比例</label>
+      <div class="size-inputs">
+        <label>寬度（px，16–8192）<input type="number" id="width-input" min="16" max="8192" step="1" value="240"></label>
+        <label>高度（px，16–8192）<input type="number" id="height-input" min="16" max="8192" step="1" value="240"></label>
+        <label>比例（%，10–1000）<input type="number" id="scale-input" min="10" max="1000" step="0.1" value="100"></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>背景</legend>
+      <label><input type="radio" name="background" value="transparent" checked> 透明</label>
+      <label><input type="radio" name="background" value="white"> 白色</label>
+      <label><input type="radio" name="background" value="custom"> 自訂顏色</label>
+      <label>自訂色碼（#RRGGBB）<input type="text" id="color-input" value="#3366CC" size="9" autocomplete="off"></label>
+    </fieldset>
+  </section>
+
+  <section aria-labelledby="preview-heading">
+    <h2 id="preview-heading">預覽與下載</h2>
+    <p id="output-text"></p>
+    <div class="preview-wrap" id="preview-wrap" data-bg="transparent">
+      <img id="preview-img" alt="你的 SVG 在輸出尺寸下的預覽" hidden>
+    </div>
+    <p>SVG 動畫只會轉換成第一格的靜態畫面。下載的 PNG 尺寸與上方「輸出尺寸」完全一致。</p>
+    <button type="button" id="download-button" disabled>下載 PNG</button>
+    <span id="filename-text"></span>
+  </section>
+</main>
+<footer>
+  <p>SVG 會在瀏覽器中處理，無需上傳。轉換僅保留支援的 SVG 內容。外部參照、樣式表、動畫和不支援的樣式會被移除，預覽與 PNG 的外觀可能因此改變。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

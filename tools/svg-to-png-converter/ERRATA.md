@@ -1,0 +1,9 @@
+# SVG conversion safety erratum
+
+Applies to the 2026-11-09 repair of the candidate from [PR 99](https://github.com/KYStr/glossquote-labs-home/pull/99). This additive erratum supersedes the original rule to preserve all attributes outside a blacklist. It also replaces the former CSS rule that preserved styles after removing selected imports and URLs.
+
+- The converter parses input as XML, rebuilds the SVG and XLink namespace declarations, then serializes the supported subset. The supported elements and attributes are declared in `public/js/core/sanitize.mjs`.
+- Ordinary shapes and paths, numeric geometry and transforms, basic text and presentation values, local fragment paints, clip paths, masks, markers and selected filters are supported. Local fragment links are limited to the supported reference elements. Images accept Base64 PNG, JPEG, GIF or WebP with a matching raster signature. The browser still has to decode the actual image data.
+- Style sheets, animations, processing instructions, foreign namespaces and `xml:base` are removed. Inline CSS is rebuilt from a defined set of presentation properties and plain values or single local fragment URLs. Escapes, comments, rule braces and unmatched parentheses or quotes cause the entire style attribute to be dropped. Unsupported declarations in a well-delimited attribute, including arbitrary functions, custom properties, imports, image sets, compound URL values and external references, are dropped individually. SVG descendants deeper than 128 levels are removed.
+- The interface reports removals in both languages. The resulting preview or PNG may differ visually from the input. Comments outside the supported rendering subset are discarded during serialization.
+- Automated checks exercise parsing and the serialized SVG that the app passes to its image blob. Browser resource loading, decoded raster output, canvas export and native dialogs require separate verification.

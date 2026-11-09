@@ -1,0 +1,1255 @@
+diff --git a/tools/svg-to-png-converter/ERRATA.md b/tools/svg-to-png-converter/ERRATA.md
+new file mode 100644
+index 0000000..4b75862
+--- /dev/null
++++ b/tools/svg-to-png-converter/ERRATA.md
+@@ -0,0 +1,9 @@
++# SVG conversion safety erratum
++
++Applies to the 2026-11-09 repair of the candidate from [PR 99](https://github.com/KYStr/glossquote-labs-home/pull/99). This additive erratum supersedes the original rule to preserve all attributes outside a blacklist. It also replaces the former CSS rule that preserved styles after removing selected imports and URLs.
++
++- The converter parses input as XML, rebuilds the SVG and XLink namespace declarations, then serializes the supported subset. The supported elements and attributes are declared in `public/js/core/sanitize.mjs`.
++- Ordinary shapes and paths, numeric geometry and transforms, basic text and presentation values, local fragment paints, clip paths, masks, markers and selected filters are supported. Local fragment links are limited to the supported reference elements. Images accept Base64 PNG, JPEG, GIF or WebP with a matching raster signature. The browser still has to decode the actual image data.
++- Style sheets, animations, processing instructions, foreign namespaces and `xml:base` are removed. Inline CSS is rebuilt from a defined set of presentation properties and plain values or single local fragment URLs. Escapes, comments, rule braces and unmatched parentheses or quotes cause the entire style attribute to be dropped. Unsupported declarations in a well-delimited attribute, including arbitrary functions, custom properties, imports, image sets, compound URL values and external references, are dropped individually. SVG descendants deeper than 128 levels are removed.
++- The interface reports removals in both languages. The resulting preview or PNG may differ visually from the input. Comments outside the supported rendering subset are discarded during serialization.
++- Automated checks exercise parsing and the serialized SVG that the app passes to its image blob. Browser resource loading, decoded raster output, canvas export and native dialogs require separate verification.
+diff --git a/tools/svg-to-png-converter/dist-preview/build-manifest.json b/tools/svg-to-png-converter/dist-preview/build-manifest.json
+index 6af44f4..912cdf3 100644
+--- a/tools/svg-to-png-converter/dist-preview/build-manifest.json
++++ b/tools/svg-to-png-converter/dist-preview/build-manifest.json
+@@ -4,13 +4,13 @@
+   "files": [
+     {
+       "path": "en/index.html",
+-      "bytes": 4588,
+-      "sha256": "65806599550ec9fa4a24ba249fb8d7d1f81b7a1a7015c8869b8e80ed6393981f"
++      "bytes": 4660,
++      "sha256": "f883809f3e20b9b5a5a62e19c662576e11435fe41e18e7f2a27567d9aeeff994"
+     },
+     {
+       "path": "index.html",
+-      "bytes": 4519,
+-      "sha256": "8941312fccb3a25e31b591dd97d50128e2ba21d0a8627cdd6fcaa37ba36a7544"
++      "bytes": 4581,
++      "sha256": "0f4de0c844f9f47d58e78c373f2d13d38a18fdc8f2f1709b2ed912f43afdf726"
+     },
+     {
+       "path": "js/app.js",
+@@ -24,8 +24,8 @@
+     },
+     {
+       "path": "js/core/sanitize.mjs",
+-      "bytes": 5813,
+-      "sha256": "05acbd613a899e265c800b2f783d93878fe661846da8169e61d6f684e2776cb2"
++      "bytes": 10440,
++      "sha256": "8af4ffb00145ce5264c6cfe5dbe5db531b167372f4f97e96410e9df08922c188"
+     },
+     {
+       "path": "js/core/size.mjs",
+@@ -34,13 +34,13 @@
+     },
+     {
+       "path": "js/core/strings.mjs",
+-      "bytes": 5598,
+-      "sha256": "e2035146f9bf58f1859b04ac1f9004f340e8abedc178619476b5c987e5ac9d84"
++      "bytes": 5918,
++      "sha256": "7f6406884fe4dc39b7b7a00e95bdee418fb8cdb074459332c2d192cdacfaea2e"
+     },
+     {
+       "path": "js/core/xml.mjs",
+-      "bytes": 10916,
+-      "sha256": "5cb11477a55ddbde7adb70949ce2021ec22a3cee5a62dc767528bbc3db33c204"
++      "bytes": 10885,
++      "sha256": "47977d5d0b305e1bcfb184b6c236bda6b83673006218d9a6e49baf48970c663f"
+     },
+     {
+       "path": "styles/main.css",
+diff --git a/tools/svg-to-png-converter/dist-preview/en/index.html b/tools/svg-to-png-converter/dist-preview/en/index.html
+index f59ec58..4bd22a5 100644
+--- a/tools/svg-to-png-converter/dist-preview/en/index.html
++++ b/tools/svg-to-png-converter/dist-preview/en/index.html
+@@ -82,7 +82,7 @@
+   </section>
+ </main>
+ <footer>
+-  <p>All processing happens locally in your browser: no network, no storage, no uploads. External references are removed and are never fetched.</p>
++  <p>Your browser processes the SVG locally without uploading it. The converter removes external references, style sheets, animations and unsupported styles. The preview and PNG may look different from the original.</p>
+ </footer>
+ <script type="module" src="../js/app.js"></script>
+ </body>
+diff --git a/tools/svg-to-png-converter/dist-preview/index.html b/tools/svg-to-png-converter/dist-preview/index.html
+index 0c92e68..cac89b1 100644
+--- a/tools/svg-to-png-converter/dist-preview/index.html
++++ b/tools/svg-to-png-converter/dist-preview/index.html
+@@ -82,7 +82,7 @@
+   </section>
+ </main>
+ <footer>
+-  <p>所有處理都在你的瀏覽器本機進行：不連網、不儲存、不上傳。外部參照會被移除，永遠不會被抓取。</p>
++  <p>SVG 會在瀏覽器中處理，無需上傳。轉換僅保留支援的 SVG 內容。外部參照、樣式表、動畫和不支援的樣式會被移除，預覽與 PNG 的外觀可能因此改變。</p>
+ </footer>
+ <script type="module" src="js/app.js"></script>
+ </body>
+diff --git a/tools/svg-to-png-converter/dist-preview/js/core/sanitize.mjs b/tools/svg-to-png-converter/dist-preview/js/core/sanitize.mjs
+index d2aa124..ddf737a 100644
+--- a/tools/svg-to-png-converter/dist-preview/js/core/sanitize.mjs
++++ b/tools/svg-to-png-converter/dist-preview/js/core/sanitize.mjs
+@@ -1,169 +1,218 @@
+-// SPEC 第 4 節封閉式淨化契約的可稽核資料與實作；清單只在這裡出現一次。
+-import { XHTML_NS } from './xml.mjs';
++import { SVG_NS, XLINK_NS, XML_NS } from './xml.mjs';
+ 
+-// 禁止元素（以 local name 比對，另加整個 XHTML 名稱空間的元素）。
+-export const BANNED_ELEMENTS = Object.freeze([
+-  'script', 'foreignObject', 'iframe', 'frame', 'frameset', 'embed', 'object',
+-  'applet', 'link', 'meta', 'base', 'form', 'input', 'button', 'audio', 'video',
+-  'source', 'track',
++const ELEMENTS = new Set([
++  'svg', 'g', 'defs', 'symbol', 'use', 'title', 'desc',
++  'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'path',
++  'text', 'tspan', 'textPath', 'image',
++  'linearGradient', 'radialGradient', 'stop', 'pattern', 'clipPath', 'mask', 'marker',
++  'filter', 'feGaussianBlur', 'feOffset', 'feFlood', 'feBlend', 'feMerge', 'feMergeNode',
+ ]);
++const FRAGMENT_ELEMENTS = new Set(['use', 'textPath', 'linearGradient', 'radialGradient', 'pattern']);
++const REFERENCE_PROPERTIES = new Set(['clip-path', 'filter', 'mask', 'marker-start', 'marker-mid', 'marker-end']);
++const FRAGMENT = /^#[a-z0-9_.:-]+$/i;
++const FRAGMENT_URL = /^url\([ \t\r\n]*(#[a-z0-9_.:-]+|"#[a-z0-9_.:-]+"|'#[a-z0-9_.:-]+')[ \t\r\n]*\)$/i;
++const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
++const LENGTH = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:px|pt|em|rem|cm|mm|in|pc|ex|%)?$/i;
++const SIMPLE_COLOR = /^(?:#[a-f0-9]{3,4}|#[a-f0-9]{6}|#[a-f0-9]{8}|[a-z]+|rgba?\([\d.,%+\-/ \t]+\)|hsla?\([\d.,%+\-/ \t]+\))$/i;
++const IDENTIFIER = /^[a-z0-9_.:-]+$/i;
++const PATH_DATA = /^[mzl hvcsqtae0-9,.+\-\t\r\n]+$/i;
++const TRANSFORM = /^(?:[ \t\r\n,]*(?:matrix|translate|scale|rotate|skewX|skewY)\([\d.eE, +\-\t\r\n]+\))+$/;
++const SIMPLE_FONT_LIST = /^[a-z0-9_ -]+(?:,[a-z0-9_ -]+)*$/i;
++const MAX_DEPTH = 128;
+ 
+-// href 允許的 data: 圖檔前綴（其後必須是 ';' 或 ','，避免 data:image/pngx 之類偽裝）。
+-export const ALLOWED_DATA_PREFIXES = Object.freeze([
+-  'data:image/png', 'data:image/jpeg', 'data:image/gif', 'data:image/webp',
+-]);
++const numberList = value => value.split(/[\s,]+/).every(number);
++const lengthList = value => value.split(/[\s,]+/).every(length);
++const color = value => SIMPLE_COLOR.test(value);
++const length = value => LENGTH.test(value) && Number.isFinite(Number.parseFloat(value));
++const number = value => NUMBER.test(value) && Number.isFinite(Number(value));
++const identifier = value => IDENTIFIER.test(value);
++const keyword = (...choices) => value => choices.includes(value);
++const paint = value => color(value) || FRAGMENT_URL.test(value);
++const opacity = value => number(value) || (value.endsWith('%') && number(value.slice(0, -1)));
++const units = keyword('userSpaceOnUse', 'objectBoundingBox');
+ 
+-export function isAllowedReference(value) {
+-  const trimmed = String(value).trim();
+-  if (trimmed.startsWith('#')) return true;
+-  const lower = trimmed.toLowerCase();
+-  return ALLOWED_DATA_PREFIXES.some((prefix) => {
+-    if (!lower.startsWith(prefix)) return false;
+-    const next = lower[prefix.length];
+-    return next === ';' || next === ',';
+-  });
++const PRESENTATION = new Map(Object.entries({
++  fill: paint, stroke: paint, color,
++  'stop-color': color, 'flood-color': color,
++  opacity, 'fill-opacity': opacity, 'stroke-opacity': opacity, 'stop-opacity': opacity, 'flood-opacity': opacity,
++  'fill-rule': keyword('nonzero', 'evenodd'), 'clip-rule': keyword('nonzero', 'evenodd'),
++  'stroke-width': length, 'stroke-miterlimit': number, 'stroke-dashoffset': length,
++  'stroke-dasharray': value => value === 'none' || lengthList(value),
++  'stroke-linecap': keyword('butt', 'round', 'square'),
++  'stroke-linejoin': keyword('miter', 'round', 'bevel'),
++  'font-family': value => SIMPLE_FONT_LIST.test(value),
++  'font-size': length, 'font-weight': value => number(value) || ['normal', 'bold', 'bolder', 'lighter'].includes(value),
++  'font-style': keyword('normal', 'italic', 'oblique'),
++  'text-anchor': keyword('start', 'middle', 'end'),
++  'letter-spacing': length, 'word-spacing': length,
++  display: keyword('none', 'inline', 'block'), visibility: keyword('visible', 'hidden', 'collapse'),
++  'vector-effect': keyword('none', 'non-scaling-stroke'),
++  'mask-type': keyword('alpha', 'luminance'),
++}));
++for (const name of REFERENCE_PROPERTIES) {
++  PRESENTATION.set(name, value => value === 'none' || FRAGMENT_URL.test(value));
+ }
+ 
+-// 從 CSS 文字移除 @import 規則與指向不允許目標的 url() 宣告；回傳 {css, removed}。
+-export function cleanCssText(css) {
+-  let removed = 0;
+-  let out = String(css);
++const ATTRIBUTES = new Map(Object.entries({
++  id: identifier, class: value => /^[a-z0-9_ -]+$/i.test(value),
++  viewBox: value => numberList(value) && value.split(/[\s,]+/).length === 4,
++  preserveAspectRatio: value => /^(?:defer )?(?:none|x(?:Min|Mid|Max)Y(?:Min|Mid|Max)(?: (?:meet|slice))?)$/.test(value),
++  version: number,
++  d: value => PATH_DATA.test(value), points: numberList, pathLength: number,
++  transform: value => TRANSFORM.test(value),
++  gradientTransform: value => TRANSFORM.test(value), patternTransform: value => TRANSFORM.test(value),
++  gradientUnits: units, patternUnits: units, patternContentUnits: units,
++  clipPathUnits: units, maskUnits: units, maskContentUnits: units, filterUnits: units, primitiveUnits: units,
++  spreadMethod: keyword('pad', 'reflect', 'repeat'),
++  markerUnits: keyword('strokeWidth', 'userSpaceOnUse'),
++  orient: value => number(value) || ['auto', 'auto-start-reverse'].includes(value),
++  stdDeviation: numberList, in: identifier, in2: identifier, result: identifier,
++  mode: keyword('normal', 'multiply', 'screen', 'darken', 'lighten'),
++}));
++for (const name of ['width', 'height', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'rx', 'ry',
++  'fx', 'fy', 'fr', 'offset', 'startOffset', 'refX', 'refY', 'markerWidth', 'markerHeight', 'textLength']) {
++  ATTRIBUTES.set(name, length);
++}
++for (const name of ['x', 'y', 'dx', 'dy']) ATTRIBUTES.set(name, lengthList);
++
++// Only raster payloads with a matching MIME, Base64 grammar and magic bytes may reach <image>.
++const RASTER_SIGNATURES = new Map([
++  ['png', bytes => bytes.startsWith('\x89PNG\r\n\x1a\n')],
++  ['jpeg', bytes => bytes.startsWith('\xff\xd8\xff')],
++  ['gif', bytes => bytes.startsWith('GIF87a') || bytes.startsWith('GIF89a')],
++  ['webp', bytes => bytes.startsWith('RIFF') && bytes.slice(8, 12) === 'WEBP'],
++]);
++
++function isRasterData(value) {
++  const match = /^data:image\/(png|jpeg|gif|webp);base64,([a-z0-9+/]+={0,2})$/i.exec(value);
++  if (!match || match[2].length % 4 !== 0) return false;
++  const bytes = atob(match[2].slice(0, 16));
++  return RASTER_SIGNATURES.get(match[1].toLowerCase())(bytes);
++}
+ 
+-  // @import：整條規則（到深度 0 的分號為止）移除，每條計 1。
+-  for (;;) {
+-    const match = /@import\b/i.exec(out);
+-    if (!match) break;
+-    const start = match.index;
+-    let j = start;
+-    let depth = 0;
+-    let quote = null;
+-    while (j < out.length) {
+-      const c = out[j];
+-      if (quote) { if (c === quote) quote = null; }
+-      else if (c === '"' || c === "'") quote = c;
+-      else if (c === '(') depth += 1;
+-      else if (c === ')') depth -= 1;
+-      else if (c === ';' && depth === 0) { j += 1; break; }
+-      j += 1;
++function splitDeclarations(value) {
++  // These constructs are outside the grammar. Do not reinterpret text inside one as declarations.
++  if (/\\|\/\*|\*\/|[{}]/.test(value)) return null;
++  const declarations = [];
++  let start = 0;
++  let quote = '';
++  let depth = 0;
++  for (let index = 0; index < value.length; index += 1) {
++    const char = value[index];
++    if (quote) {
++      if (char === quote) quote = '';
++    } else if (char === '"' || char === "'") {
++      quote = char;
++    } else if (char === '(') {
++      depth += 1;
++    } else if (char === ')') {
++      depth -= 1;
++      if (depth < 0) return null;
++    } else if (char === ';' && depth === 0) {
++      declarations.push(value.slice(start, index));
++      start = index + 1;
+     }
+-    out = out.slice(0, start) + out.slice(j);
+-    removed += 1;
+   }
++  if (quote || depth) return null;
++  declarations.push(value.slice(start));
++  return declarations;
++}
+ 
+-  // url(...)：目標不合允許清單時，移除其所屬宣告，每個宣告計 1。
+-  let cursor = 0;
+-  for (;;) {
+-    const rest = out.slice(cursor);
+-    const match = /url\s*\(/i.exec(rest);
+-    if (!match) break;
+-    const urlStart = cursor + match.index;
+-    let j = urlStart + match[0].length;
+-    while (j < out.length && /\s/.test(out[j])) j += 1;
+-    let target = '';
+-    if (out[j] === '"' || out[j] === "'") {
+-      const quote = out[j];
+-      j += 1;
+-      const targetStart = j;
+-      while (j < out.length && out[j] !== quote) j += 1;
+-      target = out.slice(targetStart, j);
+-      j += 1;
+-      while (j < out.length && out[j] !== ')') j += 1;
+-    } else {
+-      const targetStart = j;
+-      while (j < out.length && out[j] !== ')') j += 1;
+-      target = out.slice(targetStart, j);
+-    }
+-    const urlEnd = Math.min(j + 1, out.length);
+-    if (isAllowedReference(target)) { cursor = urlEnd; continue; }
+-    // 往回找宣告起點：略過成對括號內的分號（data: URL 內的 ';' 不算分隔）。
+-    let declStart = urlStart;
+-    let depth = 0;
+-    while (declStart > 0) {
+-      const c = out[declStart - 1];
+-      if (c === ')') depth += 1;
+-      else if (c === '(') depth -= 1;
+-      else if (depth === 0 && (c === ';' || c === '{' || c === '}')) break;
+-      declStart -= 1;
+-    }
+-    let declEnd = urlEnd;
+-    while (declEnd < out.length && out[declEnd] !== ';' && out[declEnd] !== '}') declEnd += 1;
+-    if (out[declEnd] === ';') declEnd += 1;
+-    out = out.slice(0, declStart) + out.slice(declEnd);
+-    removed += 1;
+-    cursor = declStart;
++// Rebuild from known declaration tokens. The input string is never copied as a CSS block.
++function cleanInlineStyle(value) {
++  const sources = splitDeclarations(value);
++  if (!sources) return { value: '', removed: 1 };
++  const declarations = [];
++  let removed = 0;
++  for (const source of sources) {
++    const declaration = source.trim();
++    if (!declaration) continue;
++    const match = /^([a-z-]+)[ \t\r\n]*:[ \t\r\n]*([\s\S]+)$/i.exec(declaration);
++    const name = match?.[1].toLowerCase();
++    const token = match?.[2].trim();
++    if (PRESENTATION.get(name)?.(token)) declarations.push(`${name}: ${token}`);
++    else removed += 1;
+   }
+-  return { css: out, removed };
++  return { value: declarations.join('; '), removed };
++}
++
++function attribute(qname, value) {
++  const [prefix, localName] = qname.includes(':') ? qname.split(':') : [null, qname];
++  return { qname, value, prefix, localName };
+ }
+ 
+-// 就地淨化已解析文件；回傳分類計數 {elements:[{name,count}], eventAttributes, references, styleItems, total}。
++function allowedHref(element, attr, value) {
++  if (attr.ns !== null && attr.ns !== XLINK_NS) return false;
++  if (element === 'image') return isRasterData(value);
++  return FRAGMENT_ELEMENTS.has(element) && FRAGMENT.test(value);
++}
++
++// Only canonical SVG names and vetted values are emitted. Input namespace declarations
++// are discarded and the two supported namespaces are rebuilt from constants.
+ export function sanitizeDocument(root) {
+-  const counts = { elements: [], eventAttributes: 0, references: 0, styleItems: 0, total: 0 };
+-  const bumpElement = (name) => {
+-    const entry = counts.elements.find((e) => e.name === name);
+-    if (entry) entry.count += 1;
+-    else counts.elements.push({ name, count: 1 });
+-    counts.total += 1;
+-  };
++  const elements = new Map();
++  const counts = { elements: [], eventAttributes: 0, references: 0, styleItems: 0, unsupportedItems: 0, total: 0 };
++  let usesXlink = false;
+ 
+-  const visit = (element) => {
+-    const keptAttrs = [];
++  function visit(element, depth) {
++    element.qname = element.localName;
++    const retained = new Map();
+     for (const attr of element.attrs) {
+-      if (attr.localName.toLowerCase().startsWith('on')) {
++      const { qname, localName, ns } = attr;
++      const value = attr.value.trim();
++      if (qname === 'xmlns' || qname.startsWith('xmlns:')) {
++        if (![SVG_NS, XLINK_NS, XML_NS].includes(value)) counts.unsupportedItems += 1;
++      } else if (localName.toLowerCase().startsWith('on')) {
+         counts.eventAttributes += 1;
+-        counts.total += 1;
+-        continue;
+-      }
+-      if (attr.localName === 'href') {
+-        if (!isAllowedReference(attr.value)) {
++      } else if (localName === 'href') {
++        const name = ns === XLINK_NS ? 'xlink:href' : 'href';
++        if (allowedHref(element.localName, attr, value) && !retained.has(name)) {
++          retained.set(name, attribute(name, value));
++          if (ns === XLINK_NS) usesXlink = true;
++        } else {
+           counts.references += 1;
+-          counts.total += 1;
+-          continue;
+         }
+-        keptAttrs.push(attr);
+-        continue;
++      } else if (ns === null && localName === 'style') {
++        const clean = cleanInlineStyle(value);
++        counts.styleItems += clean.removed;
++        if (clean.value) retained.set(qname, attribute(qname, clean.value));
++      } else if (ns === XML_NS && localName === 'space' && ['default', 'preserve'].includes(value)) {
++        retained.set('xml:space', attribute('xml:space', value));
++      } else if (ns === null && (ATTRIBUTES.get(localName) ?? PRESENTATION.get(localName))?.(value)) {
++        retained.set(qname, attribute(qname, value));
++      } else if (ns === null && (REFERENCE_PROPERTIES.has(localName) || ['fill', 'stroke', 'cursor'].includes(localName))) {
++        counts.references += 1;
++      } else {
++        counts.unsupportedItems += 1;
+       }
+-      if (attr.localName === 'style') {
+-        const cleaned = cleanCssText(attr.value);
+-        if (cleaned.removed > 0) {
+-          counts.styleItems += cleaned.removed;
+-          counts.total += cleaned.removed;
+-          keptAttrs.push({ ...attr, value: cleaned.css });
+-          continue;
+-        }
+-        keptAttrs.push(attr);
+-        continue;
+-      }
+-      keptAttrs.push(attr);
+     }
+-    element.attrs = keptAttrs;
++    element.attrs = [...retained.values()];
+ 
+-    if (element.localName === 'style') {
+-      const raw = element.children.filter((n) => n.type === 'text' || n.type === 'cdata')
+-        .map((n) => n.value).join('');
+-      if (raw) {
+-        const cleaned = cleanCssText(raw);
+-        if (cleaned.removed > 0) {
+-          counts.styleItems += cleaned.removed;
+-          counts.total += cleaned.removed;
+-          element.children = cleaned.css ? [{ type: 'text', value: cleaned.css }] : [];
+-        }
++    element.children = element.children.filter(child => {
++      if (child.type === 'comment') return false;
++      if (child.type === 'pi') {
++        counts.unsupportedItems += 1;
++        return false;
+       }
+-    }
+-
+-    const keptChildren = [];
+-    for (const child of element.children) {
+-      if (child.type === 'element') {
+-        if (BANNED_ELEMENTS.includes(child.localName) || child.ns === XHTML_NS) {
+-          bumpElement(child.localName);
+-          continue; // 連同子樹移除，子樹內不再另計。
+-        }
+-        visit(child);
++      if (child.type !== 'element') return true;
++      if (child.ns === SVG_NS && child.localName === 'style') {
++        counts.styleItems += 1;
++        return false;
+       }
+-      keptChildren.push(child);
+-    }
+-    element.children = keptChildren;
+-  };
++      if (depth === MAX_DEPTH || child.ns !== SVG_NS || !ELEMENTS.has(child.localName)) {
++        elements.set(child.localName, (elements.get(child.localName) ?? 0) + 1);
++        return false;
++      }
++      visit(child, depth + 1);
++      return true;
++    });
++  }
+ 
+-  visit(root);
++  visit(root, 0);
++  root.attrs.unshift(attribute('xmlns', SVG_NS));
++  if (usesXlink) root.attrs.push(attribute('xmlns:xlink', XLINK_NS));
++  counts.elements = [...elements].map(([name, count]) => ({ name, count }));
++  counts.total = counts.elements.reduce((sum, entry) => sum + entry.count, 0)
++    + counts.eventAttributes + counts.references + counts.styleItems + counts.unsupportedItems;
+   return counts;
+ }
+diff --git a/tools/svg-to-png-converter/dist-preview/js/core/strings.mjs b/tools/svg-to-png-converter/dist-preview/js/core/strings.mjs
+index 899a778..056bddd 100644
+--- a/tools/svg-to-png-converter/dist-preview/js/core/strings.mjs
++++ b/tools/svg-to-png-converter/dist-preview/js/core/strings.mjs
+@@ -71,8 +71,9 @@ export function removalSummary(lang, counts) {
+       parts.push(`${elementTotal} elements (${detail})`);
+     }
+     if (counts.eventAttributes) parts.push(`${counts.eventAttributes} event-handler attribute${counts.eventAttributes === 1 ? '' : 's'}`);
+-    if (counts.references) parts.push(`${counts.references} external reference${counts.references === 1 ? '' : 's'}`);
+-    if (counts.styleItems) parts.push(`${counts.styleItems} style item${counts.styleItems === 1 ? '' : 's'}`);
++    if (counts.references) parts.push(`${counts.references} unsafe or unsupported reference${counts.references === 1 ? '' : 's'}`);
++    if (counts.styleItems) parts.push(`${counts.styleItems} unsupported style item${counts.styleItems === 1 ? '' : 's'}`);
++    if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} unsupported attribute or markup item${counts.unsupportedItems === 1 ? '' : 's'}`);
+     return `removed ${counts.total} item${counts.total === 1 ? '' : 's'}: ${parts.join(', ')}`;
+   }
+   if (elementTotal === 1 && counts.elements.length === 1) {
+@@ -82,7 +83,8 @@ export function removalSummary(lang, counts) {
+     parts.push(`${elementTotal} 個元素（${detail}）`);
+   }
+   if (counts.eventAttributes) parts.push(`${counts.eventAttributes} 個事件處理屬性`);
+-  if (counts.references) parts.push(`${counts.references} 個外部參照`);
+-  if (counts.styleItems) parts.push(`${counts.styleItems} 個樣式項目`);
++  if (counts.references) parts.push(`${counts.references} 個不安全或不支援的參照`);
++  if (counts.styleItems) parts.push(`${counts.styleItems} 個不支援的樣式項目`);
++  if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} 個不支援的屬性或標記項目`);
+   return `已移除 ${counts.total} 個項目：${parts.join('、')}`;
+ }
+diff --git a/tools/svg-to-png-converter/dist-preview/js/core/xml.mjs b/tools/svg-to-png-converter/dist-preview/js/core/xml.mjs
+index 84d0cfd..d7c4491 100644
+--- a/tools/svg-to-png-converter/dist-preview/js/core/xml.mjs
++++ b/tools/svg-to-png-converter/dist-preview/js/core/xml.mjs
+@@ -2,7 +2,7 @@
+ export const SVG_NS = 'http://www.w3.org/2000/svg';
+ export const XHTML_NS = 'http://www.w3.org/1999/xhtml';
+ export const XLINK_NS = 'http://www.w3.org/1999/xlink';
+-const XML_NS = 'http://www.w3.org/XML/1998/namespace';
++export const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+ const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
+ 
+ const PREDEFINED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+@@ -261,7 +261,7 @@ function escapeAttr(value) {
+     .replace(/\t/g, '&#x9;').replace(/\n/g, '&#xA;').replace(/\r/g, '&#xD;');
+ }
+ 
+-// 序列化：屬性順序與內容原樣保留，僅做 XML 序列化正規化（SPEC 第 4 節允許）。
++// 序列化目前的樹，將文字與屬性值按 XML 規則跳脫。
+ export function serializeXml(node) {
+   switch (node.type) {
+     case 'text': return escapeText(node.value);
+diff --git a/tools/svg-to-png-converter/public/en/index.html b/tools/svg-to-png-converter/public/en/index.html
+index f59ec58..4bd22a5 100644
+--- a/tools/svg-to-png-converter/public/en/index.html
++++ b/tools/svg-to-png-converter/public/en/index.html
+@@ -82,7 +82,7 @@
+   </section>
+ </main>
+ <footer>
+-  <p>All processing happens locally in your browser: no network, no storage, no uploads. External references are removed and are never fetched.</p>
++  <p>Your browser processes the SVG locally without uploading it. The converter removes external references, style sheets, animations and unsupported styles. The preview and PNG may look different from the original.</p>
+ </footer>
+ <script type="module" src="../js/app.js"></script>
+ </body>
+diff --git a/tools/svg-to-png-converter/public/index.html b/tools/svg-to-png-converter/public/index.html
+index 0c92e68..cac89b1 100644
+--- a/tools/svg-to-png-converter/public/index.html
++++ b/tools/svg-to-png-converter/public/index.html
+@@ -82,7 +82,7 @@
+   </section>
+ </main>
+ <footer>
+-  <p>所有處理都在你的瀏覽器本機進行：不連網、不儲存、不上傳。外部參照會被移除，永遠不會被抓取。</p>
++  <p>SVG 會在瀏覽器中處理，無需上傳。轉換僅保留支援的 SVG 內容。外部參照、樣式表、動畫和不支援的樣式會被移除，預覽與 PNG 的外觀可能因此改變。</p>
+ </footer>
+ <script type="module" src="js/app.js"></script>
+ </body>
+diff --git a/tools/svg-to-png-converter/public/js/core/sanitize.mjs b/tools/svg-to-png-converter/public/js/core/sanitize.mjs
+index d2aa124..ddf737a 100644
+--- a/tools/svg-to-png-converter/public/js/core/sanitize.mjs
++++ b/tools/svg-to-png-converter/public/js/core/sanitize.mjs
+@@ -1,169 +1,218 @@
+-// SPEC 第 4 節封閉式淨化契約的可稽核資料與實作；清單只在這裡出現一次。
+-import { XHTML_NS } from './xml.mjs';
++import { SVG_NS, XLINK_NS, XML_NS } from './xml.mjs';
+ 
+-// 禁止元素（以 local name 比對，另加整個 XHTML 名稱空間的元素）。
+-export const BANNED_ELEMENTS = Object.freeze([
+-  'script', 'foreignObject', 'iframe', 'frame', 'frameset', 'embed', 'object',
+-  'applet', 'link', 'meta', 'base', 'form', 'input', 'button', 'audio', 'video',
+-  'source', 'track',
++const ELEMENTS = new Set([
++  'svg', 'g', 'defs', 'symbol', 'use', 'title', 'desc',
++  'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'path',
++  'text', 'tspan', 'textPath', 'image',
++  'linearGradient', 'radialGradient', 'stop', 'pattern', 'clipPath', 'mask', 'marker',
++  'filter', 'feGaussianBlur', 'feOffset', 'feFlood', 'feBlend', 'feMerge', 'feMergeNode',
+ ]);
++const FRAGMENT_ELEMENTS = new Set(['use', 'textPath', 'linearGradient', 'radialGradient', 'pattern']);
++const REFERENCE_PROPERTIES = new Set(['clip-path', 'filter', 'mask', 'marker-start', 'marker-mid', 'marker-end']);
++const FRAGMENT = /^#[a-z0-9_.:-]+$/i;
++const FRAGMENT_URL = /^url\([ \t\r\n]*(#[a-z0-9_.:-]+|"#[a-z0-9_.:-]+"|'#[a-z0-9_.:-]+')[ \t\r\n]*\)$/i;
++const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
++const LENGTH = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:px|pt|em|rem|cm|mm|in|pc|ex|%)?$/i;
++const SIMPLE_COLOR = /^(?:#[a-f0-9]{3,4}|#[a-f0-9]{6}|#[a-f0-9]{8}|[a-z]+|rgba?\([\d.,%+\-/ \t]+\)|hsla?\([\d.,%+\-/ \t]+\))$/i;
++const IDENTIFIER = /^[a-z0-9_.:-]+$/i;
++const PATH_DATA = /^[mzl hvcsqtae0-9,.+\-\t\r\n]+$/i;
++const TRANSFORM = /^(?:[ \t\r\n,]*(?:matrix|translate|scale|rotate|skewX|skewY)\([\d.eE, +\-\t\r\n]+\))+$/;
++const SIMPLE_FONT_LIST = /^[a-z0-9_ -]+(?:,[a-z0-9_ -]+)*$/i;
++const MAX_DEPTH = 128;
+ 
+-// href 允許的 data: 圖檔前綴（其後必須是 ';' 或 ','，避免 data:image/pngx 之類偽裝）。
+-export const ALLOWED_DATA_PREFIXES = Object.freeze([
+-  'data:image/png', 'data:image/jpeg', 'data:image/gif', 'data:image/webp',
+-]);
++const numberList = value => value.split(/[\s,]+/).every(number);
++const lengthList = value => value.split(/[\s,]+/).every(length);
++const color = value => SIMPLE_COLOR.test(value);
++const length = value => LENGTH.test(value) && Number.isFinite(Number.parseFloat(value));
++const number = value => NUMBER.test(value) && Number.isFinite(Number(value));
++const identifier = value => IDENTIFIER.test(value);
++const keyword = (...choices) => value => choices.includes(value);
++const paint = value => color(value) || FRAGMENT_URL.test(value);
++const opacity = value => number(value) || (value.endsWith('%') && number(value.slice(0, -1)));
++const units = keyword('userSpaceOnUse', 'objectBoundingBox');
+ 
+-export function isAllowedReference(value) {
+-  const trimmed = String(value).trim();
+-  if (trimmed.startsWith('#')) return true;
+-  const lower = trimmed.toLowerCase();
+-  return ALLOWED_DATA_PREFIXES.some((prefix) => {
+-    if (!lower.startsWith(prefix)) return false;
+-    const next = lower[prefix.length];
+-    return next === ';' || next === ',';
+-  });
++const PRESENTATION = new Map(Object.entries({
++  fill: paint, stroke: paint, color,
++  'stop-color': color, 'flood-color': color,
++  opacity, 'fill-opacity': opacity, 'stroke-opacity': opacity, 'stop-opacity': opacity, 'flood-opacity': opacity,
++  'fill-rule': keyword('nonzero', 'evenodd'), 'clip-rule': keyword('nonzero', 'evenodd'),
++  'stroke-width': length, 'stroke-miterlimit': number, 'stroke-dashoffset': length,
++  'stroke-dasharray': value => value === 'none' || lengthList(value),
++  'stroke-linecap': keyword('butt', 'round', 'square'),
++  'stroke-linejoin': keyword('miter', 'round', 'bevel'),
++  'font-family': value => SIMPLE_FONT_LIST.test(value),
++  'font-size': length, 'font-weight': value => number(value) || ['normal', 'bold', 'bolder', 'lighter'].includes(value),
++  'font-style': keyword('normal', 'italic', 'oblique'),
++  'text-anchor': keyword('start', 'middle', 'end'),
++  'letter-spacing': length, 'word-spacing': length,
++  display: keyword('none', 'inline', 'block'), visibility: keyword('visible', 'hidden', 'collapse'),
++  'vector-effect': keyword('none', 'non-scaling-stroke'),
++  'mask-type': keyword('alpha', 'luminance'),
++}));
++for (const name of REFERENCE_PROPERTIES) {
++  PRESENTATION.set(name, value => value === 'none' || FRAGMENT_URL.test(value));
+ }
+ 
+-// 從 CSS 文字移除 @import 規則與指向不允許目標的 url() 宣告；回傳 {css, removed}。
+-export function cleanCssText(css) {
+-  let removed = 0;
+-  let out = String(css);
++const ATTRIBUTES = new Map(Object.entries({
++  id: identifier, class: value => /^[a-z0-9_ -]+$/i.test(value),
++  viewBox: value => numberList(value) && value.split(/[\s,]+/).length === 4,
++  preserveAspectRatio: value => /^(?:defer )?(?:none|x(?:Min|Mid|Max)Y(?:Min|Mid|Max)(?: (?:meet|slice))?)$/.test(value),
++  version: number,
++  d: value => PATH_DATA.test(value), points: numberList, pathLength: number,
++  transform: value => TRANSFORM.test(value),
++  gradientTransform: value => TRANSFORM.test(value), patternTransform: value => TRANSFORM.test(value),
++  gradientUnits: units, patternUnits: units, patternContentUnits: units,
++  clipPathUnits: units, maskUnits: units, maskContentUnits: units, filterUnits: units, primitiveUnits: units,
++  spreadMethod: keyword('pad', 'reflect', 'repeat'),
++  markerUnits: keyword('strokeWidth', 'userSpaceOnUse'),
++  orient: value => number(value) || ['auto', 'auto-start-reverse'].includes(value),
++  stdDeviation: numberList, in: identifier, in2: identifier, result: identifier,
++  mode: keyword('normal', 'multiply', 'screen', 'darken', 'lighten'),
++}));
++for (const name of ['width', 'height', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'rx', 'ry',
++  'fx', 'fy', 'fr', 'offset', 'startOffset', 'refX', 'refY', 'markerWidth', 'markerHeight', 'textLength']) {
++  ATTRIBUTES.set(name, length);
++}
++for (const name of ['x', 'y', 'dx', 'dy']) ATTRIBUTES.set(name, lengthList);
++
++// Only raster payloads with a matching MIME, Base64 grammar and magic bytes may reach <image>.
++const RASTER_SIGNATURES = new Map([
++  ['png', bytes => bytes.startsWith('\x89PNG\r\n\x1a\n')],
++  ['jpeg', bytes => bytes.startsWith('\xff\xd8\xff')],
++  ['gif', bytes => bytes.startsWith('GIF87a') || bytes.startsWith('GIF89a')],
++  ['webp', bytes => bytes.startsWith('RIFF') && bytes.slice(8, 12) === 'WEBP'],
++]);
++
++function isRasterData(value) {
++  const match = /^data:image\/(png|jpeg|gif|webp);base64,([a-z0-9+/]+={0,2})$/i.exec(value);
++  if (!match || match[2].length % 4 !== 0) return false;
++  const bytes = atob(match[2].slice(0, 16));
++  return RASTER_SIGNATURES.get(match[1].toLowerCase())(bytes);
++}
+ 
+-  // @import：整條規則（到深度 0 的分號為止）移除，每條計 1。
+-  for (;;) {
+-    const match = /@import\b/i.exec(out);
+-    if (!match) break;
+-    const start = match.index;
+-    let j = start;
+-    let depth = 0;
+-    let quote = null;
+-    while (j < out.length) {
+-      const c = out[j];
+-      if (quote) { if (c === quote) quote = null; }
+-      else if (c === '"' || c === "'") quote = c;
+-      else if (c === '(') depth += 1;
+-      else if (c === ')') depth -= 1;
+-      else if (c === ';' && depth === 0) { j += 1; break; }
+-      j += 1;
++function splitDeclarations(value) {
++  // These constructs are outside the grammar. Do not reinterpret text inside one as declarations.
++  if (/\\|\/\*|\*\/|[{}]/.test(value)) return null;
++  const declarations = [];
++  let start = 0;
++  let quote = '';
++  let depth = 0;
++  for (let index = 0; index < value.length; index += 1) {
++    const char = value[index];
++    if (quote) {
++      if (char === quote) quote = '';
++    } else if (char === '"' || char === "'") {
++      quote = char;
++    } else if (char === '(') {
++      depth += 1;
++    } else if (char === ')') {
++      depth -= 1;
++      if (depth < 0) return null;
++    } else if (char === ';' && depth === 0) {
++      declarations.push(value.slice(start, index));
++      start = index + 1;
+     }
+-    out = out.slice(0, start) + out.slice(j);
+-    removed += 1;
+   }
++  if (quote || depth) return null;
++  declarations.push(value.slice(start));
++  return declarations;
++}
+ 
+-  // url(...)：目標不合允許清單時，移除其所屬宣告，每個宣告計 1。
+-  let cursor = 0;
+-  for (;;) {
+-    const rest = out.slice(cursor);
+-    const match = /url\s*\(/i.exec(rest);
+-    if (!match) break;
+-    const urlStart = cursor + match.index;
+-    let j = urlStart + match[0].length;
+-    while (j < out.length && /\s/.test(out[j])) j += 1;
+-    let target = '';
+-    if (out[j] === '"' || out[j] === "'") {
+-      const quote = out[j];
+-      j += 1;
+-      const targetStart = j;
+-      while (j < out.length && out[j] !== quote) j += 1;
+-      target = out.slice(targetStart, j);
+-      j += 1;
+-      while (j < out.length && out[j] !== ')') j += 1;
+-    } else {
+-      const targetStart = j;
+-      while (j < out.length && out[j] !== ')') j += 1;
+-      target = out.slice(targetStart, j);
+-    }
+-    const urlEnd = Math.min(j + 1, out.length);
+-    if (isAllowedReference(target)) { cursor = urlEnd; continue; }
+-    // 往回找宣告起點：略過成對括號內的分號（data: URL 內的 ';' 不算分隔）。
+-    let declStart = urlStart;
+-    let depth = 0;
+-    while (declStart > 0) {
+-      const c = out[declStart - 1];
+-      if (c === ')') depth += 1;
+-      else if (c === '(') depth -= 1;
+-      else if (depth === 0 && (c === ';' || c === '{' || c === '}')) break;
+-      declStart -= 1;
+-    }
+-    let declEnd = urlEnd;
+-    while (declEnd < out.length && out[declEnd] !== ';' && out[declEnd] !== '}') declEnd += 1;
+-    if (out[declEnd] === ';') declEnd += 1;
+-    out = out.slice(0, declStart) + out.slice(declEnd);
+-    removed += 1;
+-    cursor = declStart;
++// Rebuild from known declaration tokens. The input string is never copied as a CSS block.
++function cleanInlineStyle(value) {
++  const sources = splitDeclarations(value);
++  if (!sources) return { value: '', removed: 1 };
++  const declarations = [];
++  let removed = 0;
++  for (const source of sources) {
++    const declaration = source.trim();
++    if (!declaration) continue;
++    const match = /^([a-z-]+)[ \t\r\n]*:[ \t\r\n]*([\s\S]+)$/i.exec(declaration);
++    const name = match?.[1].toLowerCase();
++    const token = match?.[2].trim();
++    if (PRESENTATION.get(name)?.(token)) declarations.push(`${name}: ${token}`);
++    else removed += 1;
+   }
+-  return { css: out, removed };
++  return { value: declarations.join('; '), removed };
++}
++
++function attribute(qname, value) {
++  const [prefix, localName] = qname.includes(':') ? qname.split(':') : [null, qname];
++  return { qname, value, prefix, localName };
+ }
+ 
+-// 就地淨化已解析文件；回傳分類計數 {elements:[{name,count}], eventAttributes, references, styleItems, total}。
++function allowedHref(element, attr, value) {
++  if (attr.ns !== null && attr.ns !== XLINK_NS) return false;
++  if (element === 'image') return isRasterData(value);
++  return FRAGMENT_ELEMENTS.has(element) && FRAGMENT.test(value);
++}
++
++// Only canonical SVG names and vetted values are emitted. Input namespace declarations
++// are discarded and the two supported namespaces are rebuilt from constants.
+ export function sanitizeDocument(root) {
+-  const counts = { elements: [], eventAttributes: 0, references: 0, styleItems: 0, total: 0 };
+-  const bumpElement = (name) => {
+-    const entry = counts.elements.find((e) => e.name === name);
+-    if (entry) entry.count += 1;
+-    else counts.elements.push({ name, count: 1 });
+-    counts.total += 1;
+-  };
++  const elements = new Map();
++  const counts = { elements: [], eventAttributes: 0, references: 0, styleItems: 0, unsupportedItems: 0, total: 0 };
++  let usesXlink = false;
+ 
+-  const visit = (element) => {
+-    const keptAttrs = [];
++  function visit(element, depth) {
++    element.qname = element.localName;
++    const retained = new Map();
+     for (const attr of element.attrs) {
+-      if (attr.localName.toLowerCase().startsWith('on')) {
++      const { qname, localName, ns } = attr;
++      const value = attr.value.trim();
++      if (qname === 'xmlns' || qname.startsWith('xmlns:')) {
++        if (![SVG_NS, XLINK_NS, XML_NS].includes(value)) counts.unsupportedItems += 1;
++      } else if (localName.toLowerCase().startsWith('on')) {
+         counts.eventAttributes += 1;
+-        counts.total += 1;
+-        continue;
+-      }
+-      if (attr.localName === 'href') {
+-        if (!isAllowedReference(attr.value)) {
++      } else if (localName === 'href') {
++        const name = ns === XLINK_NS ? 'xlink:href' : 'href';
++        if (allowedHref(element.localName, attr, value) && !retained.has(name)) {
++          retained.set(name, attribute(name, value));
++          if (ns === XLINK_NS) usesXlink = true;
++        } else {
+           counts.references += 1;
+-          counts.total += 1;
+-          continue;
+         }
+-        keptAttrs.push(attr);
+-        continue;
++      } else if (ns === null && localName === 'style') {
++        const clean = cleanInlineStyle(value);
++        counts.styleItems += clean.removed;
++        if (clean.value) retained.set(qname, attribute(qname, clean.value));
++      } else if (ns === XML_NS && localName === 'space' && ['default', 'preserve'].includes(value)) {
++        retained.set('xml:space', attribute('xml:space', value));
++      } else if (ns === null && (ATTRIBUTES.get(localName) ?? PRESENTATION.get(localName))?.(value)) {
++        retained.set(qname, attribute(qname, value));
++      } else if (ns === null && (REFERENCE_PROPERTIES.has(localName) || ['fill', 'stroke', 'cursor'].includes(localName))) {
++        counts.references += 1;
++      } else {
++        counts.unsupportedItems += 1;
+       }
+-      if (attr.localName === 'style') {
+-        const cleaned = cleanCssText(attr.value);
+-        if (cleaned.removed > 0) {
+-          counts.styleItems += cleaned.removed;
+-          counts.total += cleaned.removed;
+-          keptAttrs.push({ ...attr, value: cleaned.css });
+-          continue;
+-        }
+-        keptAttrs.push(attr);
+-        continue;
+-      }
+-      keptAttrs.push(attr);
+     }
+-    element.attrs = keptAttrs;
++    element.attrs = [...retained.values()];
+ 
+-    if (element.localName === 'style') {
+-      const raw = element.children.filter((n) => n.type === 'text' || n.type === 'cdata')
+-        .map((n) => n.value).join('');
+-      if (raw) {
+-        const cleaned = cleanCssText(raw);
+-        if (cleaned.removed > 0) {
+-          counts.styleItems += cleaned.removed;
+-          counts.total += cleaned.removed;
+-          element.children = cleaned.css ? [{ type: 'text', value: cleaned.css }] : [];
+-        }
++    element.children = element.children.filter(child => {
++      if (child.type === 'comment') return false;
++      if (child.type === 'pi') {
++        counts.unsupportedItems += 1;
++        return false;
+       }
+-    }
+-
+-    const keptChildren = [];
+-    for (const child of element.children) {
+-      if (child.type === 'element') {
+-        if (BANNED_ELEMENTS.includes(child.localName) || child.ns === XHTML_NS) {
+-          bumpElement(child.localName);
+-          continue; // 連同子樹移除，子樹內不再另計。
+-        }
+-        visit(child);
++      if (child.type !== 'element') return true;
++      if (child.ns === SVG_NS && child.localName === 'style') {
++        counts.styleItems += 1;
++        return false;
+       }
+-      keptChildren.push(child);
+-    }
+-    element.children = keptChildren;
+-  };
++      if (depth === MAX_DEPTH || child.ns !== SVG_NS || !ELEMENTS.has(child.localName)) {
++        elements.set(child.localName, (elements.get(child.localName) ?? 0) + 1);
++        return false;
++      }
++      visit(child, depth + 1);
++      return true;
++    });
++  }
+ 
+-  visit(root);
++  visit(root, 0);
++  root.attrs.unshift(attribute('xmlns', SVG_NS));
++  if (usesXlink) root.attrs.push(attribute('xmlns:xlink', XLINK_NS));
++  counts.elements = [...elements].map(([name, count]) => ({ name, count }));
++  counts.total = counts.elements.reduce((sum, entry) => sum + entry.count, 0)
++    + counts.eventAttributes + counts.references + counts.styleItems + counts.unsupportedItems;
+   return counts;
+ }
+diff --git a/tools/svg-to-png-converter/public/js/core/strings.mjs b/tools/svg-to-png-converter/public/js/core/strings.mjs
+index 899a778..056bddd 100644
+--- a/tools/svg-to-png-converter/public/js/core/strings.mjs
++++ b/tools/svg-to-png-converter/public/js/core/strings.mjs
+@@ -71,8 +71,9 @@ export function removalSummary(lang, counts) {
+       parts.push(`${elementTotal} elements (${detail})`);
+     }
+     if (counts.eventAttributes) parts.push(`${counts.eventAttributes} event-handler attribute${counts.eventAttributes === 1 ? '' : 's'}`);
+-    if (counts.references) parts.push(`${counts.references} external reference${counts.references === 1 ? '' : 's'}`);
+-    if (counts.styleItems) parts.push(`${counts.styleItems} style item${counts.styleItems === 1 ? '' : 's'}`);
++    if (counts.references) parts.push(`${counts.references} unsafe or unsupported reference${counts.references === 1 ? '' : 's'}`);
++    if (counts.styleItems) parts.push(`${counts.styleItems} unsupported style item${counts.styleItems === 1 ? '' : 's'}`);
++    if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} unsupported attribute or markup item${counts.unsupportedItems === 1 ? '' : 's'}`);
+     return `removed ${counts.total} item${counts.total === 1 ? '' : 's'}: ${parts.join(', ')}`;
+   }
+   if (elementTotal === 1 && counts.elements.length === 1) {
+@@ -82,7 +83,8 @@ export function removalSummary(lang, counts) {
+     parts.push(`${elementTotal} 個元素（${detail}）`);
+   }
+   if (counts.eventAttributes) parts.push(`${counts.eventAttributes} 個事件處理屬性`);
+-  if (counts.references) parts.push(`${counts.references} 個外部參照`);
+-  if (counts.styleItems) parts.push(`${counts.styleItems} 個樣式項目`);
++  if (counts.references) parts.push(`${counts.references} 個不安全或不支援的參照`);
++  if (counts.styleItems) parts.push(`${counts.styleItems} 個不支援的樣式項目`);
++  if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} 個不支援的屬性或標記項目`);
+   return `已移除 ${counts.total} 個項目：${parts.join('、')}`;
+ }
+diff --git a/tools/svg-to-png-converter/public/js/core/xml.mjs b/tools/svg-to-png-converter/public/js/core/xml.mjs
+index 84d0cfd..d7c4491 100644
+--- a/tools/svg-to-png-converter/public/js/core/xml.mjs
++++ b/tools/svg-to-png-converter/public/js/core/xml.mjs
+@@ -2,7 +2,7 @@
+ export const SVG_NS = 'http://www.w3.org/2000/svg';
+ export const XHTML_NS = 'http://www.w3.org/1999/xhtml';
+ export const XLINK_NS = 'http://www.w3.org/1999/xlink';
+-const XML_NS = 'http://www.w3.org/XML/1998/namespace';
++export const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+ const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
+ 
+ const PREDEFINED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+@@ -261,7 +261,7 @@ function escapeAttr(value) {
+     .replace(/\t/g, '&#x9;').replace(/\n/g, '&#xA;').replace(/\r/g, '&#xD;');
+ }
+ 
+-// 序列化：屬性順序與內容原樣保留，僅做 XML 序列化正規化（SPEC 第 4 節允許）。
++// 序列化目前的樹，將文字與屬性值按 XML 規則跳脫。
+ export function serializeXml(node) {
+   switch (node.type) {
+     case 'text': return escapeText(node.value);
+diff --git a/tools/svg-to-png-converter/scripts/check.mjs b/tools/svg-to-png-converter/scripts/check.mjs
+index 1b7f0f5..8b5146e 100644
+--- a/tools/svg-to-png-converter/scripts/check.mjs
++++ b/tools/svg-to-png-converter/scripts/check.mjs
+@@ -41,16 +41,6 @@ for (const [name, text] of texts) {
+   assert.doesNotMatch(text, /\bdocument\s*[.)]|\bwindow\s*[.)]|\bDOMParser\b|\bXMLSerializer\b/, `${name}: core must stay DOM-free`);
+ }
+ 
+-// 淨化清單只出現一次且與 SPEC 第 4 節逐字相符。
+-const sanitizeText = texts.get('js/core/sanitize.mjs');
+-for (const banned of ['script', 'foreignObject', 'iframe', 'frame', 'frameset', 'embed', 'object', 'applet', 'link', 'meta', 'base', 'form', 'input', 'button', 'audio', 'video', 'source', 'track']) {
+-  assert.equal(sanitizeText.split(`'${banned}'`).length - 1, 1, `banned element ${banned} must appear exactly once`);
+-}
+-for (const prefix of ['data:image/png', 'data:image/jpeg', 'data:image/gif', 'data:image/webp']) {
+-  assert.ok(sanitizeText.includes(`'${prefix}'`), `allowed data prefix ${prefix} missing`);
+-}
+-assert.ok(!sanitizeText.includes('data:image/svg'), 'data:image/svg must never be allowlisted');
+-
+ // 雙語頁面：lang/title/description/唯一 h1/noindex/canonical/hreflang/首頁連結/字型提醒/無 inline 行為。
+ const pages = [
+   { name: 'index.html', lang: 'zh-Hant', home: '../../', fontNote: '無法載入網頁或網路字型' },
+@@ -79,4 +69,4 @@ const appText = texts.get('js/app.js');
+ assert.match(appText, /createObjectURL/, 'app must load the sanitised SVG via blob URL');
+ assert.match(appText, /type: 'image\/svg\+xml'/, 'blob must be image/svg+xml');
+ 
+-console.log('static checks passed: zero deps, JS syntax, safe sinks, core purity, sanitiser lists, bilingual structure');
++console.log('static checks passed: zero deps, JS syntax, safe sinks, core purity, bilingual structure');
+diff --git a/tools/svg-to-png-converter/test/sanitize.test.mjs b/tools/svg-to-png-converter/test/sanitize.test.mjs
+index 16f4983..86c5e13 100644
+--- a/tools/svg-to-png-converter/test/sanitize.test.mjs
++++ b/tools/svg-to-png-converter/test/sanitize.test.mjs
+@@ -1,137 +1,169 @@
+-// SPEC 第 4 節淨化契約：F6 字面計數、逐項禁止元素/屬性/參照類別、style 規則、良性文件零移除。
+ import { test } from 'node:test';
+ import assert from 'node:assert/strict';
+-import { parseXml, serializeXml } from '../public/js/core/xml.mjs';
+-import { sanitizeDocument, cleanCssText, isAllowedReference, BANNED_ELEMENTS } from '../public/js/core/sanitize.mjs';
++import { processInput } from '../public/js/core/process.mjs';
++import { parseXml, SVG_NS } from '../public/js/core/xml.mjs';
+ import { removalSummary } from '../public/js/core/strings.mjs';
+ 
+-const NS = 'xmlns="http://www.w3.org/2000/svg"';
+-function clean(svg) {
+-  const parsed = parseXml(svg);
+-  assert.equal(parsed.ok, true, parsed.ok ? '' : parsed.error.message);
+-  const counts = sanitizeDocument(parsed.root);
+-  return { counts, serialized: serializeXml(parsed.root) };
+-}
++const XLINK = 'http://www.w3.org/1999/xlink';
++const CANARY = 'https://outside.invalid/asset';
++const wrap = (body, root = '') => `<svg xmlns="${SVG_NS}" width="20" height="20" ${root}>${body}</svg>`;
++const paste = text => processInput(text, { size: text.length, capUnit: 'chars' });
++const clean = text => {
++  const result = paste(text);
++  assert.equal(result.status, 'ok', JSON.stringify(result.error));
++  const parsed = parseXml(result.serialized);
++  assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
++  return { ...result, root: parsed.root };
++};
+ 
+-test('F6: script 元素 + onclick 屬性 + https 參照 → 恰移除 3 項，逐項相符', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 24 24"><script>alert(1)</script>`
+-    + '<rect width="24" height="24" onclick="evil()"/>'
+-    + '<image href="https://example.com/x.png" width="24" height="24"/></svg>',
+-  );
++test('F6 removes a script, handler and external image reference with a bilingual count', () => {
++  const { counts, serialized } = clean(wrap(
++    `<script>alert(1)</script><rect width="20" height="20" onclick="evil()"/><image href="${CANARY}"/>`,
++  ));
+   assert.equal(counts.total, 3);
+   assert.deepEqual(counts.elements, [{ name: 'script', count: 1 }]);
+   assert.equal(counts.eventAttributes, 1);
+   assert.equal(counts.references, 1);
+   assert.equal(counts.styleItems, 0);
+-  // SPEC 第 3 節英文摘要句型逐字相符。
+-  assert.equal(removalSummary('en', counts),
+-    'removed 3 items: 1 script element, 1 event-handler attribute, 1 external reference');
+-  assert.equal(removalSummary('zh', counts), '已移除 3 個項目：1 個 script 元素、1 個事件處理屬性、1 個外部參照');
+-  assert.ok(!serialized.includes('script'));
+-  assert.ok(!serialized.includes('onclick'));
+-  assert.ok(!serialized.includes('example.com'));
+-  assert.ok(serialized.includes('<image')); // 元素保留，只移除 href
++  assert.equal(removalSummary('en', counts), 'removed 3 items: 1 script element, 1 event-handler attribute, 1 unsafe or unsupported reference');
++  assert.equal(removalSummary('zh', counts), '已移除 3 個項目：1 個 script 元素、1 個事件處理屬性、1 個不安全或不支援的參照');
++  assert.doesNotMatch(serialized, /script|onclick|outside\.invalid/);
++  assert.match(serialized, /<image\/>/);
+ });
+ 
+-test('每個禁止元素都被移除並計 1（含子樹只計 1）', () => {
+-  for (const name of BANNED_ELEMENTS) {
+-    const { counts, serialized } = clean(`<svg ${NS} viewBox="0 0 10 10"><${name}><rect width="1" height="1"/></${name}><circle r="2"/></svg>`);
+-    assert.equal(counts.total, 1, name);
+-    assert.deepEqual(counts.elements, [{ name, count: 1 }], name);
+-    assert.ok(!serialized.includes(`<${name}`), name);
+-    assert.ok(serialized.includes('<circle'), name);
++test('all stylesheet bodies are omitted, including escaped, commented and malformed imports', () => {
++  const cases = [
++    `@import "${CANARY}.css"; rect { fill: red }`,
++    String.raw`@im\70 ort "${CANARY}.css"; rect { fill: red }`,
++    `@import/**/url("${CANARY}.css"); rect { fill: red }`,
++    `@import url("${CANARY}.css"; rect { fill: red`,
++    `@font-face{font-family:x;src:url("${CANARY}.woff2")}`,
++    'rect { fill: red }',
++  ];
++  for (const css of cases) {
++    const { counts, root, serialized } = clean(wrap(`<style><![CDATA[${css}]]></style><rect width="2"/>`));
++    assert.equal(counts.styleItems, 1, css);
++    assert.deepEqual(root.children.map(child => child.localName), ['rect'], css);
++    assert.doesNotMatch(serialized, /outside\.invalid/, css);
++    assert.match(removalSummary('en', counts), /unsupported style item/);
++    assert.match(removalSummary('zh', counts), /不支援的樣式項目/);
+   }
+ });
+ 
+-test('XHTML 名稱空間元素一律移除', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 10 10"><x:div xmlns:x="http://www.w3.org/1999/xhtml"><x:p>hi</x:p></x:div><rect width="1" height="1"/></svg>`,
+-  );
+-  assert.equal(counts.total, 1);
+-  assert.deepEqual(counts.elements, [{ name: 'div', count: 1 }]);
+-  assert.ok(!serialized.includes('div'));
+-});
+-
+-test('on* 屬性（含大小寫混合與根元素）移除；非 on 開頭保留', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 10 10" onload="boot()"><rect width="1" height="1" ONCLICK="x()" data-on="keep"/></svg>`,
+-  );
+-  assert.equal(counts.eventAttributes, 2);
+-  assert.equal(counts.total, 2);
+-  assert.ok(!serialized.toLowerCase().includes('onclick'));
+-  assert.ok(!serialized.includes('onload'));
+-  assert.ok(serialized.includes('data-on="keep"'));
+-});
+-
+-test('href 允許清單：fragment 與四種 raster data 可留，其餘移除', () => {
++test('inline CSS rebuilds only known declarations and cannot keep resource indirection', () => {
++  const malformed = [
++    String.raw`fill:u\72l(${CANARY});`,
++    String.raw`f\69ll:url(${CANARY});`,
++    `fill:u/**/rl(${CANARY});`,
++    `fill:url(&quot;${CANARY};`,
++    `fill:url(/*foo*/${CANARY});`,
++    '/*;fill:red;*/',
++    'fill: url(#gradient));',
++  ];
++  for (const css of malformed) {
++    const { counts, root, serialized } = clean(wrap(`<rect style="${css}stroke: #000; opacity: 0.5"/>`));
++    assert.equal(counts.styleItems, 1, css);
++    assert.deepEqual(root.children[0].attrs, [], css);
++    assert.doesNotMatch(serialized, /outside\.invalid/, css);
++  }
+   const cases = [
+-    ['#frag', true],
+-    ['  #frag  ', true],
+-    ['data:image/png;base64,AAAA', true],
+-    ['data:image/jpeg;base64,AAAA', true],
+-    ['data:image/gif;base64,AAAA', true],
+-    ['data:image/webp;base64,AAAA', true],
+-    ['data:image/svg+xml;base64,AAAA', false],
+-    ['data:image/pngx;base64,AAAA', false],
+-    ['https://example.com/x.png', false],
+-    ['http://example.com/x.png', false],
+-    ['javascript:alert(1)', false],
+-    ['x.png', false],
+-    ['//example.com/x.png', false],
++    `fill:&quot;${CANARY}&quot;;`,
++    'fill:&quot;odd;fill:red;word&quot;;',
++    `fill:image-set(url(${CANARY}) 1x);`,
++    `fill:image-set(&quot;${CANARY}&quot; 1x);`,
++    `--asset:url(${CANARY}); fill:var(--asset);`,
++    `fill:url(&#104;ttps://outside.invalid/asset);`,
++    `fill:url(#gradient) url(${CANARY});`,
++    `background:url(${CANARY});`,
+   ];
+-  for (const [value, allowed] of cases) {
+-    assert.equal(isAllowedReference(value), allowed, value);
+-    const { counts } = clean(`<svg ${NS} viewBox="0 0 10 10"><image href="${value}" width="1" height="1"/></svg>`);
+-    assert.equal(counts.references, allowed ? 0 : 1, value);
+-    assert.equal(counts.total, allowed ? 0 : 1, value);
++  for (const css of cases) {
++    const { counts, root, serialized } = clean(wrap(`<rect style="${css}stroke: #000; opacity: 0.5"/>`));
++    assert.ok(counts.styleItems > 0, css);
++    assert.equal(root.children[0].attrs.find(attr => attr.qname === 'style').value, 'stroke: #000; opacity: 0.5', css);
++    assert.doesNotMatch(serialized, /outside\.invalid/, css);
+   }
+ });
+ 
+-test('xlink:href 同受允許清單約束', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 10 10"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://example.com/a.svg#x"/></svg>`,
+-  );
+-  assert.equal(counts.references, 1);
+-  assert.ok(!serialized.includes('example.com'));
+-  const ok = clean(
+-    `<svg ${NS} viewBox="0 0 10 10"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shape"/></svg>`,
+-  );
+-  assert.equal(ok.counts.total, 0);
++test('presentation attributes retain only plain colors or vetted local fragments', () => {
++  for (const name of ['fill', 'stroke', 'filter', 'clip-path', 'mask', 'marker-start', 'marker-mid', 'marker-end', 'cursor']) {
++    for (const value of [`url(${CANARY}#id)`, String.raw`u\72l(${CANARY})`, `url(${CANARY}) red`, 'var(--paint)']) {
++      const { counts, root, serialized } = clean(wrap(`<path d="M0 0L10 10" ${name}="${value}"/>`));
++      assert.equal(counts.references, 1, name);
++      assert.deepEqual(root.children[0].attrs.map(attr => attr.qname), ['d'], name);
++      assert.doesNotMatch(serialized, /outside\.invalid/, name);
++    }
++  }
+ });
+ 
+-test('style 元素：@import 移除計 1；外部 url() 宣告移除計 1；fragment url 保留', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 10 10"><style>@import url("https://example.com/x.css"); .a { fill: url(https://example.com/y.png); stroke: #000; background: url(#grad); }</style><rect class="a" width="1" height="1"/></svg>`,
+-  );
+-  assert.equal(counts.styleItems, 2);
+-  assert.equal(counts.total, 2);
+-  assert.ok(!serialized.includes('example.com'));
+-  assert.ok(serialized.includes('stroke: #000'));
+-  assert.ok(serialized.includes('url(#grad)'));
++test('href, namespace aliases, xml:base and changing href after sanitation are constrained', () => {
++  const input = wrap(`
++    <use href="${CANARY}"/>
++    <use href="/relative.svg#id"/>
++    <use xlink:href="//outside.invalid/asset#id"/>
++    <use e:href="#id"/>
++    <foreign:rect width="2" xmlns:foreign="urn:foreign"/>
++    <svg xmlns=""><rect width="2"/></svg>
++    <g xml:base="${CANARY}/" resource="${CANARY}" src="${CANARY}" ONLOAD="x()">
++      <use href="#id"><animate attributeName="href" values="#id;${CANARY}"/><set attributeName="xlink:href" to="${CANARY}"/></use>
++      <?xml-stylesheet href="${CANARY}.css"?>
++    </g>`, `xmlns:xlink="${XLINK}" xmlns:e="urn:outside"`);
++  const { counts, serialized } = clean(input);
++  assert.doesNotMatch(serialized, /outside\.invalid|urn:|xml:base|animate|<set|xml-stylesheet|ONLOAD|src=|resource=/);
++  assert.match(serialized, /<use href="#id"\/>/);
++  assert.equal(counts.references, 4);
++  assert.equal(counts.eventAttributes, 1);
++  assert.equal(counts.unsupportedItems, 5);
++  assert.deepEqual(counts.elements.map(entry => entry.name), ['rect', 'svg', 'animate', 'set']);
+ });
+ 
+-test('style 屬性：外部 url() 宣告移除；data url 宣告保留且不誤傷前後宣告', () => {
+-  const { counts, serialized } = clean(
+-    `<svg ${NS} viewBox="0 0 10 10"><rect width="1" height="1" style="fill: url(data:image/png;base64,AAAA); stroke: url(https://example.com/z.png); opacity: 0.5"/></svg>`,
+-  );
+-  assert.equal(counts.styleItems, 1);
+-  assert.equal(counts.total, 1);
+-  assert.ok(serialized.includes('url(data:image/png;base64,AAAA)'));
+-  assert.ok(serialized.includes('opacity: 0.5'));
+-  assert.ok(!serialized.includes('example.com'));
++test('accepted SVG namespace aliases canonicalize without letting unsupported attrs or contents survive', () => {
++  const original = `<s:svg xmlns:s="${SVG_NS}" xmlns:l="${XLINK}" width="20" height="20">
++    <s:defs><s:linearGradient id="g"><s:stop offset="0" stop-color="#fff"/></s:linearGradient>
++      <s:clipPath id="clip"><s:circle r="8"/></s:clipPath>
++      <s:mask id="mask"><s:rect width="20" height="20" fill="white"/></s:mask>
++      <s:path id="shape" d="M0,0 L20,0 L20,20 z"/></s:defs>
++    <s:rect width="20" height="20" fill="url(#g)" clip-path="url(&quot;#clip&quot;)" mask="url('#mask')" style="stroke: rgb(0, 0, 0); fill: url(#g)"/>
++    <s:use l:href="#shape" x="2" y="3"/>
++    <s:text x="2" y="10" xml:space="preserve">Hi &lt;script&gt;</s:text>
++  </s:svg>`;
++  const first = clean(original);
++  assert.equal(first.counts.total, 0);
++  assert.match(first.serialized, /<svg xmlns="/);
++  assert.match(first.serialized, /xlink:href="#shape"/);
++  assert.match(first.serialized, /fill="url\(#g\)"/);
++  assert.match(first.serialized, /clip-path="url\(&quot;#clip&quot;\)"/);
++  assert.match(first.serialized, /mask="url\('#mask'\)"/);
++  assert.match(first.serialized, /style="stroke: rgb\(0, 0, 0\); fill: url\(#g\)"/);
++  assert.match(first.serialized, /Hi &lt;script&gt;/);
++  assert.equal(clean(first.serialized).serialized, first.serialized);
+ });
+ 
+-test('cleanCssText: @import 字串形式與 url 形式各計 1', () => {
+-  assert.deepEqual(cleanCssText('@import "a.css"; .x { fill: red; }').removed, 1);
+-  assert.equal(cleanCssText('.x { fill: red; }').removed, 0);
++test('image data allows matching raster signatures and rejects active, spoofed, external and misplaced URLs', () => {
++  const raster = [
++    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/n2sAAAAASUVORK5CYII=',
++    'data:image/jpeg;base64,/9j/2Q==',
++    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
++    'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEAAUAmJaQAA3AA/v89WAAAAA==',
++  ];
++  for (const url of raster) {
++    const { counts, serialized } = clean(wrap(`<image width="1" height="1" href="${url}"/>`));
++    assert.equal(counts.total, 0, url);
++    assert.ok(serialized.includes(url), url);
++  }
++  for (const url of [CANARY, '#shape', 'data:image/svg+xml;base64,PHN2Zz4=', 'data:image/png;base64,PHN2Zz4=',
++    'data:image/png;base64,iVBORw0KGgo===', 'data:image/png,AAAA', 'data:image/pngx;base64,iVBORw0KGgo=',
++    'data:image/jpeg;base64,iVBORw0KGgo=']) {
++    const { counts, serialized } = clean(wrap(`<image href="${url}"/>`));
++    assert.equal(counts.references, 1, url);
++    assert.ok(!serialized.includes(url), url);
++  }
++  assert.equal(clean(wrap(`<use href="${raster[0]}"/>`)).counts.references, 1);
+ });
+ 
+-test('良性文件（漸層 fragment、use、text）零移除，序列化穩定', () => {
+-  const benign = `<svg ${NS} width="10" height="10" viewBox="0 0 10 10"><defs><linearGradient id="g"><stop offset="0" stop-color="#ffffff"/></linearGradient></defs><rect width="10" height="10" fill="url(#g)"/><use href="#g"/><text x="1" y="5">Hi</text></svg>`;
+-  const first = clean(benign);
+-  assert.equal(first.counts.total, 0);
+-  const second = clean(first.serialized);
+-  assert.equal(second.counts.total, 0);
+-  assert.equal(second.serialized, first.serialized);
++test('external DTDs and processing instructions cannot be serialized and very deep input stays bounded', () => {
++  const external = `<?xml-stylesheet href="${CANARY}.css"?><!DOCTYPE svg SYSTEM "${CANARY}.dtd">`;
++  assert.doesNotMatch(clean(external + wrap('<rect/>')).serialized, /outside\.invalid|DOCTYPE|xml-stylesheet/);
++  const result = clean(wrap('<g>'.repeat(5000) + '<rect/>' + '</g>'.repeat(5000)));
++  assert.deepEqual(result.counts.elements, [{ name: 'g', count: 1 }]);
++  assert.doesNotMatch(result.serialized, /<rect/);
+ });

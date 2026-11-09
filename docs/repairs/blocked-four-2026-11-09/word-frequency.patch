@@ -1,0 +1,295 @@
+diff --git a/tools/word-frequency/ERRATA.md b/tools/word-frequency/ERRATA.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..40453ec6a0238d084eff76d1291b6fbbfe9ee41c
+--- /dev/null
++++ b/tools/word-frequency/ERRATA.md
+@@ -0,0 +1,16 @@
++# Word frequency specification errata
++
++The 2026-11-09 [maintenance decision](../../docs/repairs/blocked-four-2026-11-09/SPEC-ERRATA.md)
++clarifies the frozen [word frequency specification](https://github.com/KYStr/glossquote-labs-home/blob/6598ac51cddee252a83685d461589537d56fa3e0/docs/specs/word-frequency/SPEC.md).
++
++- Apply enabled stopwords before counting. Apply the pure-number and minimum
++  folded word length settings to the Words table before counting.
++- Apply the minimum occurrence count after counting. It filters displayed and
++  exported rows. Each percentage divides the row count by the table's counted
++  total. The unique item count also covers all counted items. For
++  `alpha alpha beta` with a minimum of 2, the total is 3, with two unique items
++  and one result row. Alpha appears twice (66.7%).
++- Display the top 100 eligible rows by default and export every eligible row
++  in the active table as CSV.
++- Use the Unicode 16.0.0 simple case folding C+S entries. İ stays İ and ẞ
++  folds to ß. See [table provenance](PROVENANCE.md).
+diff --git a/tools/word-frequency/PROVENANCE.md b/tools/word-frequency/PROVENANCE.md
+index e5e80534ec7393cbe6505c7f54ca4cf5bc662867..8941aed8a091ccbc5600702bc3664ec79031cb7f 100644
+--- a/tools/word-frequency/PROVENANCE.md
++++ b/tools/word-frequency/PROVENANCE.md
+@@ -15,7 +15,7 @@ tests.
+ - Count-S: 31
+ - Table-SHA-256: 0478c5bf88872a05df2917e321fe1c0e2442fc7b4e3e94aed4d9f408de4c392b
+ 
+-## Which entries ship, and a noted SPEC wording conflict
++## Unicode 16 simple case folding
+ 
+ SPEC section 4 defines the token key fold as **Unicode simple case
+ folding** and states behaviourally that İ (U+0130) "has no simple
+@@ -26,13 +26,9 @@ and **S** entries (S overriding C where both exist): İ carries
+ only an F (full folding) entry, so it is unchanged under C+S, and
+ every behavioural statement in the SPEC holds.
+ 
+-The SPEC's parenthetical "(status C and F entries)" conflicts with
+-its own İ statement and with the defined operation (under C+F, İ
+-would fold to `i` + U+0307). The behavioural statements and the
+-named operation win: this table ships the 1,484 C+S entries. The
+-conflict is recorded here and in `VERIFICATION.md` for the
+-bulk-review errata; if the SPEC is corrected to C+F, regenerating
+-with the F entries is a one-line change in the generator.
++The [maintenance errata](ERRATA.md) resolves the conflicting parenthetical
++in the frozen specification. The shipped table uses the 1,484 C+S entries.
++The F entry for İ would expand it to `i` + U+0307 under full case folding.
+ 
+ The Table-SHA-256 is the SHA-256 of the sorted `HEXKEY<TAB>folded`
+ lines joined with LF (UTF-8), recomputed by the project check from
+diff --git a/tools/word-frequency/README.md b/tools/word-frequency/README.md
+index d37bfea23e4d529c51bd44d7e44f627cbccecb85..120811fb48f97ffda8f1f841a36505daddcd00a4 100644
+--- a/tools/word-frequency/README.md
++++ b/tools/word-frequency/README.md
+@@ -13,25 +13,32 @@ reproducible by hand.
+ 
+ ## 規則摘要 · Rules in brief
+ 
+-- 詞彙比對用 Unicode 簡單摺疊（CaseFolding.txt 16.0.0 的 C 與 F
++- 詞彙比對用 Unicode 簡單摺疊（CaseFolding.txt 16.0.0 的 C 與 S
+   條目，vendored 為資料檔，來源與雜湊在 `PROVENANCE.md`）：Σ 與 ς
+   都摺成 σ，轉小寫做不到這一點。顯示形式取最常見的原始寫法。
+-- Word matching uses Unicode simple case folding (the C and F
++- Word matching uses Unicode simple case folding (the C and S
+   entries of CaseFolding.txt 16.0.0, vendored as data; source and
+   hashes in `PROVENANCE.md`): Σ and ς both fold to σ, which
+   lowercasing cannot reproduce. Display forms are the most frequent
+   original casings.
+ - 中文不做斷詞：逐字與雙字元組取代分詞，標點斷段；字元表不做
+   Unicode 正規化。停用詞（英文＋中文字元，資料檔出貨、可在頁面
+-  編輯）在計總數前排除，總數是篩選後總數。
++  編輯）在計總數前排除。詞彙表也會先套用純數字詞與最短詞長設定。
+ - Chinese is not segmented: characters and bigrams stand in for
+   word segmentation, punctuation ends runs, and the Characters
+   table does not normalise. Stopwords (English + Chinese
+-  characters, shipped as data, editable in the page) apply before
+-  totals, so totals are after filters.
+-- CSV 永遠匯出完整篩選表；輸入上限 200,000 字元，超過拒絕。
+-- CSV always exports the full filtered table; input is capped at
+-  200,000 characters and refused beyond it.
++  characters, shipped as data, editable in the page) apply before counting.
++  The Words table also applies the pure-number and minimum word length settings
++  before counting.
++- 最低出現次數只篩選結果列，百分比以該表計入的總數為分母。例如
++  `alpha alpha beta` 設最低 2 次，總數為 3，alpha 為 2 次（66.7%）。
++  前 100 列是預設顯示上限，CSV 匯出目前表格中達到次數門檻的所有列。
++  輸入上限為 200,000 字元。
++- Minimum occurrence count filters rows after counting. Percentages use the
++  counted total for the table. For `alpha alpha beta` with a minimum of 2, the
++  total is 3 and alpha appears twice (66.7%). The display shows the top 100 by
++  default. CSV exports every row in the current table that meets the minimum
++  count. Input is capped at 200,000 characters.
+ 
+ ## 本地開發 · Local development
+ 
+@@ -48,6 +55,11 @@ never fetched at runtime or in tests.
+ 
+ ## 規格 · Specification
+ 
++本次維護適用 [規格勘誤](ERRATA.md)。原候選的狀態與驗證紀錄屬歷史證據。
++
++See the [specification errata](ERRATA.md) for the maintenance decisions.
++The original candidate's status and verification files record its historical evidence.
++
+ 實作依 `KYStr/glossquote-labs-home` 的
+ `docs/specs/word-frequency/SPEC.md`（修訂後候選）。本 repo 為
+ build-first 候選：登記簿的製作登記與送審保留到之後的整批審查階段，
+diff --git a/tools/word-frequency/public/en/index.html b/tools/word-frequency/public/en/index.html
+index 5dcbedb5a7c4e0c5ac5e6931d84160ba11d86b77..a1d04ba3e7cf516fd6f49e147ff7c65a50baf7f8 100644
+--- a/tools/word-frequency/public/en/index.html
++++ b/tools/word-frequency/public/en/index.html
+@@ -39,8 +39,9 @@
+       <label><input id="opt-showall" type="checkbox"> Show all rows (default top 100)</label>
+     </div>
+     <div class="field">
+-      <label for="opt-mincount">Minimum count</label>
+-      <input id="opt-mincount" type="number" min="1" step="1" value="1">
++      <label for="opt-mincount">Minimum occurrence count (row filter)</label>
++      <input id="opt-mincount" type="number" min="1" step="1" value="1" aria-describedby="mincount-note">
++      <p id="mincount-note" class="note">Only rows that meet this count appear. The total, unique item count, and percentage denominator still use all counted items.</p>
+       <label for="opt-minlength">Minimum word length (Words table, folded length)</label>
+       <input id="opt-minlength" type="number" min="1" step="1" value="1">
+     </div>
+@@ -70,10 +71,11 @@
+       <li>Classes: Han (U+4E00–U+9FFF, U+3400–U+4DBF), kana (U+3040–U+30FF) and Hangul (U+AC00–U+D7AF) count per character; every other Unicode letter or digit forms words — so Greek, Cyrillic, Arabic and other scripts land in the Words table. It is not a Latin-only table.</li>
+       <li>Words: an apostrophe joins only with a word character on both sides (don't is one token; 'tis counts as tis); hyphens and all other punctuation separate. Matching folds with Unicode simple case folding (the simple case folding entries — C and S — of CaseFolding.txt, Unicode 16.0.0): Σ and ς both fold to σ — unlike lowercasing, under which ς stays ς. The display form is the most frequent original casing, ties going to the first occurrence.</li>
+       <li>Bigrams: adjacent pairs inside a Han run only; punctuation ends a run; kana and Hangul form no bigrams. The Characters table does not normalise: visually identical text in different Unicode normalisation forms can count differently.</li>
+-      <li>Stopwords apply after tokenisation and before totals, so totals are after filters; a bigram is filtered when either character is a stopword character. Ordering is count descending, then first-occurrence position; percentages are shares of the table's filtered total, one decimal, rounded half away from zero.</li>
++      <li>Enabled stopwords are excluded before counting. A bigram is excluded if either character is a stopword. The Words table also applies the pure-number and minimum word length settings before counting.</li>
++      <li>Each row's percentage is its share of the counted total for that table, rounded to one decimal (half away from zero). Minimum occurrence count filters rows after counting. For alpha alpha beta with a minimum count of 2, the total is 3 and alpha appears twice (66.7%). Rows sort by count, then by first occurrence.</li>
+       <li>Default stopwords (English): a, about, above, after, again, against, all, am, an, and, any, are, as, at, be, because, been, before, being, below, between, both, but, by, could, did, do, does, doing, down, during, each, few, for, from, further, had, has, have, having, he, her, here, hers, herself, him, himself, his, how, i, if, in, into, is, it, its, itself, just, me, more, most, my, no, nor, not, now, of, off, on, once, only, or, other, our, ours, out, over, own, same, she, should, so, some, such, than, that, the, their, theirs, them, themselves, then, there, these, they, this, those, through, to, too, under, until, up, very, was, we, were, what, when, where, which, while, who, whom, why, will, with, you, your, yours, yourself</li>
+       <li>Default stopwords (Chinese characters): 的了是在和也不這我你他她它們就都而及與或個中有被把從到對為以於其之者嗎呢吧啊所將但若如因由向跟給讓只</li>
+-      <li>CSV always exports the full filtered table (not just the displayed top 100); the filename is frequency.csv.</li>
++      <li>The display shows the top 100 rows by default. frequency.csv exports every row in the current table that meets the minimum occurrence count.</li>
+     </ul>
+   </details>
+ </main>
+diff --git a/tools/word-frequency/public/index.html b/tools/word-frequency/public/index.html
+index ed71fd61d01e095ffced616cc8298da8646e6030..80e10aa064bf6f42aefcfa366e46b880ecf82f05 100644
+--- a/tools/word-frequency/public/index.html
++++ b/tools/word-frequency/public/index.html
+@@ -39,8 +39,9 @@
+       <label><input id="opt-showall" type="checkbox"> 顯示全部列（預設前 100）</label>
+     </div>
+     <div class="field">
+-      <label for="opt-mincount">最小次數</label>
+-      <input id="opt-mincount" type="number" min="1" step="1" value="1">
++      <label for="opt-mincount">最低出現次數（篩選結果列）</label>
++      <input id="opt-mincount" type="number" min="1" step="1" value="1" aria-describedby="mincount-note">
++      <p id="mincount-note" class="note">只保留達到門檻的結果列。總數、不重複項目數及百分比的分母照原計數。</p>
+       <label for="opt-minlength">最短詞長（詞彙表，折疊後字元數）</label>
+       <input id="opt-minlength" type="number" min="1" step="1" value="1">
+     </div>
+@@ -70,10 +71,11 @@
+       <li>分類：漢字（U+4E00–U+9FFF、U+3400–U+4DBF）、假名（U+3040–U+30FF）、諺文（U+AC00–U+D7AF）逐字計；其餘所有 Unicode 字母與數字組成詞彙——所以希臘、西里爾、阿拉伯等文字的詞都進詞彙表，它不是拉丁專用表。</li>
+       <li>詞彙：內部撇號兩邊都是詞字元才連接（don't 算一個詞；'tis 算 tis）；連字號與其他標點都是分隔符。比對用 Unicode 簡單摺疊（CaseFolding.txt 的簡單摺疊條目（C 與 S），Unicode 16.0.0）：Σ 與 ς 都摺成 σ；這與轉小寫不同，ς 在轉小寫時不會變 σ。顯示形式取最常見的原始寫法，同次數取先出現者。</li>
+       <li>雙字元組：只在連續漢字段內取相鄰對，標點會斷段；假名與諺文不組雙字元。字元表不做正規化，不同 Unicode 正規形式的同形字會分開計，敬請注意。</li>
+-      <li>停用詞在分詞後、計總數前排除，總數是篩選後的總數；雙字元組任一字是停用字就排除。排序：次數高到低，同次數比首次出現位置；百分比是占該表篩選後總數的比例，一位小數、四捨五入（五向外）。</li>
++      <li>啟用的停用詞在計數前排除。雙字元組只要任一字是停用字就會排除。詞彙表也會依純數字詞與最短詞長設定先篩選再計數。</li>
++      <li>各列百分比以該表計入的總數為分母，四捨五入至一位小數。最低出現次數只篩選結果列。例如 alpha alpha beta 設最低 2 次，總數仍為 3，alpha 為 2 次（66.7%）。依次數由高到低排序，同次數依首次出現順序。</li>
+       <li>預設停用詞（英文）：a, about, above, after, again, against, all, am, an, and, any, are, as, at, be, because, been, before, being, below, between, both, but, by, could, did, do, does, doing, down, during, each, few, for, from, further, had, has, have, having, he, her, here, hers, herself, him, himself, his, how, i, if, in, into, is, it, its, itself, just, me, more, most, my, no, nor, not, now, of, off, on, once, only, or, other, our, ours, out, over, own, same, she, should, so, some, such, than, that, the, their, theirs, them, themselves, then, there, these, they, this, those, through, to, too, under, until, up, very, was, we, were, what, when, where, which, while, who, whom, why, will, with, you, your, yours, yourself</li>
+       <li>預設停用詞（中文字元）：的了是在和也不這我你他她它們就都而及與或個中有被把從到對為以於其之者嗎呢吧啊所將但若如因由向跟給讓只</li>
+-      <li>CSV 永遠匯出完整篩選結果（不受前 100 列顯示限制）；檔案名 frequency.csv。</li>
++      <li>預設只顯示前 100 列。frequency.csv 會匯出目前表格中達到最低出現次數的所有列。</li>
+     </ul>
+   </details>
+ </main>
+diff --git a/tools/word-frequency/public/js/i18n.mjs b/tools/word-frequency/public/js/i18n.mjs
+index e3c6aec43f542b89a965d4e521b2baade8185031..35ee386b211dbb47480904f7b9378a8236d1cd1e 100644
+--- a/tools/word-frequency/public/js/i18n.mjs
++++ b/tools/word-frequency/public/js/i18n.mjs
+@@ -9,9 +9,9 @@ export const DICTIONARIES = Object.freeze({
+       INPUT_TOO_LARGE: "輸入超過上限：{count} 字元（上限 200,000），已拒絕，未截斷。",
+     }),
+     ui: Object.freeze({
+-      TOTALS: "篩選後總數 {total} · 不重複 {unique} 項 · 輸入 {input} 字元",
+-      EMPTY_TABLE: "這個表目前沒有可計的項目。",
+-      ROWS_NOTE: "顯示 {shown} / {total} 列（CSV 會匯出完整篩選結果）",
++      TOTALS: "計入總數 {total} · 不重複 {unique} 項 · 輸入 {input} 字元",
++      EMPTY_TABLE: "目前沒有符合篩選條件的結果列。",
++      ROWS_NOTE: "顯示 {shown} / {total} 列（CSV 匯出全部達到次數門檻的列）",
+       EXPORTED: "已匯出 frequency.csv。",
+     }),
+   }),
+@@ -20,9 +20,9 @@ export const DICTIONARIES = Object.freeze({
+       INPUT_TOO_LARGE: "Input refused: {count} characters (cap 200,000). Nothing was truncated.",
+     }),
+     ui: Object.freeze({
+-      TOTALS: "Total after filters {total} · {unique} unique · input {input} characters",
+-      EMPTY_TABLE: "Nothing countable in this table yet.",
+-      ROWS_NOTE: "Showing {shown} of {total} rows (CSV exports the full filtered table)",
++      TOTALS: "Counted total {total} · {unique} unique · input {input} characters",
++      EMPTY_TABLE: "No rows meet the current filters.",
++      ROWS_NOTE: "Showing {shown} of {total} rows (CSV includes all rows that meet the minimum count)",
+       EXPORTED: "frequency.csv exported.",
+     }),
+   }),
+diff --git a/tools/word-frequency/test/controller.test.mjs b/tools/word-frequency/test/controller.test.mjs
+index 1ae3c3b8e0173ea8373fe61b5a458268ee14ea01..42e57ffe7230bcc58533766c6405717d25f57a2b 100644
+--- a/tools/word-frequency/test/controller.test.mjs
++++ b/tools/word-frequency/test/controller.test.mjs
+@@ -87,7 +87,7 @@ test("defaults: empty state, stopwords prefilled but off, numbers on", () => {
+   assert.match(elements.get("stopwords-text").value, /the/);
+   assert.match(elements.get("stopwords-text").value, /的/);
+   assert.equal(elements.get("opt-stopwords").checked, false);
+-  assert.match(elements.get("result-body").textContent, /沒有可計的項目/);
++  assert.match(elements.get("result-body").textContent, /沒有符合篩選條件的結果列/);
+ });
+ 
+ test("paste computes after debounce; tabs switch tables; totals update", () => {
+@@ -140,6 +140,31 @@ test("CSV export downloads the full filtered table of the active tab", () => {
+   assert.equal(captured.downloads[0].text, "item,count,percent\ndon't,3,100.0\n");
+ });
+ 
++test("the top 100 only caps display and CSV still obeys the count threshold", () => {
++  const { elements, captured, flushTimers } = makeApp();
++  const eligible = Array.from({ length: 101 }, (_, index) => `word${index}`);
++  const input = elements.get("input-text");
++  input.value = [...eligible.flatMap((word) => [word, word]), "singleton"].join(" ");
++  input.dispatch("input");
++  flushTimers();
++  const minCount = elements.get("opt-mincount");
++  minCount.value = "2";
++  minCount.dispatch("change");
++  assert.equal(elements.get("result-body").children.length, 100);
++  assert.match(elements.get("totals-line").textContent, /總數 203 · 不重複 102 項/);
++  assert.match(elements.get("rows-note").textContent, /100 \/ 101/);
++  elements.get("export-csv").click();
++  const expected = ["item,count,percent", ...eligible.map((word) => `${word},2,1.0`), ""].join("\n");
++  assert.equal(captured.downloads[0].text, expected);
++
++  const showAll = elements.get("opt-showall");
++  showAll.checked = true;
++  showAll.dispatch("change");
++  assert.equal(elements.get("result-body").children.length, 101);
++  elements.get("export-csv").click();
++  assert.equal(captured.downloads[1].text, expected);
++});
++
+ test("over-cap input is refused with the count shown", () => {
+   const { elements, flushTimers } = makeApp();
+   const input = elements.get("input-text");
+diff --git a/tools/word-frequency/test/core.test.mjs b/tools/word-frequency/test/core.test.mjs
+index e18728faac37e77dc9ee86dfb9e44e1381865fb9..7d86ee858e79037fb25319c86771fe3dd3131527 100644
+--- a/tools/word-frequency/test/core.test.mjs
++++ b/tools/word-frequency/test/core.test.mjs
+@@ -82,7 +82,7 @@ test("fixtures 6 and 7: Greek and Cyrillic land in the Words table", () => {
+   );
+ });
+ 
+-test("fold: simple case folding per the shipped C and F entries", () => {
++test("fold: simple case folding per the shipped C and S entries", () => {
+   assert.equal(foldText("Σ"), "σ");
+   assert.equal(foldText("ς"), "σ");
+   assert.equal(foldText("İ"), "İ"); // no C/F entry: unchanged
+@@ -148,6 +148,37 @@ test("tie-breaking: equal counts order by first occurrence", () => {
+   assert.deepEqual(rows(result.words).map((r) => r[0]), ["b", "a", "c"]);
+ });
+ 
++test("minimum count keeps the counted denominator, unlike token filters", () => {
++  const text = "alpha alpha beta";
++  const threshold = analyze(text, { minCount: 2 }).words;
++  assert.equal(threshold.total, 3);
++  assert.equal(threshold.unique, 2);
++  assert.deepEqual(rows(threshold), [["alpha", 2, 66.7]]);
++  assert.equal(toCsv(threshold.rows), "item,count,percent\nalpha,2,66.7\n");
++
++  const stopwords = analyze(text, {
++    minCount: 2, stopwordsOn: true, stopwordWords: new Set(["beta"]),
++  }).words;
++  const length = analyze(text, { minCount: 2, minLength: 5 }).words;
++  const noNumbers = analyze("alpha alpha 12345", {
++    minCount: 2, includeNumbers: false,
++  }).words;
++  for (const table of [stopwords, length, noNumbers]) {
++    assert.equal(table.total, 2);
++    assert.equal(table.unique, 1);
++    assert.deepEqual(rows(table), [["alpha", 2, 100]]);
++  }
++});
++
++test("Unicode 16 C+S keeps F-only İ and uses the simple mapping for ẞ", () => {
++  assert.equal(foldText("İ"), "İ"); // C+F would expand to i + U+0307
++  assert.equal(foldText("ẞ"), "ß"); // C+F would expand to ss
++  const result = analyze("ẞ ß SS İ i", {});
++  assert.deepEqual(result.words.rows.map(({ key, count }) => [key, count]), [
++    ["ß", 2], ["ss", 1], ["İ", 1], ["i", 1],
++  ]);
++});
++
+ test("CSV: header, one-decimal percent, apostrophe unquoted, final LF", () => {
+   const result = analyze("don't don't DON'T", {});
+   assert.equal(toCsv(result.words.rows), "item,count,percent\ndon't,3,100.0\n");
