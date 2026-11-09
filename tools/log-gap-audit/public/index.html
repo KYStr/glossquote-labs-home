@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>記錄序號與時間缺口檢查｜Gloss Tools</title>
+<meta name="description" content="維運人員從測試資料匯出一段序號和相對毫秒，要分清哪兩行間缺序號、時間倒退、或間隔超過檢查門檻。">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="../../">Gloss Tools</a>
+<nav aria-label="語言">
+<a href="en/index.html" lang="en">English</a>
+</nav>
+<span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+</header>
+<main id="main">
+<h1>記錄序號與時間缺口檢查</h1>
+<p class="lede">貼上一段序號與相對毫秒，找出相鄰記錄之間的序號缺口、序號倒退或重複、時間倒退，以及超過門檻的時間間隔。資料只留在目前頁面，不會上傳或儲存。</p>
+
+<details class="format">
+<summary>輸入格式與限制</summary>
+<p>每列恰為「序號 + Tab + 毫秒」，例如 <code>10⇥0</code>。序號與毫秒皆為 0 或非零開頭、最多 18 位的整數，不接受小數、符號或空白。最多 1,000 列、65,536 個字元；結尾一個換行會自動忽略。報告保留貼上順序，每筆只和前一筆比較，不會先排序；也不解析 ISO 日期或時區。</p>
+<p>門檻預設 1000 ms；時間差嚴格大於門檻才列為時間缺口。SEQ_GAP 是兩數之間的整數缺口。</p>
+</details>
+
+<form id="auditForm" action="none" onsubmit="return false;">
+<div class="field">
+<label for="records">序號與相對毫秒</label>
+<p class="hint" id="recordsHint">每列：序號、一個 Tab、毫秒。貼上測試資料或從檔案載入。</p>
+<textarea id="records" aria-describedby="recordsHint" rows="12" spellcheck="false"></textarea>
+</div>
+
+<div class="field">
+<label for="threshold">時間缺口門檻（ms）</label>
+<p class="hint" id="thresholdHint">0 至 999999999999999999 的整數，預設 1000。</p>
+<input type="text" id="threshold" value="1000" inputmode="numeric" aria-describedby="thresholdHint" autocomplete="off">
+</div>
+
+<div class="field">
+<label for="fileInput">載入檔案</label>
+<p class="hint" id="fileHint">選擇 .tsv 或 .txt 檔案，內容會填入上方記錄欄。檔案只在本機讀取。</p>
+<input type="file" id="fileInput" accept=".tsv,.txt,text/plain" aria-describedby="fileHint">
+</div>
+
+<div class="actions">
+<button type="button" id="findBtn" class="primary">找出相鄰記錄異常</button>
+<button type="button" id="exampleBtn">載入範例</button>
+<button type="button" id="resetBtn">重設</button>
+<button type="button" id="cancelBtn" hidden>取消</button>
+<button type="button" id="downloadBtn" hidden>下載報告</button>
+</div>
+</form>
+
+<p id="exampleNote" class="example-note" hidden></p>
+<p id="status" class="status" role="status" aria-live="polite" tabindex="-1"></p>
+<div id="errorBox" class="status" data-tone="error" role="alert" hidden></div>
+
+<section id="findingsSection" aria-labelledby="findingsHeading" hidden>
+<h2 id="findingsHeading">異常與兩個來源列</h2>
+<p id="findingsSummary"></p>
+<p>SEQ_GAP 是兩數之間的整數缺口；其他列可能包含遲到資料。報告不推斷事件有無到達。</p>
+<div class="table-wrap" tabindex="0" aria-label="異常列表">
+<table id="findingsTable">
+<thead>
+<tr>
+<th scope="col">後一列</th>
+<th scope="col">前一列</th>
+<th scope="col">序號差</th>
+<th scope="col">時間差（ms）</th>
+<th scope="col">問題</th>
+</tr>
+</thead>
+<tbody id="findingsBody"></tbody>
+</table>
+</div>
+<div id="pagination" class="pagination" hidden>
+<button type="button" id="prevPageBtn">上一頁</button>
+<span id="pageInfo" aria-live="polite"></span>
+<button type="button" id="nextPageBtn">下一頁</button>
+</div>
+</section>
+
+<section aria-labelledby="faqHeading">
+<h2 id="faqHeading">常見問題</h2>
+<dl class="faq">
+<dt>會先依序號排序嗎？</dt>
+<dd>報告保留貼上順序，每筆只和前一筆比較。</dd>
+<dt>超過門檻如何定義？</dt>
+<dd>時間差嚴格大於門檻才列出。</dd>
+</dl>
+</section>
+</main>
+<footer>
+<p>本工具完全在瀏覽器本機運作，不上傳、不儲存資料。預覽版本，不供索引。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

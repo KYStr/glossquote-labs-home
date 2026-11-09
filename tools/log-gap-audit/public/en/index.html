@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Log Sequence and Time Gap Audit | Gloss Tools</title>
+<meta name="description" content="Find sequence gaps, repeats and time reversals in adjacent log rows. Inspect the original row pairs and exact differences.">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="../../en/">Gloss Tools</a>
+<nav aria-label="Language">
+<a href="../index.html" lang="zh-Hant">繁體中文</a>
+</nav>
+<span class="draft-note">Switching language or leaving the page discards the draft.</span>
+</header>
+<main id="main">
+<h1>Log Sequence and Time Gap Audit</h1>
+<p class="lede">Paste a run of sequence numbers and relative milliseconds to find sequence gaps, sequence reversals or repeats, time reversals, and time gaps over your threshold between adjacent records. Data stays on this page; nothing is uploaded or stored.</p>
+
+<details class="format">
+<summary>Input format and limits</summary>
+<p>Each row is exactly “sequence + Tab + elapsed-ms”, for example <code>10⇥0</code>. Both numbers are 0 or a non-zero-leading integer of at most 18 digits; decimals, signs, and spaces are not accepted. At most 1,000 rows and 65,536 characters; one trailing newline is ignored. The report preserves pasted order and compares each row only with the previous one — it never sorts first, and it does not parse ISO dates or time zones.</p>
+<p>The threshold defaults to 1000 ms; a time gap is listed only when the time delta is strictly greater than the threshold. SEQ_GAP is the integer gap between two numbers.</p>
+</details>
+
+<form id="auditForm" action="none" onsubmit="return false;">
+<div class="field">
+<label for="records">Sequence and elapsed milliseconds</label>
+<p class="hint" id="recordsHint">One row per record: sequence, one Tab, elapsed-ms. Paste test data or load it from a file.</p>
+<textarea id="records" aria-describedby="recordsHint" rows="12" spellcheck="false"></textarea>
+</div>
+
+<div class="field">
+<label for="threshold">Time-gap threshold in ms</label>
+<p class="hint" id="thresholdHint">An integer from 0 to 999999999999999999; default 1000.</p>
+<input type="text" id="threshold" value="1000" inputmode="numeric" aria-describedby="thresholdHint" autocomplete="off">
+</div>
+
+<div class="field">
+<label for="fileInput">Load file</label>
+<p class="hint" id="fileHint">Choose a .tsv or .txt file; its contents fill the records field above. The file is only read locally.</p>
+<input type="file" id="fileInput" accept=".tsv,.txt,text/plain" aria-describedby="fileHint">
+</div>
+
+<div class="actions">
+<button type="button" id="findBtn" class="primary">Find adjacent anomalies</button>
+<button type="button" id="exampleBtn">Load example</button>
+<button type="button" id="resetBtn">Reset</button>
+<button type="button" id="cancelBtn" hidden>Cancel</button>
+<button type="button" id="downloadBtn" hidden>Download report</button>
+</div>
+</form>
+
+<p id="exampleNote" class="example-note" hidden></p>
+<p id="status" class="status" role="status" aria-live="polite" tabindex="-1"></p>
+<div id="errorBox" class="status" data-tone="error" role="alert" hidden></div>
+
+<section id="findingsSection" aria-labelledby="findingsHeading" hidden>
+<h2 id="findingsHeading">Findings and source row pairs</h2>
+<p id="findingsSummary"></p>
+<p>SEQ_GAP is the integer gap between two numbers; other rows may contain late data. The report does not infer whether any event arrived.</p>
+<div class="table-wrap" tabindex="0" aria-label="Findings list">
+<table id="findingsTable">
+<thead>
+<tr>
+<th scope="col">Row</th>
+<th scope="col">Previous row</th>
+<th scope="col">Sequence Δ</th>
+<th scope="col">Time Δ (ms)</th>
+<th scope="col">Issues</th>
+</tr>
+</thead>
+<tbody id="findingsBody"></tbody>
+</table>
+</div>
+<div id="pagination" class="pagination" hidden>
+<button type="button" id="prevPageBtn">Previous page</button>
+<span id="pageInfo" aria-live="polite"></span>
+<button type="button" id="nextPageBtn">Next page</button>
+</div>
+</section>
+
+<section aria-labelledby="faqHeading">
+<h2 id="faqHeading">FAQ</h2>
+<dl class="faq">
+<dt>Are rows sorted first?</dt>
+<dd>The report preserves pasted order and compares adjacent records.</dd>
+<dt>When is a time gap flagged?</dt>
+<dd>The delta must be strictly greater than the threshold.</dd>
+</dl>
+</section>
+</main>
+<footer>
+<p>This tool runs entirely in your browser: nothing is uploaded or stored. Preview version, not for indexing.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
