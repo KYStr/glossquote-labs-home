@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text-to-Speech Reader | GlossQuote Tools</title>
+<meta name="description" content="Have pasted text read aloud by the voices your browser offers: sentence-by-sentence highlight, play and pause, rate and pitch controls. Your text never leaves this device; network voices are disclosed before they speak.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Text-to-Speech Reader</h1>
+  <p class="intro">Paste text, pick one of the voices your browser offers, and hear it read aloud: the current sentence is highlighted as it is spoken, with play, pause, resume and stop, and playback from any sentence you click. Your text lives only in this tab's memory — it is never stored or uploaded. The one exception is a network voice: reading with one sends the text to that voice's provider, and the page says so as soon as you pick one.</p>
+  <p class="warning">This tool cannot record the reading to an audio file: the platform API cannot capture its own speech output, so there is deliberately no download button. Use recording or TTS software with export when you need a file.</p>
+
+  <section id="unsupported-panel" class="card" hidden>
+    <h2>This browser does not support speech synthesis</h2>
+    <p>Your browser does not expose <span class="mono">speechSynthesis</span>, so nothing can be read aloud. Try a current version of Chrome, Edge, Firefox or Safari.</p>
+  </section>
+
+  <section id="reader-panel" class="card" hidden>
+    <div class="field">
+      <label for="text-input">Text to read</label>
+      <textarea id="text-input" rows="8" spellcheck="false"></textarea>
+      <p class="note"><span id="char-count">0 / 20000 characters</span></p>
+      <p>
+        <label for="file-input">Open a local .txt file</label>
+        <input id="file-input" type="file" accept=".txt,text/plain">
+        <button type="button" id="clear-button">Clear text</button>
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="voice-select">Voice</label>
+      <select id="voice-select"></select>
+      <p id="voices-status" class="note"></p>
+      <p id="network-notice" class="warning" hidden>You picked a network voice: when this voice reads, the text is sent to that voice's provider. The tool itself sends your text nowhere.</p>
+    </div>
+
+    <div class="field">
+      <label for="rate-input">Rate (<output id="rate-value">1.0×</output>)</label>
+      <input id="rate-input" type="range" min="0.5" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="field">
+      <label for="pitch-input">Pitch (<output id="pitch-value">1.0</output>)</label>
+      <input id="pitch-input" type="range" min="0" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="field">
+      <span class="field-label">Transport</span>
+      <div class="preset-row">
+        <button type="button" id="play-button">Play</button>
+        <button type="button" id="pause-button" hidden>Pause</button>
+        <button type="button" id="resume-button" hidden>Resume</button>
+        <button type="button" id="stop-button">Stop</button>
+      </div>
+      <p id="progress-text" class="note">Not started</p>
+      <progress id="progress-meter" max="100" value="0"></progress>
+    </div>
+
+    <p id="error-box" class="error" role="alert" hidden></p>
+
+    <div class="field">
+      <span class="field-label">Sentence preview (the current sentence is highlighted while reading; click a sentence while idle to start from it)</span>
+      <ol id="sentence-list" class="sentence-list"></ol>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Good to know</h2>
+    <ul>
+      <li>Changing the voice, rate or pitch during playback takes effect from the next chunk of text; Stop takes effect immediately.</li>
+      <li>Pause behaviour varies by platform: some local voices may ignore pause. Progress is computed per chunk, so the highlight and progress stay correct.</li>
+      <li>Whether reading continues when the tab is in the background is decided by the browser and OS; this tool cannot guarantee it.</li>
+      <li>Sentence splitting is a rule-based heuristic for highlight and chunking: an occasional over- or under-split changes only the highlight granularity, never the words read or their order.</li>
+      <li>The voice list is provided by your browser and operating system; this tool cannot add voices. If the list is empty, check that your system has voices installed.</li>
+      <li>Editing the text during playback stops reading at once, so a stale queue never keeps reading deleted text.</li>
+    </ul>
+  </section>
+
+  <p id="live-region" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>
