@@ -9,7 +9,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -59,7 +59,9 @@ async function main() {
   const expectedSource = `${core}\n${handler}`;
   const expectedHash = sha256(Buffer.from(expectedSource, 'utf8'));
   const generatedPath = path.join(outDir, 'js/worker-source.mjs');
-  const generatedModule = await import(`file://${generatedPath}?v=${expectedHash}`);
+  const generatedUrl = pathToFileURL(generatedPath);
+  generatedUrl.searchParams.set('v', expectedHash);
+  const generatedModule = await import(generatedUrl.href);
   if (generatedModule.WORKER_SOURCE !== expectedSource) {
     fail('worker-source.mjs: embedded source does not equal core + handler bytes');
   }
