@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>條碼產生器（Code 128 / EAN-13 / UPC-A）| GlossQuote 工具</title>
+<meta name="description" content="在本機產生可列印的一維條碼：Code 128、EAN-13、UPC-A，檢查碼公開計算、模組數與實際列印寬度都標示清楚，下載 PNG 或 SVG，內容不離開你的裝置。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/main.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote 首頁</a>
+    <a href="en/" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>條碼產生器</h1>
+  <p class="intro">把編號變成可以列印、可以掃的一維條碼。Code 128 適合內部編號（SKU、資產、書號）；EAN-13 與 UPC-A 是零售數字格式，檢查碼由工具公開計算或驗證。條碼的模組數、靜區和在你選的模組寬度下的實際列印寬度都寫在旁邊，下載的 PNG／SVG 與畫面上的條紋完全相同。全部在本機運算，不上傳、不儲存。</p>
+  <p class="gs1-note">提醒：EAN／UPC 的正式號碼由 GS1 核發配號；這個工具只做檢查碼與條紋的算術。自己編的號碼適合內部使用，不要冒充已註冊的商品條碼對外銷售。</p>
+
+  <section class="card" aria-label="條碼設定">
+    <fieldset class="symbology">
+      <legend>條碼格式</legend>
+      <label><input type="radio" name="symbology" value="code128" checked> Code 128</label>
+      <label><input type="radio" name="symbology" value="ean13"> EAN-13</label>
+      <label><input type="radio" name="symbology" value="upca"> UPC-A</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="payload">內容</label>
+      <input id="payload" type="text" value="SKU-1024" autocomplete="off" spellcheck="false" aria-describedby="payload-error switch-note">
+      <p id="payload-error" class="error" role="alert"></p>
+      <p id="switch-note" class="note"></p>
+    </div>
+
+    <div class="options">
+      <div class="field">
+        <label for="module-width">模組寬度 X（mm，0.25–1.00）</label>
+        <input id="module-width" type="number" min="0.25" max="1.00" step="0.01" value="0.33">
+      </div>
+      <div class="field">
+        <label for="bar-height">條高（mm，10–60）</label>
+        <input id="bar-height" type="number" min="10" max="60" step="1" value="25">
+      </div>
+      <div class="field">
+        <label for="png-scale">PNG 每模組像素（1–10）</label>
+        <select id="png-scale">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="field checkbox">
+        <label><input id="show-text" type="checkbox" checked> 顯示條碼下方文字</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="預覽與資料">
+    <div id="preview-wrap" class="preview-wrap">
+      <div id="svg-host" class="svg-host"></div>
+      <p id="stale-badge" class="stale-badge" hidden>已過期</p>
+    </div>
+    <dl class="facts">
+      <div><dt>格式</dt><dd id="fact-symbology">Code 128</dd></div>
+      <div><dt>符號數</dt><dd id="fact-symbols">–</dd></div>
+      <div><dt>總模組數（含靜區）</dt><dd id="fact-modules">–</dd></div>
+      <div><dt>列印總寬度</dt><dd id="fact-width">–</dd></div>
+      <div id="fact-check-row" hidden><dt>檢查碼</dt><dd id="fact-check">–</dd></div>
+    </dl>
+    <div class="downloads">
+      <button id="download-svg" type="button">下載 SVG</button>
+      <button id="download-png" type="button">下載 PNG</button>
+    </div>
+    <p class="note">條碼只提供黑條白底：對比是掃描要求，不是風格選項。內容有錯時，預覽會保留上一個正確條碼並標示已過期，下載會停用，避免把舊條碼當新的印出去。</p>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote 工具 · 完全離線運作，輸入內容不會離開這台裝置。</p>
+</footer>
+</body>
+</html>
