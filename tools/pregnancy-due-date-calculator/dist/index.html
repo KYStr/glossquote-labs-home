@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>預產期計算工具 - GlossQuote Labs</title>
+<meta name="description" content="輸入最後月經日期、受孕日或超音波日期，估算預產期、今天的妊娠週數與三個孕期的起訖日期。純本機運算，不儲存、不傳送任何日期。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">GlossQuote Labs 首頁</a>
+  <a class="lang-link" href="./en/index.html" hreflang="en" lang="en">English</a>
+</header>
+<main>
+  <h1>預產期計算工具</h1>
+  <p class="intro">選擇一種你知道的日期來推算：最後一次月經、受孕日，或超音波檢查日期。工具會算出估計預產期、今天的妊娠週數，以及三個孕期各自的開始與結束日期。</p>
+
+  <aside class="notice" id="medical-notice">
+    <h2>重要說明</h2>
+    <p>本工具算出的預產期只是統計上的<strong>估計值</strong>，不是預測，也不是醫療建議。實際上只有少數寶寶會在預產期當天出生。以月經週期推算的誤差較大，通常不如早期超音波量測可靠；若醫師或產檢給出不同的日期，請以臨床判斷為準。</p>
+  </aside>
+
+  <form id="calc-form" novalidate>
+    <fieldset class="mode-toggle">
+      <legend>選擇計算方式</legend>
+      <label><input type="radio" name="mode" value="lmp" checked> 最後月經（LMP）</label>
+      <label><input type="radio" name="mode" value="conception"> 受孕日</label>
+      <label><input type="radio" name="mode" value="ultrasound"> 超音波</label>
+    </fieldset>
+
+    <section id="panel-lmp" class="panel">
+      <div class="field">
+        <label for="lmp-date">最後一次月經的第一天</label>
+        <input type="date" id="lmp-date" name="lmpDate">
+        <p class="error" id="err-lmpDate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="cycle-length">月經週期長度（天）</label>
+        <input type="number" id="cycle-length" name="cycleLength" value="28" min="21" max="45" step="1" inputmode="numeric">
+        <p class="hint">整個週期的天數，需在 21 到 45 天之間；不確定就保留預設 28 天。</p>
+        <p class="error" id="err-cycleLength" hidden></p>
+      </div>
+    </section>
+
+    <section id="panel-conception" class="panel" hidden>
+      <div class="field">
+        <label for="conception-date">受孕日</label>
+        <input type="date" id="conception-date" name="conceptionDate">
+        <p class="error" id="err-conceptionDate" hidden></p>
+      </div>
+    </section>
+
+    <section id="panel-ultrasound" class="panel" hidden>
+      <div class="field">
+        <label for="scan-date">超音波檢查日期</label>
+        <input type="date" id="scan-date" name="scanDate">
+        <p class="error" id="err-scanDate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="scan-weeks">檢查當時的妊娠週數（週）</label>
+        <input type="number" id="scan-weeks" name="scanWeeks" min="4" max="42" step="1" inputmode="numeric">
+        <p class="hint">需在 4 到 42 週之間。</p>
+        <p class="error" id="err-scanWeeks" hidden></p>
+      </div>
+      <div class="field">
+        <label for="scan-days">檢查當時的妊娠天數（天）</label>
+        <input type="number" id="scan-days" name="scanDays" min="0" max="6" step="1" inputmode="numeric">
+        <p class="hint">需在 0 到 6 天之間。</p>
+        <p class="error" id="err-scanDays" hidden></p>
+      </div>
+    </section>
+  </form>
+
+  <section class="results" aria-live="polite" aria-label="計算結果">
+    <h2>結果</h2>
+    <p id="result-empty">尚未輸入日期。選擇計算方式並輸入日期後，這裡會顯示估計預產期、今天的妊娠週數與三個孕期的起訖日期。</p>
+    <div id="result-body" hidden>
+      <p id="result-stale" class="stale" hidden>目前的輸入有問題，以下是上一次的有效結果，可能已過時。</p>
+      <dl>
+        <div>
+          <dt>估計預產期</dt>
+          <dd id="out-edd"></dd>
+        </div>
+        <div>
+          <dt>今天的妊娠週數（截至 <span id="out-today"></span>）</dt>
+          <dd id="out-ga"></dd>
+        </div>
+        <div>
+          <dt>目前孕期</dt>
+          <dd id="out-trimester"></dd>
+        </div>
+      </dl>
+      <p id="out-beyond" class="beyond" hidden>依目前輸入推算，妊娠已超過 42 週。請核對日期是否正確，並以臨床評估為準。</p>
+      <table class="trimester-table">
+        <caption>三個孕期的起訖日期</caption>
+        <thead>
+          <tr><th scope="col">孕期</th><th scope="col">開始日期</th><th scope="col">結束日期</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">第一孕期</th><td id="t1-start"></td><td id="t1-end"></td></tr>
+          <tr><th scope="row">第二孕期</th><td id="t2-start"></td><td id="t2-end"></td></tr>
+          <tr><th scope="row">第三孕期</th><td id="t3-start"></td><td id="t3-end"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>本頁所有計算都在你的裝置上完成：不連網傳送、不儲存你輸入的日期，日期也不會出現在網址或頁面標題中。</p>
+    <p><a href="../../">回到 GlossQuote Labs 首頁</a></p>
+  </footer>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
