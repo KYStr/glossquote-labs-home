@@ -39,3 +39,7 @@
 ## 最終 r2 包獨立驗證
 
 [最終非作者覆核](independent-review/DELIVERY-REVIEW-r2.md)、[r2 ZIP 回執](archive-verification.json)、[完整核對](independent-review/delivery-verification-r2.json)、[43 條相對連結](independent-review/all-document-links-r2.json)、[退修紀錄](independent-review/DELIVERY-LINK-REVISION.md)。此 GitHub 目錄保存證據；sources/deployed-artifacts/external-input/scripts 與 verify-package.py 在交付 ZIP 裡，產品與發布來源由固定 candidate manifest 取得。初版 f7bd 的入口檢查不足已記錄退修，不作為最終交付通過依據。
+
+## 最終登記
+
+非作者於 r1508 簽收固定 candidate，本主代理另讀回同一 operationId、candidate、reviewer 與五項分數。[主代理讀回](accepted-readback.json)、[非作者簽收回執](independent-review/registry-review-receipt.json)、[原始碼 PR275 合併](product-merge.json)。GitHub 維護 accepted 不替代完整產品或外部複驗；已部署版本及 ZIP SHA 保持不變。
