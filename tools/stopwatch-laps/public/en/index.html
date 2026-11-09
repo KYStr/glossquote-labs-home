@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stopwatch with Laps | GlossQuote Tools</title>
+<meta name="description" content="A lap stopwatch on a single monotonic clock: lap times are derived from split readings, so laps always sum exactly to the total. Fastest and slowest laps are marked, with an average lap and CSV export. Runs fully on-device; no network, no storage.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site">
+    <a href="../../en/">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Stopwatch with Laps</h1>
+  <p class="intro">Press Start, then press Lap at the end of each round. Every lap time is derived from split readings on one clock, so the laps always add up exactly to the last split. Time spent paused for a break never counts.</p>
+  <p class="note">The display shows centiseconds, truncated from millisecond timing (never rounded up). This is not officiating or photo-finish grade accuracy.</p>
+
+  <section class="card" aria-label="Stopwatch">
+    <div id="display" class="display">00:00.00</div>
+    <p class="current-lap">Current lap (in progress): <span id="current-lap">00:00.00</span></p>
+    <div class="controls">
+      <button id="btn-toggle" type="button">Start</button>
+      <button id="btn-lap" type="button" disabled>Lap</button>
+      <button id="btn-reset" type="button">Reset</button>
+      <button id="btn-export" type="button" disabled>Export CSV</button>
+    </div>
+    <p id="limit-note" class="warning" hidden>The 500-lap limit is reached, so no more laps can be recorded. The stopwatch keeps running and existing laps can still be exported.</p>
+  </section>
+
+  <section id="stats" class="card" hidden>
+    <h2>Statistics (completed laps)</h2>
+    <ul class="stats-list">
+      <li>Fastest lap: <span id="stat-fastest">—</span></li>
+      <li>Slowest lap: <span id="stat-slowest">—</span></li>
+      <li>Average lap: <span id="stat-average">—</span></li>
+    </ul>
+  </section>
+
+  <section id="laps-section" class="card" hidden>
+    <h2>Lap table</h2>
+    <table class="laps">
+      <thead>
+        <tr><th scope="col">Lap</th><th scope="col">Lap time</th><th scope="col">Split</th><th scope="col">Mark</th></tr>
+      </thead>
+      <tbody id="laps-body"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Keyboard shortcuts</h2>
+    <ul class="shortcuts">
+      <li><kbd>Space</kbd>: start / pause / resume</li>
+      <li><kbd>L</kbd>: record a lap (while running only)</li>
+      <li><kbd>R</kbd>: reset</li>
+    </ul>
+    <p class="note">This page uses no network and stores nothing; closing or reloading discards everything. Lap data leaves the page only as the CSV file you download with the Export button.</p>
+  </section>
+  <div id="announcer" class="visually-hidden" aria-live="polite"></div>
+</main>
+</body>
+</html>
