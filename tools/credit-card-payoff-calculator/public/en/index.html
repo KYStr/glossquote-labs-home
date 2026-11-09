@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Card Payoff Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a card balance and APR to see how long a fixed monthly payment takes to clear it, the total interest, or the payment needed to finish within a target number of months — including never-payoff detection.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+  <p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+</header>
+<main class="page">
+  <h1>Credit Card Payoff Calculator</h1>
+  <p class="intro">Enter the balance and APR from your statement to see how long a fixed monthly payment takes to clear the debt and how much interest it costs — or what you need to pay each month to finish within a target number of months. If a payment does not even cover the interest, the tool says so directly: that balance never pays off.</p>
+  <p class="disclosure">This is an estimate under the stated model. Your issuer's statement governs; fees, penalties, cash advances and minimum-payment rules are not modeled.</p>
+
+  <form id="payoff-form" novalidate>
+    <section class="card">
+      <h2>Balance and APR</h2>
+      <div class="field">
+        <label for="balance">Balance</label>
+        <input id="balance" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="balance-error">
+        <p id="balance-error" class="error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="apr-percent">APR (annual percentage rate, %)</label>
+        <input id="apr-percent" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="apr-percent-error">
+        <p id="apr-percent-error" class="error" hidden></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Payoff mode</h2>
+      <div class="mode-group">
+        <label class="mode-option"><input type="radio" name="payoff-mode" id="mode-payment" value="payment"> Fixed monthly payment</label>
+        <label class="mode-option"><input type="radio" name="payoff-mode" id="mode-months" value="months"> Target months</label>
+      </div>
+      <div class="field" id="payment-field">
+        <label for="monthly-payment">Monthly payment</label>
+        <input id="monthly-payment" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="monthly-payment-error">
+        <p id="monthly-payment-error" class="error" hidden></p>
+      </div>
+      <div class="field" id="months-field" hidden>
+        <label for="target-months">Target months</label>
+        <input id="target-months" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="target-months-error">
+        <p id="target-months-error" class="error" hidden></p>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">Calculate payoff plan</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="reset-button">Reset</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+    </div>
+    <p id="example-note" class="note" hidden></p>
+    <p id="status-message" class="status" aria-live="polite"></p>
+  </form>
+
+  <section class="card" id="result-section" hidden>
+    <h2>Months to payoff and total interest</h2>
+    <dl class="summary">
+      <div class="summary-row"><dt>Months to payoff</dt><dd id="sum-months"></dd></div>
+      <div class="summary-row" id="sum-required-row" hidden><dt>Required monthly payment</dt><dd id="sum-required"></dd></div>
+      <div class="summary-row"><dt>Total interest</dt><dd id="sum-interest"></dd></div>
+      <div class="summary-row"><dt>Total paid</dt><dd id="sum-paid"></dd></div>
+      <div class="summary-row"><dt>Final payment</dt><dd id="sum-final"></dd></div>
+    </dl>
+    <h3>Monthly schedule</h3>
+    <div class="table-scroll" id="schedule-region" aria-label="Monthly schedule" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">Month</th><th scope="col">Payment</th><th scope="col">Interest</th><th scope="col">Principal</th><th scope="col">Balance</th></tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <button type="button" id="page-prev">Previous page</button>
+      <span id="page-info"></span>
+      <button type="button" id="page-next">Next page</button>
+    </div>
+    <button type="button" id="download-button" class="primary">Download report</button>
+  </section>
+
+  <section class="card">
+    <h2>About this model</h2>
+    <ul>
+      <li>Interest is charged monthly on the opening balance; each payment covers interest first, then principal. All amounts are integer cents, with interest rounded half-up to the cent.</li>
+      <li>Target-months mode derives the payment from the exact annuity formula, rounded up to the cent, then verifies it with the same monthly simulation.</li>
+      <li>The simulation is capped at 600 months; if a plan cannot finish within the cap, the tool says so instead of printing a fake schedule.</li>
+      <li>This tool does not connect to a bank or import statements, and does not model minimum-payment rules, annual fees, penalties, cash advances or tiered rates.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>FAQ</h2>
+    <h3>Why does it say the balance never pays off?</h3>
+    <p>When the payment is no more than the first month's interest, the balance never shrinks.</p>
+    <h3>How is the target-months payment derived?</h3>
+    <p>From the exact annuity formula, rounded up to the cent, then verified by the same monthly simulation.</p>
+  </section>
+</main>
+</body>
+</html>
