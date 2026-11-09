@@ -1,0 +1,1196 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-tap-tempo-20261109",
+  "slug": "tap-tempo",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "steady-120",
+      "kind": "core",
+      "purpose": "等距敲擊 500 ms，4 個間隔，中位數與平均同為 500，BPM 120.0",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1000,
+          1500,
+          2000
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 5,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 5,
+          "segmentIntervalCount": 4,
+          "resetCount": 0,
+          "intervalCount": 4,
+          "windowIntervals": [
+            500,
+            500,
+            500,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 500,
+          "bpmMedian": 120.0,
+          "bpmMean": 120.0,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "two-taps-basic",
+      "kind": "core",
+      "purpose": "最少可用輸入：2 次敲擊、1 個間隔 600 ms，BPM 100.0，每秒拍數 1.67",
+      "input": {
+        "taps": [
+          2000,
+          2600
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 2,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 2,
+          "segmentIntervalCount": 1,
+          "resetCount": 0,
+          "intervalCount": 1,
+          "windowIntervals": [
+            600
+          ],
+          "medianIntervalMs": 600,
+          "meanIntervalMs": 600,
+          "bpmMedian": 100.0,
+          "bpmMean": 100.0,
+          "beatsPerSecond": 1.67
+        }
+      }
+    },
+    {
+      "id": "even-median",
+      "kind": "core",
+      "purpose": "偶數個間隔（4 個），中位數為排序後中間兩值 400 與 500 的平均 450",
+      "input": {
+        "taps": [
+          0,
+          400,
+          900,
+          1300,
+          1900
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 5,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 5,
+          "segmentIntervalCount": 4,
+          "resetCount": 0,
+          "intervalCount": 4,
+          "windowIntervals": [
+            400,
+            500,
+            400,
+            600
+          ],
+          "medianIntervalMs": 450,
+          "meanIntervalMs": 475,
+          "bpmMedian": 133.3,
+          "bpmMean": 126.3,
+          "beatsPerSecond": 2.22
+        }
+      }
+    },
+    {
+      "id": "jitter-median-vs-mean",
+      "kind": "core",
+      "purpose": "一次敲偏（間隔 1400）使平均 BPM 88.2 遠低於中位數 BPM 120.0，證明中位數抗離群",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1000,
+          1500,
+          2900,
+          3400
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 6,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 6,
+          "segmentIntervalCount": 5,
+          "resetCount": 0,
+          "intervalCount": 5,
+          "windowIntervals": [
+            500,
+            500,
+            500,
+            1400,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 680,
+          "bpmMedian": 120.0,
+          "bpmMean": 88.2,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "half-ms-median",
+      "kind": "core",
+      "purpose": "間隔 500 與 501，中位數與平均皆為 500.5（.5 粒度），BPM 119.9",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1001
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 3,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 3,
+          "segmentIntervalCount": 2,
+          "resetCount": 0,
+          "intervalCount": 2,
+          "windowIntervals": [
+            500,
+            501
+          ],
+          "medianIntervalMs": 500.5,
+          "meanIntervalMs": 500.5,
+          "bpmMedian": 119.9,
+          "bpmMean": 119.9,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "mean-rounding-tie",
+      "kind": "core",
+      "purpose": "平均間隔 500.25 小數一位恰為平局（.x5），固定 half-up 進位為 500.3；bpmMean 由未捨入平均 119.940… 取 119.9",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1000,
+          1500,
+          2001
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 5,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 5,
+          "segmentIntervalCount": 4,
+          "resetCount": 0,
+          "intervalCount": 4,
+          "windowIntervals": [
+            500,
+            500,
+            500,
+            501
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 500.3,
+          "bpmMedian": 120.0,
+          "bpmMean": 119.9,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "post-gap-reset",
+      "kind": "core",
+      "purpose": "間隔 3500 > 2000 觸發重置，重置後那次敲擊（4500）成為新段落第一下，其時間戳保留、段落由它起算",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1000,
+          4500,
+          5000,
+          5500
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 6,
+          "segmentStartIndex": 3,
+          "segmentTapCount": 3,
+          "segmentIntervalCount": 2,
+          "resetCount": 1,
+          "intervalCount": 2,
+          "windowIntervals": [
+            500,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 500,
+          "bpmMedian": 120.0,
+          "bpmMean": 120.0,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "gap-exactly-2000",
+      "kind": "core",
+      "purpose": "間隔恰好 2000 不重置（重置條件為嚴格大於 2000），該間隔仍進窗格拉低平均 BPM 至 60.0",
+      "input": {
+        "taps": [
+          0,
+          500,
+          2500,
+          3000
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 4,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 4,
+          "segmentIntervalCount": 3,
+          "resetCount": 0,
+          "intervalCount": 3,
+          "windowIntervals": [
+            500,
+            2000,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 1000,
+          "bpmMedian": 120.0,
+          "bpmMean": 60.0,
+          "beatsPerSecond": 2.0
+        }
+      }
+    },
+    {
+      "id": "window-last-eight",
+      "kind": "core",
+      "purpose": "段落有 11 個間隔，只取最後 8 個（皆 400），較早的 500 間隔被窗格排除，segmentIntervalCount 11 與 intervalCount 8 並列可見",
+      "input": {
+        "taps": [
+          0,
+          500,
+          1000,
+          1500,
+          1900,
+          2300,
+          2700,
+          3100,
+          3500,
+          3900,
+          4300,
+          4700
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 12,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 12,
+          "segmentIntervalCount": 11,
+          "resetCount": 0,
+          "intervalCount": 8,
+          "windowIntervals": [
+            400,
+            400,
+            400,
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "medianIntervalMs": 400,
+          "meanIntervalMs": 400,
+          "bpmMedian": 150.0,
+          "bpmMean": 150.0,
+          "beatsPerSecond": 2.5
+        }
+      }
+    },
+    {
+      "id": "single-tap",
+      "kind": "core",
+      "purpose": "只有 1 次敲擊：合法輸入，無間隔，所有估計值為 null（少於 2 次敲擊不給讀數）",
+      "input": {
+        "taps": [
+          1234
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 1,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 1,
+          "segmentIntervalCount": 0,
+          "resetCount": 0,
+          "intervalCount": 0,
+          "windowIntervals": [],
+          "medianIntervalMs": null,
+          "meanIntervalMs": null,
+          "bpmMedian": null,
+          "bpmMean": null,
+          "beatsPerSecond": null
+        }
+      }
+    },
+    {
+      "id": "no-taps",
+      "kind": "core",
+      "purpose": "空陣列：合法輸入（對應 UI 空狀態），所有估計值為 null，非錯誤",
+      "input": {
+        "taps": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "tapCount": 0,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 0,
+          "segmentIntervalCount": 0,
+          "resetCount": 0,
+          "intervalCount": 0,
+          "windowIntervals": [],
+          "medianIntervalMs": null,
+          "meanIntervalMs": null,
+          "bpmMedian": null,
+          "bpmMean": null,
+          "beatsPerSecond": null
+        }
+      }
+    },
+    {
+      "id": "non-monotonic",
+      "kind": "core",
+      "purpose": "第三個時間戳 499 小於前一個 500，非遞增回 NON_MONOTONIC，row 指向出錯元素（1-based 第 3 個）",
+      "input": {
+        "taps": [
+          0,
+          500,
+          499
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NON_MONOTONIC",
+          "field": "taps",
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "equal-timestamps",
+      "kind": "core",
+      "purpose": "相鄰時間戳相等（間隔 0 無有限 BPM）同樣回 NON_MONOTONIC，row 為後一個元素",
+      "input": {
+        "taps": [
+          0,
+          500,
+          500
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NON_MONOTONIC",
+          "field": "taps",
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "fractional-element",
+      "kind": "core",
+      "purpose": "元素 500.5 非整數毫秒，回 INTEGER_FORMAT，row 為第 2 個元素",
+      "input": {
+        "taps": [
+          0,
+          500.5
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "taps",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "element-range",
+      "kind": "core",
+      "purpose": "元素 10000000000001 超過固定上限 10^13 ms，回 RANGE，row 為第 2 個元素",
+      "input": {
+        "taps": [
+          0,
+          10000000000001
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "taps",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "schema-extra-field",
+      "kind": "core",
+      "purpose": "多出未知欄位 note，整份回 SCHEMA，field 與 row 為 null",
+      "input": {
+        "taps": [
+          0,
+          500
+        ],
+        "note": "x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "too-many-taps",
+      "kind": "core",
+      "purpose": "513 個時間戳超過容量上限 512，回 INPUT_LIMIT，field 為 taps、row 為 null；容量在逐元素檢查之前判定",
+      "input": {
+        "taps": [
+          0,
+          1000,
+          2000,
+          3000,
+          4000,
+          5000,
+          6000,
+          7000,
+          8000,
+          9000,
+          10000,
+          11000,
+          12000,
+          13000,
+          14000,
+          15000,
+          16000,
+          17000,
+          18000,
+          19000,
+          20000,
+          21000,
+          22000,
+          23000,
+          24000,
+          25000,
+          26000,
+          27000,
+          28000,
+          29000,
+          30000,
+          31000,
+          32000,
+          33000,
+          34000,
+          35000,
+          36000,
+          37000,
+          38000,
+          39000,
+          40000,
+          41000,
+          42000,
+          43000,
+          44000,
+          45000,
+          46000,
+          47000,
+          48000,
+          49000,
+          50000,
+          51000,
+          52000,
+          53000,
+          54000,
+          55000,
+          56000,
+          57000,
+          58000,
+          59000,
+          60000,
+          61000,
+          62000,
+          63000,
+          64000,
+          65000,
+          66000,
+          67000,
+          68000,
+          69000,
+          70000,
+          71000,
+          72000,
+          73000,
+          74000,
+          75000,
+          76000,
+          77000,
+          78000,
+          79000,
+          80000,
+          81000,
+          82000,
+          83000,
+          84000,
+          85000,
+          86000,
+          87000,
+          88000,
+          89000,
+          90000,
+          91000,
+          92000,
+          93000,
+          94000,
+          95000,
+          96000,
+          97000,
+          98000,
+          99000,
+          100000,
+          101000,
+          102000,
+          103000,
+          104000,
+          105000,
+          106000,
+          107000,
+          108000,
+          109000,
+          110000,
+          111000,
+          112000,
+          113000,
+          114000,
+          115000,
+          116000,
+          117000,
+          118000,
+          119000,
+          120000,
+          121000,
+          122000,
+          123000,
+          124000,
+          125000,
+          126000,
+          127000,
+          128000,
+          129000,
+          130000,
+          131000,
+          132000,
+          133000,
+          134000,
+          135000,
+          136000,
+          137000,
+          138000,
+          139000,
+          140000,
+          141000,
+          142000,
+          143000,
+          144000,
+          145000,
+          146000,
+          147000,
+          148000,
+          149000,
+          150000,
+          151000,
+          152000,
+          153000,
+          154000,
+          155000,
+          156000,
+          157000,
+          158000,
+          159000,
+          160000,
+          161000,
+          162000,
+          163000,
+          164000,
+          165000,
+          166000,
+          167000,
+          168000,
+          169000,
+          170000,
+          171000,
+          172000,
+          173000,
+          174000,
+          175000,
+          176000,
+          177000,
+          178000,
+          179000,
+          180000,
+          181000,
+          182000,
+          183000,
+          184000,
+          185000,
+          186000,
+          187000,
+          188000,
+          189000,
+          190000,
+          191000,
+          192000,
+          193000,
+          194000,
+          195000,
+          196000,
+          197000,
+          198000,
+          199000,
+          200000,
+          201000,
+          202000,
+          203000,
+          204000,
+          205000,
+          206000,
+          207000,
+          208000,
+          209000,
+          210000,
+          211000,
+          212000,
+          213000,
+          214000,
+          215000,
+          216000,
+          217000,
+          218000,
+          219000,
+          220000,
+          221000,
+          222000,
+          223000,
+          224000,
+          225000,
+          226000,
+          227000,
+          228000,
+          229000,
+          230000,
+          231000,
+          232000,
+          233000,
+          234000,
+          235000,
+          236000,
+          237000,
+          238000,
+          239000,
+          240000,
+          241000,
+          242000,
+          243000,
+          244000,
+          245000,
+          246000,
+          247000,
+          248000,
+          249000,
+          250000,
+          251000,
+          252000,
+          253000,
+          254000,
+          255000,
+          256000,
+          257000,
+          258000,
+          259000,
+          260000,
+          261000,
+          262000,
+          263000,
+          264000,
+          265000,
+          266000,
+          267000,
+          268000,
+          269000,
+          270000,
+          271000,
+          272000,
+          273000,
+          274000,
+          275000,
+          276000,
+          277000,
+          278000,
+          279000,
+          280000,
+          281000,
+          282000,
+          283000,
+          284000,
+          285000,
+          286000,
+          287000,
+          288000,
+          289000,
+          290000,
+          291000,
+          292000,
+          293000,
+          294000,
+          295000,
+          296000,
+          297000,
+          298000,
+          299000,
+          300000,
+          301000,
+          302000,
+          303000,
+          304000,
+          305000,
+          306000,
+          307000,
+          308000,
+          309000,
+          310000,
+          311000,
+          312000,
+          313000,
+          314000,
+          315000,
+          316000,
+          317000,
+          318000,
+          319000,
+          320000,
+          321000,
+          322000,
+          323000,
+          324000,
+          325000,
+          326000,
+          327000,
+          328000,
+          329000,
+          330000,
+          331000,
+          332000,
+          333000,
+          334000,
+          335000,
+          336000,
+          337000,
+          338000,
+          339000,
+          340000,
+          341000,
+          342000,
+          343000,
+          344000,
+          345000,
+          346000,
+          347000,
+          348000,
+          349000,
+          350000,
+          351000,
+          352000,
+          353000,
+          354000,
+          355000,
+          356000,
+          357000,
+          358000,
+          359000,
+          360000,
+          361000,
+          362000,
+          363000,
+          364000,
+          365000,
+          366000,
+          367000,
+          368000,
+          369000,
+          370000,
+          371000,
+          372000,
+          373000,
+          374000,
+          375000,
+          376000,
+          377000,
+          378000,
+          379000,
+          380000,
+          381000,
+          382000,
+          383000,
+          384000,
+          385000,
+          386000,
+          387000,
+          388000,
+          389000,
+          390000,
+          391000,
+          392000,
+          393000,
+          394000,
+          395000,
+          396000,
+          397000,
+          398000,
+          399000,
+          400000,
+          401000,
+          402000,
+          403000,
+          404000,
+          405000,
+          406000,
+          407000,
+          408000,
+          409000,
+          410000,
+          411000,
+          412000,
+          413000,
+          414000,
+          415000,
+          416000,
+          417000,
+          418000,
+          419000,
+          420000,
+          421000,
+          422000,
+          423000,
+          424000,
+          425000,
+          426000,
+          427000,
+          428000,
+          429000,
+          430000,
+          431000,
+          432000,
+          433000,
+          434000,
+          435000,
+          436000,
+          437000,
+          438000,
+          439000,
+          440000,
+          441000,
+          442000,
+          443000,
+          444000,
+          445000,
+          446000,
+          447000,
+          448000,
+          449000,
+          450000,
+          451000,
+          452000,
+          453000,
+          454000,
+          455000,
+          456000,
+          457000,
+          458000,
+          459000,
+          460000,
+          461000,
+          462000,
+          463000,
+          464000,
+          465000,
+          466000,
+          467000,
+          468000,
+          469000,
+          470000,
+          471000,
+          472000,
+          473000,
+          474000,
+          475000,
+          476000,
+          477000,
+          478000,
+          479000,
+          480000,
+          481000,
+          482000,
+          483000,
+          484000,
+          485000,
+          486000,
+          487000,
+          488000,
+          489000,
+          490000,
+          491000,
+          492000,
+          493000,
+          494000,
+          495000,
+          496000,
+          497000,
+          498000,
+          499000,
+          500000,
+          501000,
+          502000,
+          503000,
+          504000,
+          505000,
+          506000,
+          507000,
+          508000,
+          509000,
+          510000,
+          511000,
+          512000
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "taps",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-tapping-live",
+      "kind": "controller",
+      "purpose": "即時敲擊路徑：逐下敲入，每下排程評估發布後讀數與核心對該前綴陣列的結果一致；跨 2000 ms 的一敲開新段落（讀數回到 null），復原上一敲與重設皆即時失效舊讀數。",
+      "input": {
+        "liveTaps": [
+          1000,
+          1500,
+          2000,
+          6000,
+          6500
+        ]
+      },
+      "expected": {
+        "afterTap1": {
+          "state": "tapping",
+          "tapCount": 1,
+          "intervalCount": 0,
+          "bpmMedian": null,
+          "downloadAvailable": false
+        },
+        "afterTap2": {
+          "state": "tapping",
+          "tapCount": 2,
+          "intervalCount": 1,
+          "bpmMedian": 120.0,
+          "downloadAvailable": true
+        },
+        "afterTap3": {
+          "state": "tapping",
+          "tapCount": 3,
+          "intervalCount": 2,
+          "bpmMedian": 120.0,
+          "downloadAvailable": true
+        },
+        "afterTap4": {
+          "state": "tapping",
+          "tapCount": 4,
+          "intervalCount": 0,
+          "bpmMedian": null,
+          "resetCount": 1,
+          "downloadAvailable": false
+        },
+        "afterTap5": {
+          "state": "tapping",
+          "tapCount": 5,
+          "intervalCount": 1,
+          "bpmMedian": 120.0,
+          "downloadAvailable": true
+        },
+        "afterUndo": {
+          "state": "tapping",
+          "tapCount": 4,
+          "intervalCount": 0,
+          "bpmMedian": null,
+          "downloadAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "tapCount": 0,
+          "downloadAvailable": false
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先以匯入文字產出真結果，再改為非遞增輸入，舊結果及下載立即失效，重新計算回 NON_MONOTONIC。",
+      "input": {
+        "initial": "0, 500, 1000",
+        "edit": "0, 500, 499"
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "downloadAvailable": true,
+          "bpmMedian": 120.0
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "downloadAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "downloadAvailable": false,
+          "error": {
+            "code": "NON_MONOTONIC",
+            "field": "taps",
+            "row": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "匯入計算排程完成前取消，晚到結果不能復活，重設回預設（匯入文字清空、無敲擊）。",
+      "input": {
+        "draft": "0, 500, 1000",
+        "lateResult": {
+          "tapCount": 3,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 3,
+          "segmentIntervalCount": 2,
+          "resetCount": 0,
+          "intervalCount": 2,
+          "windowIntervals": [
+            500,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 500,
+          "bpmMedian": 120.0,
+          "bpmMean": 120.0,
+          "beatsPerSecond": 2.0
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "downloadAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "downloadAvailable": false,
+          "draft": "0, 500, 1000"
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "downloadAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "downloadAvailable": false,
+          "draft": ""
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "舊匯入工作掛起時改以新輸入啟動新工作，新工作先出錯，再注入舊世代成功結果，保留目前錯誤。",
+      "input": {
+        "olderDraft": "0, 500, 1000",
+        "newerDraft": "0, 500, 499",
+        "olderLateResult": {
+          "tapCount": 3,
+          "segmentStartIndex": 0,
+          "segmentTapCount": 3,
+          "segmentIntervalCount": 2,
+          "resetCount": 0,
+          "intervalCount": 2,
+          "windowIntervals": [
+            500,
+            500
+          ],
+          "medianIntervalMs": 500,
+          "meanIntervalMs": 500,
+          "bpmMedian": 120.0,
+          "bpmMean": 120.0,
+          "beatsPerSecond": 2.0
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "downloadAvailable": false,
+          "error": {
+            "code": "NON_MONOTONIC",
+            "field": "taps",
+            "row": 3
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "downloadAvailable": false,
+          "error": {
+            "code": "NON_MONOTONIC",
+            "field": "taps",
+            "row": 3
+          }
+        }
+      }
+    }
+  ]
+}
