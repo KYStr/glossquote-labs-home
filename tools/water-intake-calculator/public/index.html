@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日飲水量計算機 — 估算你的每日飲水範圍</title>
+<meta name="description" content="依體重（每公斤 30–35 毫升）、活動量與氣候，估算每日飲水量範圍（毫升與杯數）。這是一般教育性估算，不是醫療建議。">
+<!--META-->
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header>
+  <nav><a href="../../">GlossQuote Labs 首頁</a> · <a href="en/">English</a></nav>
+  <h1>每日飲水量計算機</h1>
+  <p class="intro">輸入體重、活動量與氣候，結果一律以範圍呈現，來自本頁印出的簡單模型，不會給單一數字。</p>
+</header>
+<main>
+  <form id="calc" novalidate>
+    <div class="field">
+      <label for="weight">體重（公斤）</label>
+      <input id="weight" name="weight" type="number" inputmode="decimal" min="20" max="300" step="0.1" value="70" aria-describedby="weight-hint weight-error">
+      <p id="weight-hint" class="hint">20.0–300.0 公斤，最多一位小數。</p>
+      <p id="weight-error" class="error" role="alert" hidden></p>
+    </div>
+    <div class="field">
+      <label for="activity">活動量</label>
+      <select id="activity" name="activity">
+          <option value="sedentary" selected>久坐</option>
+          <option value="light">輕度</option>
+          <option value="moderate">中度</option>
+          <option value="high">高度</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="climate">氣候</label>
+      <select id="climate" name="climate">
+          <option value="temperate" selected>溫和</option>
+          <option value="warm">溫暖</option>
+          <option value="hot">炎熱</option>
+      </select>
+    </div>
+  </form>
+  <section id="result" aria-live="polite">
+    <h2>估算範圍</h2>
+    <p id="result-ml" class="result-ml">2,100–2,450 毫升／日</p>
+    <p id="result-cups">8.4–9.8 杯（每杯 250 毫升）</p>
+    <p id="result-stale" class="stale" hidden>已過時：修正體重後才會更新這個範圍。</p>
+  </section>
+  <p id="disclaimer" class="disclaimer">這是依簡單模型計算的一般教育性估算。個人需求會因健康狀況、藥物、飲食，以及許多本工具未納入的因素而不同。這不是醫療建議。若有健康狀況或任何疑慮，請諮詢合格的專業人員。</p>
+  <section id="model">
+    <h2>計算模型</h2>
+    <p id="model-statement">基準：每公斤體重 30–35 毫升。活動量加算（毫升，範圍兩端同加）：久坐 +0、輕度 +350、中度 +700、高度 +1,050。氣候倍率：溫和 ×1.0、溫暖 ×1.1、炎熱 ×1.25。公式：下限 =（30 × 體重（公斤）+ 活動加算）× 氣候倍率；上限 =（35 × 體重（公斤）+ 活動加算）× 氣候倍率。杯數以每杯 250 毫升換算，並由未捨入的精確值計算。</p>
+  </section>
+  <p class="privacy">完全在你的瀏覽器中計算：不儲存、不傳送、不追蹤。</p>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
