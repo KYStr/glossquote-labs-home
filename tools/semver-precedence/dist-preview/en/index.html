@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SemVer Precedence Comparison | Gloss Tools</title>
+<meta name="description" content="Compare two Semantic Versioning 2.0.0 identifiers and see the first field that decides their precedence.">
+<link rel="canonical" href="index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="status"><span class="status-badge" id="status-badge" data-tone="info">Not started</span></span>
+  <nav class="lang-nav" aria-label="Language">
+    <a id="lang-link" href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span aria-hidden="true">·</span>
+    <a id="home-link" href="../../en/">Back to home</a>
+  </nav>
+</header>
+
+<main>
+  <h1>SemVer Precedence Comparison</h1>
+  <p class="lede">Compare two Semantic Versioning 2.0.0 identifiers and see which one has higher precedence and which identifier decides it. All computation happens locally; nothing you type is uploaded or stored.</p>
+
+  <div class="notice" role="note">
+    <p>Switching languages or leaving the page discards your draft. A result is only valid for the current input snapshot; editing the input immediately invalidates the old result and its download.</p>
+  </div>
+
+  <form id="compare-form" novalidate>
+    <div class="fields">
+      <div class="field">
+        <label for="left-input">Left version
+          <span class="hint">For example 1.0.0-rc.10; no v prefix, no surrounding spaces.</span>
+        </label>
+        <input id="left-input" name="left" type="text" inputmode="text" autocomplete="off"
+          spellcheck="false" maxlength="256" aria-describedby="left-error">
+        <p class="field-error" id="left-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="right-input">Right version
+          <span class="hint">For example 1.0.0-rc.2; no v prefix, no surrounding spaces.</span>
+        </label>
+        <input id="right-input" name="right" type="text" inputmode="text" autocomplete="off"
+          spellcheck="false" maxlength="256" aria-describedby="right-error">
+        <p class="field-error" id="right-error" hidden></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="compare-button" class="primary">Compare precedence</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+      <button type="button" id="reset-button">Reset</button>
+    </div>
+
+    <p class="status-line" id="status-line" role="status" aria-live="polite">Enter two versions, or load the example.</p>
+  </form>
+
+  <section class="result" id="result" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">Precedence and deciding identifier</h2>
+    <p class="summary" id="result-summary"></p>
+    <p class="deciding" id="result-deciding"></p>
+    <table class="breakdown">
+      <caption>Field-by-field comparison</caption>
+      <thead>
+        <tr><th scope="col">Field</th><th scope="col">Left version</th><th scope="col">Right version</th><th scope="col">Note</th></tr>
+      </thead>
+      <tbody id="breakdown-body"></tbody>
+    </table>
+    <div class="download-row">
+      <button type="button" id="download-button">Download report</button>
+    </div>
+  </section>
+
+  <details>
+    <summary>Input limits</summary>
+    <ul>
+      <li>Each version is at most 256 characters. No trimming: leading or trailing spaces are rejected.</li>
+      <li>Format is <code>major.minor.patch</code>, with optional <code>-prerelease</code> and <code>+build</code>; no <code>v</code> prefix.</li>
+      <li>Each core field is at most 32 digits, with no leading zeros (except 0 itself).</li>
+      <li>Prerelease and build each have at most 16 identifiers, each at most 32 characters, using only <code>0-9 A-Z a-z -</code>.</li>
+      <li>A purely numeric prerelease identifier must not have leading zeros; build identifiers may.</li>
+      <li>Build metadata does not affect precedence.</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Frequently asked questions</summary>
+    <p><strong>Does rc.10 outrank rc.2?</strong><br>With the same prefix, numeric 10 has higher precedence than 2.</p>
+    <p><strong>Does +build.2 outrank +build.1?</strong><br>Build metadata does not affect precedence.</p>
+  </details>
+</main>
+
+<footer>
+  <p>Fully local tool: no account, no upload, no records kept. The report file is always named <code>semver-precedence-report.json</code>.</p>
+</footer>
+
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
