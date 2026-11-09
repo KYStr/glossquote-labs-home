@@ -32,6 +32,10 @@
 
 解壓後執行 `python verify-package.py` 核對每檔 bytes／SHA-256；FILES.json 自身除外。這一包的修正狀態是 **內部維護驗收通過、已部署、待外部複驗**。
 
-## 最終包獨立驗證
+## 封包修訂 r2
 
-[最終非作者覆核](independent-review/DELIVERY-REVIEW.md)、[ZIP 回執](archive-verification.json)、[完整核對](independent-review/delivery-verification.json)。此 GitHub 目錄保存證據；sources/deployed-artifacts/external-input/scripts 與 verify-package.py 在交付 ZIP 裡，產品與發布來源可由固定 candidate manifest 取得。
+初版 ZIP 完整性與主入口連結通過後，擴大到所有 Markdown 的掃描發現 3 個歷史規格相對連結缺少目標。r2 保留產品與原規格 bytes，加入 3 個明示為參考入口的文件，指向原規格固定 commit；未把其他工具草案列為已實作或 ready。舊 ZIP 雜湊與失敗紀錄保留，r2 重新核對全部文件相對連結。
+
+## 最終 r2 包獨立驗證
+
+[最終非作者覆核](independent-review/DELIVERY-REVIEW-r2.md)、[r2 ZIP 回執](archive-verification.json)、[完整核對](independent-review/delivery-verification-r2.json)、[43 條相對連結](independent-review/all-document-links-r2.json)、[退修紀錄](independent-review/DELIVERY-LINK-REVISION.md)。此 GitHub 目錄保存證據；sources/deployed-artifacts/external-input/scripts 與 verify-package.py 在交付 ZIP 裡，產品與發布來源由固定 candidate manifest 取得。初版 f7bd 的入口檢查不足已記錄退修，不作為最終交付通過依據。
