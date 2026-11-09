@@ -1,7 +1,9 @@
 # Pickup Window Route — Verification
 
-Candidate commit: (filled in after the PR is opened; PR head is verified
-equal before the parent submits it).
+Candidate commit: `57e36e81a825717306e40c813d1c9ee7b9ce4575`
+Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/131
+(base `codex/initial-publication`, OPEN + draft, head verified ==
+candidate commit).
 
 Environment: Node v24.22.1, offline, Linux. All commands run from
 `tools/pickup-window-route/`.
