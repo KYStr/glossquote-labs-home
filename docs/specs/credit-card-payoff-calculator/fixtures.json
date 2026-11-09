@@ -1,0 +1,787 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-credit-card-payoff-calculator-20261109",
+  "slug": "credit-card-payoff-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "fixed-payment-basic",
+      "kind": "core",
+      "purpose": "固定月付：逐月利息、本金與最後一期小額付款",
+      "input": {
+        "balance": "1200.00",
+        "aprPercent": "12",
+        "mode": "payment",
+        "monthlyPayment": "110.00",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "months": 12,
+          "totalInterestCents": 7711,
+          "totalPaidCents": 127711,
+          "finalPaymentCents": 6711,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 11000,
+              "interestCents": 1200,
+              "principalCents": 9800,
+              "balanceCents": 110200
+            },
+            {
+              "month": 2,
+              "paymentCents": 11000,
+              "interestCents": 1102,
+              "principalCents": 9898,
+              "balanceCents": 100302
+            },
+            {
+              "month": 3,
+              "paymentCents": 11000,
+              "interestCents": 1003,
+              "principalCents": 9997,
+              "balanceCents": 90305
+            },
+            {
+              "month": 4,
+              "paymentCents": 11000,
+              "interestCents": 903,
+              "principalCents": 10097,
+              "balanceCents": 80208
+            },
+            {
+              "month": 5,
+              "paymentCents": 11000,
+              "interestCents": 802,
+              "principalCents": 10198,
+              "balanceCents": 70010
+            },
+            {
+              "month": 6,
+              "paymentCents": 11000,
+              "interestCents": 700,
+              "principalCents": 10300,
+              "balanceCents": 59710
+            },
+            {
+              "month": 7,
+              "paymentCents": 11000,
+              "interestCents": 597,
+              "principalCents": 10403,
+              "balanceCents": 49307
+            },
+            {
+              "month": 8,
+              "paymentCents": 11000,
+              "interestCents": 493,
+              "principalCents": 10507,
+              "balanceCents": 38800
+            },
+            {
+              "month": 9,
+              "paymentCents": 11000,
+              "interestCents": 388,
+              "principalCents": 10612,
+              "balanceCents": 28188
+            },
+            {
+              "month": 10,
+              "paymentCents": 11000,
+              "interestCents": 282,
+              "principalCents": 10718,
+              "balanceCents": 17470
+            },
+            {
+              "month": 11,
+              "paymentCents": 11000,
+              "interestCents": 175,
+              "principalCents": 10825,
+              "balanceCents": 6645
+            },
+            {
+              "month": 12,
+              "paymentCents": 6711,
+              "interestCents": 66,
+              "principalCents": 6645,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "target-months-annuity",
+      "kind": "core",
+      "purpose": "目標月數：年金公式進位到分，同月結模擬驗證，實際 12 個月還清",
+      "input": {
+        "balance": "10000.00",
+        "aprPercent": "24",
+        "mode": "months",
+        "monthlyPayment": null,
+        "targetMonths": "12"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetMonths": 12,
+          "requiredPaymentCents": 94560,
+          "months": 12,
+          "totalInterestCents": 134715,
+          "totalPaidCents": 1134715,
+          "finalPaymentCents": 94555,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 94560,
+              "interestCents": 20000,
+              "principalCents": 74560,
+              "balanceCents": 925440
+            },
+            {
+              "month": 2,
+              "paymentCents": 94560,
+              "interestCents": 18509,
+              "principalCents": 76051,
+              "balanceCents": 849389
+            },
+            {
+              "month": 3,
+              "paymentCents": 94560,
+              "interestCents": 16988,
+              "principalCents": 77572,
+              "balanceCents": 771817
+            },
+            {
+              "month": 4,
+              "paymentCents": 94560,
+              "interestCents": 15436,
+              "principalCents": 79124,
+              "balanceCents": 692693
+            },
+            {
+              "month": 5,
+              "paymentCents": 94560,
+              "interestCents": 13854,
+              "principalCents": 80706,
+              "balanceCents": 611987
+            },
+            {
+              "month": 6,
+              "paymentCents": 94560,
+              "interestCents": 12240,
+              "principalCents": 82320,
+              "balanceCents": 529667
+            },
+            {
+              "month": 7,
+              "paymentCents": 94560,
+              "interestCents": 10593,
+              "principalCents": 83967,
+              "balanceCents": 445700
+            },
+            {
+              "month": 8,
+              "paymentCents": 94560,
+              "interestCents": 8914,
+              "principalCents": 85646,
+              "balanceCents": 360054
+            },
+            {
+              "month": 9,
+              "paymentCents": 94560,
+              "interestCents": 7201,
+              "principalCents": 87359,
+              "balanceCents": 272695
+            },
+            {
+              "month": 10,
+              "paymentCents": 94560,
+              "interestCents": 5454,
+              "principalCents": 89106,
+              "balanceCents": 183589
+            },
+            {
+              "month": 11,
+              "paymentCents": 94560,
+              "interestCents": 3672,
+              "principalCents": 90888,
+              "balanceCents": 92701
+            },
+            {
+              "month": 12,
+              "paymentCents": 94555,
+              "interestCents": 1854,
+              "principalCents": 92701,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-apr-payment",
+      "kind": "core",
+      "purpose": "零利率固定月付：利息全為零，最後一期為餘額",
+      "input": {
+        "balance": "1000.00",
+        "aprPercent": "0",
+        "mode": "payment",
+        "monthlyPayment": "300.00",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "months": 4,
+          "totalInterestCents": 0,
+          "totalPaidCents": 100000,
+          "finalPaymentCents": 10000,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 30000,
+              "interestCents": 0,
+              "principalCents": 30000,
+              "balanceCents": 70000
+            },
+            {
+              "month": 2,
+              "paymentCents": 30000,
+              "interestCents": 0,
+              "principalCents": 30000,
+              "balanceCents": 40000
+            },
+            {
+              "month": 3,
+              "paymentCents": 30000,
+              "interestCents": 0,
+              "principalCents": 30000,
+              "balanceCents": 10000
+            },
+            {
+              "month": 4,
+              "paymentCents": 10000,
+              "interestCents": 0,
+              "principalCents": 10000,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-apr-months",
+      "kind": "core",
+      "purpose": "零利率目標月數：應繳金額為餘額除以月數無條件進位到分",
+      "input": {
+        "balance": "1000.00",
+        "aprPercent": "0.00",
+        "mode": "months",
+        "monthlyPayment": null,
+        "targetMonths": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetMonths": 3,
+          "requiredPaymentCents": 33334,
+          "months": 3,
+          "totalInterestCents": 0,
+          "totalPaidCents": 100000,
+          "finalPaymentCents": 33332,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 33334,
+              "interestCents": 0,
+              "principalCents": 33334,
+              "balanceCents": 66666
+            },
+            {
+              "month": 2,
+              "paymentCents": 33334,
+              "interestCents": 0,
+              "principalCents": 33334,
+              "balanceCents": 33332
+            },
+            {
+              "month": 3,
+              "paymentCents": 33332,
+              "interestCents": 0,
+              "principalCents": 33332,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "never-payoff-equal",
+      "kind": "core",
+      "purpose": "月付恰等於第一個月利息：餘額永遠不減，NEVER_PAYOFF",
+      "input": {
+        "balance": "5000.00",
+        "aprPercent": "24",
+        "mode": "payment",
+        "monthlyPayment": "100.00",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NEVER_PAYOFF",
+          "field": "monthlyPayment",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "one-month-payoff",
+      "kind": "core",
+      "purpose": "月付大於第一個月到期總額：一個月還清，實付為餘額加利息",
+      "input": {
+        "balance": "250.00",
+        "aprPercent": "12",
+        "mode": "payment",
+        "monthlyPayment": "300.00",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "months": 1,
+          "totalInterestCents": 250,
+          "totalPaidCents": 25250,
+          "finalPaymentCents": 25250,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 25250,
+              "interestCents": 250,
+              "principalCents": 25000,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "half-up-interest",
+      "kind": "core",
+      "purpose": "利息恰為 0.5 分時 half-up 進位為 1 分",
+      "input": {
+        "balance": "1.00",
+        "aprPercent": "6",
+        "mode": "payment",
+        "monthlyPayment": "0.60",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "months": 2,
+          "totalInterestCents": 1,
+          "totalPaidCents": 101,
+          "finalPaymentCents": 41,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 60,
+              "interestCents": 1,
+              "principalCents": 59,
+              "balanceCents": 41
+            },
+            {
+              "month": 2,
+              "paymentCents": 41,
+              "interestCents": 0,
+              "principalCents": 41,
+              "balanceCents": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "payoff-too-long",
+      "kind": "core",
+      "purpose": "月付只比第一個月利息多 1 分且餘額極大：600 個月內還不完，PAYOFF_TOO_LONG",
+      "input": {
+        "balance": "999999999.99",
+        "aprPercent": "0.01",
+        "mode": "payment",
+        "monthlyPayment": "8333.34",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PAYOFF_TOO_LONG",
+          "field": "monthlyPayment",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "payment-format-error",
+      "kind": "core",
+      "purpose": "金額小數超過兩位：MONEY_FORMAT",
+      "input": {
+        "balance": "1200.00",
+        "aprPercent": "12",
+        "mode": "payment",
+        "monthlyPayment": "12.345",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "MONEY_FORMAT",
+          "field": "monthlyPayment",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "apr-range-error",
+      "kind": "core",
+      "purpose": "年利率 100 超過上限 99.99：RANGE",
+      "input": {
+        "balance": "1200.00",
+        "aprPercent": "100",
+        "mode": "payment",
+        "monthlyPayment": "110.00",
+        "targetMonths": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "aprPercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為永遠還不完的輸入，舊結果及所有下載立即失效，重跑得到 NEVER_PAYOFF。",
+      "input": {
+        "initial": {
+          "balance": "1200.00",
+          "aprPercent": "12",
+          "mode": "payment",
+          "monthlyPayment": "110.00",
+          "targetMonths": "24"
+        },
+        "edit": {
+          "balance": "5000.00",
+          "aprPercent": "24",
+          "mode": "payment",
+          "monthlyPayment": "100.00",
+          "targetMonths": "24"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NEVER_PAYOFF",
+            "field": "monthlyPayment",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "balance": "1200.00",
+          "aprPercent": "12",
+          "mode": "payment",
+          "monthlyPayment": "110.00",
+          "targetMonths": "24"
+        },
+        "lateResult": {
+          "mode": "payment",
+          "months": 12,
+          "totalInterestCents": 7711,
+          "totalPaidCents": 127711,
+          "finalPaymentCents": 6711,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 11000,
+              "interestCents": 1200,
+              "principalCents": 9800,
+              "balanceCents": 110200
+            },
+            {
+              "month": 2,
+              "paymentCents": 11000,
+              "interestCents": 1102,
+              "principalCents": 9898,
+              "balanceCents": 100302
+            },
+            {
+              "month": 3,
+              "paymentCents": 11000,
+              "interestCents": 1003,
+              "principalCents": 9997,
+              "balanceCents": 90305
+            },
+            {
+              "month": 4,
+              "paymentCents": 11000,
+              "interestCents": 903,
+              "principalCents": 10097,
+              "balanceCents": 80208
+            },
+            {
+              "month": 5,
+              "paymentCents": 11000,
+              "interestCents": 802,
+              "principalCents": 10198,
+              "balanceCents": 70010
+            },
+            {
+              "month": 6,
+              "paymentCents": 11000,
+              "interestCents": 700,
+              "principalCents": 10300,
+              "balanceCents": 59710
+            },
+            {
+              "month": 7,
+              "paymentCents": 11000,
+              "interestCents": 597,
+              "principalCents": 10403,
+              "balanceCents": 49307
+            },
+            {
+              "month": 8,
+              "paymentCents": 11000,
+              "interestCents": 493,
+              "principalCents": 10507,
+              "balanceCents": 38800
+            },
+            {
+              "month": 9,
+              "paymentCents": 11000,
+              "interestCents": 388,
+              "principalCents": 10612,
+              "balanceCents": 28188
+            },
+            {
+              "month": 10,
+              "paymentCents": 11000,
+              "interestCents": 282,
+              "principalCents": 10718,
+              "balanceCents": 17470
+            },
+            {
+              "month": 11,
+              "paymentCents": 11000,
+              "interestCents": 175,
+              "principalCents": 10825,
+              "balanceCents": 6645
+            },
+            {
+              "month": 12,
+              "paymentCents": 6711,
+              "interestCents": 66,
+              "principalCents": 6645,
+              "balanceCents": 0
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "balance": "1200.00",
+            "aprPercent": "12",
+            "mode": "payment",
+            "monthlyPayment": "110.00",
+            "targetMonths": "24"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "balance": "50000.00",
+            "aprPercent": "15",
+            "mode": "payment",
+            "monthlyPayment": "3000.00",
+            "targetMonths": "24"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "balance": "1200.00",
+          "aprPercent": "12",
+          "mode": "payment",
+          "monthlyPayment": "110.00",
+          "targetMonths": "24"
+        },
+        "newerDraft": {
+          "balance": "5000.00",
+          "aprPercent": "24",
+          "mode": "payment",
+          "monthlyPayment": "100.00",
+          "targetMonths": "24"
+        },
+        "olderLateResult": {
+          "mode": "payment",
+          "months": 12,
+          "totalInterestCents": 7711,
+          "totalPaidCents": 127711,
+          "finalPaymentCents": 6711,
+          "rows": [
+            {
+              "month": 1,
+              "paymentCents": 11000,
+              "interestCents": 1200,
+              "principalCents": 9800,
+              "balanceCents": 110200
+            },
+            {
+              "month": 2,
+              "paymentCents": 11000,
+              "interestCents": 1102,
+              "principalCents": 9898,
+              "balanceCents": 100302
+            },
+            {
+              "month": 3,
+              "paymentCents": 11000,
+              "interestCents": 1003,
+              "principalCents": 9997,
+              "balanceCents": 90305
+            },
+            {
+              "month": 4,
+              "paymentCents": 11000,
+              "interestCents": 903,
+              "principalCents": 10097,
+              "balanceCents": 80208
+            },
+            {
+              "month": 5,
+              "paymentCents": 11000,
+              "interestCents": 802,
+              "principalCents": 10198,
+              "balanceCents": 70010
+            },
+            {
+              "month": 6,
+              "paymentCents": 11000,
+              "interestCents": 700,
+              "principalCents": 10300,
+              "balanceCents": 59710
+            },
+            {
+              "month": 7,
+              "paymentCents": 11000,
+              "interestCents": 597,
+              "principalCents": 10403,
+              "balanceCents": 49307
+            },
+            {
+              "month": 8,
+              "paymentCents": 11000,
+              "interestCents": 493,
+              "principalCents": 10507,
+              "balanceCents": 38800
+            },
+            {
+              "month": 9,
+              "paymentCents": 11000,
+              "interestCents": 388,
+              "principalCents": 10612,
+              "balanceCents": 28188
+            },
+            {
+              "month": 10,
+              "paymentCents": 11000,
+              "interestCents": 282,
+              "principalCents": 10718,
+              "balanceCents": 17470
+            },
+            {
+              "month": 11,
+              "paymentCents": 11000,
+              "interestCents": 175,
+              "principalCents": 10825,
+              "balanceCents": 6645
+            },
+            {
+              "month": 12,
+              "paymentCents": 6711,
+              "interestCents": 66,
+              "principalCents": 6645,
+              "balanceCents": 0
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NEVER_PAYOFF",
+            "field": "monthlyPayment",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NEVER_PAYOFF",
+            "field": "monthlyPayment",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
