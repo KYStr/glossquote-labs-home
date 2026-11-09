@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lottery Number Picker | Gloss Tools</title>
+<meta name="description" content="Generate picks for Taiwan's Lotto 6/49, Super Lotto 638 and Daily Cash 539 with a seeded, reproducible generator — the same seed always yields the same numbers, and every combination is equally likely.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>Lottery Number Picker</h1>
+  <p class="lede">Generate picks for Taiwan's Lotto 6/49, Super Lotto 638 and Daily Cash 539 with a seeded, reproducible generator — the same seed always yields the same numbers, and every combination is equally likely.</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Pick settings</h2>
+      <form id="picks-form" novalidate>
+        <div class="field">
+          <label for="game">Game</label>
+          <select id="game" aria-describedby="error-game">
+            <option value="lotto649">Lotto 6/49</option>
+            <option value="power638">Super Lotto 638</option>
+            <option value="daily539">Daily Cash 539</option>
+          </select>
+          <p class="field-error" id="error-game" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="seed">Seed</label>
+          <p class="help" id="help-seed">Leave blank to have a seed generated and shown; reuse it to reproduce the same numbers.</p>
+          <input id="seed" type="text" autocomplete="off" spellcheck="false" aria-describedby="help-seed error-seed">
+          <p class="field-error" id="error-seed" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="set-count">Sets</label>
+          <p class="help" id="help-set-count">1–10 sets.</p>
+          <input id="set-count" type="text" value="3" autocomplete="off" spellcheck="false" aria-describedby="help-set-count error-setCount">
+          <p class="field-error" id="error-setCount" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="exclude">Exclude numbers</label>
+          <p class="help" id="help-exclude">Applies to Zone 1 only; the Super Lotto Zone 2 is never excluded. Comma-separated, for example 1, 2, 3.</p>
+          <input id="exclude" type="text" autocomplete="off" spellcheck="false" aria-describedby="help-exclude error-exclude">
+          <p class="field-error" id="error-exclude" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">Generate numbers</button>
+          <button id="example-btn" type="button">Load example</button>
+          <button id="cancel-btn" type="button" hidden>Cancel</button>
+          <button id="reset-btn" type="button">Reset</button>
+        </div>
+        <p class="help" id="example-note" hidden>Example loaded (synthetic data: Lotto 6/49, seed 42, 3 sets, no exclusions). Press “Generate numbers” to run it.</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">Your numbers</h2>
+      <p id="status" class="status" role="status" aria-live="polite">Enter a seed and set count, or load the example, then press “Generate numbers”.</p>
+      <div id="results" hidden>
+        <p class="result-summary" id="result-summary"></p>
+        <div id="result-sets"></div>
+        <p class="result-note">Every combination is equally likely. This tool cannot predict draw results; no combination has a better chance of winning than any other.</p>
+        <div class="actions">
+          <button id="copy-btn" type="button" disabled>Copy numbers</button>
+          <button id="download-btn" type="button" disabled>Download numbers</button>
+        </div>
+        <p class="help" id="copy-note" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">How it works and its limits</h2>
+    <ul>
+      <li>Fixed game rules: Lotto 6/49 draws 6 from Zone 1 (1–49); Super Lotto 638 draws 6 from Zone 1 (1–38) plus 1 from Zone 2 (1–8); Daily Cash 539 draws 5 from Zone 1 (1–39).</li>
+      <li>The generator is fully determined by the seed (mulberry32): the same seed, game, set count and exclusion list always produce bit-for-bit identical results. Exclusions apply to Zone 1 only.</li>
+      <li>This is a number-picking aid only: no draw results, no prize checking, no statistics or predictions, and no purchase flow. Data stays on this page only — nothing is uploaded or stored, and leaving the page discards it.</li>
+    </ul>
+    <h3>Why does the same seed always give the same numbers?</h3>
+    <p>The generator is fully determined by the seed, so results are reproducible and can be checked again later.</p>
+    <h3>Are generated numbers more likely to win?</h3>
+    <p>No. Every combination is equally likely, and this tool cannot predict draw results.</p>
+    <h3>Does excluding numbers change the odds of the rest?</h3>
+    <p>No — excluded numbers simply never appear; every remaining combination stays equally likely.</p>
+  </section>
+</main>
+</body>
+</html>
