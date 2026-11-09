@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Water Intake Calculator — Estimate Your Daily Range</title>
+<meta name="description" content="Estimate a daily water intake range in millilitres and cups from body weight (30–35 ml per kg), activity level and climate. A general educational estimate, not medical advice.">
+<!--META-->
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <nav><a href="../../en/">GlossQuote Labs home</a> · <a href="../">繁體中文</a></nav>
+  <h1>Daily Water Intake Calculator</h1>
+  <p class="intro">Enter your body weight, activity level and climate. The result is always a range from the simple model printed on this page — never a single prescribed number.</p>
+</header>
+<main>
+  <form id="calc" novalidate>
+    <div class="field">
+      <label for="weight">Body weight (kg)</label>
+      <input id="weight" name="weight" type="number" inputmode="decimal" min="20" max="300" step="0.1" value="70" aria-describedby="weight-hint weight-error">
+      <p id="weight-hint" class="hint">20.0–300.0 kg, one decimal place at most.</p>
+      <p id="weight-error" class="error" role="alert" hidden></p>
+    </div>
+    <div class="field">
+      <label for="activity">Activity level</label>
+      <select id="activity" name="activity">
+          <option value="sedentary" selected>Sedentary</option>
+          <option value="light">Light</option>
+          <option value="moderate">Moderate</option>
+          <option value="high">High</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="climate">Climate</label>
+      <select id="climate" name="climate">
+          <option value="temperate" selected>Temperate</option>
+          <option value="warm">Warm</option>
+          <option value="hot">Hot</option>
+      </select>
+    </div>
+  </form>
+  <section id="result" aria-live="polite">
+    <h2>Your estimated range</h2>
+    <p id="result-ml" class="result-ml">2,100–2,450 ml per day</p>
+    <p id="result-cups">8.4–9.8 cups (250 ml per cup)</p>
+    <p id="result-stale" class="stale" hidden>Out of date: fix the weight to update this range.</p>
+  </section>
+  <p id="disclaimer" class="disclaimer">This is a general educational estimate from a simple model. Individual needs vary with health, medication, diet and many other factors this tool does not model. It is not medical advice. If you have a health condition or any concern, please ask a qualified professional.</p>
+  <section id="model">
+    <h2>The model</h2>
+    <p id="model-statement">Baseline: 30–35 ml per kilogram of body weight. Activity additions (ml, added to both ends): Sedentary +0, Light +350, Moderate +700, High +1,050. Climate multipliers: Temperate ×1.0, Warm ×1.1, Hot ×1.25. Formula: low = (30 × weight in kg + activity addition) × climate multiplier; high = (35 × weight in kg + activity addition) × climate multiplier. Cups use 250 ml per cup and are computed from the exact, unrounded values.</p>
+  </section>
+  <p class="privacy">Runs entirely in your browser: nothing is stored, sent or tracked.</p>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
