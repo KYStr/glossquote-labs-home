@@ -109,6 +109,8 @@ test("a real fixture rebuild adds a published third tool to both languages and e
   for (const page of ["dist/index.html", "dist/en/index.html"]) {
     const html = readFileSync(join(root, page), "utf8");
     const fixtureName = page.includes("/en/") ? "Third fixture tool" : "第三個測試工具";
+    const ogLocale = page.includes("/en/") ? "en_US" : "zh_TW";
+    assert.deepEqual([...html.matchAll(/<meta property="og:locale" content="([^"]+)">/gu)].map((match) => match[1]), [ogLocale]);
     assert.ok(occurrences(html, fixtureName) >= 2, `${fixtureName} should appear in the all-tools and recent sections`);
     assert.doesNotMatch(html, /Hidden draft fixture|不可顯示的草稿/u);
     assert.match(html, /&lt;mark&gt;safe text&lt;\/mark&gt;|&lt;mark&gt;安全文字&lt;\/mark&gt;/u);
@@ -123,6 +125,10 @@ test("production build creates exact canonical, language, robots, sitemap, redir
 
   const zh = readFileSync(join(root, "dist-production", "index.html"), "utf8");
   const en = readFileSync(join(root, "dist-production", "en", "index.html"), "utf8");
+  assert.match(zh, /<meta property="og:locale" content="zh_TW">/u);
+  assert.match(en, /<meta property="og:locale" content="en_US">/u);
+  assert.match(en, /<html lang="en">/u);
+  assert.match(zh, /hreflang="en" href="https:\/\/glossquote\.com\/en\/index\.html"/u);
   assert.match(zh, /rel="canonical" href="https:\/\/glossquote\.com\/index\.html"/u);
   assert.match(en, /rel="canonical" href="https:\/\/glossquote\.com\/en\/index\.html"/u);
   assert.match(zh, /hreflang="x-default" href="https:\/\/glossquote\.com\/index\.html"/u);

@@ -31,7 +31,7 @@ const COPY = Object.freeze({
   },
   en: {
     lang: "en",
-    htmlLocale: "en",
+    htmlLocale: "en_US",
     title: "GlossQuote | Free Online Tools for Everyday Tasks",
     description: "Find free online tools for everyday tasks. Review a practical example and how your input is handled, then use the tool in your browser.",
     headline: "Everyday tasks, simply done.",

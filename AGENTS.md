@@ -66,3 +66,9 @@
 採用與維護：工作者須讀到本文件實際版本並在原任務安全點採用；遠端提交不代表所有既有對話已載入，也不為載入規則重啟在工工作者。後續用真實任務觀察是否從錯誤走到修復、驗證及交付，沒有這些證據就不能宣稱主動性已改善。只整合與任務相關的持久規則，不重複堆疊相同要求或以無關閱讀拖延執行。
 
 寫法依據（2026-11-09 已讀）：[官方 AGENTS.md 指南](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[精簡指令與完成條件](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)、[以驗證回饋驅動修復及停損](https://developers.openai.com/cookbook/examples/codex/build_iterative_repair_loops_with_codex)。以上是本專案的具體工作約定，不變更工具或平台權限。
+
+
+## Current user-directed repairs — 2026-11-09
+
+The user explicitly removed the requirement to wait for original author chats. For repairs coordinated by the primary, use a new implementation subagent with requested model `gpt-6.1-sol` and reasoning `medium`; the primary independently inspects the diff and verifies the result, then publishes it to this shared GitHub repository. Do not ask the user to relay repair prompts or wait for an unavailable original author. Historical source/ownership records remain evidence: use a separately recorded maintenance task and current claim rather than forging an original owner's acknowledgement, claim or review. The latest explicit task direction overrides the older original-author-only preference. Independent candidate review, required release gates, no-cost hosting, no credential/settings drift and the no-desktop-interference constraints continue to apply. Requested tool parameters are not a claim of separately observed backend model identity.
+
