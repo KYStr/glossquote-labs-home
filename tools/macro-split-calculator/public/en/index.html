@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Macro Split Calculator | Gloss Tools</title>
+<meta name="description" content="Turn a daily calorie target and a diet ratio (balanced, high-protein, low-carb, keto or custom) into grams of protein, carbs and fat, with implied calories and an optional per-meal split.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Macro Split Calculator</h1>
+  <p class="lede">Turn a daily calorie target you already have into grams of protein, carbohydrates and fat for a chosen diet ratio. After grams are rounded to whole numbers, the largest macro absorbs the rounding drift by a fixed rule and any remaining difference is shown; you can also split the day's grams across 1–6 meals. This tool does not estimate calorie needs — you enter the target.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Daily calorie target and diet preset</h2>
+      <form id="macro-form" novalidate>
+        <div class="field">
+          <label for="field-calories">Daily calorie target (kcal)</label>
+          <p class="help" id="help-calories">800–10,000 kcal, a whole number. The target comes from you, your coach, or your dietitian; this tool does not estimate needs.</p>
+          <input id="field-calories" name="calories" type="text" inputmode="numeric" autocomplete="off" value="2000" aria-describedby="help-calories">
+          <p class="field-error" id="error-calories" role="alert"></p>
+        </div>
+        <fieldset class="field preset-group">
+          <legend>Diet preset</legend>
+          <p class="help" id="help-preset">Ratios are the calorie percentages of protein / carbs / fat. The three percentage fields in the next section are read only when you choose Custom.</p>
+          <label class="radio-row" for="field-preset-balanced">
+            <input id="field-preset-balanced" name="preset" type="radio" value="balanced" checked>
+            Balanced (30/40/30)
+          </label>
+          <label class="radio-row" for="field-preset-high-protein">
+            <input id="field-preset-high-protein" name="preset" type="radio" value="high-protein">
+            High protein (40/30/30)
+          </label>
+          <label class="radio-row" for="field-preset-low-carb">
+            <input id="field-preset-low-carb" name="preset" type="radio" value="low-carb">
+            Low carb (35/25/40)
+          </label>
+          <label class="radio-row" for="field-preset-keto">
+            <input id="field-preset-keto" name="preset" type="radio" value="keto">
+            Keto (20/5/75)
+          </label>
+          <label class="radio-row" for="field-preset-custom">
+            <input id="field-preset-custom" name="preset" type="radio" value="custom">
+            Custom
+          </label>
+          <p class="field-error" id="error-preset" role="alert"></p>
+        </fieldset>
+
+        <h2 id="custom-heading">Custom percentages and per-meal split</h2>
+        <fieldset class="field pct-group">
+          <legend>Custom percentages (%)</legend>
+          <p class="help" id="help-pct">Read only when the preset is Custom; the three must add up to exactly 100. With any named preset these fields are ignored completely.</p>
+          <div class="field">
+            <label for="field-proteinPct">Protein (%)</label>
+            <input id="field-proteinPct" name="proteinPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-proteinPct" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-carbsPct">Carbohydrates (%)</label>
+            <input id="field-carbsPct" name="carbsPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-carbsPct" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-fatPct">Fat (%)</label>
+            <input id="field-fatPct" name="fatPct" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-pct">
+            <p class="field-error" id="error-fatPct" role="alert"></p>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="field-meals">Meals per day (optional)</label>
+          <p class="help" id="help-meals">Leave empty for no split; enter 1–6 to divide the adjusted daily grams across meals, with leftover grams going to the earlier meals.</p>
+          <input id="field-meals" name="meals" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-meals">
+          <p class="field-error" id="error-meals" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter values or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate macro grams</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Grams per macro and implied calories</h2>
+      <p id="summary"></p>
+      <p class="adjusted-note" id="adjusted-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="Macro grams table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Macro</th><th scope="col">Ratio</th><th scope="col">Target kcal</th><th scope="col">Grams per day</th><th scope="col">Implied kcal</th></tr>
+          </thead>
+          <tbody id="macro-rows"></tbody>
+        </table>
+      </div>
+      <div id="meals-block" hidden>
+        <h3>Per-meal split</h3>
+        <div class="table-scroll" role="region" aria-label="Per-meal split table" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Meal</th><th scope="col">Protein (g)</th><th scope="col">Carbs (g)</th><th scope="col">Fat (g)</th><th scope="col">Calories (kcal)</th></tr>
+            </thead>
+            <tbody id="meal-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>The conversion factors are fixed at 4 kcal/g for protein, 4 kcal/g for carbohydrate and 9 kcal/g for fat. Each macro's exact grams (target × percentage ÷ factor) are rounded half-up to whole grams. The difference between the implied calories of those whole grams and the target (the residual) is absorbed by the macro with the largest calorie share: the residual divided by that macro's factor, rounded half-up to whole grams; ties go in protein, carbs, fat order. If that adjustment is zero grams, nothing is adjusted and the remaining difference is shown as the implied difference.</p>
+    <p>The "Target kcal" column shows each macro's exact calories rounded for display only; it does not feed the gram calculation, and the three displayed values are not guaranteed to add up to the target. The per-meal split uses the adjusted daily grams, divided independently per macro, and each meal's grams always add back up to the daily grams. The downloadable report is a fixed-format JSON file with the same result as on screen.</p>
+  </details>
+
+  <p class="nutrition-note">This tool uses the general nutrition conversion of 4 kcal per gram of protein and carbohydrate and 9 kcal per gram of fat. Results are general dietary-planning information only, not medical or nutrition advice; consult a physician or dietitian if you have a medical condition, are pregnant, or have special dietary needs.</p>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why doesn't the implied total match the target exactly?</dt>
+      <dd>Grams are whole numbers; the largest macro absorbs the rounding drift by a fixed rule and any remaining difference is shown.</dd>
+      <dt>Where does the calorie target come from?</dt>
+      <dd>You enter it; this tool does not estimate calorie needs.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculations run locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
