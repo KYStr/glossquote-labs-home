@@ -1,0 +1,147 @@
+{
+  "inputScope": "Old M2 source541a0cd/candidatedf37047 with101-site snapshot; current140-site release retained exact four-tool bytes",
+  "inputSha256": "9d4a96c782b9bbb5bce7b367bf15a3b4acbc83274a4e1c6fcc53448c80a9b0ef",
+  "priorFindings": [
+    {
+      "id": "SEC-01",
+      "area": "安全",
+      "severity": "low",
+      "priority": "P2",
+      "title": "附件分包工具防嵌入標頭",
+      "status": "FIXED_RESPONSE_HEADERS",
+      "result": "雙語200、兩個301入口與404回應均含 frame-ancestors none、X-Frame-Options DENY。當輪實際跨來源 iframe 測試受平台 URL 政策阻擋，沒有以歷史證據充當新測。",
+      "evidence": "retest/security/findings.json"
+    },
+    {
+      "id": "SEC-02",
+      "area": "安全",
+      "severity": "low",
+      "priority": "P2",
+      "title": "正式工具缺少HSTS",
+      "status": "FIXED_RESPONSE_HEADERS",
+      "result": "47主機的94個雙語HTTPS回應，均只有一個 Strict-Transport-Security: max-age=31536000，包括media的兩個307。HTTP初訪強制升級另為UNKNOWN。",
+      "evidence": "retest/security/evidence/live-headers.json"
+    },
+    {
+      "id": "SEO-01",
+      "area": "SEO",
+      "severity": "low",
+      "priority": "P3",
+      "title": "缺少社群分享預覽圖 og:image",
+      "status": "NOT_FIXED",
+      "result": "首頁兩語與47正式工具兩語，96頁仍全數缺少og:image；屬分享展示改善，沒有搜尋排名損失的證據。",
+      "evidence": "retest/seo/evidence/all-page-checks.json"
+    },
+    {
+      "id": "SEO-02",
+      "area": "SEO",
+      "severity": "low",
+      "priority": "P3",
+      "title": "英文首頁og:locale格式",
+      "status": "FIXED",
+      "result": "現網已改為en_US；html lang=en及hreflang=en正確保留，與封包M1產物相同。",
+      "evidence": "retest/seo/evidence/package-comparisons.json"
+    },
+    {
+      "id": "SEO-03",
+      "area": "SEO",
+      "severity": "low",
+      "priority": "P3",
+      "title": "media入口額外307",
+      "status": "NOT_FIXED_OPTIMIZATION",
+      "result": "/index.html及/en/index.html仍307至/與/en/，兩個canonical終點均200，語系與canonical正確；維持非阻擋最佳化。",
+      "evidence": "retest/seo/evidence/media-current.json"
+    }
+  ],
+  "newFindings": [
+    {
+      "id": "FUNC-M2-01",
+      "tool": "text-to-speech-reader",
+      "severity": "low",
+      "status": "FIXED_DEPLOYED_AWAITING_EXTERNAL_RETEST",
+      "newTestCase": "TTS-N02",
+      "title": "Unicode whitespace after sentence terminator does not split as specified",
+      "input": [
+        "First.　Second.",
+        "First. Second."
+      ],
+      "expected": [
+        [
+          "First.",
+          "Second."
+        ],
+        [
+          "First.",
+          "Second."
+        ]
+      ],
+      "actual": [
+        [
+          "First.　Second."
+        ],
+        [
+          "First. Second."
+        ]
+      ],
+      "comparison": "ASCII space and tab split into two sentences.",
+      "impact": "Sentence count, sentence selection and highlight granularity differ. Text is retained; no claim of speech content loss.",
+      "cause": "segmentText scans only ASCII space and tab after .!?; the supplied SPEC says whitespace without that restriction.",
+      "recommendedFix": "Define one sentence-separator whitespace predicate consistent with the contract; handle CR/LF as existing explicit separators and support Unicode whitespace such as U+3000 and U+00A0. Preserve text order and the documented normalization at joins.",
+      "recommendedTests": [
+        "ASCII space and tab controls",
+        "U+3000 and U+00A0 before uppercase/digit/opening quote",
+        "Lowercase-following negative cases",
+        "CRLF, decimal, abbreviation and length regressions"
+      ],
+      "environmentAssessment": "Deterministic pure-core logic, not Linux voice availability.",
+      "area": "功能",
+      "priority": "P3",
+      "guiCases": [
+        "TTS-05",
+        "TTS-06"
+      ],
+      "sourceCommit": "aa906abec8500d8160d0732c38d5cfc1885f6fd8",
+      "candidate": "e9eb54813a55bd9f0a04b703ecbccee8c2510f4d"
+    },
+    {
+      "id": "FUNC-M2-02",
+      "tool": "fluid-typography",
+      "severity": "medium",
+      "status": "FIXED_DEPLOYED_AWAITING_EXTERNAL_RETEST",
+      "title": "Inspection banner adds a second language link that reloads and clears input",
+      "sourceEvidence": "Deployed HTML line 13 includes ordinary language anchors. App binds state-preserving click only to #language; pagehide/pageshow/new document init clear state.",
+      "observedByParent": "Generate with fmax=3 and custom sample; #language to English preserves input/CSS. Banner Traditional Chinese link navigates a fresh page, resets fmax to2/sample/default and clears result.",
+      "scope": "Public-inspection overlay integration; original #language remains working.",
+      "contractInterpretation": "SPEC section2.5 language changes retain sample validity state, section2.6 and A14 preserve numeric/CSS state on language toggle. It also explicitly says ordinary navigation/reload has no persistent input. Therefore this is inconsistent duplicated language-control behavior, not a requirement to preserve all navigation/reloads.",
+      "recommendedFix": "Share same-document language switching across explicitly identified same-tool language anchors, including overlay, based on target language/URL. Preserve modifier/middle-click and cross-origin native navigation. Do not add storage or URL query state. Alternatively remove the duplicate overlay language control where the integrated tool already has it.",
+      "recommendedTests": [
+        "Both language controls in both directions after generation",
+        "Both controls with numeric error and 241-code-point sample",
+        "Same-document Back/Forward and focus retention",
+        "Ctrl/Meta/Shift/middle-click native semantics",
+        "Ordinary reload and pagehide remain reset/no-persistence"
+      ],
+      "environmentAssessment": "DOM wiring and lifecycle; not a Linux arithmetic/build issue.",
+      "area": "功能",
+      "priority": "P2",
+      "guiCases": [
+        "FT-03",
+        "FT-04",
+        "FT-05"
+      ],
+      "sourceCommit": "aa906abec8500d8160d0732c38d5cfc1885f6fd8",
+      "candidate": "e9eb54813a55bd9f0a04b703ecbccee8c2510f4d"
+    }
+  ],
+  "retainedNotRun": [
+    "未做完整Network/Storage截取。",
+    "未做手機、Firefox、Safari、Edge與讀屏。",
+    "下載只覆核單一32×16合成SVG；沒有原生檔案挑選或拖放。",
+    "未量測完整性能、Core Web Vitals或Google收錄。",
+    "通知列兩方向失敗為同一根因，故3個失敗測例只對應2個新功能問題。"
+  ],
+  "seoRemaining": [
+    "SEO-01 sharing image on96 formal pages",
+    "SEO-03 extra media307 (canonical target works)"
+  ]
+}
