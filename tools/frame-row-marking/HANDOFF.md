@@ -4,8 +4,8 @@
 - **Repo:** `KYStr/glossquote-labs-home`
 - **Branch:** `muse/frame-row-marking-production-20261109`
 - **Base:** `codex/initial-publication` — base commit `5e8fab03c00fba01bca68b1dd80280eb380b9bd6`
-- **Candidate commit:** (filled after the PR is opened; see VERIFICATION.md)
-- **PR:** (draft PR against `codex/initial-publication`; see VERIFICATION.md)
+- **Candidate commit:** `83a0018945382ae1894a051da7585c0f2182283e`
+- **PR:** https://github.com/KYStr/glossquote-labs-home/pull/115 (draft, base `codex/initial-publication`)
 
 ## Fixed source
 
