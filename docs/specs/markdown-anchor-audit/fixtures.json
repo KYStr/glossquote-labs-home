@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-markdown-anchor-audit-20261109",
+  "slug": "markdown-anchor-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "forward-reference",
+      "kind": "core",
+      "purpose": "先見目錄再見標題",
+      "input": {
+        "markdown": "- [Setup](#setup)\n# Setup\n## Build Notes\n[Build](#build-notes)"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "headings": [
+            {
+              "line": 2,
+              "id": "setup"
+            },
+            {
+              "line": 3,
+              "id": "build-notes"
+            }
+          ],
+          "links": [
+            {
+              "line": 1,
+              "id": "setup",
+              "status": "ok",
+              "targets": [
+                2
+              ]
+            },
+            {
+              "line": 4,
+              "id": "build-notes",
+              "status": "ok",
+              "targets": [
+                3
+              ]
+            }
+          ],
+          "collisions": [],
+          "unsupportedHeadings": []
+        }
+      }
+    },
+    {
+      "id": "case-collision",
+      "kind": "core",
+      "purpose": "同 slug 的不同標題造成歧義",
+      "input": {
+        "markdown": "# Build Notes\n## build-notes\n- [Build](#build-notes)"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "headings": [
+            {
+              "line": 1,
+              "id": "build-notes"
+            },
+            {
+              "line": 2,
+              "id": "build-notes"
+            }
+          ],
+          "links": [
+            {
+              "line": 3,
+              "id": "build-notes",
+              "status": "ambiguous",
+              "targets": [
+                1,
+                2
+              ]
+            }
+          ],
+          "collisions": [
+            {
+              "id": "build-notes",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ],
+          "unsupportedHeadings": []
+        }
+      }
+    },
+    {
+      "id": "case-sensitive",
+      "kind": "core",
+      "purpose": "fragment 不默默改成小寫",
+      "input": {
+        "markdown": "# Setup\n[Setup](#Setup)"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "headings": [
+            {
+              "line": 1,
+              "id": "setup"
+            }
+          ],
+          "links": [
+            {
+              "line": 2,
+              "id": "Setup",
+              "status": "missing",
+              "targets": []
+            }
+          ],
+          "collisions": [],
+          "unsupportedHeadings": []
+        }
+      }
+    },
+    {
+      "id": "ignore-fence",
+      "kind": "core",
+      "purpose": "fence 內標題不成為目標",
+      "input": {
+        "markdown": "```md\n# Fake\n```\n- [Fake](#fake)\n## 真實標題"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "headings": [],
+          "links": [
+            {
+              "line": 4,
+              "id": "fake",
+              "status": "missing",
+              "targets": []
+            }
+          ],
+          "collisions": [],
+          "unsupportedHeadings": [
+            5
+          ]
+        }
+      }
+    },
+    {
+      "id": "open-fence",
+      "kind": "core",
+      "purpose": "fence 未關閉給原列",
+      "input": {
+        "markdown": "# Valid\n```\n## Code"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "FENCE_UNCLOSED",
+          "field": "markdown",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "tilde-fence",
+      "kind": "core",
+      "purpose": "支援範圍外的 fence 明確停止",
+      "input": {
+        "markdown": "~~~md\n# Example"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNSUPPORTED_FENCE",
+          "field": "markdown",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "no-matches",
+      "kind": "core",
+      "purpose": "文字和外部連結無命中",
+      "input": {
+        "markdown": "A paragraph\n[More](https://example.invalid)"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "headings": [],
+          "links": [],
+          "collisions": [],
+          "unsupportedHeadings": []
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "markdown": "- [Setup](#setup)\n# Setup\n## Build Notes\n[Build](#build-notes)"
+        },
+        "edit": {
+          "markdown": "# Valid\n```\n## Code"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "FENCE_UNCLOSED",
+            "field": "markdown",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "markdown": "- [Setup](#setup)\n# Setup\n## Build Notes\n[Build](#build-notes)"
+        },
+        "lateResult": {
+          "headings": [
+            {
+              "line": 2,
+              "id": "setup"
+            },
+            {
+              "line": 3,
+              "id": "build-notes"
+            }
+          ],
+          "links": [
+            {
+              "line": 1,
+              "id": "setup",
+              "status": "ok",
+              "targets": [
+                2
+              ]
+            },
+            {
+              "line": 4,
+              "id": "build-notes",
+              "status": "ok",
+              "targets": [
+                3
+              ]
+            }
+          ],
+          "collisions": [],
+          "unsupportedHeadings": []
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "markdown": "- [Setup](#setup)\n# Setup\n## Build Notes\n[Build](#build-notes)"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "markdown": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "markdown": "- [Setup](#setup)\n# Setup\n## Build Notes\n[Build](#build-notes)"
+        },
+        "newerDraft": {
+          "markdown": "# Valid\n```\n## Code"
+        },
+        "olderLateResult": {
+          "headings": [
+            {
+              "line": 2,
+              "id": "setup"
+            },
+            {
+              "line": 3,
+              "id": "build-notes"
+            }
+          ],
+          "links": [
+            {
+              "line": 1,
+              "id": "setup",
+              "status": "ok",
+              "targets": [
+                2
+              ]
+            },
+            {
+              "line": 4,
+              "id": "build-notes",
+              "status": "ok",
+              "targets": [
+                3
+              ]
+            }
+          ],
+          "collisions": [],
+          "unsupportedHeadings": []
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "FENCE_UNCLOSED",
+            "field": "markdown",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "FENCE_UNCLOSED",
+            "field": "markdown",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-decimal-column-parser-20261109",
+  "slug": "decimal-column-parser",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "dot-round",
+      "kind": "core",
+      "purpose": "兩個中間值、補零與前導零",
+      "input": {
+        "source": "1,234.500\n1.005\n1.015",
+        "profile": "dot",
+        "scale": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "profile": "dot",
+          "scale": "2",
+          "rows": [
+            {
+              "line": 1,
+              "value": "1234.5",
+              "normalized": "1234.50",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "value": "1.005",
+              "normalized": "1.00",
+              "rounded": true
+            },
+            {
+              "line": 3,
+              "value": "1.015",
+              "normalized": "1.02",
+              "rounded": true
+            }
+          ],
+          "cleanValues": [
+            "1234.50",
+            "1.00",
+            "1.02"
+          ]
+        }
+      }
+    },
+    {
+      "id": "comma-preserve",
+      "kind": "core",
+      "purpose": "逗號小數和去負零",
+      "input": {
+        "source": "-1.000,25\n-00,0\n0001",
+        "profile": "comma",
+        "scale": "preserve"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "profile": "comma",
+          "scale": "preserve",
+          "rows": [
+            {
+              "line": 1,
+              "value": "-1000.25",
+              "normalized": "-1000.25",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "value": "0",
+              "normalized": "0",
+              "rounded": false
+            },
+            {
+              "line": 3,
+              "value": "1",
+              "normalized": "1",
+              "rounded": false
+            }
+          ],
+          "cleanValues": [
+            "-1000.25",
+            "0",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ties-negative",
+      "kind": "core",
+      "purpose": "負數 tie，整數輸出",
+      "input": {
+        "source": "-2.5\n-3.5\n-0.49",
+        "profile": "dot",
+        "scale": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "profile": "dot",
+          "scale": "0",
+          "rows": [
+            {
+              "line": 1,
+              "value": "-2.5",
+              "normalized": "-2",
+              "rounded": true
+            },
+            {
+              "line": 2,
+              "value": "-3.5",
+              "normalized": "-4",
+              "rounded": true
+            },
+            {
+              "line": 3,
+              "value": "-0.49",
+              "normalized": "0",
+              "rounded": true
+            }
+          ],
+          "cleanValues": [
+            "-2",
+            "-4",
+            "0"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mixed-dirty",
+      "kind": "core",
+      "purpose": "錯誤列保留定位，不提供整欄清洗值",
+      "input": {
+        "source": "1.2\n12,34\n\n3e5",
+        "profile": "dot",
+        "scale": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "profile": "dot",
+          "scale": "4",
+          "rows": [
+            {
+              "line": 1,
+              "value": "1.2",
+              "normalized": "1.2000",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "error": "DECIMAL_SYNTAX"
+            },
+            {
+              "line": 3,
+              "error": "EMPTY_CELL"
+            },
+            {
+              "line": 4,
+              "error": "DECIMAL_SYNTAX"
+            }
+          ],
+          "cleanValues": null
+        }
+      }
+    },
+    {
+      "id": "digit-boundary",
+      "kind": "core",
+      "purpose": "18 位保留，19 位拒絕",
+      "input": {
+        "source": "900719925474099300\n9007199254740993000",
+        "profile": "dot",
+        "scale": "preserve"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "profile": "dot",
+          "scale": "preserve",
+          "rows": [
+            {
+              "line": 1,
+              "value": "900719925474099300",
+              "normalized": "900719925474099300",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "error": "DIGIT_LIMIT"
+            }
+          ],
+          "cleanValues": null
+        }
+      }
+    },
+    {
+      "id": "empty-column",
+      "kind": "core",
+      "purpose": "完全沒有資料",
+      "input": {
+        "source": "",
+        "profile": "dot",
+        "scale": "preserve"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "source",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "invalid-scale",
+      "kind": "core",
+      "purpose": "固定小數位只用明示選項",
+      "input": {
+        "source": "2",
+        "profile": "dot",
+        "scale": "1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCALE",
+          "field": "scale",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "source": "1,234.500\n1.005\n1.015",
+          "profile": "dot",
+          "scale": "2"
+        },
+        "edit": {
+          "source": "",
+          "profile": "dot",
+          "scale": "preserve"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "source",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "source": "1,234.500\n1.005\n1.015",
+          "profile": "dot",
+          "scale": "2"
+        },
+        "lateResult": {
+          "profile": "dot",
+          "scale": "2",
+          "rows": [
+            {
+              "line": 1,
+              "value": "1234.5",
+              "normalized": "1234.50",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "value": "1.005",
+              "normalized": "1.00",
+              "rounded": true
+            },
+            {
+              "line": 3,
+              "value": "1.015",
+              "normalized": "1.02",
+              "rounded": true
+            }
+          ],
+          "cleanValues": [
+            "1234.50",
+            "1.00",
+            "1.02"
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "source": "1,234.500\n1.005\n1.015",
+            "profile": "dot",
+            "scale": "2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "source": "",
+            "profile": "dot",
+            "scale": "preserve"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "source": "1,234.500\n1.005\n1.015",
+          "profile": "dot",
+          "scale": "2"
+        },
+        "newerDraft": {
+          "source": "",
+          "profile": "dot",
+          "scale": "preserve"
+        },
+        "olderLateResult": {
+          "profile": "dot",
+          "scale": "2",
+          "rows": [
+            {
+              "line": 1,
+              "value": "1234.5",
+              "normalized": "1234.50",
+              "rounded": false
+            },
+            {
+              "line": 2,
+              "value": "1.005",
+              "normalized": "1.00",
+              "rounded": true
+            },
+            {
+              "line": 3,
+              "value": "1.015",
+              "normalized": "1.02",
+              "rounded": true
+            }
+          ],
+          "cleanValues": [
+            "1234.50",
+            "1.00",
+            "1.02"
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "source",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "source",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

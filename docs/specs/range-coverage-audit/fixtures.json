@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-range-coverage-audit-20261109",
+  "slug": "range-coverage-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "gap-and-overlap",
+      "kind": "core",
+      "purpose": "同時有一個重疊及一個空段",
+      "input": {
+        "start": "0",
+        "end": "10",
+        "intervals": "0\t4\n3\t6\n8\t10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "spans": [
+            {
+              "from": "0",
+              "to": "3",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            },
+            {
+              "from": "3",
+              "to": "4",
+              "depth": 2,
+              "lines": [
+                1,
+                2
+              ]
+            },
+            {
+              "from": "4",
+              "to": "6",
+              "depth": 1,
+              "lines": [
+                2
+              ]
+            },
+            {
+              "from": "6",
+              "to": "8",
+              "depth": 0,
+              "lines": []
+            },
+            {
+              "from": "8",
+              "to": "10",
+              "depth": 1,
+              "lines": [
+                3
+              ]
+            }
+          ],
+          "covered": "8",
+          "uncovered": "2",
+          "overlapped": "1"
+        }
+      }
+    },
+    {
+      "id": "negative-touch",
+      "kind": "core",
+      "purpose": "負小數跨零，相接不重疊",
+      "input": {
+        "start": "-1.5",
+        "end": "1",
+        "intervals": "-1.5\t-0.250\n-0.25\t0.250\n0.25\t1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "spans": [
+            {
+              "from": "-1.5",
+              "to": "-0.25",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            },
+            {
+              "from": "-0.25",
+              "to": "0.25",
+              "depth": 1,
+              "lines": [
+                2
+              ]
+            },
+            {
+              "from": "0.25",
+              "to": "1",
+              "depth": 1,
+              "lines": [
+                3
+              ]
+            }
+          ],
+          "covered": "2.5",
+          "uncovered": "0",
+          "overlapped": "0"
+        }
+      }
+    },
+    {
+      "id": "duplicate-interval",
+      "kind": "core",
+      "purpose": "同區間兩列保持 depth 2",
+      "input": {
+        "start": "-0.0",
+        "end": "2",
+        "intervals": "1\t2\n1.000\t2.000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "spans": [
+            {
+              "from": "0",
+              "to": "1",
+              "depth": 0,
+              "lines": []
+            },
+            {
+              "from": "1",
+              "to": "2",
+              "depth": 2,
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ],
+          "covered": "1",
+          "uncovered": "1",
+          "overlapped": "1"
+        }
+      }
+    },
+    {
+      "id": "triple-depth",
+      "kind": "core",
+      "purpose": "重疊長度不依深度重複相加",
+      "input": {
+        "start": "0",
+        "end": "4",
+        "intervals": "0\t4\n1\t3\n2\t3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "spans": [
+            {
+              "from": "0",
+              "to": "1",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            },
+            {
+              "from": "1",
+              "to": "2",
+              "depth": 2,
+              "lines": [
+                1,
+                2
+              ]
+            },
+            {
+              "from": "2",
+              "to": "3",
+              "depth": 3,
+              "lines": [
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "from": "3",
+              "to": "4",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            }
+          ],
+          "covered": "4",
+          "uncovered": "0",
+          "overlapped": "2"
+        }
+      }
+    },
+    {
+      "id": "no-intervals",
+      "kind": "core",
+      "purpose": "空清單顯示全域缺口",
+      "input": {
+        "start": "-0.001",
+        "end": "0",
+        "intervals": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "spans": [
+            {
+              "from": "-0.001",
+              "to": "0",
+              "depth": 0,
+              "lines": []
+            }
+          ],
+          "covered": "0",
+          "uncovered": "0.001",
+          "overlapped": "0"
+        }
+      }
+    },
+    {
+      "id": "outside",
+      "kind": "core",
+      "purpose": "超過域端點，禁止裁切",
+      "input": {
+        "start": "0",
+        "end": "1",
+        "intervals": "0\t1.001"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OUTSIDE",
+          "field": "intervals",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "zero-length",
+      "kind": "core",
+      "purpose": "零長度區間拒絕",
+      "input": {
+        "start": "0",
+        "end": "1",
+        "intervals": "0.500\t0.5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTERVAL_ORDER",
+          "field": "intervals",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "start": "0",
+          "end": "10",
+          "intervals": "0\t4\n3\t6\n8\t10"
+        },
+        "edit": {
+          "start": "0",
+          "end": "1",
+          "intervals": "0\t1.001"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OUTSIDE",
+            "field": "intervals",
+            "row": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "start": "0",
+          "end": "10",
+          "intervals": "0\t4\n3\t6\n8\t10"
+        },
+        "lateResult": {
+          "spans": [
+            {
+              "from": "0",
+              "to": "3",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            },
+            {
+              "from": "3",
+              "to": "4",
+              "depth": 2,
+              "lines": [
+                1,
+                2
+              ]
+            },
+            {
+              "from": "4",
+              "to": "6",
+              "depth": 1,
+              "lines": [
+                2
+              ]
+            },
+            {
+              "from": "6",
+              "to": "8",
+              "depth": 0,
+              "lines": []
+            },
+            {
+              "from": "8",
+              "to": "10",
+              "depth": 1,
+              "lines": [
+                3
+              ]
+            }
+          ],
+          "covered": "8",
+          "uncovered": "2",
+          "overlapped": "1"
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "start": "0",
+            "end": "10",
+            "intervals": "0\t4\n3\t6\n8\t10"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "start": "0",
+            "end": "10",
+            "intervals": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "start": "0",
+          "end": "10",
+          "intervals": "0\t4\n3\t6\n8\t10"
+        },
+        "newerDraft": {
+          "start": "0",
+          "end": "1",
+          "intervals": "0\t1.001"
+        },
+        "olderLateResult": {
+          "spans": [
+            {
+              "from": "0",
+              "to": "3",
+              "depth": 1,
+              "lines": [
+                1
+              ]
+            },
+            {
+              "from": "3",
+              "to": "4",
+              "depth": 2,
+              "lines": [
+                1,
+                2
+              ]
+            },
+            {
+              "from": "4",
+              "to": "6",
+              "depth": 1,
+              "lines": [
+                2
+              ]
+            },
+            {
+              "from": "6",
+              "to": "8",
+              "depth": 0,
+              "lines": []
+            },
+            {
+              "from": "8",
+              "to": "10",
+              "depth": 1,
+              "lines": [
+                3
+              ]
+            }
+          ],
+          "covered": "8",
+          "uncovered": "2",
+          "overlapped": "1"
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OUTSIDE",
+            "field": "intervals",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OUTSIDE",
+            "field": "intervals",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}

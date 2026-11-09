@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-json-patch-preflight-20261109",
+  "slug": "json-patch-preflight",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "insert-and-remove",
+      "kind": "core",
+      "purpose": "陣列插入後再依新索引移除",
+      "input": {
+        "document": "{\"rows\":[\"a\",\"c\"]}",
+        "patch": "[{\"op\":\"add\",\"path\":\"/rows/1\",\"value\":\"b\"},{\"op\":\"remove\",\"path\":\"/rows/0\"}]"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "document": {
+            "rows": [
+              "b",
+              "c"
+            ]
+          },
+          "steps": [
+            {
+              "op": "add",
+              "path": "/rows/1"
+            },
+            {
+              "op": "remove",
+              "path": "/rows/0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pointer-escapes",
+      "kind": "core",
+      "purpose": "~01 解一次，~1 解成 slash",
+      "input": {
+        "document": "{\"~1\":{\"a/b\":1}}",
+        "patch": "[{\"op\":\"replace\",\"path\":\"/~01/a~1b\",\"value\":2}]"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "document": {
+            "~1": {
+              "a/b": 2
+            }
+          },
+          "steps": [
+            {
+              "op": "replace",
+              "path": "/~01/a~1b"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "test-object-order",
+      "kind": "core",
+      "purpose": "結構 test 忽略物件鍵順",
+      "input": {
+        "document": "{\"\":{\"a\":1,\"b\":2}}",
+        "patch": "[{\"op\":\"test\",\"path\":\"/\",\"value\":{\"b\":2,\"a\":1}}]"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "document": {
+            "": {
+              "a": 1,
+              "b": 2
+            }
+          },
+          "steps": [
+            {
+              "op": "test",
+              "path": "/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "late-failure",
+      "kind": "core",
+      "purpose": "後段 test 失敗，前段 replace 不可下載",
+      "input": {
+        "document": "{\"v\":1}",
+        "patch": "[{\"op\":\"replace\",\"path\":\"/v\",\"value\":2},{\"op\":\"test\",\"path\":\"/v\",\"value\":1}]"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TEST_FAILED",
+          "field": "patch",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "duplicate-decoded",
+      "kind": "core",
+      "purpose": "解碼後同鍵拒絕",
+      "input": {
+        "document": "{\"x\":1,\"\\u0078\":2}",
+        "patch": "[{\"op\":\"remove\",\"path\":\"/x\"}]"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_KEY",
+          "field": "document",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "forbidden-path",
+      "kind": "core",
+      "purpose": "禁止進入 prototype key",
+      "input": {
+        "document": "{}",
+        "patch": "[{\"op\":\"add\",\"path\":\"/__proto__\",\"value\":{\"a\":1}}]"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "FORBIDDEN_KEY",
+          "field": "patch",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "bad-index",
+      "kind": "core",
+      "purpose": "陣列 index 禁前導零",
+      "input": {
+        "document": "[\"a\",\"b\"]",
+        "patch": "[{\"op\":\"remove\",\"path\":\"/01\"}]"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ARRAY_INDEX",
+          "field": "patch",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "maximum-integer",
+      "kind": "core",
+      "purpose": "保留最大安全整數",
+      "input": {
+        "document": "{\"v\":9007199254740991}",
+        "patch": "[{\"op\":\"test\",\"path\":\"/v\",\"value\":9007199254740991}]"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "document": {
+            "v": 9007199254740991
+          },
+          "steps": [
+            {
+              "op": "test",
+              "path": "/v"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "unsupported-copy",
+      "kind": "core",
+      "purpose": "受限 subset 排除 copy",
+      "input": {
+        "document": "{}",
+        "patch": "[{\"op\":\"copy\",\"path\":\"/new\",\"from\":\"/old\"}]"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OP_UNSUPPORTED",
+          "field": "patch",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "document": "{\"rows\":[\"a\",\"c\"]}",
+          "patch": "[{\"op\":\"add\",\"path\":\"/rows/1\",\"value\":\"b\"},{\"op\":\"remove\",\"path\":\"/rows/0\"}]"
+        },
+        "edit": {
+          "document": "{\"v\":1}",
+          "patch": "[{\"op\":\"replace\",\"path\":\"/v\",\"value\":2},{\"op\":\"test\",\"path\":\"/v\",\"value\":1}]"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TEST_FAILED",
+            "field": "patch",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "document": "{\"rows\":[\"a\",\"c\"]}",
+          "patch": "[{\"op\":\"add\",\"path\":\"/rows/1\",\"value\":\"b\"},{\"op\":\"remove\",\"path\":\"/rows/0\"}]"
+        },
+        "lateResult": {
+          "document": {
+            "rows": [
+              "b",
+              "c"
+            ]
+          },
+          "steps": [
+            {
+              "op": "add",
+              "path": "/rows/1"
+            },
+            {
+              "op": "remove",
+              "path": "/rows/0"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "document": "{\"rows\":[\"a\",\"c\"]}",
+            "patch": "[{\"op\":\"add\",\"path\":\"/rows/1\",\"value\":\"b\"},{\"op\":\"remove\",\"path\":\"/rows/0\"}]"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "document": "",
+            "patch": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "document": "{\"rows\":[\"a\",\"c\"]}",
+          "patch": "[{\"op\":\"add\",\"path\":\"/rows/1\",\"value\":\"b\"},{\"op\":\"remove\",\"path\":\"/rows/0\"}]"
+        },
+        "newerDraft": {
+          "document": "{\"v\":1}",
+          "patch": "[{\"op\":\"replace\",\"path\":\"/v\",\"value\":2},{\"op\":\"test\",\"path\":\"/v\",\"value\":1}]"
+        },
+        "olderLateResult": {
+          "document": {
+            "rows": [
+              "b",
+              "c"
+            ]
+          },
+          "steps": [
+            {
+              "op": "add",
+              "path": "/rows/1"
+            },
+            {
+              "op": "remove",
+              "path": "/rows/0"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TEST_FAILED",
+            "field": "patch",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TEST_FAILED",
+            "field": "patch",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

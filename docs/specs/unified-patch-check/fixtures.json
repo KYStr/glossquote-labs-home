@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-unified-patch-check-20261109",
+  "slug": "unified-patch-check",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "context-replace",
+      "kind": "core",
+      "purpose": "逐行 context 和替換",
+      "input": {
+        "base": "a\nb\nc\n",
+        "patch": "--- old\n+++ new\n@@ -1,3 +1,3 @@\n a\n-b\n+B\n c\n"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "text": "a\nB\nc\n",
+          "added": 1,
+          "removed": 1,
+          "hunks": [
+            {
+              "oldIndex": 0,
+              "newIndex": 0,
+              "oldCount": 3,
+              "newCount": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "insert-start",
+      "kind": "core",
+      "purpose": "零長度舊 hunk 於檔頭插入",
+      "input": {
+        "base": "a\n",
+        "patch": "--- old\n+++ new\n@@ -0,0 +1 @@\n+x\n"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "text": "x\na\n",
+          "added": 1,
+          "removed": 0,
+          "hunks": [
+            {
+              "oldIndex": 0,
+              "newIndex": 0,
+              "oldCount": 0,
+              "newCount": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "remove-all",
+      "kind": "core",
+      "purpose": "清空後輸出零 bytes",
+      "input": {
+        "base": "a\n",
+        "patch": "--- old\n+++ new\n@@ -1 +0,0 @@\n-a\n"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "text": "",
+          "added": 0,
+          "removed": 1,
+          "hunks": [
+            {
+              "oldIndex": 0,
+              "newIndex": 0,
+              "oldCount": 1,
+              "newCount": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "two-hunks",
+      "kind": "core",
+      "purpose": "兩個座標各自從 source／結果算",
+      "input": {
+        "base": "a\nb\nc\n",
+        "patch": "--- old\n+++ new\n@@ -1,0 +2 @@\n+x\n@@ -3 +4 @@\n-c\n+C\n"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "text": "a\nx\nb\nC\n",
+          "added": 2,
+          "removed": 1,
+          "hunks": [
+            {
+              "oldIndex": 1,
+              "newIndex": 1,
+              "oldCount": 0,
+              "newCount": 1
+            },
+            {
+              "oldIndex": 2,
+              "newIndex": 3,
+              "oldCount": 1,
+              "newCount": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mismatch-space",
+      "kind": "core",
+      "purpose": "不修剪來源空白",
+      "input": {
+        "base": " a\n",
+        "patch": "--- old\n+++ new\n@@ -1 +1 @@\n-a\n+b\n"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CONTEXT_MISMATCH",
+          "field": "patch",
+          "row": 4
+        }
+      }
+    },
+    {
+      "id": "bad-count",
+      "kind": "core",
+      "purpose": "宣告 count 和 hunk 不同",
+      "input": {
+        "base": "a\n",
+        "patch": "--- old\n+++ new\n@@ -1,2 +1 @@\n-a\n+b\n"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HUNK_COUNT",
+          "field": "patch",
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "wrong-output-position",
+      "kind": "core",
+      "purpose": "不能忽略新側座標",
+      "input": {
+        "base": "a\n",
+        "patch": "--- old\n+++ new\n@@ -1 +2 @@\n-a\n+b\n"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HUNK_NEW_POSITION",
+          "field": "patch",
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "base": "a\nb\nc\n",
+          "patch": "--- old\n+++ new\n@@ -1,3 +1,3 @@\n a\n-b\n+B\n c\n"
+        },
+        "edit": {
+          "base": " a\n",
+          "patch": "--- old\n+++ new\n@@ -1 +1 @@\n-a\n+b\n"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "CONTEXT_MISMATCH",
+            "field": "patch",
+            "row": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "base": "a\nb\nc\n",
+          "patch": "--- old\n+++ new\n@@ -1,3 +1,3 @@\n a\n-b\n+B\n c\n"
+        },
+        "lateResult": {
+          "text": "a\nB\nc\n",
+          "added": 1,
+          "removed": 1,
+          "hunks": [
+            {
+              "oldIndex": 0,
+              "newIndex": 0,
+              "oldCount": 3,
+              "newCount": 3
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "base": "a\nb\nc\n",
+            "patch": "--- old\n+++ new\n@@ -1,3 +1,3 @@\n a\n-b\n+B\n c\n"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "base": "",
+            "patch": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "base": "a\nb\nc\n",
+          "patch": "--- old\n+++ new\n@@ -1,3 +1,3 @@\n a\n-b\n+B\n c\n"
+        },
+        "newerDraft": {
+          "base": " a\n",
+          "patch": "--- old\n+++ new\n@@ -1 +1 @@\n-a\n+b\n"
+        },
+        "olderLateResult": {
+          "text": "a\nB\nc\n",
+          "added": 1,
+          "removed": 1,
+          "hunks": [
+            {
+              "oldIndex": 0,
+              "newIndex": 0,
+              "oldCount": 3,
+              "newCount": 3
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "CONTEXT_MISMATCH",
+            "field": "patch",
+            "row": 4
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "CONTEXT_MISMATCH",
+            "field": "patch",
+            "row": 4
+          }
+        }
+      }
+    }
+  ]
+}

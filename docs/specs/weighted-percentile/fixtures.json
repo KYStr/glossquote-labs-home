@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-weighted-percentile-20261109",
+  "slug": "weighted-percentile",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "weighted-tie",
+      "kind": "core",
+      "purpose": "邊界上選到累計剛好達秩的值",
+      "input": {
+        "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+        "percentile": "60"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "quantile": "20",
+          "weightTotal": "10",
+          "rank": "6",
+          "cumulativeBefore": "3",
+          "cumulativeThrough": "6",
+          "contributors": [
+            1,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "id": "just-over",
+      "kind": "core",
+      "purpose": "60.01 使 rank 由 6 變 7",
+      "input": {
+        "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+        "percentile": "60.01"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "quantile": "30",
+          "weightTotal": "10",
+          "rank": "7",
+          "cumulativeBefore": "6",
+          "cumulativeThrough": "10",
+          "contributors": [
+            4
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-percentile",
+      "kind": "core",
+      "purpose": "零百分位及負小數",
+      "input": {
+        "samples": "1.2\t2\n-0.125\t1",
+        "percentile": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "quantile": "-0.125",
+          "weightTotal": "3",
+          "rank": "1",
+          "cumulativeBefore": "0",
+          "cumulativeThrough": "1",
+          "contributors": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "id": "maximum-count",
+      "kind": "core",
+      "purpose": "大頻次不展開，百分位 100",
+      "input": {
+        "samples": "1000000000\t1000000000\n-1000000000\t1000000000",
+        "percentile": "100"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "quantile": "1000000000",
+          "weightTotal": "2000000000",
+          "rank": "2000000000",
+          "cumulativeBefore": "1000000000",
+          "cumulativeThrough": "2000000000",
+          "contributors": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-same",
+      "kind": "core",
+      "purpose": "負零與正零同群",
+      "input": {
+        "samples": "-0.000\t2\n0\t1",
+        "percentile": "95"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "quantile": "0",
+          "weightTotal": "3",
+          "rank": "3",
+          "cumulativeBefore": "0",
+          "cumulativeThrough": "3",
+          "contributors": [
+            1,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid-count",
+      "kind": "core",
+      "purpose": "頻次零拒絕且報列",
+      "input": {
+        "samples": "1\t2\n2\t0",
+        "percentile": "50"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "COUNT",
+          "field": "samples",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "percentile-range",
+      "kind": "core",
+      "purpose": "拒絕超過 100",
+      "input": {
+        "samples": "1\t2",
+        "percentile": "100.01"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PERCENTILE",
+          "field": "percentile",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+          "percentile": "60"
+        },
+        "edit": {
+          "samples": "1\t2\n2\t0",
+          "percentile": "50"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "COUNT",
+            "field": "samples",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+          "percentile": "60"
+        },
+        "lateResult": {
+          "quantile": "20",
+          "weightTotal": "10",
+          "rank": "6",
+          "cumulativeBefore": "3",
+          "cumulativeThrough": "6",
+          "contributors": [
+            1,
+            3
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+            "percentile": "60"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "samples": "",
+            "percentile": "95"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "samples": "20\t2\n10\t3\n20\t1\n30\t4",
+          "percentile": "60"
+        },
+        "newerDraft": {
+          "samples": "1\t2\n2\t0",
+          "percentile": "50"
+        },
+        "olderLateResult": {
+          "quantile": "20",
+          "weightTotal": "10",
+          "rank": "6",
+          "cumulativeBefore": "3",
+          "cumulativeThrough": "6",
+          "contributors": [
+            1,
+            3
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "COUNT",
+            "field": "samples",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "COUNT",
+            "field": "samples",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

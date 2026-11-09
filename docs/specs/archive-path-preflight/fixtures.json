@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-archive-path-preflight-20261109",
+  "slug": "archive-path-preflight",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "normal-tree",
+      "kind": "core",
+      "purpose": "明示目錄和自己的後代可共存",
+      "input": {
+        "entries": "D\tdata\nF\tdata/a.txt\nF\tdata/b.txt"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "unsafe": [],
+          "conflicts": [],
+          "safeWithinPolicy": true
+        }
+      }
+    },
+    {
+      "id": "implicit-alias",
+      "kind": "core",
+      "purpose": "兩個隱式父目錄不同拼法",
+      "input": {
+        "entries": "F\tData/a.txt\nF\tdata/b.txt"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 2,
+          "unsafe": [],
+          "conflicts": [
+            {
+              "kind": "CASE_ALIAS",
+              "key": "data",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ],
+          "safeWithinPolicy": false
+        }
+      }
+    },
+    {
+      "id": "file-parent-and-duplicate",
+      "kind": "core",
+      "purpose": "同名檔／目錄，加檔案占祖先",
+      "input": {
+        "entries": "F\ta\nF\ta/b\nD\ta"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "unsafe": [],
+          "conflicts": [
+            {
+              "kind": "SAME_MEMBER",
+              "key": "a",
+              "lines": [
+                1,
+                3
+              ]
+            },
+            {
+              "kind": "PARENT_FILE",
+              "key": "a",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ],
+          "safeWithinPolicy": false
+        }
+      }
+    },
+    {
+      "id": "traversal-and-reserved",
+      "kind": "core",
+      "purpose": "拒絕 ..、設備名、尾點與空段",
+      "input": {
+        "entries": "F\t../x\nF\ta/NUL.txt\nD\ta.\nD\ta//b"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 4,
+          "unsafe": [
+            {
+              "line": 1,
+              "code": "DOT_SEGMENT",
+              "segment": 1
+            },
+            {
+              "line": 2,
+              "code": "DEVICE_NAME",
+              "segment": 2
+            },
+            {
+              "line": 3,
+              "code": "TRAILING_DOT",
+              "segment": 1
+            },
+            {
+              "line": 4,
+              "code": "EMPTY_SEGMENT",
+              "segment": 2
+            }
+          ],
+          "conflicts": [],
+          "safeWithinPolicy": false
+        }
+      }
+    },
+    {
+      "id": "drive-and-slash",
+      "kind": "core",
+      "purpose": "根路徑、磁碟代號和反斜線",
+      "input": {
+        "entries": "F\t/etc/x\nF\tC:foo\nF\tx\\y"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "unsafe": [
+            {
+              "line": 1,
+              "code": "ABSOLUTE",
+              "segment": null
+            },
+            {
+              "line": 2,
+              "code": "ABSOLUTE",
+              "segment": null
+            },
+            {
+              "line": 3,
+              "code": "BACKSLASH",
+              "segment": null
+            }
+          ],
+          "conflicts": [],
+          "safeWithinPolicy": false
+        }
+      }
+    },
+    {
+      "id": "case-same-member",
+      "kind": "core",
+      "purpose": "終端 segment 產生 alias 和同名",
+      "input": {
+        "entries": "F\tx/File.txt\nF\tx/file.txt"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 2,
+          "unsafe": [],
+          "conflicts": [
+            {
+              "kind": "CASE_ALIAS",
+              "key": "x/file.txt",
+              "lines": [
+                1,
+                2
+              ]
+            },
+            {
+              "kind": "SAME_MEMBER",
+              "key": "x/file.txt",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ],
+          "safeWithinPolicy": false
+        }
+      }
+    },
+    {
+      "id": "symlink-kind",
+      "kind": "core",
+      "purpose": "非支援類型停止，不推測為檔",
+      "input": {
+        "entries": "L\tx"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_FORMAT",
+          "field": "entries",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "entries": "D\tdata\nF\tdata/a.txt\nF\tdata/b.txt"
+        },
+        "edit": {
+          "entries": "L\tx"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "ROW_FORMAT",
+            "field": "entries",
+            "row": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "entries": "D\tdata\nF\tdata/a.txt\nF\tdata/b.txt"
+        },
+        "lateResult": {
+          "rowCount": 3,
+          "unsafe": [],
+          "conflicts": [],
+          "safeWithinPolicy": true
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "entries": "D\tdata\nF\tdata/a.txt\nF\tdata/b.txt"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "entries": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "entries": "D\tdata\nF\tdata/a.txt\nF\tdata/b.txt"
+        },
+        "newerDraft": {
+          "entries": "L\tx"
+        },
+        "olderLateResult": {
+          "rowCount": 3,
+          "unsafe": [],
+          "conflicts": [],
+          "safeWithinPolicy": true
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "ROW_FORMAT",
+            "field": "entries",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "ROW_FORMAT",
+            "field": "entries",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}

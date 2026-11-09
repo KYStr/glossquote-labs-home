@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-candidate-key-audit-20261109",
+  "slug": "candidate-key-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "compare-keys",
+      "kind": "core",
+      "purpose": "單欄重複，複合鍵有效且最小",
+      "input": {
+        "table": "dept\tid\tname\nA\t1\tX\nB\t1\tY\nB\t2\tZ",
+        "candidates": "id\ndept+id\ndept+id+name"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "candidates": [
+            {
+              "columns": [
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [
+                [
+                  2,
+                  3
+                ]
+              ],
+              "valid": false,
+              "minimal": false
+            },
+            {
+              "columns": [
+                "dept",
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": true
+            },
+            {
+              "columns": [
+                "dept",
+                "id",
+                "name"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "missing-is-distinct",
+      "kind": "core",
+      "purpose": "缺欄值不算重複群",
+      "input": {
+        "table": "key\tname\n\tA\n\tB\nx\tC\nx\tD",
+        "candidates": "key"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 4,
+          "candidates": [
+            {
+              "columns": [
+                "key"
+              ],
+              "missingRows": [
+                2,
+                3
+              ],
+              "duplicateGroups": [
+                [
+                  4,
+                  5
+                ]
+              ],
+              "valid": false,
+              "minimal": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "literal-tuple",
+      "kind": "core",
+      "purpose": "內含 + 不造成 tuple 互撞",
+      "input": {
+        "table": "x\ty\na+b\tc\na\tb+c",
+        "candidates": "x+y"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 2,
+          "candidates": [
+            {
+              "columns": [
+                "x",
+                "y"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "case-spaces",
+      "kind": "core",
+      "purpose": "前後空格和大小寫照字面",
+      "input": {
+        "table": "x\nx\nX\n x\n",
+        "candidates": "x"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "candidates": [
+            {
+              "columns": [
+                "x"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "duplicate-set",
+      "kind": "core",
+      "purpose": "相同集合不同順序亦重複",
+      "input": {
+        "table": "x\ty\na\tb",
+        "candidates": "x+y\ny+x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_CANDIDATE",
+          "field": "candidates",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "bad-width",
+      "kind": "core",
+      "purpose": "不補齊缺欄",
+      "input": {
+        "table": "x\ty\na",
+        "candidates": "x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "WIDTH",
+          "field": "table",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "unknown-column",
+      "kind": "core",
+      "purpose": "候選指定不存在欄",
+      "input": {
+        "table": "x\na",
+        "candidates": "y"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CANDIDATE",
+          "field": "candidates",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "table": "dept\tid\tname\nA\t1\tX\nB\t1\tY\nB\t2\tZ",
+          "candidates": "id\ndept+id\ndept+id+name"
+        },
+        "edit": {
+          "table": "x\ty\na\tb",
+          "candidates": "x+y\ny+x"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "DUP_CANDIDATE",
+            "field": "candidates",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "table": "dept\tid\tname\nA\t1\tX\nB\t1\tY\nB\t2\tZ",
+          "candidates": "id\ndept+id\ndept+id+name"
+        },
+        "lateResult": {
+          "rowCount": 3,
+          "candidates": [
+            {
+              "columns": [
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [
+                [
+                  2,
+                  3
+                ]
+              ],
+              "valid": false,
+              "minimal": false
+            },
+            {
+              "columns": [
+                "dept",
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": true
+            },
+            {
+              "columns": [
+                "dept",
+                "id",
+                "name"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": false
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "table": "dept\tid\tname\nA\t1\tX\nB\t1\tY\nB\t2\tZ",
+            "candidates": "id\ndept+id\ndept+id+name"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "table": "",
+            "candidates": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "table": "dept\tid\tname\nA\t1\tX\nB\t1\tY\nB\t2\tZ",
+          "candidates": "id\ndept+id\ndept+id+name"
+        },
+        "newerDraft": {
+          "table": "x\ty\na\tb",
+          "candidates": "x+y\ny+x"
+        },
+        "olderLateResult": {
+          "rowCount": 3,
+          "candidates": [
+            {
+              "columns": [
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [
+                [
+                  2,
+                  3
+                ]
+              ],
+              "valid": false,
+              "minimal": false
+            },
+            {
+              "columns": [
+                "dept",
+                "id"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": true
+            },
+            {
+              "columns": [
+                "dept",
+                "id",
+                "name"
+              ],
+              "missingRows": [],
+              "duplicateGroups": [],
+              "valid": true,
+              "minimal": false
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "DUP_CANDIDATE",
+            "field": "candidates",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "DUP_CANDIDATE",
+            "field": "candidates",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

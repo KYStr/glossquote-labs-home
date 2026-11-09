@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-fixed-width-slicer-20261109",
+  "slug": "fixed-width-slicer",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "mixed-script",
+      "kind": "core",
+      "purpose": "位元組切界保留空格和多位元字",
+      "input": {
+        "records": "A中  \nB文xy",
+        "widths": "1,3,2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "widths": [
+            1,
+            3,
+            2
+          ],
+          "byteWidth": 6,
+          "rows": [
+            {
+              "line": 1,
+              "fields": [
+                "A",
+                "中",
+                "  "
+              ]
+            },
+            {
+              "line": 2,
+              "fields": [
+                "B",
+                "文",
+                "xy"
+              ]
+            }
+          ],
+          "validRows": 2,
+          "invalidRows": 0
+        }
+      }
+    },
+    {
+      "id": "split-scalar",
+      "kind": "core",
+      "purpose": "總長符合但切到 emoji 中段",
+      "input": {
+        "records": "😀X",
+        "widths": "2,3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "widths": [
+            2,
+            3
+          ],
+          "byteWidth": 5,
+          "rows": [
+            {
+              "line": 1,
+              "error": "SPLIT_UTF8",
+              "actualBytes": 5,
+              "boundary": 2
+            }
+          ],
+          "validRows": 0,
+          "invalidRows": 1
+        }
+      }
+    },
+    {
+      "id": "length-first",
+      "kind": "core",
+      "purpose": "不以切界掩蓋 byte 長度問題",
+      "input": {
+        "records": "é\nab\n",
+        "widths": "1,2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "widths": [
+            1,
+            2
+          ],
+          "byteWidth": 3,
+          "rows": [
+            {
+              "line": 1,
+              "error": "LENGTH",
+              "actualBytes": 2
+            },
+            {
+              "line": 2,
+              "error": "LENGTH",
+              "actualBytes": 2
+            }
+          ],
+          "validRows": 0,
+          "invalidRows": 2
+        }
+      }
+    },
+    {
+      "id": "bom-literal",
+      "kind": "core",
+      "purpose": "欄起始 U+FEFF 當內容保留",
+      "input": {
+        "records": "X﻿Y",
+        "widths": "1,3,1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "widths": [
+            1,
+            3,
+            1
+          ],
+          "byteWidth": 5,
+          "rows": [
+            {
+              "line": 1,
+              "fields": [
+                "X",
+                "﻿",
+                "Y"
+              ]
+            }
+          ],
+          "validRows": 1,
+          "invalidRows": 0
+        }
+      }
+    },
+    {
+      "id": "partial-report",
+      "kind": "core",
+      "purpose": "有效、長度錯、切界錯並存",
+      "input": {
+        "records": "AB\n\né",
+        "widths": "1,1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "widths": [
+            1,
+            1
+          ],
+          "byteWidth": 2,
+          "rows": [
+            {
+              "line": 1,
+              "fields": [
+                "A",
+                "B"
+              ]
+            },
+            {
+              "line": 2,
+              "error": "LENGTH",
+              "actualBytes": 0
+            },
+            {
+              "line": 3,
+              "error": "SPLIT_UTF8",
+              "actualBytes": 2,
+              "boundary": 1
+            }
+          ],
+          "validRows": 1,
+          "invalidRows": 2
+        }
+      }
+    },
+    {
+      "id": "zero-width",
+      "kind": "core",
+      "purpose": "欄寬零拒絕",
+      "input": {
+        "records": "AB",
+        "widths": "0,2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "WIDTH_RANGE",
+          "field": "widths",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "whitespace-width",
+      "kind": "core",
+      "purpose": "不猜欄寬標記",
+      "input": {
+        "records": "AB",
+        "widths": "1, 1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "WIDTH_FORMAT",
+          "field": "widths",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "records": "A中  \nB文xy",
+          "widths": "1,3,2"
+        },
+        "edit": {
+          "records": "AB",
+          "widths": "0,2"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WIDTH_RANGE",
+            "field": "widths",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "records": "A中  \nB文xy",
+          "widths": "1,3,2"
+        },
+        "lateResult": {
+          "widths": [
+            1,
+            3,
+            2
+          ],
+          "byteWidth": 6,
+          "rows": [
+            {
+              "line": 1,
+              "fields": [
+                "A",
+                "中",
+                "  "
+              ]
+            },
+            {
+              "line": 2,
+              "fields": [
+                "B",
+                "文",
+                "xy"
+              ]
+            }
+          ],
+          "validRows": 2,
+          "invalidRows": 0
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "records": "A中  \nB文xy",
+            "widths": "1,3,2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "records": "",
+            "widths": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "records": "A中  \nB文xy",
+          "widths": "1,3,2"
+        },
+        "newerDraft": {
+          "records": "AB",
+          "widths": "0,2"
+        },
+        "olderLateResult": {
+          "widths": [
+            1,
+            3,
+            2
+          ],
+          "byteWidth": 6,
+          "rows": [
+            {
+              "line": 1,
+              "fields": [
+                "A",
+                "中",
+                "  "
+              ]
+            },
+            {
+              "line": 2,
+              "fields": [
+                "B",
+                "文",
+                "xy"
+              ]
+            }
+          ],
+          "validRows": 2,
+          "invalidRows": 0
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WIDTH_RANGE",
+            "field": "widths",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WIDTH_RANGE",
+            "field": "widths",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
