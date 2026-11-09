@@ -29,6 +29,10 @@
 
 來源取得曾遇候選archive TLS證書鏈失敗，未停用TLS驗證或修改信任設定；改用既有固定候選副本，逐檔與本輪GitHub tree/blob核對一致。跨repo Git tree不能直接引用，會先搬入原樣objects；這不是產品merge或部署。
 
+非作者從固定PR候選建立乾淨副本後發現：首次來源搬移錯誤略過table-reconcile原已追蹤的13個dist檔（79,298 bytes）。本地staging含額外檔使先前本地完整性檢查沒有發現漏傳。已保留首次FAIL證據，修正為只排除發布根自身build目錄，原樣保留工具來源內已追蹤產物，並以新固定候選逐檔覆驗。
+
+同輪另修正18個外部候選索引的root tree欄位：原API使用commit別名查tree，回應sha不能假設是真正root tree；現改讀git commit的tree.sha。9組規格目錄保留了基線既有10份review/brief附檔，與原source tree不同是已歸屬的附加證據；source-index分列sourceTree、destinationTree和retainedFromSharedBaseline，不再混用來源。
+
 未做產品功能重驗、正式站Network/Storage、真機、UI或部署；沒有控制使用者桌面。所有先前NOT_RUN與退修不被整合PASS抵銷。新預案的文件獨審與產品九面向分別記錄。
 
 ## 雲端接續與衝突

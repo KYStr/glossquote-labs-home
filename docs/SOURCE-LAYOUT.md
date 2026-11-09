@@ -34,6 +34,8 @@ archives/                     本地與雲端舊盤點、重複來源與證據
 
 來源索引會同時列 legacy default 與 candidate。部分舊 repo 的 default 只有 README／骨架，真正產品在 open PR；這是版本位置差異，不可把 default 快照當成「產品消失」或用骨架覆蓋候選。
 
+索引的 `sourceTree` 是原始Git subtree，`destinationTree` 是中央保存目錄。若保留基線既有審查附檔，會在 `retainedFromSharedBaseline` 列其原commit與路徑，不能把這些附檔歸給較早的來源版本。確認整包檔案時應從固定GitHub commit建立乾淨副本，不能讓staging額外檔掩蓋漏傳。
+
 ## 重複與歷史差異怎麼處理
 
 八項本地/雲端歷史重複已保留為 alternatives：多軌議程、問答卡、通訊錄、錄音筆記、循環賽、期限倒排、照片聯絡表、圖片疊合。它們保有各自固定 source 和原owner；中央整理不選勝者、不合併評分、不把其中一個釋放。

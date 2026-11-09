@@ -38,7 +38,7 @@ node scripts/workspace.mjs show <slug-or-task-id>
 - **新 production**：必須有完整 ready spec、可承接 task、正確 allowedExecutors。一次補至自己五件未交付、同時一件 working；不足整批時先補規格，不拆單規避。
 - **新 spec 工作**：先有 GitHub brief 與 spec task，自己 claim 後寫八節；發布文件後交非作者 review。產品尚未實作，不該填產品 PASS。
 - **已有成果但沒有正規 claim**：保留 source/作者/PR；交主統籌做補正，不能新 claim 同名預案假裝尚未製作。`adopt-existing` 只供未完成原始 reconciliation 時，已完成後不能拿它繞過新工作規則。
-- **有兩個來源版本**：看 source-index 的 alternatives，固定兩邊 commit，讀實際差異與各自證據，交原 owner 決定合併；不以日期最新直接取代另一份。
+- **有兩個來源版本**：查 source-index 的 snapshots 中相同 slug、不同 kind 的列，以及 archives 下的本地/雲端歷史來源，固定兩邊 commit，讀實際差異與各自證據，交原 owner 決定合併；不以日期最新直接取代另一份。
 
 ## 4. 本人 ACK、唯一 claim、讀回
 
