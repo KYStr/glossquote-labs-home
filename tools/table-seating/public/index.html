@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同行群分桌｜Gloss Tools</title>
+<meta name="description" content="按桌容量、同行人數及無階或指定桌限制產生一份完整分桌表。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>同行群分桌</h1>
+  <p class="intro">先輸入每張桌子的座位數和是否可以無階到達，再輸入同行群的人數與指定桌；按下「安排同行群分桌」，就得到一份不拆群的逐桌分桌表。</p>
+
+  <form id="seating-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>桌子</legend>
+          <p class="help">最多 4 桌。每桌都要有桌名與座位數；座位數 1–20。</p>
+          <div id="tables-body" class="rows"></div>
+          <button type="button" id="add-table" class="secondary">新增一桌</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>同行群</legend>
+          <p class="help">最多 8 群。每群都要有群名與人數；人數 1–20。群不會被拆開。勾選「需要無階」表示該群只能坐無階桌；「指定桌」可留空。</p>
+          <div id="parties-body" class="rows"></div>
+          <button type="button" id="add-party" class="secondary">新增一群</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="arrange" class="primary">安排同行群分桌</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料，用來示範回退搜尋；載入後仍需按「安排同行群分桌」才會計算。</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="分桌結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
