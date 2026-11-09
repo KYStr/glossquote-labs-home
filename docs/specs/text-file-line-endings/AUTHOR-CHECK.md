@@ -8,4 +8,6 @@
 
 - 7 筆字面核心案例、3 筆 controller 案例。`mixed-bom` 核對點為「檔頭保留，混合 CRLF/CR/LF 轉 LF」。
 
+- double-bom 反例重算為 EFBBBF0A 再得 0A。65,536 個 LF 轉 CRLF 後是 131,072 bytes，重選該副本超限。重跑 bytes 相同只驗首次輸出仍是合法輸入且沒有在 strip 模式重辨前次保留首 BOM 的情境。
+
 - 產品交驗、Chrome/Edge、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN，分數 null。未固定候選或未獨評前不計 ready。

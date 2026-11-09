@@ -108,7 +108,7 @@
 
 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
 
-另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。測 65,536 / 65,537 bytes、UTF-8 truncated/overlong、零 byte、CRLF 正確歸一及 9 次相同分隔只列 8 位置。正規化同目標兩次輸出 bytes 冪等，保留第二個 BOM 當內容。
+另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。測 65,536 / 65,537 bytes、UTF-8 truncated/overlong、零 byte、CRLF 正確歸一及 9 次相同分隔只列 8 位置。同一 target/bomMode 下，僅在首次輸出仍是合法輸入，且未在 strip 模式把前次保留的開頭 U+FEFF 再辨為 BOM 時，測重跑輸出 bytes 相同。double-bom 反例中，EF BB BF EF BB BF 0D 第一次 strip/lf 得 EF BB BF 0A，第二次首三 bytes 重新按輸入 BOM 辨認，得到 0A。容量反例為 65,536 個 LF 轉成 131,072 bytes 的 CRLF，可下載。重新選此副本超過輸入上限，回 INPUT_LIMIT。
 
 候選 gate（均 NOT_RUN）
 
