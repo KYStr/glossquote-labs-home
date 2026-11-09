@@ -3,7 +3,8 @@
 - **Fixed spec source:** `docs/specs/game-night-scorecard/` (`spec-game-night-scorecard-20261109`, v1) at base `23c1d5f70db16e8bd0086259156243c5a57f8785` (`codex/initial-publication`)
 - **Registry task:** `labs-prod-game-night-scorecard-20261109`
 - **Claim:** `muse-main-claim-game-night-scorecard-20261109T082402Z-w5`
-- **Candidate commit:** (filled in after the PR is opened; see the draft PR)
+- **Candidate commit:** `d1ad488d3fef863f94cc8808b376194cda4f4abe` (tool commit; this follow-up commit records it and the PR URL below)
+- **Draft PR:** https://github.com/KYStr/glossquote-labs-home/pull/124 (base `codex/initial-publication`, OPEN + draft, head verified == candidate commit)
 - **Environment:** Node v24.22.1, offline, Linux
 
 ## Commands and results (all exit 0)
