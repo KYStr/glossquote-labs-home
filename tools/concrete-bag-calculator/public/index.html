@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>混凝土用量計算機｜Gloss Tools</title>
+<meta name="description" content="輸入平板、條形基礎或圓柱的尺寸、數量與損耗率，算出混凝土體積（m³ 與 yd³）與 40／60／80 lb 預拌袋裝的需要包數。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>混凝土用量計算機</h1>
+  <p class="lede">選擇形狀，填入公分尺寸、數量與損耗率（預設 10%），一次算出淨體積與含損耗體積（m³ 與 yd³），並列出 40、60、80 lb 三種預拌袋裝各需要幾包。損耗只加在總體積一次，袋數再以未捨入的體積無條件進位到整包。結果是採購估算，不是結構設計。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="concrete-form" novalidate>
+        <fieldset class="field" id="shape-group">
+          <legend>形狀</legend>
+          <label class="radio-row" for="field-shape-slab">
+            <input id="field-shape-slab" name="shape" type="radio" value="slab" checked>
+            平板
+          </label>
+          <label class="radio-row" for="field-shape-footing">
+            <input id="field-shape-footing" name="shape" type="radio" value="footing">
+            條形基礎
+          </label>
+          <label class="radio-row" for="field-shape-cylinder">
+            <input id="field-shape-cylinder" name="shape" type="radio" value="cylinder">
+            圓柱
+          </label>
+          <p class="field-error" id="error-shape" role="alert"></p>
+        </fieldset>
+        <div class="field" data-shapes="slab footing">
+          <label for="field-lengthCm">長（公分）</label>
+          <p class="help" id="help-lengthCm">大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-lengthCm" name="lengthCm" type="text" inputmode="decimal" autocomplete="off" value="400" aria-describedby="help-lengthCm">
+          <p class="field-error" id="error-lengthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="slab footing">
+          <label for="field-widthCm">寬（公分）</label>
+          <p class="help" id="help-widthCm">大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-widthCm" name="widthCm" type="text" inputmode="decimal" autocomplete="off" value="300" aria-describedby="help-widthCm">
+          <p class="field-error" id="error-widthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="slab">
+          <label for="field-thicknessCm">厚（公分）</label>
+          <p class="help" id="help-thicknessCm">平板厚度，大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-thicknessCm" name="thicknessCm" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-thicknessCm">
+          <p class="field-error" id="error-thicknessCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="footing" hidden>
+          <label for="field-depthCm">深（公分）</label>
+          <p class="help" id="help-depthCm">條形基礎深度，大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-depthCm" name="depthCm" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-depthCm">
+          <p class="field-error" id="error-depthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="cylinder" hidden>
+          <label for="field-diameterCm">直徑（公分）</label>
+          <p class="help" id="help-diameterCm">圓柱直徑，大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-diameterCm" name="diameterCm" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-diameterCm">
+          <p class="field-error" id="error-diameterCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="cylinder" hidden>
+          <label for="field-heightCm">高（公分）</label>
+          <p class="help" id="help-heightCm">圓柱高度，大於 0、不超過 10000 公分，小數至多 2 位。</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="200" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-count">數量</label>
+          <p class="help" id="help-count">1–999 的整數（件數）。</p>
+          <input id="field-count" name="count" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-count">
+          <p class="field-error" id="error-count" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wastePct">損耗率（%）</label>
+          <p class="help" id="help-wastePct">0–100%，小數至多 2 位，預設 10%。損耗只加在總體積一次。</p>
+          <input id="field-wastePct" name="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-wastePct">
+          <p class="field-error" id="error-wastePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入尺寸，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算混凝土用量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">體積與袋數</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="table-scroll" role="region" aria-label="袋數表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">袋型</th><th scope="col">每包產量（m³）</th><th scope="col">需要包數</th></tr>
+          </thead>
+          <tbody id="bag-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">袋數以未捨入的含損耗體積計算並無條件進位到整包。結果是採購估算，不是結構設計；實際用量受現場整平與厚度誤差影響。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與產量來源</summary>
+    <p>體積以公分尺寸換算：平板與條形基礎為長×寬×厚（深），圓柱為 π×（直徑/2）²×高，π 固定取小數 30 位。淨體積乘以件數後，加計一次損耗率得到含損耗體積；三種袋數都以未捨入的含損耗體積除以每包產量後無條件進位，畫面顯示的 3 位小數體積不會被拿來回推袋數。全部運算以精確有理數完成，不使用浮點數。</p>
+    <p>每包產量依主要預拌廠商公開產品資料固定：40 lb 約 0.30 ft³（0.0084950539776 m³）、60 lb 約 0.45 ft³（0.0127425809664 m³）、80 lb 約 0.60 ft³（0.0169901079552 m³），以 1 ft³ = 0.028316846592 m³ 換算。結果只有畫面顯示，沒有下載或匯出，文字可手動選取。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>損耗率加在哪一步？</dt>
+      <dd>先加在總體積上，再換算三種袋數；袋數本身不再另加損耗。</dd>
+      <dt>產量是保證值嗎？</dt>
+      <dd>不是，這是依廠商公布的每包約略產量換算的採購估算，實際用量受現場整平與厚度誤差影響。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
