@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Check a pasted archive manifest for unsafe relative names, case aliases, duplicate members and file-parent conflicts.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Archive Member Path Preflight | Gloss Tools</title>
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="spacer"></span>
+  <p class="draft-note">Switching language or leaving the page discards the draft.</p>
+  <a href="../index.html" lang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Archive Member Path Preflight</h1>
+  <p class="lede">Check a pasted archive manifest for unsafe relative names, case aliases, duplicate members and file-parent conflicts. Only the list you paste is checked: no archive is read, nothing is renamed, nothing is uploaded.</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Input</h2>
+      <label for="entries-input">Archive manifest: F or D, Tab, path</label>
+      <p class="help" id="entries-help">One member per row: write F (file) or D (directory), then one Tab, then the relative path. At most 500 rows; each path is 1–240 characters with at most 16 segments.</p>
+      <textarea id="entries-input" rows="12" aria-describedby="entries-help" spellcheck="false"></textarea>
+
+      <details class="rules" id="rules">
+        <summary>Portable relative-path rules</summary>
+        <ul>
+          <li>Each row: F or D, one Tab, then the path. Paths have no trailing slash; the kind marks directories.</li>
+          <li>Paths are 1–240 characters with at most 16 segments; each segment is 1–64 characters and only accepts <code>A–Z a–z 0–9 . _ -</code>.</li>
+          <li>Absolute paths, drive letters, backslashes, <code>.</code> or <code>..</code> segments, empty segments, and trailing dots are rejected.</li>
+          <li>Reserved device names are rejected: <code>CON PRN AUX NUL COM1–COM9 LPT1–LPT9</code> (case-insensitive, compared before the extension).</li>
+          <li>Comparison folds ASCII case: paths that differ only in capitalisation conflict.</li>
+          <li>Declaring the same member twice, or a file occupying another member&rsquo;s ancestor directory, is a conflict.</li>
+          <li>No archive is read or extracted, nothing is renamed, and no repair commands are produced.</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">Check archive paths</button>
+        <button type="button" id="example-button">Load example</button>
+        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="cancel-button" hidden>Cancel</button>
+        <button type="button" id="download-button" hidden>Download report</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <p id="status-text">Paste a manifest, or load the example.</p>
+      </div>
+      <p class="example-note" id="example-note" hidden>The example is sample data, not your files.</p>
+      <div class="error-box" id="error-box" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="result-section" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">Invalid rows and tree conflicts</h2>
+      <p id="result-summary"></p>
+
+      <h3 id="unsafe-heading">Invalid rows</h3>
+      <p class="empty-note" id="unsafe-empty" hidden>No invalid rows.</p>
+      <div class="table-region" id="unsafe-region" role="region" aria-labelledby="unsafe-heading" tabindex="0">
+        <table id="unsafe-table">
+          <caption>Invalid rows: only the first violation per row is reported</caption>
+          <thead>
+            <tr><th scope="col">Row</th><th scope="col">Code</th><th scope="col">Segment</th><th scope="col">Detail</th></tr>
+          </thead>
+          <tbody id="unsafe-table-body"></tbody>
+        </table>
+      </div>
+      <div class="pager" id="unsafe-pager" hidden>
+        <button type="button" id="unsafe-prev">Previous page</button>
+        <p id="unsafe-page-info"></p>
+        <button type="button" id="unsafe-next">Next page</button>
+      </div>
+
+      <h3 id="conflicts-heading">Tree conflicts</h3>
+      <p class="empty-note" id="conflicts-empty" hidden>No tree conflicts.</p>
+      <div class="table-region" id="conflicts-region" role="region" aria-labelledby="conflicts-heading" tabindex="0">
+        <table id="conflicts-table">
+          <caption>Tree conflicts: sorted by normalized path</caption>
+          <thead>
+            <tr><th scope="col">Kind</th><th scope="col">Normalized path</th><th scope="col">Source rows</th><th scope="col">Detail</th></tr>
+          </thead>
+          <tbody id="conflicts-table-body"></tbody>
+        </table>
+      </div>
+      <div class="pager" id="conflicts-pager" hidden>
+        <button type="button" id="conflicts-prev">Previous page</button>
+        <p id="conflicts-page-info"></p>
+        <button type="button" id="conflicts-next">Next page</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Does a clean report guarantee safe extraction?</dt>
+      <dd>The audit checks this manifest against its stated naming policy.</dd>
+      <dt>Why flag a case-only difference?</dt>
+      <dd>The portability policy compares paths with ASCII case folded.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p>This tool runs entirely in your browser. Nothing is uploaded or stored; the draft is discarded when you leave the page.</p>
+  </footer>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
