@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>長料裁切規劃｜Cut Planner by GlossQuote</title>
+<meta name="description" content="依固定長度長料、兩端修邊與鋸縫，使用可重現的 FFD 啟發式產生逐支裁切清單。這不是最少用料保證。"><meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://cuts.glossquote.com/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://cuts.glossquote.com/index.html"><link rel="alternate" hreflang="en" href="https://cuts.glossquote.com/en/index.html"><link rel="alternate" hreflang="x-default" href="https://cuts.glossquote.com/index.html">
+<link rel="stylesheet" href="/css/app.css"><script type="module" src="/js/boot.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#workspace">跳至工作區</a>
+<header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools by GlossQuote</a><nav aria-label="導覽"><a href="https://glossquote.com/index.html">工具首頁</a><a id="language-link" href="/en/index.html" lang="en" aria-describedby="language-help">English</a></nav></header>
+<main>
+<div class="intro"><h1>長料裁切規劃</h1><p>輸入原料長度、每端修邊、鋸縫與需求件數，查看每支原料的裁切順序和餘料。</p><p class="help" id="language-help">切換語言會清除目前工作。</p></div>
+<div class="model-notice"><p><strong>本工具以 FFD 啟發式排料；結果不保證使用最少支原料或達到最佳化。</strong></p><p>本模型只在同一支原料的相鄰成品間計一次鋸縫；不計兩端修邊切鋸的鋸縫，也不在最後成品與餘料間另扣鋸縫。餘料不保證可回用，請現場檢查。</p><p>所有長度均以毫米（mm）計。</p></div>
+<noscript><p class="error-summary">JavaScript 未啟用，無法試算。表單保持停用，尺寸不會透過表單送出。</p></noscript><p id="init-error" class="error-summary" hidden>頁面未能初始化。工作區保持停用，請重新載入後再試。</p>
+<div id="workspace" class="workspace">
+<section class="input-area" aria-labelledby="stock-heading"><form id="cut-form" novalidate autocomplete="off"><fieldset id="work-fields" disabled>
+<h2 id="stock-heading">原料條件</h2><div class="settings-fields"><div class="field"><label for="stock-length">原料長度（mm）</label><input id="stock-length" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="" aria-describedby="stock-length-help stock-length-error"><small id="stock-length-help">0.01–100000 mm</small><span class="field-error" id="stock-length-error"></span></div>
+<div class="field"><label for="end-trim">每端修邊（mm）</label><input id="end-trim" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="0" aria-describedby="end-trim-help end-trim-error"><small id="end-trim-help">0–10000 mm</small><span class="field-error" id="end-trim-error"></span></div>
+<div class="field"><label for="kerf">相鄰成品間鋸縫（mm）</label><input id="kerf" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="0" aria-describedby="kerf-help kerf-error"><small id="kerf-help">0–1000 mm · 只計相鄰成品間；第一件前不扣鋸縫。</small><span class="field-error" id="kerf-error"></span></div></div>
+<section class="demands" aria-labelledby="demands-heading"><h2 id="demands-heading">成品需求</h2><p id="row-count" class="help"></p><p class="help format-help">請使用 ASCII 數字及句點，長度最多兩位小數，數量只接受整數。最多 40 列、合計 200 件；名稱 1–60 字元。</p><div id="rows"></div><button type="button" class="add-row" id="add-row" disabled>新增需求列</button></section>
+<div class="actions"><button type="submit" id="calculate" class="primary" disabled>產生裁切清單</button><button type="button" id="clear" disabled>清除</button></div>
+<p id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden></p>
+</fieldset></form></section>
+<section class="output-area" aria-labelledby="results-heading"><h2 id="results-heading">裁切清單</h2><p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">輸入尺寸與需求後開始。</p>
+<div id="empty-result" class="empty-result"><h3>逐支查看配置與餘料</h3><p>清單會列出每件的來源列與件序，另列成品、修邊、鋸縫與剩餘可用長度。</p><p class="help">FFD = 由長到短排序，依序放入第一支可容納的原料。</p></div>
+<div id="result-content" hidden><div id="plan"></div><div class="report-actions"><button type="button" id="copy" disabled>複製純文字清單</button><button type="button" id="download" disabled>下載 .txt 清單</button></div><p class="help">複製由瀏覽器決定是否允許；下載檔名為 glossquote-cut-plan.txt，每個下載連結保留 30 秒，最多同時 8 個。</p></div>
+<details id="report-box" class="report-box" hidden><summary>檢視純文字清單</summary><label for="report-text">目前已驗證的純文字報告</label><textarea id="report-text" readonly spellcheck="false" autocomplete="off"></textarea><button type="button" id="select-report" disabled>選取報告文字</button></details>
+</section></div>
+<section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">使用前核對</h2><details><summary>這個工具會保證使用最少支原料嗎？</summary><p>不會。工具使用固定 FFD 啟發式，方便產生可重現的估算清單，但不保證支數最少或最佳化。</p></details>
+<details><summary>鋸縫會如何計算？</summary><p>只在同一支原料的相鄰成品間計一次；不在第一件前或最後成品與餘料間扣鋸縫，也不計兩端修邊下刀本身的鋸縫。</p></details>
+<details><summary>清單中的餘料有包含兩端修邊嗎？</summary><p>沒有。餘料是可用長度中扣除成品與相鄰成品間鋸縫後的未分配長度；兩端修邊另列。這不保證餘料可回用，請現場檢查。</p></details>
+<details><summary>工具會知道原料瑕疵、夾持或鋸切方式嗎？</summary><p>不會。這些現場條件不在計算模型內，請先自行評估並量測。</p></details></section>
+<p class="privacy">本版不保存資料。輸入與結果只在此頁面處理，編輯即淘汰舊結果。切換語言、清除或離開頁面會清掉工作；離開頁面後不恢復草稿。首次載入仍需下載網站檔案，資產已載入後可離線試算，離線重載不保證可用。</p>
+</main><footer><a href="https://glossquote.com/index.html">工具首頁</a> · Gloss Tools by GlossQuote</footer>
+<dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description"><h2 id="confirm-title"></h2><p id="confirm-description"></p><div class="actions"><button type="button" id="confirm-cancel" disabled>保留目前工作</button><button type="button" id="confirm-accept" class="primary" disabled>清除工作</button></div></dialog>
+</body></html>

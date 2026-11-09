@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPv4 Subnet Calculator | GlossQuote Tools</title>
+<meta name="description" content="IPv4 subnet maths: network and broadcast addresses, usable host range, classification and the binary boundary; plus subnet splitting and a membership check. Exact integer arithmetic on your device; no network, no storage.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>IPv4 Subnet Calculator</h1>
+  <p class="intro">Enter an address and a prefix to get the network address, broadcast address, usable host range, classification and binary boundary at once; split a network into child subnets, or check whether another address belongs to the subnet. Everything is exact integer arithmetic on your own device — no network, no storage. IPv4 only: IPv6 is out of scope by design.</p>
+
+  <section class="card">
+    <fieldset class="field">
+      <legend>Mode</legend>
+      <label><input id="mode-analysis" type="radio" name="mode" checked> Subnet analysis</label>
+      <label><input id="mode-split" type="radio" name="mode"> Split subnets</label>
+      <label><input id="mode-member" type="radio" name="mode"> Membership check</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="address-input">IPv4 address (or paste CIDR, e.g. 192.168.1.64/26)</label>
+      <input id="address-input" type="text" autocomplete="off" spellcheck="false" class="mono" placeholder="192.168.1.64">
+      <p id="address-error" class="error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="prefix-input">Prefix length (0–32)</label>
+      <input id="prefix-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" class="mono">
+      <p id="prefix-error" class="error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="netmask-input">Netmask (kept in sync with the prefix)</label>
+      <input id="netmask-input" type="text" autocomplete="off" spellcheck="false" class="mono">
+      <p id="netmask-error" class="error" role="alert" hidden></p>
+    </div>
+  </section>
+
+  <section id="analysis-panel" class="card">
+    <h2>Analysis</h2>
+    <p id="result-hint" class="note">Enter a valid address and the results appear here as you type.</p>
+    <dl id="analysis-rows"></dl>
+    <p id="analysis-note" class="note"></p>
+    <p>
+      <button type="button" id="copy-button" disabled>Copy analysis summary</button>
+      <span id="copy-status" class="note"></span>
+    </p>
+  </section>
+
+  <section id="split-panel" class="card" hidden>
+    <h2>Split subnets</h2>
+    <div class="field">
+      <label for="child-prefix-input">Child prefix length (must be longer than the parent prefix)</label>
+      <input id="child-prefix-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" class="mono" placeholder="26">
+      <p id="split-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="split-summary" class="note"></p>
+    <table>
+      <thead>
+        <tr><th>Network</th><th>Broadcast</th><th>First usable</th><th>Last usable</th><th>Usable hosts</th></tr>
+      </thead>
+      <tbody id="split-body"></tbody>
+    </table>
+  </section>
+
+  <section id="member-panel" class="card" hidden>
+    <h2>Membership check</h2>
+    <div class="field">
+      <label for="member-input">Address to check</label>
+      <input id="member-input" type="text" autocomplete="off" spellcheck="false" class="mono" placeholder="192.168.1.100">
+      <p id="member-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="member-verdict"></p>
+  </section>
+
+  <section class="card">
+    <h2>How the rules work</h2>
+    <ul>
+      <li>A /31 is an RFC 3021 point-to-point link: both addresses are usable; the "total minus two" rule does not apply.</li>
+      <li>A /32 is a host route: network, broadcast and the usable address are the address itself.</li>
+      <li>Leading zeros in an octet (e.g. 192.168.01.1) are an error, not a guess: historically they meant octal, so this tool refuses them outright.</li>
+      <li>A netmask must be contiguous (some 1 bits, then only 0 bits). A mask like 255.255.0.255 is an error, not a mode.</li>
+      <li>Classification and historical class are different things: classification follows special-purpose ranges (private, loopback, documentation…), while the historical class only looks at the first octet and no longer describes routing.</li>
+      <li>Split lists show at most the first 256 children, but the total count is always shown as an exact integer.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

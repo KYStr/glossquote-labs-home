@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="整理旅行物品、打包狀態與已知重量。留白重量會標成未知，不會當作零；支援本機 JSON 備份與預覽匯入。">
+  <title>行李清單與重量試算｜GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#list-title">跳至清單</a>
+  <header class="topbar"><span class="brand">Gloss Tools <span>by GlossQuote</span></span><nav aria-label="語言"><span aria-current="page">繁體中文</span><a href="/en/index.html" lang="en">English</a></nav></header>
+  <main>
+    <div class="page-intro"><h1>行李清單與重量試算</h1><p>列出要帶的物品與數量，勾選已打包項目；輸入實際量到的重量後查看小計。</p></div>
+    <p class="privacy-notice" id="memory-notice"><strong>資料只留在此分頁。</strong>重新載入、離開或關閉分頁會清除清單。要保留，請下載 JSON 備份。輸入不會上傳。</p>
+    <noscript><p>請啟用 JavaScript，才能在此分頁整理清單。</p></noscript>
+    <section class="list-section" aria-labelledby="list-title">
+      <div class="list-toolbar"><h2 id="list-title" tabindex="-1">要帶的物品</h2><div class="filters" role="group" aria-label="篩選清單"><button type="button" id="filter-all" aria-pressed="true">全部</button><button type="button" id="filter-unpacked" aria-pressed="false">未打包</button></div></div>
+      <p id="example-notice" class="example-notice" hidden>目前為週末旅行範例（示例資料）。</p>
+      <div id="rows" class="rows"></div>
+      <p id="empty-message" class="empty-message">還沒有物品。新增第一項，開始整理清單。</p>
+      <div class="add-bar"><button type="button" id="add-item" class="primary">＋ 新增物品</button><p id="row-limit" class="help">最多 100 列；勾選一列代表該列全部數量已打包。</p></div>
+    </section>
+    <section class="summary-section" aria-labelledby="summary-title">
+      <div><h2 id="summary-title">打包進度與重量</h2><div id="summary"></div></div>
+      <div class="limit-field"><label for="limit">我的重量上限（g，選填）</label><input id="limit" type="text" inputmode="numeric" autocomplete="off" aria-describedby="limit-help limit-error"><p id="limit-help" class="help">由你自行設定，留白不比較。上限 1–999,999,999 g；結果不代表航空公司許可。</p><p id="limit-error" class="field-error" hidden></p></div>
+    </section>
+    <section class="backup-section" aria-labelledby="backup-title">
+      <h2 id="backup-title">保存或載入清單</h2><p class="help">下載 UTF-8 JSON 備份；保存位置由瀏覽器決定。匯入先預覽，確認後才取代。備份最多 128 KiB。</p>
+      <div class="backup-actions"><button type="button" id="download">下載備份</button><label class="file-label">匯入 JSON<input id="import-file" type="file" accept=".json,application/json" aria-label="匯入 JSON"></label><button type="button" id="load-example">載入週末旅行範例</button><button type="button" id="reset" class="quiet danger">清空清單</button></div>
+      <div id="import-panel" class="import-panel" hidden><h3 id="import-heading"></h3><p id="import-message"></p><div id="import-details"></div><div class="import-actions"><button type="button" id="confirm-import" class="primary" hidden>以備份取代目前清單</button><button type="button" id="cancel-import">取消匯入</button></div></div>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <details class="help-section"><summary>關於留白重量與備份</summary><h3>留白重量會當作 0 嗎？</h3><p>不會。留白是未知，0 g 則是已知零。有未知重量時，只顯示已知小計。若小計已超過上限，只能知道至少超出多少。</p><h3>這會套用航空公司行李規則嗎？</h3><p>不會。上限由你自行輸入，結果不代表可否登機。</p><h3>重新整理會保留清單嗎？</h3><p>不會；請先下載 JSON 備份。工具沒有自動儲存，也不會把清單傳到伺服器。切換語言會離開此分頁並清除清單。</p></details>
+  </main>
+  <footer>Gloss Tools by GlossQuote · 本機預覽</footer>
+  <dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-body"><h2 id="dialog-title"></h2><p id="dialog-body"></p><div class="dialog-actions"><button type="button" id="dialog-cancel" autofocus>取消</button><button type="button" id="dialog-confirm"></button></div></dialog>
+</body>
+</html>

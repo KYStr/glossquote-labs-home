@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Bookmark Export Organizer — Local Bookmark Cleanup</title>
+  <meta name="description" content="Organize bookmark HTML locally, review exact URL matches, move folders, and download importable files.">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the organizer</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a><span class="product-name">Bookmark export organizer</span><nav aria-label="Language"><a href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>Organize a bookmark export</h1><span class="candidate">Local candidate; not deployed</span><p>Review duplicate URLs and folders before exporting. Your source file is not changed.</p></div>
+    <p class="language-note">Changing language leaves this page. Unexported bookmark changes will be lost.</p>
+    <noscript><p class="notice">JavaScript is needed to parse and organize files in this page. There is no upload option.</p></noscript>
+    <section class="import-section" aria-labelledby="import-title">
+      <div><h2 id="import-title">Choose bookmark HTML</h2><label for="source">One HTML file exported from your browser</label><input id="source" type="file" accept=".html,.htm,text/html" aria-describedby="limits privacy"><p id="source-summary" class="source-summary"></p></div>
+      <div class="import-help"><p id="limits">UTF-8 · Up to 2 MiB · 3000 links · 12 folder levels</p><p id="privacy">Processed in this tab's memory. No upload, link opening, or icon loading. Starting over or leaving clears page data and temporary download URLs; downloaded files remain.</p><details><summary>Supported export format</summary><p>Accepts the documented Netscape bookmark HTML profile: DL / DT / H3 / A structure, common wrapper tokens and metadata. Only absolute HTTP/HTTPS URLs without credentials are accepted. Unsupported markup rejects the whole file without silently dropping entries.</p><p>This does not promise support for every browser export variant. Empty folders can be reviewed; HTML builds nonempty paths from included bookmarks.</p></details></div>
+    </section>
+    <div class="state-bar"><p id="status" role="status" aria-live="polite"></p><button id="cancel" type="button" hidden>Cancel processing</button><button id="reset" type="button" disabled>Start over</button></div>
+    <div id="error" class="error notice" role="alert" tabindex="-1" hidden></div>
+    <section id="workspace" aria-labelledby="review-title" hidden>
+      <div class="review-heading"><h2 id="review-title">Review bookmarks</h2><p id="summary"></p></div>
+      <p class="hint">All bookmarks start included. A suggested keeper is a hint; keeping only one entry or excluding entries requires confirmation. Search and folder filters change the view. Inclusion checkboxes determine the output.</p>
+      <div class="workspace-grid">
+        <aside aria-labelledby="folders-title"><h3 id="folders-title">Folder tree</h3><p class="hint">Counts show direct entries. Selecting a folder also shows its descendants.</p><div id="folder-tree" class="folder-tree" role="group" aria-label="Filter by folder path"></div></aside>
+        <div class="canvas">
+          <div class="filters"><div class="field"><label for="search">Search titles or URLs</label><input id="search" type="search" maxlength="2048" autocomplete="off"></div><div class="field"><label for="view-mode">Show entries</label><select id="view-mode"><option value="all">All bookmarks</option><option value="duplicates">Duplicate URLs only</option><option value="excluded">Excluded entries only</option></select></div></div>
+          <p id="visible-count" class="hint" role="status"></p>
+          <div id="confirmation" class="notice confirmation" role="group" aria-label="Confirm exclusions" hidden><p id="confirmation-copy"></p><p id="confirmation-target" class="url"></p><div class="actions"><button id="confirm-exclude" type="button">Confirm included entries</button><button id="cancel-exclude" type="button">Cancel and keep entries</button></div></div>
+          <section id="folder-editor" class="notice editor" aria-labelledby="folder-editor-title" hidden><h3 id="folder-editor-title"></h3><form id="folder-form"><div class="field"><label for="destination">Move to an existing folder</label><select id="destination"></select></div><div class="field"><label for="new-path">Or create a path (one folder name per line)</label><textarea id="new-path" rows="3" maxlength="4096" aria-describedby="path-help folder-error"></textarea><p id="path-help" class="hint">Enter the full path, up to 12 levels and 1–255 UTF-8 bytes per name. Leave blank to use the selection above. Choose Root to move out of folders. A slash can be part of a name.</p></div><p id="folder-error" class="field-error" role="alert"></p><div class="actions"><button type="submit">Apply folder path</button><button id="cancel-move" type="button">Cancel move</button></div></form></section>
+          <div id="bookmarks" aria-label="Bookmarks and exact URL groups"></div>
+          <details class="rename"><summary>Rename a folder and all descendant paths</summary><form id="rename-form"><div class="field"><label for="rename-from">Folder to rename</label><select id="rename-from"></select></div><div class="field"><label for="rename-path">New full path (one name per line)</label><textarea id="rename-path" rows="3" maxlength="4096" aria-describedby="rename-help rename-error"></textarea><p id="rename-help" class="hint">Updates all bookmarks and descendant paths under this folder. Matching paths merge. JSON retains original paths. Up to 12 levels and 1–255 UTF-8 bytes per name; no empty names, . or .., or control characters.</p></div><p id="rename-error" class="field-error" role="alert"></p><button id="rename-submit" type="submit">Update folder and descendants</button></form></details>
+        </div>
+      </div>
+      <section class="export-section" aria-labelledby="export-title"><h2 id="export-title">Download organized bookmarks</h2><p id="output-summary"></p><div class="actions"><button id="download-html" class="primary" type="button" disabled>Download import HTML</button><button id="download-json" type="button" disabled>Download JSON backup</button></div><p class="hint">Files are generated only when you click download. Results do not expire automatically. Download again after edits. This tool does not import into your browser.</p></section>
+    </section>
+    <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+    <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Before you start</h2><details><summary>Will the tool open bookmark websites?</summary><p>No. URLs are plain text for exact matching; no network request is made.</p></details><details><summary>Are URLs merged when only the query differs?</summary><p>No. Different query strings remain separate exact URL groups.</p></details><details><summary>Does it automatically remove duplicate bookmarks?</summary><p>No. All entries start included. You must explicitly exclude entries for HTML output; JSON keeps every entry.</p></details><details><summary>Are icons or favicons loaded?</summary><p>No. ICON metadata is ignored, never decoded, displayed, or requested.</p></details><details><summary>Does it support every browser export?</summary><p>This candidate accepts only the documented Netscape profile. Unsupported markup rejects the whole file rather than silently dropping items.</p></details></section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote</span><a href="https://glossquote.com/en/index.html">All Gloss Tools</a></footer>
+</body>
+</html>

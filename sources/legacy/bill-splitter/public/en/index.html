@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Quick Bill Settlement &amp; Advanced Split — GlossQuote</title>
+<meta name="description" content="Enter what each person paid, including 0. Total shared payments automatically, split equally or by shares, and see who pays whom. Local calculations without an account.">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/app.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<header><div class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">GlossQuote</a><nav aria-label="All tools"><a href="https://glossquote.com/en/index.html">All tools</a><a href="/index.html" lang="zh-Hant">繁體中文</a></nav></div></header>
+<main>
+<div class="intro"><p class="preview" data-preview>Local preview</p><h1>See who pays whom</h1><p>Enter what each person paid. Include anyone who paid nothing with 0. Quick mode splits equally; advanced mode can split by shares.</p><p class="hint">Bill details are processed on this page. You choose whether to copy or download them.</p><p class="hint">Switching language clears the current content.</p></div>
+<div class="worksheet">
+<noscript><p>Enable JavaScript to calculate. All calculations run on this page.</p></noscript>
+<form id="bill-form" autocomplete="off" novalidate>
+<fieldset class="workflow-choice"><legend>Settlement mode</legend><div class="workflow-options"><label class="mode-choice" for="workflow-quick"><input id="workflow-quick" name="workflow" type="radio" value="quick" checked>Quick settlement</label><label class="mode-choice" for="workflow-advanced"><input id="workflow-advanced" name="workflow" type="radio" value="advanced">Advanced split</label></div></fieldset>
+<p id="quick-help" class="hint">Add up each person's payments for shared costs and enter the amount paid. Blank means 0. Everyone listed shares all costs equally.</p>
+<div class="bill-settings"><div><label for="precision">Decimal places</label><select id="precision" name="precision" aria-describedby="amount-hint"><option value="2">2 decimal places</option><option value="0">0 decimal places</option></select></div></div>
+<p class="hint" id="amount-hint">Use plain numbers without commas or symbols. Each payment and the sum are limited to 99,999,999.99 (2 decimals) / 99,999,999 (0 decimals).</p><p class="hint">Use one currency for all amounts; include tax and fees in the shared costs.</p>
+<div id="advanced-options" hidden><div class="options"><div class="method"><label for="mode">Split method</label><select id="mode" name="mode"><option value="equal">Equally</option><option value="shares">By shares</option></select></div></div></div>
+<div class="people-heading"><h2 id="people-title">People</h2><span id="people-count" class="hint"></span></div>
+<div id="people" aria-labelledby="people-title"></div>
+<div class="people-actions"><button id="add-person" type="button" aria-describedby="people-limit">Add person</button><span id="people-limit" class="hint"></span></div>
+<div class="actions"><button id="calculate" class="primary" type="submit">Calculate who pays whom</button><button id="clear" type="button">Clear</button><button id="example" type="button">Load 900 / 300 / 0 example</button></div>
+<p id="form-error" class="form-error" tabindex="-1"></p><p id="draft-state" class="hint">Enter what each person paid for shared costs. Include anyone who paid nothing with 0.</p><p id="calculation-status" class="sr-only" role="status" aria-atomic="true"></p>
+</form>
+<section class="results" aria-labelledby="results-title"><h2 id="results-title">Settlement and split</h2><p id="empty-result" class="hint">Enter each person's payments, then calculate to see the suggestions.</p><div id="result-content"></div><div class="actions"><button id="copy" type="button" disabled>Copy details</button><button id="download" type="button" disabled>Download TXT</button></div><p id="output-status" role="status" aria-atomic="true"></p><div id="output" hidden><label class="report-label" for="report">Text details</label><textarea id="report" readonly spellcheck="false"></textarea></div></section>
+</div>
+<section class="help" aria-labelledby="help-title"><h2 id="help-title">How to use</h2><p>Choose zero or two decimal places. One person uses this page to collect everyone's shared costs. Add up what each person paid, including anyone who paid nothing with 0. Both modes total these payments automatically and list who pays whom. You never need to enter the total separately. Quick settlement splits equally. Advanced split offers equal splitting or custom shares. A person with zero shares owes nothing but can still pay upfront; shares cannot all be zero. All-zero payments are valid. Names, payments, and precision are shared between modes, and advanced share drafts are kept. Switching or editing clears the old result, so calculate again before exporting. This is not a per-expense ledger or a split for different subgroups. It supports 2 to 50 people, uses one currency, runs locally, and keeps no history. It does not send money.</p>
+<details><summary>How is rounding handled?</summary><p>Smallest units go to the largest remainders first. Ties follow creation order. Shares always add up to the exact bill total.</p></details>
+<details><summary>Does this send money?</summary><p>No. It only calculates reproducible suggestions. It does not send money, reminders, or connect accounts, and does not claim to minimize transfer count.</p></details>
+<details><summary>Can I mix currencies?</summary><p>No currency conversion is available. Choose zero or two decimals for one currency and check that the precision suits your unit.</p></details>
+<details><summary>How do quick and advanced modes differ?</summary><p>Both modes total each person's payments automatically and suggest transfers. Quick settlement splits equally. Advanced split offers equal splitting or custom shares. A person with zero shares owes nothing, but their payment still counts toward what they should receive.</p></details>
+</section>
+<footer><p>Gloss Tools by GlossQuote</p><p>No account or analytics. Loading this site requires a connection; bill details are not uploaded. Clearing does not erase anything you already copied or downloaded.</p></footer>
+</main>
+</body>
+</html>

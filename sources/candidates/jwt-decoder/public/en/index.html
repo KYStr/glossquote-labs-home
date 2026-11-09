@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JWT Decoder and Claims Inspector | GlossQuote Tools</title>
+<meta name="description" content="Decode a JWT's header and payload JSON locally and read its exp, nbf and iat time claims against the device clock. The signature is not verified; tokens are never uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>JWT Decoder and Claims Inspector</h1>
+  <p class="warning">Decoded locally in your browser. The signature is NOT verified — anyone can forge these contents. Never paste a token you would not show a colleague.</p>
+  <p class="intro">Paste a three-part token (header.payload.signature) to decode its header and payload JSON locally, translate the exp, nbf and iat time claims into local times, and read a time status stated against the device clock. This tool decodes only — it never verifies: nothing is uploaded, stored, or placed in the URL, and leaving or reloading the page discards the token.</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="token-input">Token (compact form)</label>
+      <textarea id="token-input" rows="4" autocomplete="off" spellcheck="false" class="mono" aria-describedby="input-error"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <button type="button" id="clear-button">Clear</button>
+      <p id="copy-note" class="note" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div id="results" hidden>
+    <section class="card" aria-label="Time status">
+      <h2>Time status</h2>
+      <p id="status-line" class="status-line"></p>
+      <p id="status-caption" class="note">The status only relates the time claims to the device clock — the signature is not verified.</p>
+      <p id="checked-at" class="note"></p>
+    </section>
+
+    <section class="card" aria-label="Header">
+      <h2>Header</h2>
+      <div id="header-summary"></div>
+      <pre id="header-json" class="pane mono"></pre>
+      <button type="button" id="copy-header">Copy header JSON</button>
+    </section>
+
+    <section class="card" aria-label="Payload">
+      <h2>Payload</h2>
+      <pre id="payload-json" class="pane mono"></pre>
+      <button type="button" id="copy-payload">Copy payload JSON</button>
+      <table class="group-table">
+        <thead>
+          <tr><th>Claim</th><th>Raw value</th><th>Annotation</th></tr>
+        </thead>
+        <tbody id="claims-body"></tbody>
+      </table>
+    </section>
+
+    <section class="card" aria-label="Signature">
+      <h2>Signature</h2>
+      <pre id="signature-text" class="pane mono"></pre>
+      <p id="signature-meta" class="note"></p>
+      <p class="note">Signature is not verified by this tool.</p>
+    </section>
+  </div>
+
+  <details class="card">
+    <summary>Help and limits</summary>
+    <ul>
+      <li>This tool decodes three-part tokens; a five-part input is a JWE (an encrypted JWT), which this tool does not decrypt.</li>
+      <li>Time readouts use this device's clock as the reference: a wrong device clock yields a wrong readout.</li>
+      <li>alg values are reported, never judged: alg=none is displayed like any other alg value and receives no special trust.</li>
+      <li>Duplicate keys inside a JSON object follow JSON.parse semantics (last wins); the pretty printer cannot show both.</li>
+      <li>The input limit is 16,384 characters; longer input is rejected, not truncated.</li>
+      <li>The sample token in the documentation and tests is synthetic; its signature segment is a dummy string, not a real HMAC.</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

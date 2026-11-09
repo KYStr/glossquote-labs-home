@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>食材差額採買單｜本機處理工具 - GlossQuote</title>
+  <meta name="description" content="煮幾道菜時同一食材分散在不同食譜，家裡也有一些，想一次知道到底還要買多少。 使用 食材差額採買單，在瀏覽器本地整理資料並取得可下載成果。">
+  <link rel="stylesheet" href="/styles/app.css"><script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到工作區</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools</a><nav aria-label="網站導覽"><a href="https://glossquote.com/index.html">返回工具首頁</a><a id="lang-link" href="/en/index.html" lang="en" hreflang="en">English</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>食材差額採買單</h1><p>幾道菜的材料加在一起，再扣掉家中庫存，這次只買缺的量。</p><p class="muted">本機處理 · 不自動保存 · 預覽候選版</p></div>
+    <noscript><p class="notice warning">請啟用 JavaScript 才能在本機計算；此頁不提供雲端替代處理。</p></noscript>
+    <p id="unsupported" class="notice warning">正在準備本機工作區。需要支援模組、BigInt、Unicode 驗證、檔案讀取與 Blob 下載的瀏覽器；若此提示持續顯示，請換用具備這些能力的瀏覽器。工作區尚未啟用，不會使用雲端替代處理。</p>
+    <fieldset id="workspace" disabled>
+      <legend class="sr-only">需求、庫存與採買清單</legend>
+      <div class="workspace-toolbar"><div class="actions"><button id="example" type="button">載入假例子</button><button id="clear" type="button" class="quiet">清除全部輸入</button></div><p id="counts" class="muted"></p></div>
+      <p id="example-note" class="notice info" hidden></p>
+      <section id="confirm-area" class="confirmation" aria-labelledby="confirm-message" hidden><p id="confirm-message"></p><div class="actions"><button id="confirm-no" type="button">取消</button><button id="confirm-yes" type="button">確認</button></div></section>
+      <div class="editors">
+        <section class="demand-pane" aria-labelledby="demand-title"><div class="section-heading"><h2 id="demand-title">這次要煮什麼？</h2><button id="add-meal" type="button">新增料理</button></div><p>直接填本次實際材料量，不做食譜份數縮放。新料理以 1 份為起點。</p><p id="quantity-help" class="muted">數量 0–1,000,000，最多 3 位小數，請用半形數字；0 代表暫不需要。</p><div id="meals"></div></section>
+        <details class="stock-pane" open><summary>家中已有的庫存</summary><p class="muted">可收合；同名、同類單位的庫存會先加總再扣一次。</p><div id="stock"></div><button id="add-stock" type="button">加入庫存</button></details>
+      </div>
+      <div class="calculate-bar"><button id="calculate" type="button" class="primary">產生採買清單</button><p id="status" role="status" aria-live="polite">加入資料開始</p></div>
+      <p id="error-message" class="notice error" role="alert" hidden></p>
+      <section class="result-canvas" aria-label="採買結果"><p id="progress" class="progress" hidden></p><div id="results"><p class="empty">加入資料開始</p></div></section>
+      <section id="export-panel" class="export-panel" aria-labelledby="export-title" hidden><h2 id="export-title">帶走這份清單</h2><div class="actions"><button id="download-txt" type="button" disabled>下載採買 TXT</button><button id="download-report" type="button" disabled>下載完整報告 JSON</button><button id="copy" type="button" disabled>複製採買文字</button></div><p class="muted">報告保留所有來源與單位說明；完整報告不是可重新載入的專案檔。</p><div id="copy-fallback" hidden><label for="copy-text">可自行選取的採買文字</label><textarea id="copy-text" readonly rows="12" spellcheck="false"></textarea></div></section>
+      <details class="project-tools"><summary>儲存或載入專案</summary><p>下載專案可保留料理與庫存，下次自行匯入。已買勾選只在本頁，不存入專案。整份匯入會先預覽，再由你確認替換；取消會保留目前輸入。</p><button id="download-project" type="button">下載專案 JSON</button><div class="field import-field"><label for="import-file">選擇專案 JSON（UTF-8，最多 2 MiB）</label><input id="import-file" type="file" accept=".json,application/json"><button id="cancel-import" type="button" hidden>取消讀取</button></div><section id="import-preview" class="import-preview" aria-labelledby="import-title" hidden><h3 id="import-title">確認要替換的專案</h3><p>確認後會替換目前料理與庫存，舊結果與已買勾選會清除。</p><div id="preview-content"></div><div class="actions"><button id="dismiss-import" type="button">取消並保留原輸入</button><button id="confirm-import" type="button">確認替換專案</button></div></section></details>
+    </fieldset>
+    <section class="help" aria-labelledby="rules-title"><h2 id="rules-title">合併與使用界線</h2><p>材料名經 NFC 正規化、去頭尾空白後精確比對，大小寫及內部空白保留。不自動合併同義詞；需要時可自行改名。僅 g/kg、ml/L 可換算；piece 及各種自訂計數標籤各自保留。</p><p>最多 30 道料理、300 列需求、300 列庫存。每組需求或庫存總量最多 1,000,000,000 g/ml/piece/自訂單位。不判斷飲食、營養或保存安全。輸入僅留在目前頁面記憶體，不上傳、不自動保存；重新整理、離頁或切換語言會失去未匯出的資料。清除不會刪除已下載檔案，也不代表安全抹除裝置記憶體。</p><h2>常見問題</h2><details><summary>可以把克換成毫升嗎？</summary><p>不能。不同材料密度不同，請用同類單位；同名材料的質量與體積會分成兩列，並顯示無法互換提示。</p></details><details><summary>同名材料會自動合併嗎？</summary><p>名稱去頭尾空白後精確相同且單位相容才合併，不猜同義詞。「包」與「袋」等自訂單位分開計算。</p></details><details><summary>會記住我的庫存嗎？</summary><p>不會自動保存；請下載專案 JSON，下次自行匯入。已買勾選只記錄本頁進度，不會再扣一次庫存。</p></details></section>
+  </main><footer>Gloss Tools by GlossQuote · 本地預覽，尚未正式發布</footer>
+</body>
+</html>

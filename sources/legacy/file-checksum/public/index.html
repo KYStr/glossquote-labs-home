@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在瀏覽器本機計算檔案 SHA-256，貼上預期校驗碼立即比對。支援單檔最多128 MiB，可複製或下載校驗碼，無需上傳檔案。">
+  <title>檔案 SHA-256 校驗與比對｜GlossQuote</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workbench">前往校驗工作區</a>
+  <header class="topbar">
+    <a href="https://glossquote.com/index.html">Gloss Tools by GlossQuote</a>
+    <nav aria-label="語言"><a href="./en/index.html" lang="en" hreflang="en">English</a></nav>
+  </header>
+  <main>
+    <h1>檔案 SHA-256 校驗</h1>
+    <p class="intro">選擇檔案後計算校驗碼，也可貼上來源提供的 64 位 SHA-256。比對能幫助確認內容一致，不能判斷檔案是否安全或證明發布者身份。</p>
+    <p id="startup-notice" class="notice">需要啟用 JavaScript 才能在本機計算。檔案不會上傳。</p>
+    <p id="support-notice" class="notice error" role="status" hidden></p>
+    <section class="workbench" id="workbench" aria-labelledby="workspace-title">
+      <h2 id="workspace-title">核對檔案內容</h2>
+      <div class="fields">
+        <div class="field">
+          <label for="file">選擇檔案</label>
+          <p id="file-help" class="help">任意單一檔案，最多 128 MiB（134,217,728 bytes），包含空檔。按下計算後才讀取內容。</p>
+          <input id="file" type="file" aria-describedby="file-help">
+          <div id="file-meta" class="file-meta" hidden>
+            <bdi id="file-name" class="file-name"></bdi>
+            <p id="file-size" class="file-size"></p>
+            <details id="name-details"><summary>查看完整檔名</summary><bdi id="full-name" class="full-name"></bdi></details>
+          </div>
+        </div>
+        <div class="field">
+          <label for="expected">預期 SHA-256（選填）</label>
+          <p id="expected-help" class="help">只貼上 64 位十六進位校驗碼；可用大小寫，不含前綴、檔名或內部空白。</p>
+          <textarea id="expected" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="expected-help expected-error" aria-invalid="false"></textarea>
+          <p id="expected-error" class="field-error"></p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="calculate" class="primary" type="button" aria-busy="false" disabled>計算 SHA-256</button>
+        <button id="cancel" type="button" disabled>取消</button>
+        <button id="clear" type="button">清除</button>
+      </div>
+      <p id="status" class="work-status" role="status" aria-live="polite">選擇檔案，最多 128 MiB。</p>
+      <div class="result" aria-labelledby="result-title">
+        <h3 id="result-title"><label for="checksum">SHA-256 校驗碼</label></h3>
+        <textarea id="checksum" class="checksum" rows="3" readonly spellcheck="false" wrap="soft" aria-describedby="comparison" disabled></textarea>
+        <p id="comparison" class="comparison" data-state="pending" role="status" aria-live="polite">待計算</p>
+        <div class="actions output-actions">
+          <button id="copy" type="button" disabled>複製校驗碼</button>
+          <button id="download" type="button" disabled>下載校驗碼</button>
+        </div>
+        <p id="output-status" class="output-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <p class="help">切換語言會離開當前結果。這是開發預覽，尚未正式發布。</p>
+    <section class="help-section" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">檔案留在這個瀏覽器</h2>
+      <p>檔案內容由這個瀏覽器計算，沒有上傳、帳號或保存紀錄。網站的頁面與程式仍需從網站載入；完成初始載入後，運算不需要再下載相依程式。</p>
+      <p>清除或離開頁面會放棄工具持有的檔案與結果引用；不代表抹除作業系統記憶體，也不會刪除已複製或下載的內容。只有按下複製或下載才會輸出校驗碼。</p>
+    </section>
+    <section class="help-section" aria-labelledby="faq-title">
+      <h2 id="faq-title">常見問題</h2>
+      <details><summary>檔案會上傳嗎？</summary><p>不會。檔案的原始 bytes 在本機瀏覽器處理。開啟網站仍會載入頁面資產，伺服器也會收到一般網站連線資訊。</p></details>
+      <details><summary>為什麼上限是 128 MiB？</summary><p>Web Crypto 需要把完整檔案讀入記憶體。這個工具的上限是 128 MiB，包含該邊界；不提供串流大檔。記憶體不足時可能計算失敗，請選擇較小檔案。</p></details>
+      <details><summary>改名會改變校驗碼嗎？</summary><p>不會，檔名、MIME 與修改日期都不參與計算。只有原始內容 bytes 參與；換行或一個 byte 變動都會影響校驗碼。</p></details>
+      <details><summary>校驗碼相符就代表安全嗎？</summary><p>不代表。請使用來自可信來源的校驗碼。這個工具只協助核對內容一致，沒有病毒掃描、簽章檢查或發布者身份驗證。</p></details>
+    </section>
+  </main>
+  <footer>Gloss Tools by GlossQuote</footer>
+</body>
+</html>

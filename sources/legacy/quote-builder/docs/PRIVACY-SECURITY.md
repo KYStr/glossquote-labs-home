@@ -1,0 +1,3 @@
+# Privacy and lifecycle
+
+Quote inputs and exports stay in current-page memory. No accounts, upload, analytics, remote fonts or persistent browser storage. Only explicit download controls create local downloads; fixed filenames omit names/notes. Imported UTF-8 JSON is size/schema/duplicate-key checked before confirmation. Draft edits, clear and real navigation invalidate old output; file-reader generation guards prevent stale replacement. Output is escaped static text, never user HTML. Clearing does not remove downloaded files or promise secure memory erasure. Do not enter credentials, payment data or secrets.

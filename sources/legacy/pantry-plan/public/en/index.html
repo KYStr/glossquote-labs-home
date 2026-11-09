@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Pantry-aware shopping list | GlossQuote</title>
+  <meta name="description" content="Pantry-aware shopping list in your browser. Review the result and export it locally without uploading your input.">
+  <link rel="stylesheet" href="/styles/app.css"><script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools</a><nav aria-label="Site navigation"><a href="https://glossquote.com/en/index.html">All tools</a><a id="lang-link" href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>Pantry-aware shopping list</h1><p>Cooking several dishes? Combine their ingredients, subtract what is already at home, and buy only what is missing.</p><p class="muted">Processed locally · No automatic saving · Preview candidate</p></div>
+    <noscript><p class="notice warning">Enable JavaScript for local calculation. This page does not use a cloud fallback.</p></noscript>
+    <p id="unsupported" class="notice warning">Preparing the local workspace. This tool requires modules, BigInt, Unicode validation, file reading and Blob downloads. If this notice remains, use a browser with those features. The workspace stays disabled and no cloud fallback is used.</p>
+    <fieldset id="workspace" disabled>
+      <legend class="sr-only">Demand, stock and shopping list</legend>
+      <div class="workspace-toolbar"><div class="actions"><button id="example" type="button">Load fictional example</button><button id="clear" type="button" class="quiet">Clear all inputs</button></div><p id="counts" class="muted"></p></div>
+      <p id="example-note" class="notice info" hidden></p>
+      <section id="confirm-area" class="confirmation" aria-labelledby="confirm-message" hidden><p id="confirm-message"></p><div class="actions"><button id="confirm-no" type="button">Cancel</button><button id="confirm-yes" type="button">Confirm</button></div></section>
+      <div class="editors">
+        <section class="demand-pane" aria-labelledby="demand-title"><div class="section-heading"><h2 id="demand-title">What are you cooking?</h2><button id="add-meal" type="button">Add dish</button></div><p>Enter the actual quantities for this cooking session. Dishes start at 1 portion; recipe portion scaling is not performed.</p><p id="quantity-help" class="muted">Quantity: 0–1,000,000, up to 3 decimal places, using ASCII digits. Zero means none needed for now.</p><div id="meals"></div></section>
+        <details class="stock-pane" open><summary>Already in your pantry</summary><p class="muted">Collapsible. Matching stock rows are summed, then deducted once.</p><div id="stock"></div><button id="add-stock" type="button">Add stock</button></details>
+      </div>
+      <div class="calculate-bar"><button id="calculate" type="button" class="primary">Generate shopping list</button><p id="status" role="status" aria-live="polite">Add data to begin</p></div>
+      <p id="error-message" class="notice error" role="alert" hidden></p>
+      <section class="result-canvas" aria-label="Shopping result"><p id="progress" class="progress" hidden></p><div id="results"><p class="empty">Add data to begin</p></div></section>
+      <section id="export-panel" class="export-panel" aria-labelledby="export-title" hidden><h2 id="export-title">Take your list with you</h2><div class="actions"><button id="download-txt" type="button" disabled>Download shopping TXT</button><button id="download-report" type="button" disabled>Download full JSON report</button><button id="copy" type="button" disabled>Copy shopping text</button></div><p class="muted">The report retains all sources and unit notes. The full report is not an importable project file.</p><div id="copy-fallback" hidden><label for="copy-text">Shopping text you can select yourself</label><textarea id="copy-text" readonly rows="12" spellcheck="false"></textarea></div></section>
+      <details class="project-tools"><summary>Save or load a project</summary><p>Download a project to keep your dishes and stock, then re-import it next time. Purchased marks stay on this page and are not stored in the project. Imports are previewed before you confirm replacement; cancelling keeps your current inputs.</p><button id="download-project" type="button">Download project JSON</button><div class="field import-field"><label for="import-file">Choose project JSON (UTF-8, up to 2 MiB)</label><input id="import-file" type="file" accept=".json,application/json"><button id="cancel-import" type="button" hidden>Cancel reading</button></div><section id="import-preview" class="import-preview" aria-labelledby="import-title" hidden><h3 id="import-title">Review replacement project</h3><p>Confirming replaces current dishes and stock, and clears the old result and purchased marks.</p><div id="preview-content"></div><div class="actions"><button id="dismiss-import" type="button">Cancel and keep original inputs</button><button id="confirm-import" type="button">Confirm project replacement</button></div></section></details>
+    </fieldset>
+    <section class="help" aria-labelledby="rules-title"><h2 id="rules-title">Grouping rules and limits</h2><p>Ingredient names match exactly after NFC normalization and trimming. Case and internal spaces are preserved. Synonyms are not merged; rename ingredients explicitly when needed. Only g/kg and ml/L convert. Piece and each custom count label stay separate.</p><p>Up to 30 dishes, 300 demand rows and 300 stock rows. Each grouped demand or stock total is capped at 1,000,000,000 g/ml/piece/custom units. This tool does not assess dietary, nutritional or storage safety. Inputs stay in this page’s memory without uploading or automatic saving. Refreshing, leaving or switching language loses unexported data. Clearing does not remove downloaded files or securely erase device memory.</p><h2>Frequently asked questions</h2><details><summary>Can grams convert to millilitres?</summary><p>No. Mass and volume remain separate because density varies by ingredient. The same name in different unit groups appears on separate rows with a warning.</p></details><details><summary>How are ingredients grouped?</summary><p>By the trimmed exact name and compatible unit dimension. Synonyms are not guessed. Different custom count labels such as “bag” and “packet” remain separate.</p></details><details><summary>Is inventory saved automatically?</summary><p>No. Export and re-import the project JSON when needed. Purchased marks track this page only and never deduct inventory a second time.</p></details></section>
+  </main><footer>Gloss Tools by GlossQuote · Local preview, not a live release</footer>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>打字速度測驗 | GlossQuote 工具</title>
+<meta name="description" content="在本機進行 30 或 60 秒打字測驗：英文以 WPM、中文以 CPM 依固定公式計分，逐字元位置比對，不上傳、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>打字速度測驗</h1>
+  <p class="intro">選好秒數與文章語言，照著文章逐字鍵入。第一個送出的字元才開始計時；時間到或打完整篇即鎖定並依固定公式計分。全部運算都在你的裝置上進行，輸入不上傳、不儲存，重整即丟棄。</p>
+  <p class="warning">本測驗以實體鍵盤為計分環境；觸控鍵盤的成績不列入計分情境，請在桌機或筆電上使用。</p>
+  <p class="note">計分概要：淨 WPM ＝ 正確字元 ÷ 5 ÷ 分鐘；中文文章改以淨 CPM（正確字元 ÷ 分鐘）計。完整規則見頁尾。</p>
+
+  <section class="card">
+    <fieldset class="field">
+      <legend>秒數</legend>
+      <label><input id="duration-30" type="radio" name="duration" checked> 30 秒</label>
+      <label><input id="duration-60" type="radio" name="duration"> 60 秒</label>
+    </fieldset>
+    <fieldset class="field">
+      <legend>文章語言</legend>
+      <label><input id="plang-en" type="radio" name="plang" checked> 英文</label>
+      <label><input id="plang-zh" type="radio" name="plang"> 繁體中文</label>
+    </fieldset>
+    <div class="field">
+      <span class="field-label">文章</span>
+      <div id="passage-view" class="passage mono" aria-label="要照著輸入的文章"></div>
+      <p id="passage-name" class="note"></p>
+    </div>
+    <div class="field">
+      <label for="typing-input">在此輸入（第一個字送出時開始計時）</label>
+      <input id="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" class="mono">
+      <p id="paste-note" class="note"></p>
+    </div>
+    <div class="field">
+      <span id="time-left" class="status-line"></span>
+      <div class="progress"><div id="progress-bar" class="progress-fill"></div></div>
+      <button type="button" id="new-passage">換一篇文章</button>
+    </div>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section id="results" class="card" hidden aria-label="測驗結果">
+    <h2>結果</h2>
+    <p id="no-result" class="note" hidden></p>
+    <dl class="metrics">
+      <div><dt id="metric-gross-label">總 WPM</dt><dd id="metric-gross">–</dd></div>
+      <div><dt id="metric-net-label">淨 WPM</dt><dd id="metric-net">–</dd></div>
+      <div><dt>準確率</dt><dd id="metric-accuracy">–</dd></div>
+      <div><dt>用時（秒）</dt><dd id="metric-elapsed">–</dd></div>
+    </dl>
+    <div id="review-view" class="passage mono" aria-label="逐字元檢視"></div>
+    <h3 id="mistakes-heading">打錯的字詞</h3>
+    <ul id="mistake-list"></ul>
+    <div class="field">
+      <button type="button" id="retry-same">同篇重試</button>
+      <button type="button" id="retry-new">換篇重試</button>
+    </div>
+  </section>
+
+  <details class="card">
+    <summary>完整計分規則</summary>
+    <ul>
+      <li>比對 strictly 逐位置：第 i 個字元正確，若且唯若輸入的第 i 字與文章的第 i 字相同（以 Unicode 碼點計）。漏打一字會讓之後每個位置都錯位，直到你退格修正為止。</li>
+      <li>第一個送出的字元開始計時；注音或拼音的組字過程不計分、不顯示，送出（commit）才算。</li>
+      <li>時間到：以選定的完整秒數計算；提前打完：以實際用時（0.1 秒）計算。</li>
+      <li>英文：總 WPM ＝ 總字元 ÷ 5 ÷ 分鐘；淨 WPM ＝ 正確字元 ÷ 5 ÷ 分鐘。中文：總／淨 CPM ＝ 總／正確字元 ÷ 分鐘，標題只寫 CPM。</li>
+      <li>速度四捨五入到整數（0.5 進位）；準確率 ＝ 正確 ÷ 總字元，顯示到小數一位。</li>
+      <li>不接受貼上；超過文章長度的字元不受理。測驗只存在於記憶體，重整或離開即丟棄。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

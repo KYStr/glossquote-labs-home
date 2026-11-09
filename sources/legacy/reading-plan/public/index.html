@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="輸入總頁數、已讀頁數、日期範圍與可讀星期，將剩餘頁數分配到各閱讀日。可檢查每日頁數上限；工具不追蹤實際閱讀。">
+  <title>閱讀進度規劃：依可讀日分配頁數｜GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至閱讀規劃</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <a href="/en/index.html" lang="en" hreflang="en">English</a>
+  </header>
+  <div class="page">
+    <p class="language-note">切換語言會清除目前輸入與計畫。</p>
+    <main id="main">
+      <h1>閱讀進度規劃</h1>
+      <p class="intro">選擇你真正能閱讀的日期與星期，平均分配尚未讀完的頁數。若進度落後，更新已讀頁數與開始日期後重新計算。</p>
+      <noscript><p class="notice">請開啟 JavaScript 以在此分頁計算閱讀計畫。</p></noscript>
+      <div class="worksheet">
+        <form id="reading-form" novalidate autocomplete="off">
+          <fieldset id="input-controls" disabled>
+          <h2>書籍與可讀時間</h2>
+          <div class="field"><label for="titleRaw">書名（選填）</label><input id="titleRaw" type="text" maxlength="256" spellcheck="false" aria-describedby="titleRaw-help titleRaw-error"><p class="help" id="titleRaw-help">請使用簡短書名；前後空白不列入報告。</p><p class="field-error" id="titleRaw-error"></p></div>
+          <div class="field-pair">
+            <div class="field"><label for="totalPagesRaw">總頁數</label><input id="totalPagesRaw" type="text" inputmode="numeric" maxlength="256" required aria-describedby="totalPagesRaw-help totalPagesRaw-error"><p class="help" id="totalPagesRaw-help">1–10000，僅用 0–9，不含逗號。</p><p class="field-error" id="totalPagesRaw-error"></p></div>
+            <div class="field"><label for="completedPagesRaw">已讀頁數</label><input id="completedPagesRaw" type="text" inputmode="numeric" maxlength="256" value="0" required aria-describedby="completedPagesRaw-help completedPagesRaw-error"><p class="help" id="completedPagesRaw-help">0 至總頁數；未開始填 0。</p><p class="field-error" id="completedPagesRaw-error"></p></div>
+          </div>
+          <div class="date-controls"><h3>日期範圍</h3><button type="button" class="quiet" id="date-mode" aria-pressed="false">改用文字輸入日期</button></div>
+          <p id="date-help" class="help">日期限 1900-01-01 至 2100-12-31。包含開始與截止日，最多 366 天。</p>
+          <p id="date-mode-error" class="field-error" role="status"></p>
+          <div class="field-pair dates">
+            <div class="field"><label for="startDateRaw">開始日期</label><input id="startDateRaw" type="date" inputmode="numeric" min="1900-01-01" max="2100-12-31" required aria-describedby="startDateRaw-help startDateRaw-error"><p class="help" id="startDateRaw-help">YYYY-MM-DD</p><p class="field-error" id="startDateRaw-error"></p></div>
+            <div class="field"><label for="endDateRaw">截止日期</label><input id="endDateRaw" type="date" inputmode="numeric" min="1900-01-01" max="2100-12-31" required aria-describedby="endDateRaw-help endDateRaw-error"><p class="help" id="endDateRaw-help">YYYY-MM-DD</p><p class="field-error" id="endDateRaw-error"></p></div>
+          </div>
+          <fieldset id="weekdays" aria-describedby="weekdays-help weekdays-error">
+            <legend>可讀星期</legend>
+            <p class="help" id="weekdays-help">至少選一天；只依星期安排，不查詢假日。</p>
+            <div class="weekday-choices"><label class="weekday-choice"><input type="checkbox" name="weekday" value="1" checked><span>星期一</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="2" checked><span>星期二</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="3" checked><span>星期三</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="4" checked><span>星期四</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="5" checked><span>星期五</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="6" ><span>星期六</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="7" ><span>星期日</span></label></div>
+            <p class="field-error" id="weekdays-error"></p>
+          </fieldset>
+          <div class="field"><label for="dailyCapRaw">每日頁數上限（選填）</label><input id="dailyCapRaw" type="text" inputmode="numeric" maxlength="256" aria-describedby="dailyCapRaw-help dailyCapRaw-error"><p class="help" id="dailyCapRaw-help">1–10000，僅用 0–9；留空不設上限。</p><p class="field-error" id="dailyCapRaw-error"></p></div>
+          <div class="actions"><button id="create" type="submit" class="primary" disabled>產生閱讀計畫</button><button id="clear" type="button">清除</button></div>
+          <div id="errors" class="notice error-notice" hidden></div>
+          <p class="privacy">這只是一份計畫，不會追蹤你實際讀完的頁數。輸入只留在此分頁；離開或重新載入即清除。</p>
+          </fieldset>
+        </form>
+        <div class="output-area">
+          <p id="status" role="status" class="status">選擇開始與截止日期、輸入頁數，再產生計畫。</p>
+          <section id="result" aria-labelledby="result-title" hidden>
+            <h2 id="result-title"></h2>
+            <p id="book-name" class="book-name"></p>
+            <p id="result-note" class="result-note"></p>
+            <dl id="summary" class="summary"></dl>
+            <ol id="schedule" class="schedule" aria-label="逐日頁碼分配" hidden></ol>
+          </section>
+          <section id="exports" aria-labelledby="report-label" hidden>
+            <label id="report-label" for="report">純文字報告（唯讀）</label>
+            <p class="help">可選取文字手動複製；TXT 不含其他資料。</p>
+            <textarea id="report" readonly rows="9" spellcheck="false" aria-describedby="copy-status"></textarea>
+            <div class="actions"><button type="button" id="copy" disabled>複製計畫</button><button type="button" id="download" disabled>下載 TXT</button></div>
+            <p id="copy-status" class="help" role="status"></p><p id="download-status" class="help" role="status"></p>
+          </section>
+        </div>
+      </div>
+      <section class="faq" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">規劃方式與資料處理</h2>
+        <details><summary>它如何分配剩餘頁數？</summary><p>計算選定日期範圍內符合星期的可讀日，平均分配剩餘頁數；餘數由較早的可讀日先多分一頁。剩餘頁數較少時，後面的可讀日保留為彈性／休息日。</p></details>
+        <details><summary>落後後怎麼更新計畫？</summary><p>修改已讀頁數與新的開始日期，再按重新計算。工具不會自動追蹤閱讀或自動調整今天。</p></details>
+        <details><summary>會略過國定假日嗎？</summary><p>不會。工具只依你選取的星期安排日期，不查詢所在地假日或學校行事曆；請自行調整可讀星期與日期。</p></details>
+        <details><summary>我的書名與計畫會保存或上傳嗎？</summary><p>不需要帳號或雲端保存。資料只留在目前分頁；離開或重新載入後清除。複製與下載只會在你明確按下對應按鈕後執行。初次載入仍需要下載網站檔案，瀏覽器會管理你複製或下載的內容。</p></details>
+      </section>
+    </main>
+    <footer><a href="https://glossquote.com/index.html">返回 Gloss Tools 首頁</a><span>在此分頁運算 · 本版不保存資料</span></footer>
+  </div>
+  <dialog id="clear-dialog" aria-labelledby="clear-heading" aria-describedby="clear-description">
+    <h2 id="clear-heading">清除這本書的規劃？</h2>
+    <p id="clear-description">要清除書名、頁數、日期、星期、計畫與報告嗎？</p>
+    <div class="actions"><button id="keep-data" type="button" autofocus>保留目前內容</button><button id="confirm-clear" type="button" class="primary">清除資料</button></div>
+  </dialog>
+</body>
+</html>

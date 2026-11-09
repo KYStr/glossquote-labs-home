@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Code Maker | GlossQuote Tools</title>
+<meta name="description" content="Generate QR codes offline on your device: text or Wi-Fi details, your choice of error-correction level, margin and colours, PNG or SVG download.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>QR Code Maker</h1>
+  <p class="intro">Turn text, a URL or Wi-Fi details into a QR code, computed entirely in your browser — nothing is uploaded or stored. Remember: a QR code is a printed copy in public view, and anyone who can see it can read its contents, so never post one publicly if it carries a password.</p>
+
+  <section class="card" aria-label="Content">
+    <div class="tabs" role="tablist" aria-label="Content type">
+      <button type="button" id="mode-text-tab" role="tab" aria-selected="true">Text</button>
+      <button type="button" id="mode-wifi-tab" role="tab" aria-selected="false">Wi-Fi</button>
+    </div>
+    <div id="panel-text">
+      <label for="input-text">Payload text</label>
+      <textarea id="input-text" rows="4" placeholder="Type text or a URL here…" autocomplete="off"></textarea>
+    </div>
+    <div id="panel-wifi" hidden>
+      <label for="wifi-ssid">Network name (SSID)</label>
+      <input id="wifi-ssid" type="text" autocomplete="off">
+      <label for="wifi-security">Security</label>
+      <select id="wifi-security">
+        <option value="WPA" selected>WPA / WPA2</option>
+        <option value="WEP">WEP</option>
+        <option value="nopass">None</option>
+      </select>
+      <label for="wifi-password">Password</label>
+      <input id="wifi-password" type="password" autocomplete="off">
+      <label class="checkline" for="wifi-hidden"><input id="wifi-hidden" type="checkbox"> Hidden network (SSID not broadcast)</label>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Style and output settings">
+    <fieldset>
+      <legend>Error correction</legend>
+      <div class="radios">
+        <label for="ec-l"><input type="radio" id="ec-l" name="ec-level" value="L"> L (≈7% recovery)</label>
+        <label for="ec-m"><input type="radio" id="ec-m" name="ec-level" value="M" checked> M (≈15% recovery)</label>
+        <label for="ec-q"><input type="radio" id="ec-q" name="ec-level" value="Q"> Q (≈25% recovery)</label>
+        <label for="ec-h"><input type="radio" id="ec-h" name="ec-level" value="H"> H (≈30% recovery)</label>
+      </div>
+    </fieldset>
+    <div class="grid">
+      <div>
+        <label for="margin">Margin (modules) <span id="margin-value">4</span></label>
+        <input id="margin" type="range" min="0" max="8" step="1" value="4">
+      </div>
+      <div>
+        <label for="png-size">PNG size (px)</label>
+        <input id="png-size" type="number" min="256" max="4096" step="1" value="1024">
+      </div>
+      <div>
+        <label for="fg-color">Foreground</label>
+        <input id="fg-color" type="color" value="#000000">
+      </div>
+      <div>
+        <label for="bg-color">Background</label>
+        <input id="bg-color" type="color" value="#ffffff">
+      </div>
+    </div>
+    <p id="contrast-warning" class="warning" hidden>Contrast is low or the foreground is lighter than the background; scanners may fail to read this code. Prefer a dark foreground on a light background.</p>
+  </section>
+
+  <section class="card" aria-label="Preview and downloads">
+    <div class="preview">
+      <canvas id="preview-canvas" width="232" height="232" hidden></canvas>
+      <span id="preview-alt" class="visually-hidden"></span>
+      <p id="state-message" aria-live="polite">Enter content and the QR code will appear here.</p>
+    </div>
+    <dl class="readout">
+      <div><dt>Bytes</dt><dd id="readout-bytes">0</dd></div>
+      <div><dt>Version</dt><dd id="readout-version">–</dd></div>
+      <div><dt>Bytes remaining</dt><dd id="readout-remaining">–</dd></div>
+    </dl>
+    <div class="actions">
+      <button type="button" id="download-png" disabled>Download PNG</button>
+      <button type="button" id="download-svg" disabled>Download SVG</button>
+      <button type="button" id="copy-payload" disabled>Copy payload</button>
+      <button type="button" id="clear-button">Clear</button>
+    </div>
+    <p id="contrast-warning-2" class="warning" hidden>The current colours have low contrast; the downloaded QR code may not scan.</p>
+    <p><span id="copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <footer class="site-footer">
+    <p>Everything is computed locally in your browser: no network, no storage, no tracking. Leaving or reloading discards your input.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>GlossQuote Event Timeline | Plan an Event Schedule</title>
+  <meta name="description" content="Add a start time and activity durations to see each start and end, next-day markers, and the difference from an optional target. Data stays in this page’s memory.">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to worksheet</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools</a><span>Event Timeline</span><a id="language-link" href="/index.html" lang="zh-Hant">繁體中文</a></header>
+  <main id="main">
+    <h1>Turn an event plan into a clear timeline</h1>
+    <p class="intro">Enter the start time, activity names, and whole-minute durations, then build the timeline. For a target end time, state whether it falls on the next day.</p>
+    <p class="privacy">Data stays in this page and is cleared when you leave. Drafts are not saved. Initial loading still requires the site files.</p>
+    <noscript><p class="error">Enable JavaScript to calculate the timeline in this page. Data is not sent to a server.</p></noscript>
+    <form id="timeline-form" autocomplete="off" novalidate>
+      <div class="clock-fields">
+        <div class="field"><label for="start-time">Start time</label><input id="start-time" type="text" inputmode="text" maxlength="256" placeholder="09:00" spellcheck="false" aria-describedby="clock-help" autocomplete="off"></div>
+        <div class="field"><label for="target-time">Target end time (optional)</label><input id="target-time" type="text" inputmode="text" maxlength="256" placeholder="10:00" spellcheck="false" aria-describedby="clock-help" autocomplete="off"></div>
+        <div class="target-day"><label for="target-next-day"><input id="target-next-day" type="checkbox" aria-describedby="target-day-help" disabled>Target is the next day</label><p id="target-day-help">Enter a target time to enable this choice.</p></div>
+      </div>
+      <p id="clock-help" class="hint">24-hour ASCII HH:MM, such as 09:00. Neither 9:00 nor 24:00 is accepted.</p>
+      <section aria-labelledby="activities-heading">
+        <div class="section-heading"><h2 id="activities-heading">Activity order</h2><span id="row-count" class="hint">1 / 60</span></div>
+        <p id="row-help" class="hint">Keep activities in order. Each lasts 1–720 whole minutes; the full timeline can be at most 1440 minutes. A break is an activity too.</p>
+        <div id="activity-rows" class="activity-rows"></div>
+        <div class="add-row"><button id="add-activity" type="button" aria-describedby="row-limit">Add activity</button><span id="row-limit" class="hint">Up to 60 activities; keep at least one.</span></div>
+      </section>
+      <p id="field-error" class="error" role="alert" hidden></p>
+      <div class="build-actions"><button id="clear-all" type="button">Clear all</button><button id="build-timeline" class="primary" type="submit">Build timeline</button></div>
+    </form>
+    <p id="notice" class="notice" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p id="empty-result" class="empty-result">Add a start time and at least one activity.</p>
+    <section id="result" aria-labelledby="result-heading" hidden>
+      <div class="section-heading"><h2 id="result-heading">Timeline</h2><span>Built result</span></div>
+      <ol id="schedule-rows" class="schedule-rows"></ol>
+      <dl id="schedule-summary" class="schedule-summary"></dl>
+    </section>
+    <section class="report-section" aria-labelledby="report-heading">
+      <h2 id="report-heading">Plain text report</h2>
+      <label for="report">Current timeline report (read only)</label>
+      <textarea id="report" rows="9" readonly spellcheck="false" wrap="soft" aria-describedby="report-help"></textarea>
+      <p id="report-help" class="hint">After building, you can select the text to copy it manually. TXT uses UTF-8 without a BOM. Rebuild after editing.</p>
+      <div class="report-actions"><button id="copy-report" type="button" disabled>Copy report</button><button id="download-report" type="button" aria-describedby="download-help" disabled>Download TXT</button></div>
+      <p id="download-help" class="hint">Each click downloads one report. Up to 8 downloads can be active; their resources are released after 60 seconds.</p>
+    </section>
+    <section class="help" aria-labelledby="help-heading">
+      <h2 id="help-heading">How to use</h2>
+      <p>Enter a start time, activity names, and whole-minute durations. Notes are optional. Use Move up and Move down to change the order, then select Build timeline. Any edit immediately clears the previous result.</p>
+      <p>No calendar dates, time zones, daylight-saving rules, or reminders are used. Changing language leaves this page and clears the data. A clipboard write already accepted by the browser cannot be recalled. You and your browser manage the clipboard and downloaded files.</p>
+      <h2>Frequently asked questions</h2>
+      <details><summary>Is my timeline saved?</summary><p>No. Inputs and results stay in this page’s memory and are cleared when you leave.</p></details>
+      <details><summary>What happens when the schedule passes midnight?</summary><p>Times after midnight are marked “next day.” No calendar date, time zone, or daylight-saving rules are used.</p></details>
+      <details><summary>Can I build a timeline without a target end time?</summary><p>Yes. Leave it blank and keep “Target is the next day” unchecked; no early/late comparison is shown.</p></details>
+      <details><summary>How long can each activity be?</summary><p>Each activity can be 1 to 720 minutes. The full timeline is limited to 1440 minutes and 60 activities.</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to Gloss Tools</a><span>Gloss Tools by GlossQuote</span></footer>
+</body>
+</html>

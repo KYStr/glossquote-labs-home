@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Markdown Preview and HTML Export | GlossQuote Labs</title>
+    <meta name="description" content="A fully local Markdown live preview with a published syntax subset, escaped raw HTML, and a standalone single-file HTML export.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https: http:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    >
+    <link rel="alternate" hreflang="zh-Hant" href="../">
+    <link rel="alternate" hreflang="en" href="./">
+    <link rel="stylesheet" href="../styles/tokens.css">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="home-link" href="https://glossquote.com/">GlossQuote</a>
+      <p class="lang-switch"><a href="../" hreflang="zh-Hant">繁體中文</a></p>
+    </header>
+    <main>
+      <h1>Markdown Preview and HTML Export</h1>
+      <p class="lede">
+        Preview Markdown locally with a published syntax subset and deviation list;
+        raw HTML is always escaped and link schemes are whitelisted. Copy the preview
+        HTML, or download one standalone HTML file with its stylesheet inlined that
+        opens offline. Your draft lives only in page memory — nothing is stored or sent.
+      </p>
+
+      <p id="limit-error" class="error" role="alert" hidden></p>
+
+      <div class="panes">
+        <section class="pane">
+          <div class="pane-head">
+            <label for="editor">Markdown editor</label>
+            <span class="pane-actions">
+              <button id="sample-button" type="button">Load sample</button>
+              <button id="clear-button" type="button">Clear</button>
+            </span>
+          </div>
+          <textarea id="editor" rows="18" spellcheck="false" autocomplete="off"></textarea>
+          <p id="counts" class="counts">0 characters · 0 words</p>
+        </section>
+        <section class="pane">
+          <div class="pane-head">
+            <span id="preview-label">Preview</span>
+            <span class="pane-actions">
+              <label class="sync"><input id="sync-toggle" type="checkbox" checked> Sync scroll</label>
+              <button id="copy-button" type="button" disabled>Copy HTML</button>
+              <button id="export-button" type="button" disabled>Export HTML file</button>
+            </span>
+          </div>
+          <div id="preview" class="preview" role="region" aria-labelledby="preview-label" tabindex="0"></div>
+        </section>
+      </div>
+
+      <p id="status-note" class="status"></p>
+      <p id="announce" class="visually-hidden" aria-live="polite"></p>
+
+      <details id="help" class="help">
+        <summary>Supported subset and deviations (complete list)</summary>
+        <p>
+          Supported: ATX headings (1–6), paragraphs, fenced code blocks, blockquotes,
+          unordered/ordered/task lists, thematic breaks, pipe tables with column
+          alignment, code spans, emphasis, strong, strikethrough, inline links and
+          images, full reference links, angle autolinks, backslash escapes, and hard
+          breaks from two trailing spaces or a trailing backslash.
+        </p>
+        <p>
+          Deviations from full CommonMark (complete list): setext headings are
+          unsupported; raw HTML is escaped, never executed; collapsed
+          <code>[text][]</code> and shortcut <code>[text]</code> reference links are
+          unsupported; bare URLs are not autolinked; HTML entities pass through only
+          for the named set
+          <code>&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;#39; &amp;nbsp;</code>
+          and numeric character references — other <code>&amp;name;</code> sequences
+          render literally.
+        </p>
+        <p>
+          Note: image URLs in a draft are requested by your browser when previewed
+          (the preview sets no-referrer on images). Remove sensitive image URLs
+          before previewing a draft.
+        </p>
+      </details>
+    </main>
+  </body>
+</html>

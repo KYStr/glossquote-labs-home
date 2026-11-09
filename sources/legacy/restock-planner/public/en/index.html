@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Restock Quantity Planner | Gloss Tools</title>
+  <meta name="description" content="Estimate restock packs, possible shortage before arrival, and whole days of stock from observed use, current stock, lead time, reserve, and pack size.">
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#worksheet">Skip to the restock worksheet</a>
+  <header><span>Gloss Tools / Restock Quantity Planner</span><nav aria-label="Website"><a href="https://glossquote.com/en/index.html">Home</a><a id="language" href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav></header>
+  <main id="worksheet">
+    <h1>Plan how many packs to restock</h1>
+    <p class="intro">Enter observed use and current stock to review a restock estimate under a fixed-average-use assumption.</p>
+    <p class="privacy">Inputs are processed on this page. This version does not save data. Changing language or leaving clears the draft. Initial loading still needs the website files.</p>
+    <noscript><p class="warning">Enable JavaScript for this page to calculate. This version does not save data; the fields are currently disabled.</p></noscript>
+    <p id="initialization" class="notice">Preparing the worksheet. If fields stay disabled, reload and try again; data is not sent to another service.</p>
+    <section id="confirmation" class="confirmation" aria-labelledby="confirmation-title" aria-describedby="confirmation-text" hidden>
+      <h2 id="confirmation-title">Confirm the next step</h2><p id="confirmation-text"></p>
+      <div class="actions"><button id="cancel" type="button" disabled>Cancel</button><button id="confirm" type="button" disabled>Confirm</button></div>
+    </section>
+    <section aria-labelledby="period-title">
+      <h2 id="period-title">Set the planning period</h2>
+      <p id="period-help">Use the observation total to estimate fixed average use. The order becomes available at the end of the lead period. Desired coverage starts after arrival.</p>
+      <div class="periods">
+        <div class="field"><label for="observationDaysRaw">Observation days</label><input id="observationDaysRaw" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="30" aria-describedby="observation-help observationDaysRaw-error" disabled><small id="observation-help">1–365 days; matches each item's observed use.</small><span id="observationDaysRaw-error" class="field-error"></span></div>
+        <div class="field"><label for="leadDaysRaw">Lead time in days</label><input id="leadDaysRaw" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="7" aria-describedby="lead-help leadDaysRaw-error" disabled><small id="lead-help">0–365 days until the order is available.</small><span id="leadDaysRaw-error" class="field-error"></span></div>
+        <div class="field"><label for="coverageDaysRaw">Desired days after arrival</label><input id="coverageDaysRaw" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="30" aria-describedby="coverage-help coverageDaysRaw-error" disabled><small id="coverage-help">1–365 days; excludes the lead period.</small><span id="coverageDaysRaw-error" class="field-error"></span></div>
+      </div>
+      <details><summary>Calculation method and limits</summary><div class="reading"><p>Target units = observed use × (lead days + coverage days) ÷ observation days + safety reserve. Subtract current stock, then round up to whole packs, with a minimum of zero packs. Decisions use exact integer ratios. Daily use is displayed to three decimal places with half-up rounding.</p><p>Shortage before arrival excludes the new order. Whole days of stock use current stock and fixed average use, without deducting reserve. Runway is not estimated at zero use. This version does not handle incoming orders, multiple warehouses, unit conversion or changing demand. It is an estimate, not a demand forecast.</p></div></details>
+    </section>
+    <section aria-labelledby="items-title">
+      <div class="section-heading"><h2 id="items-title">Enter use and stock for each item</h2><span id="item-count">1 / 30 items</span></div>
+      <p>Use ASCII whole numbers. An empty field is not zero. Use the same unit for every quantity in an item. Maximum: 30 items.</p>
+      <div id="items">
+        <fieldset class="item-row"><legend>Item 1</legend>
+          <div class="field"><label for="initial-name">Name</label><input id="initial-name" type="text" autocomplete="off" disabled></div>
+          <div class="field"><label for="initial-unit">Unit label</label><input id="initial-unit" type="text" autocomplete="off" disabled></div>
+          <div class="field"><label for="initial-used">Use during observation</label><input id="initial-used" type="text" inputmode="numeric" autocomplete="off" disabled></div>
+          <div class="field"><label for="initial-stock">Current stock</label><input id="initial-stock" type="text" inputmode="numeric" autocomplete="off" disabled></div>
+          <div class="field"><label for="initial-reserve">Safety reserve</label><input id="initial-reserve" type="text" inputmode="numeric" autocomplete="off" disabled></div>
+          <div class="field"><label for="initial-pack">Units per pack</label><input id="initial-pack" type="text" inputmode="numeric" autocomplete="off" disabled></div>
+          <button type="button" disabled>Remove item</button>
+        </fieldset>
+      </div>
+      <div class="actions examples"><button id="add" type="button" disabled>＋ Add item</button><button id="example-normal" type="button" disabled>Example: normal restock</button><button id="example-shortage" type="button" disabled>Example: shortage before arrival</button></div>
+      <div class="actions calculate-actions"><button id="clear" type="button" disabled>Clear all</button><button id="calculate" class="primary" type="button" disabled>Calculate restock</button></div>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Fill in each item, then select “Calculate restock.” Nothing has been calculated yet.</p>
+    <section id="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">Your restock estimate</h2><p>Fixed average use is assumed. The order is available at the end of the lead period. Any earlier shortage needs separate attention.</p>
+      <div id="result-list"></div>
+    </section>
+    <section class="report-section" aria-labelledby="report-title"><h2 id="report-title">Complete order report</h2><p id="report-help">The complete selectable report appears here after a successful calculation. Select text manually with your keyboard. There are no copy or download buttons.</p><label class="visually-hidden" for="report">Complete order report (read only)</label><textarea id="report" rows="13" readonly autocomplete="off" spellcheck="false" aria-describedby="report-help" disabled></textarea></section>
+    <section class="reading faq" aria-labelledby="faq-title"><h2 id="faq-title">Common questions</h2>
+      <details><summary>How does the planner estimate the number of packs?</summary><p>It estimates a fixed average from observed use, includes lead time, desired coverage after arrival and safety reserve, subtracts current stock, then rounds up to whole packs. It is an estimate from your inputs, not a demand forecast.</p></details>
+      <details><summary>Can it calculate when observed use is zero?</summary><p>Yes. Stock runway is not estimated at zero use. Safety reserve still counts toward the target, so an order may still be suggested.</p></details>
+      <details><summary>Are incoming orders included in current stock?</summary><p>No. This version uses current stock only and does not handle incoming orders or multiple warehouses. A changing usage rate may make the fixed-average estimate inaccurate.</p></details>
+    </section>
+    <footer>Gloss Tools by GlossQuote · Local candidate, not published.</footer>
+  </main>
+</body>
+</html>

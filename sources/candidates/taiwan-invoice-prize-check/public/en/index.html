@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taiwan Uniform Invoice Prize Check | GlossQuote Tools</title>
+<meta name="description" content="Check Taiwan uniform invoice numbers offline: full tier verdicts, an honest last-3 quick screen, and batch checking of up to 500 lines. Full-width digits are converted automatically; nothing is uploaded.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Taiwan Uniform Invoice Prize Check</h1>
+  <p class="intro">Copy this period's winning numbers from the official Ministry of Finance announcement into the setup below, then check your invoices. Everything runs locally in your browser — nothing is uploaded or stored. This tool checks the numbers you typed against the standard prize amounts; the official announcement for the period governs, and a typing error in the winning numbers produces wrong verdicts, so double-check the setup after entering it. Full-width digits (０-９) are converted to ASCII automatically.</p>
+
+  <section class="card" aria-label="Winning number setup">
+    <h2>Winning numbers</h2>
+    <div class="grid">
+      <div>
+        <label for="special">Special Prize (8 digits)</label>
+        <input id="special" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-special">
+        <p id="err-special" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="grand">Grand Prize (8 digits)</label>
+        <input id="grand" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-grand">
+        <p id="err-grand" class="error" hidden></p>
+      </div>
+    </div>
+    <fieldset>
+      <legend>First Prize (1–5 numbers, 8 digits)</legend>
+      <div class="grid">
+        <div><label for="first-1">First Prize set 1</label><input id="first-1" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-2">First Prize set 2</label><input id="first-2" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-3">First Prize set 3</label><input id="first-3" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-4">First Prize set 4</label><input id="first-4" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-5">First Prize set 5</label><input id="first-5" type="text" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <p id="err-first" class="error" hidden></p>
+    </fieldset>
+    <fieldset>
+      <legend>Additional Sixth Prize (0–4 sets, 3 digits, may be empty)</legend>
+      <div class="grid">
+        <div><label for="add-1">Additional set 1</label><input id="add-1" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-2">Additional set 2</label><input id="add-2" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-3">Additional set 3</label><input id="add-3" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-4">Additional set 4</label><input id="add-4" type="text" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <p id="err-add" class="error" hidden></p>
+    </fieldset>
+    <p id="setup-summary" aria-live="polite"></p>
+    <p><button type="button" id="setup-reset">Reset winning numbers</button></p>
+  </section>
+
+  <section class="card" aria-label="Full check">
+    <h2>Full check</h2>
+    <label for="full-input">Invoice number (8 digits)</label>
+    <input id="full-input" type="text" inputmode="numeric" autocomplete="off" aria-describedby="full-error">
+    <p id="full-error" class="error" hidden></p>
+    <p><button type="button" id="full-check" disabled>Check</button></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Number</th><th scope="col">Verdict</th><th scope="col">Standard amount</th><th scope="col">Matching rule</th></tr></thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+    <p id="results-summary" aria-live="polite"></p>
+    <p class="hint">The same number may be checked repeatedly (shops can hold duplicates); the summary counts rows.</p>
+    <div class="actions">
+      <button type="button" id="copy-summary">Copy summary</button>
+      <button type="button" id="clear-results">Clear results</button>
+    </div>
+    <p><span id="copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <section class="card" aria-label="Quick last-3 screen">
+    <h2>Quick last-3 screen</h2>
+    <label for="quick-input">Last 3 digits of the invoice</label>
+    <input id="quick-input" type="text" inputmode="numeric" autocomplete="off" aria-describedby="quick-error">
+    <p id="quick-error" class="error" hidden></p>
+    <p><button type="button" id="quick-check" disabled>Screen</button></p>
+    <div id="quick-result" aria-live="polite"></div>
+    <p class="hint">Quick mode only ever says “possible” or “cannot win” — never a definite tier or an amount.</p>
+  </section>
+
+  <section class="card" aria-label="Batch check">
+    <h2>Batch check</h2>
+    <label for="batch-input">Paste invoice numbers (one per line, at most 500 lines)</label>
+    <textarea id="batch-input" rows="8" aria-describedby="batch-help"></textarea>
+    <p id="batch-help" class="hint">Malformed lines are listed with their reason, never silently dropped.</p>
+    <p id="batch-error" class="error" hidden></p>
+    <p><button type="button" id="batch-run" disabled>Check batch</button></p>
+    <p id="batch-summary" aria-live="polite"></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Line</th><th scope="col">Number</th><th scope="col">Verdict</th><th scope="col">Standard amount</th><th scope="col">Note</th></tr></thead>
+        <tbody id="batch-body"></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button type="button" id="copy-batch-summary">Copy batch summary</button>
+    </div>
+    <p><span id="batch-copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <footer class="site-footer">
+    <p>Everything is computed locally in your browser: no network, no storage, no tracking. Leaving or reloading discards your input. The official Ministry of Finance announcement governs all prizes and amounts.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>統一發票對獎 | GlossQuote 工具</title>
+<meta name="description" content="在本機離線對統一發票：輸入開獎號碼後逐張完整對獎、末3碼快速篩選或整批貼上檢查，全寬數字自動轉換，不上傳任何號碼。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>統一發票對獎</h1>
+  <p class="intro">先從財政部公布的統一發票中獎號碼把本期開獎號碼抄進下方設定，再逐張對獎。所有檢查都在你的瀏覽器本機完成，不上傳、不儲存。本工具依一般獎金標準金額檢查你輸入的號碼；正式結果以財政部當期公告為準，開獎號碼若抄錯，對獎結果就會錯，請在設定後再核對一次。全寬數字（０-９）會自動轉成半寬。</p>
+
+  <section class="card" aria-label="開獎號碼設定">
+    <h2>開獎號碼設定</h2>
+    <div class="grid">
+      <div>
+        <label for="special">特別獎（8 碼）</label>
+        <input id="special" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-special">
+        <p id="err-special" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="grand">特獎（8 碼）</label>
+        <input id="grand" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-grand">
+        <p id="err-grand" class="error" hidden></p>
+      </div>
+    </div>
+    <fieldset>
+      <legend>頭獎（1–5 組，8 碼）</legend>
+      <div class="grid">
+        <div><label for="first-1">頭獎第 1 組</label><input id="first-1" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-2">頭獎第 2 組</label><input id="first-2" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-3">頭獎第 3 組</label><input id="first-3" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-4">頭獎第 4 組</label><input id="first-4" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="first-5">頭獎第 5 組</label><input id="first-5" type="text" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <p id="err-first" class="error" hidden></p>
+    </fieldset>
+    <fieldset>
+      <legend>增開六獎（0–4 組，3 碼，可留空）</legend>
+      <div class="grid">
+        <div><label for="add-1">增開第 1 組</label><input id="add-1" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-2">增開第 2 組</label><input id="add-2" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-3">增開第 3 組</label><input id="add-3" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="add-4">增開第 4 組</label><input id="add-4" type="text" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <p id="err-add" class="error" hidden></p>
+    </fieldset>
+    <p id="setup-summary" aria-live="polite"></p>
+    <p><button type="button" id="setup-reset">重設開獎號碼</button></p>
+  </section>
+
+  <section class="card" aria-label="完整對獎">
+    <h2>完整對獎</h2>
+    <label for="full-input">發票號碼（8 碼）</label>
+    <input id="full-input" type="text" inputmode="numeric" autocomplete="off" aria-describedby="full-error">
+    <p id="full-error" class="error" hidden></p>
+    <p><button type="button" id="full-check" disabled>對獎</button></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">號碼</th><th scope="col">結果</th><th scope="col">標準金額</th><th scope="col">中獎規則</th></tr></thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+    <p id="results-summary" aria-live="polite"></p>
+    <p class="hint">同一號碼可重複對獎（店家可能持有重複號碼），摘要依列數計算。</p>
+    <div class="actions">
+      <button type="button" id="copy-summary">複製摘要</button>
+      <button type="button" id="clear-results">清除結果</button>
+    </div>
+    <p><span id="copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <section class="card" aria-label="末3碼快速篩選">
+    <h2>末 3 碼快速篩選</h2>
+    <label for="quick-input">發票末 3 碼</label>
+    <input id="quick-input" type="text" inputmode="numeric" autocomplete="off" aria-describedby="quick-error">
+    <p id="quick-error" class="error" hidden></p>
+    <p><button type="button" id="quick-check" disabled>快速篩選</button></p>
+    <div id="quick-result" aria-live="polite"></div>
+    <p class="hint">快速篩選只會說「可能」或「不可能」，不會給出確定獎項或金額。</p>
+  </section>
+
+  <section class="card" aria-label="整批對獎">
+    <h2>整批對獎</h2>
+    <label for="batch-input">貼上發票號碼（每行一張，最多 500 行）</label>
+    <textarea id="batch-input" rows="8" aria-describedby="batch-help"></textarea>
+    <p id="batch-help" class="hint">格式錯誤的行會逐行列出原因，不會被默默丟棄。</p>
+    <p id="batch-error" class="error" hidden></p>
+    <p><button type="button" id="batch-run" disabled>整批對獎</button></p>
+    <p id="batch-summary" aria-live="polite"></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">行</th><th scope="col">號碼</th><th scope="col">結果</th><th scope="col">標準金額</th><th scope="col">說明</th></tr></thead>
+        <tbody id="batch-body"></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button type="button" id="copy-batch-summary">複製批次摘要</button>
+    </div>
+    <p><span id="batch-copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <footer class="site-footer">
+    <p>所有運算都在本機瀏覽器完成：不連網、不儲存、不追蹤。離開或重新整理後，輸入內容即消失。獎項與金額以財政部當期公告為準。</p>
+  </footer>
+</main>
+</body>
+</html>

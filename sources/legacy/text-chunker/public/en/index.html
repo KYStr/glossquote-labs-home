@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Split long text into copyable chunks by a chosen Unicode code point limit, with an optional preference for line breaks. No platform rules are assumed.">
+  <title>Text Chunker with a Unicode Code Point Limit | GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the text tool</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">GlossQuote Tools</a>
+    <nav aria-label="Language"><a href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁中</a><span aria-current="page">English</span></nav>
+  </header>
+  <main id="main" class="canvas">
+    <h1>Split text by a code point limit</h1>
+    <p class="intro">Choose a maximum per chunk and review the full text. Joining the chunks in order gives you the same source.</p>
+    <form id="chunk-form" novalidate autocomplete="off" aria-busy="false">
+      <div class="source-field">
+        <label for="source">Text to split</label>
+        <textarea id="source" name="source" rows="7" spellcheck="false" autocomplete="off" aria-describedby="source-hint source-count source-error" aria-invalid="false" placeholder="Paste text here"></textarea>
+        <div class="source-meta"><p id="source-hint">Maximum: 100,000 UTF-16 code units. Text and chunks are processed in this page's memory without uploading.</p><p id="source-count" class="measurement"></p></div>
+        <p id="source-error" class="field-error" hidden></p>
+      </div>
+      <div class="settings">
+        <div class="field">
+          <label for="limit">Maximum per chunk (Unicode code points)</label>
+          <input id="limit" name="limit" type="text" inputmode="numeric" value="280" autocomplete="off" spellcheck="false" aria-describedby="limit-range limit-hint limit-error" aria-invalid="false">
+          <p id="limit-range">Choose 1–10,000, with a maximum of 1,000 chunks.</p>
+          <p id="limit-hint">This counts code points, not visible emoji or a platform-specific limit.</p>
+          <p id="limit-error" class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="mode">How to split</label>
+          <select id="mode" name="mode" aria-describedby="mode-hint mode-error" aria-invalid="false">
+            <option value="strict">Strict limit</option>
+            <option value="prefer-lf">Prefer line breaks</option>
+          </select>
+          <p id="mode-hint">Prefer the last LF within the current limit, keeping it in that chunk. With no LF, split at the limit.</p>
+          <p id="mode-error" class="field-error" hidden></p>
+        </div>
+      </div>
+      <p class="character-note">One visible emoji can contain several code points. A split may separate it or other combined characters.</p>
+      <div class="actions"><button id="split" class="primary" type="submit">Split text</button><button id="clear" type="button">Clear text</button></div>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true" data-kind="info"></p>
+    <p id="refresh-notice" class="refresh-notice">Reloading clears your text and chunks.</p>
+    <section id="results" aria-labelledby="results-title" aria-busy="false">
+      <h2 id="results-title">Copyable chunks</h2>
+      <p id="empty">Paste text, choose a limit, then press Split text.</p>
+      <p id="result-summary" class="measurement" hidden></p>
+      <div id="pagination" class="pagination" hidden>
+        <p id="page-range"></p>
+        <div class="page-controls"><button id="previous" type="button">Previous</button><div class="page-field"><label for="page-choice">Go to page</label><select id="page-choice"></select></div><button id="next" type="button">Next</button></div>
+      </div>
+      <ol id="chunks" class="chunks"></ol>
+    </section>
+    <section class="help" aria-labelledby="help-title">
+      <h2 id="help-title">Counting and preserving text</h2>
+      <details><summary>Does this follow a social platform's character limit?</summary><p>No. You choose the limit, and this tool counts Unicode code points rather than any platform's character rules.</p></details>
+      <details><summary>Are emoji one character?</summary><p>A visible emoji can contain several code points and may be split. This tool does not count grapheme clusters or visible emoji shapes.</p></details>
+      <details><summary>Will line breaks stay the same?</summary><p>Chunks preserve the source currently in the text field. No numbering or separators are added, and whitespace is kept. A browser may normalize pasted CRLF or CR line endings to LF before the tool reads them. The tool does not recover pre-paste file bytes. Prefer line breaks looks for LF only.</p></details>
+    </section>
+    <noscript><p class="field-error">Enable JavaScript to split text locally in your browser.</p></noscript>
+  </main>
+  <footer class="footer">Text stays in the current page. Copying starts only when you choose a chunk.</footer>
+</body>
+</html>

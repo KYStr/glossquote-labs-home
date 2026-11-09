@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Password Generator and Strength Checker | GlossQuote Tools</title>
+<meta name="description" content="Generate random passwords and passphrases locally, and check password strength with a published estimation model: entropy and every penalty itemised. Everything runs on your device; nothing is uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Password Generator and Strength Checker</h1>
+  <p class="intro">Passwords and passphrases are generated locally with the browser's cryptographic randomness (crypto.getRandomValues) — never uploaded, never stored, gone when the tab closes. Strength figures are estimates from the model published on this page, not a guarantee; keep generated passwords in a reputable password manager, because this tool stores nothing. Note that a screenshot or a shoulder-surfer can still see a password while it is on screen.</p>
+
+  <p id="crypto-warning" class="error" role="alert" hidden></p>
+
+  <section class="card">
+    <div class="tabs" role="tablist" aria-label="Mode">
+      <button type="button" id="tab-password" role="tab" aria-selected="true">Password</button>
+      <button type="button" id="tab-passphrase" role="tab" aria-selected="false">Passphrase</button>
+      <button type="button" id="tab-check" role="tab" aria-selected="false">Strength check</button>
+    </div>
+
+    <div id="panel-password">
+      <div class="field">
+        <label for="pw-length">Length (8–128)</label>
+        <input id="pw-length" type="number" min="8" max="128" step="1" value="20">
+      </div>
+      <fieldset class="field">
+        <legend>Character sets</legend>
+        <label><input id="pw-lower" type="checkbox" checked> Lowercase a–z</label>
+        <label><input id="pw-upper" type="checkbox" checked> Uppercase A–Z</label>
+        <label><input id="pw-digits" type="checkbox" checked> Digits 0–9</label>
+        <label><input id="pw-symbols" type="checkbox" checked> Symbols</label>
+        <label><input id="pw-no-ambiguous" type="checkbox"> Exclude ambiguous characters (l, I, 1, O, 0)</label>
+      </fieldset>
+      <div class="field">
+        <label for="pw-count">Batch size (1–10)</label>
+        <input id="pw-count" type="number" min="1" max="10" step="1" value="1">
+      </div>
+      <p class="expected">Expected entropy: <span id="pw-expected"></span> bits</p>
+      <p id="pw-replace-note" class="note"></p>
+      <button type="button" id="pw-generate" class="primary">Generate</button>
+      <p id="pw-error" class="error" role="alert"></p>
+      <div id="pw-list" class="secret-list"></div>
+    </div>
+
+    <div id="panel-passphrase" hidden>
+      <div class="field">
+        <label for="pp-words">Words (3–10)</label>
+        <input id="pp-words" type="number" min="3" max="10" step="1" value="5">
+      </div>
+      <div class="field">
+        <label for="pp-separator">Separator</label>
+        <select id="pp-separator">
+          <option value="hyphen" selected>Hyphen -</option>
+          <option value="space">Space</option>
+          <option value="underscore">Underscore _</option>
+          <option value="dot">Dot .</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <fieldset class="field">
+        <legend>Options</legend>
+        <label><input id="pp-capitalize" type="checkbox"> Capitalise one word</label>
+        <label><input id="pp-digit" type="checkbox"> Append one random digit</label>
+      </fieldset>
+      <div class="field">
+        <label for="pp-count">Batch size (1–10)</label>
+        <input id="pp-count" type="number" min="1" max="10" step="1" value="1">
+      </div>
+      <p class="expected">Expected entropy: <span id="pp-expected"></span> bits</p>
+      <p id="pp-replace-note" class="note"></p>
+      <button type="button" id="pp-generate" class="primary">Generate</button>
+      <p id="pp-error" class="error" role="alert"></p>
+      <div id="pp-list" class="secret-list"></div>
+    </div>
+
+    <div id="panel-check" hidden>
+      <div class="field">
+        <label for="check-input">Password to check</label>
+        <input id="check-input" type="password" autocomplete="off" spellcheck="false">
+        <button type="button" id="check-toggle">Show / hide</button>
+      </div>
+      <p id="check-error" class="error" role="alert"></p>
+      <div id="check-breakdown"></div>
+      <p id="check-final" class="final"></p>
+      <p class="note">This is an estimate from a published model (base entropy minus itemised penalties), not a safety guarantee; the password you type is never shown in the results.</p>
+    </div>
+  </section>
+
+  <p>
+    <button type="button" id="wipe-button">Wipe everything</button>
+    <span id="status-note" class="note"></span>
+  </p>
+  <p id="announce" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>

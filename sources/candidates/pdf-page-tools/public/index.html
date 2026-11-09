@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF 頁面工具：合併、分割、擷取、旋轉 | GlossQuote 工具</title>
+<meta name="description" content="在本機合併、分割、擷取與旋轉 PDF 頁面：檔案不離開你的裝置、不上傳、不儲存。先看輸出計畫再產生，頁數與順序可驗證。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>PDF 頁面工具</h1>
+  <p class="intro">合併、分割、擷取與旋轉 PDF 頁面，全部在你的瀏覽器裡完成：檔案不離開你的裝置，不上傳任何伺服器、不儲存，關閉分頁就消失。產生之前會先顯示完整的輸出計畫（頁面順序、群組、旋轉角度），產生後可以在任何 PDF 閱讀器核對頁數與順序。</p>
+  <p class="warning">重要：本工具不是遮蔽（redaction）工具——移動或擷取頁面不會移除內容，輸出的頁面可能仍含有來源檔案的隱藏圖層與中繼資料。請勿把處理過的檔案當成已消毒的檔案分享。另外，來源 PDF 的大綱／書籤與內部連結不保證在複製頁面後保留，這是已知限制，不是故障。受密碼保護的檔案會被拒絕（不要求密碼、不嘗試解密）。</p>
+
+  <section class="card">
+    <div class="tabs" role="tablist" aria-label="模式">
+      <button type="button" id="tab-merge" role="tab" aria-selected="true">合併</button>
+      <button type="button" id="tab-split" role="tab" aria-selected="false">分割</button>
+      <button type="button" id="tab-extract" role="tab" aria-selected="false">擷取</button>
+      <button type="button" id="tab-rotate" role="tab" aria-selected="false">旋轉</button>
+    </div>
+
+    <div class="field">
+      <label for="file-input">加入 PDF 檔案（可多選，或拖放到下方區域）</label>
+      <input id="file-input" type="file" accept="application/pdf,.pdf" multiple>
+      <div id="drop-zone" class="drop-zone">把 PDF 拖放到這裡</div>
+    </div>
+
+    <ul id="file-list" class="file-list"></ul>
+    <ul id="file-errors" class="file-errors"></ul>
+
+    <p id="controls-merge" class="note">合併：依清單順序串連所有檔案的頁面。用每列的「上移／下移」按鈕調整順序（也可以拖曳列）。</p>
+
+    <div id="range-block" hidden>
+      <div class="field">
+        <label for="range-input">頁面範圍（例如 1-3, 5, 8- ；頁碼從 1 起）</label>
+        <input id="range-input" type="text" autocomplete="off" spellcheck="false" class="mono" aria-describedby="range-error">
+        <p id="range-error" class="error" role="alert"></p>
+      </div>
+      <fieldset class="field" id="split-options" hidden>
+        <legend>分割輸出方式</legend>
+        <label><input id="split-combined" type="radio" name="split-mode" checked> 合併成一個檔案</label>
+        <label><input id="split-pergroup" type="radio" name="split-mode"> 每一組一個檔案</label>
+      </fieldset>
+      <div class="field" id="rotate-options" hidden>
+        <label for="angle-select">旋轉角度（順時針，加上頁面原有的旋轉）</label>
+        <select id="angle-select">
+          <option value="90" selected>90°</option>
+          <option value="180">180°</option>
+          <option value="270">270°</option>
+        </select>
+      </div>
+    </div>
+
+    <p id="plan" class="plan"></p>
+    <p>
+      <button type="button" id="generate-button" class="primary" disabled>產生</button>
+      <span id="progress-note" class="note"></span>
+    </p>
+    <ul id="download-list" class="download-list"></ul>
+    <p>
+      <button type="button" id="start-over">重新開始（清除全部）</button>
+      <span id="status-note" class="note"></span>
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>限制與說明</h2>
+    <ul>
+      <li>單一檔案 ≤ 200 MB；合併最多 20 個檔案、總大小 ≤ 200 MB、總頁數 ≤ 2,000 頁；其他模式 ≤ 2,000 頁。超限會以具名錯誤指出，不會靜默截斷。</li>
+      <li>輸出頁面是複製原頁（文字仍是文字，不會被轉成圖片）；輸出的 Producer 固定為 GlossQuote Labs PDF Page Tools，來源文件的標題／作者等中繼資料不會被複製過去。</li>
+      <li>同一組輸入重複產生，頁面順序與旋轉會相同（結構確定）；PDF 檔案位元組本身可能不同，因為寫入器會嵌入文件 ID 與時間。</li>
+      <li>本工具可離線從靜態主機執行；直接以 file:// 開啟時，瀏覽器的 File API 限制可能影響選檔，這是瀏覽器的限制。</li>
+    </ul>
+  </section>
+
+  <p id="announce" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>

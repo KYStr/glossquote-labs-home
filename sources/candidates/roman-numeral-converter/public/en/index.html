@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+    <link rel="alternate" hreflang="en" href="./index.html">
+    <link rel="alternate" hreflang="x-default" href="../index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Roman Numeral Converter: Integers to Canonical Roman Numerals｜GlossQuote-Labs</title>
+    <meta name="description" content="Convert integers from 1 to 3999 to canonical Roman numerals, or Roman numerals back to integers, in your browser, with a breakdown table. Non-canonical strings are called out with their loose value and the correct canonical form, never silently accepted. Nothing is saved or uploaded.">
+    <link rel="stylesheet" href="../styles/tokens.css">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://glossquote.com/en/index.html">GlossQuote-Labs</a>
+      <span class="location">Roman Numeral Converter</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="Language">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="../index.html">繁體中文</a>
+          <a lang="en" hreflang="en" href="./index.html" aria-current="page">English</a>
+        </nav>
+        <p class="language-note">Switching pages clears the current input.</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">Roman Numeral Converter</h1>
+        <p class="intro">Type in either field and the other field plus the breakdown update immediately. “Canonical” has exactly one definition here: the string the greedy table produces. A non-canonical string such as IC is never silently accepted — the page tells you its loose value is 99 and the canonical form is XCIX.</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          This browser cannot start the converter. Please open it in a browser that supports JavaScript modules. The usage notes and reference table below remain readable.
+        </p>
+
+        <form id="tool-form">
+          <fieldset id="tool-controls" disabled>
+            <legend class="visually-hidden">Roman numeral converter workspace</legend>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="int-field">Integer (1–3999)</label>
+                <input id="int-field" name="intValue" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1994" aria-describedby="int-help" aria-invalid="false">
+                <p id="int-help" class="field-help">Digits only, at most 4 characters; leading zeros are read as the number (007 = 7).</p>
+                <p id="int-error" class="field-error" hidden></p>
+                <p id="int-note" class="field-help" hidden></p>
+                <p class="field-actions"><button id="int-copy" type="button" class="button button-secondary">Copy integer</button></p>
+              </div>
+              <div class="field">
+                <label for="roman-field">Roman numeral</label>
+                <input id="roman-field" name="romanValue" type="text" autocomplete="off" spellcheck="false" value="MCMXCIV" aria-describedby="roman-help" aria-invalid="false">
+                <p id="roman-help" class="field-help">Lowercase is treated as uppercase; at most 15 characters; canonical forms only.</p>
+                <p id="roman-error" class="field-error" hidden></p>
+                <p class="field-actions"><button id="roman-copy" type="button" class="button button-secondary">Copy Roman numeral</button></p>
+              </div>
+            </div>
+
+            <p id="stale-note" class="stale-note" hidden>Out of date: a field is invalid, so the last valid result is shown.</p>
+
+            <section class="breakdown-wrap" aria-labelledby="breakdown-title">
+              <h2 id="breakdown-title">Breakdown</h2>
+              <table class="data-table">
+                <thead><tr><th scope="col">Symbol group</th><th scope="col">Value</th></tr></thead>
+                <tbody id="breakdown-body">
+                  <tr><td>M</td><td>1000</td></tr>
+                  <tr><td>CM</td><td>900</td></tr>
+                  <tr><td>XC</td><td>90</td></tr>
+                  <tr><td>IV</td><td>4</td></tr>
+                </tbody>
+                <tfoot><tr><th scope="row">Total</th><td id="breakdown-total">1994</td></tr></tfoot>
+              </table>
+            </section>
+          </fieldset>
+        </form>
+
+        <p id="tool-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+      </section>
+
+      <section class="usage-notes" aria-labelledby="usage-title">
+        <h2 id="usage-title">How to use it and its limits</h2>
+        <p>The integer range is 1 to 3999. Roman numerals have no zero, so 0 is not a conversion result but an error that explains why; values from 4000 on need overline (vinculum) notation, which is out of scope and likewise refused with an explanation rather than improvised.</p>
+        <p>The Roman field accepts at most 15 characters (the longest canonical form, 3888 = MMMDCCCLXXXVIII, is exactly 15). Lowercase input is treated as uppercase; a space inside the field is an invalid character and its position is named. While a field is invalid, the other field and the breakdown stay at their last valid values, marked out of date, and the copy buttons are disabled so a stale conversion can never be copied as if current.</p>
+        <p>Traditional clock faces often write 4 as IIII as a design convention; this tool reports the canonical form IV only and offers no IIII mode.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>The thirteen-entry reference table (greedy table)</h2>
+        <table class="data-table">
+          <thead><tr><th scope="col">Symbol group</th><th scope="col">Value</th></tr></thead>
+          <tbody>
+            <tr><td>M</td><td>1000</td></tr>
+            <tr><td>CM</td><td>900</td></tr>
+            <tr><td>D</td><td>500</td></tr>
+            <tr><td>CD</td><td>400</td></tr>
+            <tr><td>C</td><td>100</td></tr>
+            <tr><td>XC</td><td>90</td></tr>
+            <tr><td>L</td><td>50</td></tr>
+            <tr><td>XL</td><td>40</td></tr>
+            <tr><td>X</td><td>10</td></tr>
+            <tr><td>IX</td><td>9</td></tr>
+            <tr><td>V</td><td>5</td></tr>
+            <tr><td>IV</td><td>4</td></tr>
+            <tr><td>I</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <p>Taking entries from the top down, as many times as each fits, is exactly how the canonical form is generated; the breakdown comes from the same process, so it can never disagree with the displayed string.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>What counts as canonical</h2>
+        <p>There is one test: read the input symbol by symbol into its loose value (subtract a symbol when a larger one follows, otherwise add), then regenerate that value with the greedy table. The input is canonical only if the regenerated string is identical. The familiar corollaries follow from this definition and are explanation, not extra checks: I, X, C and M repeat at most three times; V, L and D never repeat; subtraction appears only in the six table pairs (IV, IX, XL, XC, CD, CM).</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>How your data is handled</h2>
+        <p>The conversion runs in this page in your browser. The tool does not write to browser storage and does not upload your input; values never appear in the address bar or the page title, and reloading returns to the defaults. The web host may still receive the connection information any page request requires.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>Frequently asked questions</h2>
+        <dl class="faq-list">
+          <div>
+            <dt>Why is IC not 99?</dt>
+            <dd>Because subtraction may only use the symbol one step below: 99 splits into 90 + 9, that is XC + IX = XCIX. IC skips a step, so it is a non-canonical string whose loose value happens to be 99.</dd>
+          </div>
+          <div>
+            <dt>Why is there no zero?</dt>
+            <dd>The Roman system has no symbol for zero and no positional empty place. “None” can only be written in words, not in these symbols.</dd>
+          </div>
+          <div>
+            <dt>Why do clocks often show IIII for 4?</dt>
+            <dd>That is a traditional clock-face design convention (often explained as visual balance with the VIII opposite it). Convention aside, the canonical form is IV, and this tool reports only the canonical form.</dd>
+          </div>
+          <div>
+            <dt>Can it convert 4000 or more?</dt>
+            <dd>No. Historically, values from 4000 on put a bar over a symbol to multiply it by 1000; that is a separate notation and out of scope here. Entering 4000 shows the ceiling explanation instead.</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+    <footer class="site-footer" aria-labelledby="site-footer-title">
+      <div class="site-footer-content">
+        <h2 id="site-footer-title">More tools</h2>
+        <nav aria-label="More GlossQuote tools">
+          <ul class="footer-links">
+            <li><a href="https://glossquote.com/en/index.html">GlossQuote-Labs home</a></li>
+            <li><a href="https://units.glossquote.com/en/index.html">Unit Converter</a></li>
+          </ul>
+        </nav>
+        <p class="footer-note">Leaving this page clears the current input.</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Subscription Budget: Compare Monthly and Annual Costs | GlossQuote</title>
+  <meta name="description" content="Compare monthly, quarterly and annual subscriptions in one currency. Estimate annual totals and a planned reduction locally in your browser, without connecting accounts.">
+  <link rel="stylesheet" href="../styles.css">
+  <script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to the budget worksheet</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <nav aria-label="Page navigation">
+      <a href="../index.html" lang="zh-Hant" hreflang="zh-Hant" aria-describedby="language-note">繁體中文</a>
+      <a href="https://glossquote.com/en/index.html">Tools home</a>
+    </nav>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>Subscription budget</h1>
+      <p>See the annual cost behind each payment, then compare a planned reduction.</p>
+      <p class="quiet-copy" id="language-note">Switching language, refreshing or leaving clears your entries and report. Copy or download them first.</p>
+    </div>
+    <noscript><p class="notice">This tool needs JavaScript to calculate in the current page. Enable JavaScript and reload. Entries and reports are not saved.</p></noscript>
+    <section id="workspace" aria-labelledby="worksheet-title" class="worksheet">
+      <div class="section-heading">
+        <h2 id="worksheet-title">Your subscriptions</h2>
+        <div class="secondary-actions">
+          <button id="example" type="button" class="quiet" disabled>Load example</button>
+          <button id="clear" type="button" class="quiet" disabled>Clear budget</button>
+        </div>
+      </div>
+      <form id="budget-form" novalidate autocomplete="off">
+        <div class="currency-line">
+          <div class="field currency-field">
+            <label for="currency">Currency</label>
+            <input id="currency" type="text" value="TWD" maxlength="12" autocapitalize="off" spellcheck="false" autocomplete="off" aria-describedby="currency-help currency-error">
+            <p id="currency-error" class="field-error"></p>
+          </div>
+          <p id="currency-help">Use one currency for every amount. Enter uppercase letters; the label does not convert money.</p>
+        </div>
+        <p class="quiet-copy">Each payment: 0–1000000.00, up to two decimal places. Complete or remove every blank row.</p>
+        <div id="rows"></div>
+        <p id="error-summary" class="error-summary" role="alert" hidden></p>
+        <div class="actionbar">
+          <div class="add-area">
+            <button id="add" type="button" class="secondary" disabled>Add subscription</button>
+            <span id="row-count" class="quiet-copy"></span>
+          </div>
+          <button id="calculate" class="primary" type="submit" disabled>Calculate costs</button>
+        </div>
+      </form>
+      <p id="status" role="status" class="status">Add your current subscriptions to compare a planned reduction.</p>
+    </section>
+    <section id="results" class="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">Annual costs and planned stops</h2>
+      <div id="summary" class="summary"></div>
+      <div class="assumptions">
+        <p><strong>Planned stops are a scenario. No services are cancelled.</strong> The estimated annual reduction is the selected rows’ annual total. Actual savings are not guaranteed.</p>
+        <p>Annualized at fixed rates; excludes refunds, taxes, price changes and cancellation fees. This is not an actual bill for this year.</p>
+        <p>Exact annual amounts are summed before monthly averages are rounded half up to cents. “approx.” marks a rounded average. Row averages may differ from the total by a few cents; planned-stop and retained averages may differ from the current average by 0.01.</p>
+      </div>
+      <h3>Subscription details</h3>
+      <ol id="details" class="details"></ol>
+      <div class="report-heading">
+        <h3><label for="report">Complete text report</label></h3>
+        <div class="secondary-actions">
+          <button id="copy" type="button" class="secondary" aria-busy="false" disabled>Copy report</button>
+          <button id="download" type="button" class="secondary" aria-describedby="download-status" disabled>Download TXT</button>
+        </div>
+      </div>
+      <p class="quiet-copy" id="report-help">Preview before exporting. If clipboard access is unavailable, select the report and copy it manually. Your browser manages downloaded files.</p>
+      <textarea id="report" readonly rows="12" spellcheck="false" aria-describedby="report-help"></textarea>
+      <p id="export-status" role="status" class="status"></p>
+      <p id="download-status" role="status" class="quiet-copy"></p>
+    </section>
+    <section class="guide" aria-labelledby="method-title">
+      <h2 id="method-title">How it works</h2>
+      <p>Enter the cost per payment and billing period: monthly × 12, quarterly × 4, yearly × 1. A quarter is three months and a year is twelve months. The monthly average divides the annual amount by 12; it is not the amount billed each month.</p>
+      <p>Selected planned stops remain in the current total. The tool then separates planned stops from retained subscriptions. A report appears only after you calculate; any edit clears the previous result until you calculate again.</p>
+      <h2>Frequently asked questions</h2>
+      <details><summary>Does this cancel a subscription?</summary><p>No. It only calculates your selected scenario. Contact each provider yourself to check cancellation methods and terms.</p></details>
+      <details><summary>Is the monthly average my bill?</summary><p>No. It divides the annualized amount by 12 and excludes billing dates, refunds and taxes.</p></details>
+      <details><summary>Can I mix currencies?</summary><p>No. The label does not convert currencies. Enter all amounts in one currency.</p></details>
+      <details><summary>Why can row averages differ from the total?</summary><p>Rows are rounded for display; totals are calculated from exact annual amounts first. Planned-stop and retained averages are also rounded separately, so their sum can differ from the current average by 0.01.</p></details>
+      <details><summary>Are entries saved after leaving?</summary><p>No. Copy or download the report yourself. This is not an accounting record.</p></details>
+      <h2>Limits and privacy</h2>
+      <p>All entries are processed in the current page. The tool does not connect accounts, read bills, send subscription contents or save entries in website storage. The initial load still downloads website files. Calculations work offline after the page has loaded; first-time offline loading is outside this version.</p>
+      <p>Refreshing, clearing or leaving clears the page’s draft and results. This does not mean system memory is securely erased. You and your browser manage copied text and downloaded files. The tool does not make financial, legal or cancellation eligibility decisions.</p>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to Gloss Tools home</a><span>Gloss Tools by GlossQuote</span></footer>
+  <dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-text">
+    <h2 id="dialog-title"></h2><p id="dialog-text"></p>
+    <div class="dialog-actions"><button id="cancel" type="button" class="secondary" autofocus>Cancel</button><button id="confirm" type="button" class="primary">Confirm</button></div>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>名單比對與合併：找出新增、移除與共同項目 | GlossQuote</title>
+  <meta name="description" content="貼上兩份一行一筆的名單，在瀏覽器本機找出 A 獨有、B 獨有、共同項目與去重合併結果。可選前後空白與大小寫規則，不需上傳或建立帳號。">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#lists">跳到名單</a>
+  <header class="topbar"><span class="brand">Gloss Tools by GlossQuote</span><nav aria-label="語言"><a href="/en/index.html" lang="en" hreflang="en">English</a></nav></header>
+  <main id="lists" tabindex="-1">
+    <h1>名單比對與合併</h1>
+    <p class="intro">貼上兩份清單，快速知道哪些新增、哪些移除、哪些兩邊都有。</p>
+    <p class="privacy">只在此頁記憶體中處理，不上傳、不保存草稿。離頁或重新載入即清除。</p>
+    <noscript><p class="error-notice">請啟用 JavaScript，才能在本機比對名單。</p></noscript>
+    <form id="compare-form" autocomplete="off" novalidate>
+      <div class="inputs">
+        <div class="field">
+          <label for="a-text">名單 A</label>
+          <p class="hint" id="a-hint">一行一筆；每側最多 5,000 筆非空項目、100,000 個 UTF-16 字元，每筆最多 200 個 Unicode 字碼。</p>
+          <textarea id="a-text" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="a-hint a-counter a-error" aria-invalid="false"></textarea>
+          <p class="counter" id="a-counter"></p>
+          <p class="field-error" id="a-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="b-text">名單 B</label>
+          <p class="hint" id="b-hint">一行一筆；每側最多 5,000 筆非空項目、100,000 個 UTF-16 字元，每筆最多 200 個 Unicode 字碼。</p>
+          <textarea id="b-text" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="b-hint b-counter b-error" aria-invalid="false"></textarea>
+          <p class="counter" id="b-counter"></p>
+          <p class="field-error" id="b-error" hidden></p>
+        </div>
+      </div>
+      <fieldset><legend>比對規則</legend><div class="rules">
+        <label class="choice"><input type="checkbox" id="trim-items" checked><span>移除每筆前後空白<small>預設開啟。關閉時保留前後空白；全空白列一律忽略。</small></span></label>
+        <label class="choice"><input type="checkbox" id="ignore-case"><span>忽略大小寫<small>預設關閉。開啟後 alice 與 ALICE 視為同一鍵，保留首次文字。</small></span></label>
+      </div></fieldset>
+      <div class="actions"><button id="compare" class="primary" type="submit">比對名單</button><button id="example" type="button">載入假資料範例</button><button id="clear" type="button">清除</button></div>
+      <p id="error-notice" class="error-notice" role="alert" hidden></p>
+    </form>
+    <section class="results" aria-labelledby="results-heading">
+      <h2 id="results-heading">比對結果</h2>
+      <p id="comparison-status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div id="input-summary" class="input-summary" hidden>
+        <div class="side-summary"><h3>名單 A</h3><dl><dt>輸入行數</dt><dd id="a-rawLineCount"></dd><dt>忽略空白列</dt><dd id="a-blankLineCount"></dd><dt>非空項目</dt><dd id="a-nonEmptyLineCount"></dd><dt>去重後項目</dt><dd id="a-uniqueCount"></dd><dt>重複列</dt><dd id="a-duplicateCount"></dd></dl></div>
+        <div class="side-summary"><h3>名單 B</h3><dl><dt>輸入行數</dt><dd id="b-rawLineCount"></dd><dt>忽略空白列</dt><dd id="b-blankLineCount"></dd><dt>非空項目</dt><dd id="b-nonEmptyLineCount"></dd><dt>去重後項目</dt><dd id="b-uniqueCount"></dd><dt>重複列</dt><dd id="b-duplicateCount"></dd></dl></div>
+      </div>
+      <p class="details-note">首次行號從 1 起算，包含空白列。出現次數包含首次項目；同一側的重複列只輸出一次。</p>
+      <div class="result-grid">
+        <section class="result-section" aria-labelledby="aOnly-title">
+          <div class="result-head"><h3 id="aOnly-title">只在 A <span class="result-count" id="aOnly-count">—</span></h3><button type="button" id="aOnly-copy" aria-label="複製：只在 A" aria-describedby="aOnly-hint" aria-busy="false" disabled>複製</button></div>
+          <p class="copy-hint" id="aOnly-hint">沒有項目可複製</p>
+          <p class="empty" id="aOnly-empty">比對後顯示結果。</p>
+          <ul class="result-rows" id="aOnly-rows"></ul>
+          <p class="copy-status" id="aOnly-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="aOnly-fallback" hidden><label for="aOnly-manual">手動複製此區完整清單</label><textarea id="aOnly-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="bOnly-title">
+          <div class="result-head"><h3 id="bOnly-title">只在 B <span class="result-count" id="bOnly-count">—</span></h3><button type="button" id="bOnly-copy" aria-label="複製：只在 B" aria-describedby="bOnly-hint" aria-busy="false" disabled>複製</button></div>
+          <p class="copy-hint" id="bOnly-hint">沒有項目可複製</p>
+          <p class="empty" id="bOnly-empty">比對後顯示結果。</p>
+          <ul class="result-rows" id="bOnly-rows"></ul>
+          <p class="copy-status" id="bOnly-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="bOnly-fallback" hidden><label for="bOnly-manual">手動複製此區完整清單</label><textarea id="bOnly-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="intersection-title">
+          <div class="result-head"><h3 id="intersection-title">共同項目 <span class="result-count" id="intersection-count">—</span></h3><button type="button" id="intersection-copy" aria-label="複製：共同項目" aria-describedby="intersection-hint" aria-busy="false" disabled>複製</button></div>
+          <p class="copy-hint" id="intersection-hint">沒有項目可複製</p>
+          <p class="empty" id="intersection-empty">比對後顯示結果。</p>
+          <ul class="result-rows" id="intersection-rows"></ul>
+          <p class="copy-status" id="intersection-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="intersection-fallback" hidden><label for="intersection-manual">手動複製此區完整清單</label><textarea id="intersection-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="merged-title">
+          <div class="result-head"><h3 id="merged-title">合併清單 <span class="result-count" id="merged-count">—</span></h3><button type="button" id="merged-copy" aria-label="複製：合併清單" aria-describedby="merged-hint" aria-busy="false" disabled>複製</button></div>
+          <p class="copy-hint" id="merged-hint">沒有項目可複製</p>
+          <p class="empty" id="merged-empty">比對後顯示結果。</p>
+          <ul class="result-rows" id="merged-rows"></ul>
+          <p class="copy-status" id="merged-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="merged-fallback" hidden><label for="merged-manual">手動複製此區完整清單</label><textarea id="merged-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+      </div>
+    </section>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">使用說明</h2>
+      <h3>是否逐行比較？</h3><p>不是。這裡比較每列項目是否也存在另一份名單中，兩側順序不需要相同；不是逐行文字 diff。</p>
+      <h3>什麼情況算相同？</h3><p>預設去掉每列前後空白，再以大小寫敏感方式比對。關閉移除空白會保留外側空白。開啟忽略大小寫使用 JavaScript 的 toLowerCase 小寫鍵，不做拼字、同義詞、NFC 或 NFKC 正規化；也不判斷兩筆資料是否是同一個人。</p>
+      <h3>同一側重複會怎樣？</h3><p>每側只保留首次項目的文字與行號，統計重複列。共同項目以 A 的首次文字顯示；合併依 A 的順序開始，再追加 B 中未見的項目。</p>
+      <h3>名單會上傳或保存嗎？</h3><p>名單只在此頁記憶體中計算，不上傳、不保存草稿。離頁或重載即清除。手動複製後的 OS 剪貼簿、瀏覽器擴充與複製目的地由你的使用環境管理。</p>
+      <h3>空結果代表失敗嗎？</h3><p>不是。合法名單可能沒有某類符合項目，甚至兩側都空白也能比對成功。空結果會顯示「沒有符合項目」，且沒有內容可複製。</p>
+    </section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote</span><a href="https://glossquote.com/index.html">返回工具首頁</a></footer>
+</body>
+</html>

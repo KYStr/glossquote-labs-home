@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>訂閱費用盤點：比較月繳、季繳與年繳支出｜GlossQuote</title>
+  <meta name="description" content="在瀏覽器整理同幣別訂閱，計算全年費用與平均每月金額，試算計畫停用後的差額。資料留在目前頁面，不連接帳戶或取消服務。">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到盤點工作表</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <nav aria-label="頁面導覽">
+      <a href="./en/index.html" lang="en" hreflang="en" aria-describedby="language-note">English</a>
+      <a href="https://glossquote.com/index.html">工具首頁</a>
+    </nav>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>訂閱費用盤點</h1>
+      <p>整理每次扣款，看見全年負擔，再比較計畫停用的差額。</p>
+      <p class="quiet-copy" id="language-note">切換語言、刷新或離開頁面都會清除輸入與報告；請先自行複製或下載。</p>
+    </div>
+    <noscript><p class="notice">此工具需要 JavaScript 才能在目前頁面計算。請啟用 JavaScript 後重新載入；輸入及報告不會保存。</p></noscript>
+    <section id="workspace" aria-labelledby="worksheet-title" class="worksheet">
+      <div class="section-heading">
+        <h2 id="worksheet-title">你的訂閱</h2>
+        <div class="secondary-actions">
+          <button id="example" type="button" class="quiet" disabled>載入範例</button>
+          <button id="clear" type="button" class="quiet" disabled>清除盤點</button>
+        </div>
+      </div>
+      <form id="budget-form" novalidate autocomplete="off">
+        <div class="currency-line">
+          <div class="field currency-field">
+            <label for="currency">幣別</label>
+            <input id="currency" type="text" value="TWD" maxlength="12" autocapitalize="off" spellcheck="false" autocomplete="off" aria-describedby="currency-help currency-error">
+            <p id="currency-error" class="field-error"></p>
+          </div>
+          <p id="currency-help">所有金額須同幣別。填入大寫英文字母；標籤不會換匯。</p>
+        </div>
+        <p class="quiet-copy">每次金額 0–1000000.00，最多二位小數。空白列請完成或移除。</p>
+        <div id="rows"></div>
+        <p id="error-summary" class="error-summary" role="alert" hidden></p>
+        <div class="actionbar">
+          <div class="add-area">
+            <button id="add" type="button" class="secondary" disabled>新增訂閱</button>
+            <span id="row-count" class="quiet-copy"></span>
+          </div>
+          <button id="calculate" class="primary" type="submit" disabled>計算支出</button>
+        </div>
+      </form>
+      <p id="status" role="status" class="status">加入你目前付費的訂閱，再比較計畫停用後的費用。</p>
+    </section>
+    <section id="results" class="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">全年支出與停用試算</h2>
+      <div id="summary" class="summary"></div>
+      <div class="assumptions">
+        <p><strong>計畫停用只是假設，不會真的取消服務。</strong>預計全年差額為勾選列的全年合計，不保證實際節省。</p>
+        <p>依固定費率全年化；不含退款、稅、調價或取消費用。這不是今年實際帳單。</p>
+        <p>先精確加總全年，再把月均四捨五入到分。「約」表示月均經捨入。逐列月均相加可能與總結相差數分；停用與保留兩組月均相加可能與目前相差 0.01。</p>
+      </div>
+      <h3>逐列明細</h3>
+      <ol id="details" class="details"></ol>
+      <div class="report-heading">
+        <h3><label for="report">完整文字報告</label></h3>
+        <div class="secondary-actions">
+          <button id="copy" type="button" class="secondary" aria-busy="false" disabled>複製報告</button>
+          <button id="download" type="button" class="secondary" aria-describedby="download-status" disabled>下載 TXT</button>
+        </div>
+      </div>
+      <p class="quiet-copy" id="report-help">先預覽再匯出。剪貼簿不可用時，可選取報告手動複製；下載檔案由瀏覽器管理。</p>
+      <textarea id="report" readonly rows="12" spellcheck="false" aria-describedby="report-help"></textarea>
+      <p id="export-status" role="status" class="status"></p>
+      <p id="download-status" role="status" class="quiet-copy"></p>
+    </section>
+    <section class="guide" aria-labelledby="method-title">
+      <h2 id="method-title">如何計算</h2>
+      <p>輸入每次扣款金額與週期：月繳乘 12、季繳乘 4、年繳乘 1。季度固定為三個月，全年固定十二個月。平均每月是全年金額除以 12，並非每月實際扣款。</p>
+      <p>勾選「計畫停用」的項目仍包含在目前總額，再分為計畫停用與保留兩組。只有按下「計算支出」才產生報告；任何編輯都會清除舊結果，需重新計算。</p>
+      <h2>常見問題</h2>
+      <details><summary>會幫我取消訂閱嗎？</summary><p>不會，只計算你勾選的假設。你需要自行向服務商確認取消方式與條件。</p></details>
+      <details><summary>月均就是每月帳單嗎？</summary><p>不是，是全年化金額除 12，未考慮實際扣款日、退款或稅費。</p></details>
+      <details><summary>可以混用幣別嗎？</summary><p>不行，標籤不會換匯；請先自行以同幣別輸入。</p></details>
+      <details><summary>為何逐列月均加起來有差？</summary><p>各列顯示到分，總結先精確加年額再除 12，可能有捨入差。停用與保留月均也各自捨入，與目前月均相加可能差 0.01。</p></details>
+      <details><summary>關閉頁面會保存嗎？</summary><p>不會，需自己複製或下載報告；本工具不是帳務紀錄。</p></details>
+      <h2>限制與隱私</h2>
+      <p>所有輸入只在目前頁面處理，不連接帳戶、不讀帳單、不傳送訂閱內容，也不保存到網站儲存空間。初次載入仍需下載網站檔案；頁面載入後的計算可在離線時進行，首次離線開啟不在本版範圍。</p>
+      <p>刷新、清除或離開會清空本頁草稿和結果；這不代表系統記憶體已被安全抹除。已複製的文字與已下載的檔案仍由你與瀏覽器管理。本工具不作理財、法律或取消資格判斷。</p>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">回到 Gloss Tools 工具首頁</a><span>Gloss Tools by GlossQuote</span></footer>
+  <dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-text">
+    <h2 id="dialog-title"></h2><p id="dialog-text"></p>
+    <div class="dialog-actions"><button id="cancel" type="button" class="secondary" autofocus>取消</button><button id="confirm" type="button" class="primary">確認</button></div>
+  </dialog>
+</body>
+</html>

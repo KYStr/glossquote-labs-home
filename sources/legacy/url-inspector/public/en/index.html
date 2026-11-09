@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Inspect repeated query parameters, edit selected values, and remove selected tracking parameters locally. Unchanged segments keep their encoding; links are never opened.">
+  <title>URL Inspector & Query Editor — GlossQuote</title>
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the URL workspace</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">GlossQuote</a><nav aria-label="All tools"><a href="https://glossquote.com/en/index.html">All tools</a><div class="language-switch"><a href="/index.html" lang="zh-Hant" aria-describedby="language-hint">繁體中文</a><p id="language-hint" class="language-hint">Switching language clears the current content.</p></div></nav></header>
+  <main id="main">
+    <div class="intro"><h1>Inspect and edit URL parameters</h1><p class="muted">See every parameter. Keep what you need.</p></div>
+    <section aria-labelledby="source-label">
+      <label id="source-label" for="source">Source URL</label>
+      <textarea id="source" rows="3" spellcheck="false" autocomplete="off" aria-describedby="source-hint source-error"></textarea>
+      <p id="source-hint" class="hint">Paste a URL starting with http:// or https://. Limit: 65,536 UTF-16 code units and 256 parameter rows. Do not paste credentials.</p>
+      <p class="notice">Processed in this browser. Input links are never opened.</p>
+      <p id="source-error" class="error" role="alert"></p>
+      <div class="actions"><button id="inspect" type="button" class="primary" disabled>Inspect URL</button><button id="clear" type="button" disabled>Clear</button><button id="example" type="button" disabled>Load example</button></div>
+    </section>
+    <noscript><p class="error">Enable JavaScript to use this tool. Your input is not sent to a server.</p></noscript>
+    <details id="inspection" hidden><summary>Original source and browser-parsed values</summary><p class="raw-label">Original source (only outer ASCII spaces trimmed)</p><pre id="raw-source"></pre><p class="hint">Parsed values may normalize the host, default port, or path. This is not a link safety check. New URLs use the original text.</p><dl id="parsed" data-protocol="Protocol" data-hostname="Host (ASCII)" data-port="Port" data-pathname="Path" data-hash="Fragment (parsed)"></dl></details>
+    <section id="workspace" class="workspace" aria-labelledby="workspace-title" hidden>
+      <div class="section-heading"><h2 id="workspace-title" tabindex="-1">Parameters</h2><span id="row-count" class="hint"></span></div>
+      <p id="empty-rows" class="empty">No parameters. Generate the original URL or add a parameter.</p>
+      <ol id="rows" class="parameters"></ol>
+      <div class="actions"><button id="add" type="button" disabled>Add parameter</button><button id="tracking" type="button" disabled>Select common tracking parameters</button></div>
+      <p class="hint">Only selects utm_source, utm_medium, utm_campaign, utm_term, utm_content, gclid, fbclid, and msclkid (ASCII case insensitive). It does not remove all tracking.</p>
+      <p class="notice">Changing parameters may invalidate signed or verification links. Changes apply only when you generate the URL.</p>
+      <div class="actions"><button id="generate" type="button" disabled>Generate URL</button></div>
+    </section>
+    <p id="draft-note" class="hint"></p>
+    <section class="output" aria-labelledby="result-label">
+      <h2><label id="result-label" for="result">New URL</label></h2>
+      <textarea id="result" rows="3" readonly spellcheck="false" aria-describedby="changed output-hint"></textarea>
+      <p id="changed" class="hint"></p>
+      <div class="actions"><button id="copy" type="button" data-label="Copy URL" disabled>Copy URL</button><button id="download" type="button" disabled>Download TXT</button></div>
+      <p id="output-hint" class="hint">The result is plain text and is never opened automatically. TXT contains the exact URL and one final newline.</p>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <section class="help" aria-labelledby="help-title"><h2 id="help-title">How to use this tool</h2><p>Paste a complete URL to inspect repeated parameters, original encoding, and browser-parsed values. Edit selected names or values, mark rows for removal, or add a parameter. Unchanged segments keep their spelling and order. Generate the new URL, check it, then copy or download it yourself.</p><ol><li>Paste a URL and choose Inspect URL.</li><li>Edit a name or value, mark rows for removal, or add a parameter.</li><li>Choose Generate URL, then check and copy or download the result.</li></ol><p class="hint">Only HTTP and HTTPS URLs are accepted, without login information or relative paths. Undecodable rows can be kept or removed. Edited rows use form query encoding, with + for spaces.</p><details><summary>Does it open or shorten links?</summary><p>No. It only processes text. It never visits, prefetches, or expands an input link.</p></details><details><summary>Why does + appear as a space?</summary><p>Form query decoding treats + as a space. %2B represents a plus sign. Decoding happens once.</p></details><details><summary>Does removing tracking parameters make a link safe?</summary><p>No. There is no safety scan, and edits may break signed or verification links.</p></details><details><summary>Are duplicate parameters or other encodings changed?</summary><p>Order and untouched segments are preserved. Only edited or new rows are re-encoded. Reverting an edit restores the original segment.</p></details><details><summary>Data and privacy</summary><p>Your work stays in this page’s memory and is not written to site storage or the page URL. Only Copy or Download exports it. Switching language or leaving the page clears tool content. Clearing does not erase copied text or downloaded files. Loading the site still connects to retrieve static assets.</p></details></section>
+  </main>
+  <footer>Gloss Tools by GlossQuote · A local URL tool</footer>
+</body>
+</html>

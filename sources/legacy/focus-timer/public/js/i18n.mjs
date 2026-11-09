@@ -1,0 +1,66 @@
+const ZH_HANT = Object.freeze({
+  stateRunning: "進行中",
+  stateClockBackward: "裝置時間往回調整，計時已暫停。確認後可繼續剩餘時間。",
+  statePaused: "已暫停",
+  stateCompleted: "這段計時已結束",
+  stateError: "無法取得有效裝置時間。請取消計時後重試。",
+  stateReady: "尚未開始",
+  buttonPause: "暫停",
+  buttonResume: "繼續計時",
+  buttonRestart: "再次開始",
+  buttonStart: "開始計時",
+  buttonCancel: "取消計時",
+  durationError: "請輸入 1 至 180 的整數分鐘。",
+  statusCancelled: "已取消計時",
+  unavailable: "此瀏覽器無法啟動計時。你仍可閱讀使用方式。",
+  titleRunning: "{time}｜專注計時",
+  titleCompleted: "計時已結束｜專注計時",
+  sound_off: "提示音關閉。你可以先試聽，不會自動開啟到期提醒。",
+  sound_enabled: "提示音已開啟；實際播放仍受裝置與瀏覽器限制。",
+  sound_preparing: "正在準備提示音，畫面計時不受影響。",
+  sound_test: "已嘗試播放試聽聲；是否聽到取決於裝置設定。",
+  sound_attempted: "已嘗試播放一次到期提示音；請以畫面完成狀態為準。",
+  sound_unsupported: "此瀏覽器不支援提示音，畫面計時仍可正常使用。",
+  sound_blocked: "未能啟用提示音。請再次試聽；畫面計時仍正常運作。",
+  sound_cleanup: "音訊仍在清理或無法釋放。可稍後再試；若持續發生請重新載入。",
+  sound_stopped: "提示音已停止。開始、繼續或再次開啟選項時會重新準備。",
+  sound_unready: "這次到期沒有播放提示音。下次開始前可試聽；畫面計時已完成。",
+});
+
+const EN = Object.freeze({
+  stateRunning: "Running",
+  stateClockBackward: "The device clock moved backward, so the timer paused. Check the clock, then resume the remaining time.",
+  statePaused: "Paused",
+  stateCompleted: "This focus session has ended",
+  stateError: "The device time is unavailable. Cancel the timer and try again.",
+  stateReady: "Not started",
+  buttonPause: "Pause",
+  buttonResume: "Resume",
+  buttonRestart: "Start again",
+  buttonStart: "Start timer",
+  buttonCancel: "Cancel timer",
+  durationError: "Enter a whole number from 1 to 180 minutes.",
+  statusCancelled: "Timer cancelled",
+  unavailable: "This browser could not start the timer. You can still read the instructions.",
+  titleRunning: "{time} | Focus timer",
+  titleCompleted: "Timer complete | Focus timer",
+  sound_off: "Sound is off. Testing it does not turn on the end-of-session sound.",
+  sound_enabled: "Sound is enabled; playback still depends on your device and browser.",
+  sound_preparing: "Preparing sound. The visual timer is unaffected.",
+  sound_test: "Attempted a test sound. Whether you hear it depends on your device settings.",
+  sound_attempted: "Attempted one end-of-session sound. Check the completed timer on screen.",
+  sound_unsupported: "This browser does not support sound. The visual timer still works.",
+  sound_blocked: "Sound could not be enabled. Try Test sound again; the visual timer still works.",
+  sound_cleanup: "Audio is still closing or could not be released. Retry later; reload if this persists.",
+  sound_stopped: "Sound stopped. Starting, resuming, or re-enabling the option will prepare it again.",
+  sound_unready: "No sound played for this session. Test sound before starting again; the visual timer has ended.",
+});
+
+export const MESSAGES = Object.freeze({
+  "zh-Hant": ZH_HANT,
+  en: EN,
+});
+
+export function getMessages(locale) {
+  return locale === "en" ? EN : ZH_HANT;
+}

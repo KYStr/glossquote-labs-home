@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UUID Generator and Inspector | GlossQuote Tools</title>
+<meta name="description" content="Generate RFC 9562 version 4 and 7 UUIDs locally (case and hyphen options, copy-all or download), and inspect any pasted UUID: well-formedness, version, variant and the v1 / v7 embedded time. No network, no storage.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>UUID Generator and Inspector</h1>
+  <p class="intro">Generate version 4 and version 7 UUIDs locally under RFC 9562, or paste any UUID into the inspector to see its well-formedness, version, variant, and — for v1 and v7 — the moment it encodes. All randomness comes from this device's cryptographic source; nothing is sent or stored, and a reload wipes everything.</p>
+
+  <section class="card" aria-labelledby="generator-heading">
+    <h2 id="generator-heading">Generator</h2>
+    <div class="field">
+      <label for="version-select">Version</label>
+      <select id="version-select">
+        <option value="4" selected>Version 4 (random)</option>
+        <option value="7">Version 7 (Unix time)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="count-input">Count (1–1000)</label>
+      <input id="count-input" type="number" min="1" max="1000" step="1" value="1">
+      <p id="count-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label><input id="opt-uppercase" type="checkbox"> Uppercase letters</label>
+      <label><input id="opt-hyphens" type="checkbox" checked> Hyphens (8-4-4-4-12)</label>
+    </div>
+    <div class="field">
+      <button type="button" id="generate-button">Generate</button>
+      <button type="button" id="copy-all" disabled>Copy all</button>
+      <button type="button" id="download-button" disabled>Download .txt</button>
+    </div>
+    <p id="batch-label" class="status-line" role="status"></p>
+    <ol id="results-list" class="results" aria-label="Generated UUIDs"></ol>
+    <p class="warning">UUIDs are identifiers, not passwords or tokens; never use one to protect anything. Click any result to load it into the inspector below and verify it in place.</p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section class="card" aria-labelledby="inspector-heading">
+    <h2 id="inspector-heading">Inspector</h2>
+    <div class="field">
+      <label for="inspect-input">Paste a UUID</label>
+      <input id="inspect-input" type="text" autocomplete="off" spellcheck="false" placeholder="01941f29-7c00-7abc-8123-456789abcdef">
+    </div>
+    <div id="inspect-report" class="report" role="region" aria-label="Inspection report"></div>
+  </section>
+
+  <details class="card">
+    <summary>How it works and its limits</summary>
+    <ul>
+      <li>Only v4 and v7 are generated: v1 embeds a device identifier and a guessable timestamp; v3 and v5 are name hashes, which belong to a hashing tool; v6 is a reordered v1 for legacy systems; v8 is vendor-defined. The inspector still recognises every version.</li>
+      <li>v7 values created in the same millisecond share the same timestamp prefix and differ only in random bits; no ordering is promised within a batch.</li>
+      <li>Inspection is strict: only the 36-character hyphenated form or the 32-character hex form is accepted; { } braces and urn:uuid: wrappers are unsupported and rejected.</li>
+      <li>The report says "well-formed" only: a well-formed UUID can be forged by anyone, and this tool verifies no authenticity or identity.</li>
+      <li>Version 6 reorders the time fields; the inspector names the version but does not decode its timestamp.</li>
+      <li>Generated batches and inspected values live in memory only — never in the URL, never in any storage.</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

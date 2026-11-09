@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>房貸攤還試算 | GlossQuote 工具</title>
+<meta name="description" content="在本機離線試算房貸逐月攤還表：本息平均或本金平均、寬限期、兩段式利率與提前還款，整數分幣精確計算並可匯出 CSV。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>房貸攤還試算</h1>
+  <p class="intro">逐月攤還表全部在你的瀏覽器本機運算，不上傳、不儲存。金額以整數分幣計算，利息逐月以四捨五入到分，任何人都能依本頁公式重算驗證。</p>
+
+  <section class="card" aria-label="貸款條件">
+    <fieldset>
+      <legend>還款方式</legend>
+      <div class="radios">
+        <label for="method-annuity"><input type="radio" id="method-annuity" name="method" value="annuity" checked> 本息平均攤還</label>
+        <label for="method-principal"><input type="radio" id="method-principal" name="method" value="principal"> 本金平均攤還</label>
+      </div>
+    </fieldset>
+    <div class="grid">
+      <div>
+        <label for="principal">貸款金額（元）</label>
+        <input id="principal" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-principal" placeholder="例如 8000000">
+        <p id="err-principal" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="rate">年利率（%）</label>
+        <input id="rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-rate" placeholder="例如 2.095">
+        <p id="err-rate" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="term-years">年期（年）</label>
+        <input id="term-years" type="number" min="1" max="40" step="1" value="20" aria-describedby="err-term">
+        <p id="err-term" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="grace-months">寬限期（月）</label>
+        <input id="grace-months" type="number" min="0" step="1" value="0" aria-describedby="err-grace">
+        <p id="err-grace" class="error" hidden></p>
+      </div>
+    </div>
+    <label class="checkline" for="tranche-enabled"><input id="tranche-enabled" type="checkbox"> 啟用第二段利率</label>
+    <div id="tranche-fields" hidden>
+      <div class="grid">
+        <div>
+          <label for="tranche-rate">第二段年利率（%）</label>
+          <input id="tranche-rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-tranche-rate">
+          <p id="err-tranche-rate" class="error" hidden></p>
+        </div>
+        <div>
+          <label for="tranche-month">起始月份</label>
+          <input id="tranche-month" type="number" min="2" step="1" aria-describedby="err-tranche-month">
+          <p id="err-tranche-month" class="error" hidden></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="提前還款">
+    <h2>提前還款</h2>
+    <div class="grid">
+      <div>
+        <label for="prepay-month">月份</label>
+        <input id="prepay-month" type="number" min="1" step="1" aria-describedby="err-prepay-month">
+        <p id="err-prepay-month" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="prepay-amount">金額（元）</label>
+        <input id="prepay-amount" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-prepay-amount">
+        <p id="err-prepay-amount" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="prepay-mode">方式</label>
+        <select id="prepay-mode">
+          <option value="reduce-term" selected>縮短期數（月付不變）</option>
+          <option value="reduce-payment">減少月付（期數不變）</option>
+        </select>
+      </div>
+    </div>
+    <p><button type="button" id="prepay-add">新增提前還款</button></p>
+    <p id="prepay-error" class="error" hidden></p>
+    <ul id="prepay-list"></ul>
+  </section>
+
+  <section class="card" aria-label="試算結果">
+    <p class="disclaimer">本工具的結果是以您輸入的數字重算的估算值，並非銀行的報價、核准結果或財務建議；實際貸款條件以銀行契約為準。</p>
+    <p id="state-message" aria-live="polite">輸入貸款金額與年利率後，這裡會顯示逐月攤還表。</p>
+    <div id="results-tables" hidden>
+      <dl class="readout">
+        <div><dt>總繳金額</dt><dd id="total-paid">–</dd></div>
+        <div><dt>總利息</dt><dd id="total-interest">–</dd></div>
+        <div id="saved-row" hidden><dt>較無提前還款省下利息</dt><dd id="interest-saved">–</dd></div>
+      </dl>
+      <h2>年度彙總</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">年度</th><th scope="col">月數</th><th scope="col">繳款</th><th scope="col">利息</th><th scope="col">本金</th><th scope="col">期末餘額</th></tr></thead>
+          <tbody id="yearly-body"></tbody>
+        </table>
+      </div>
+      <h2>逐月攤還表</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">月份</th><th scope="col">期初餘額</th><th scope="col">繳款</th><th scope="col">利息</th><th scope="col">本金</th><th scope="col">期末餘額</th></tr></thead>
+          <tbody id="ledger-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="export-csv" disabled>匯出 CSV</button>
+      <button type="button" id="reset-button">全部重設</button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>所有運算都在本機瀏覽器完成：不連網、不儲存、不追蹤。離開或重新整理後，輸入內容即消失。</p>
+  </footer>
+</main>
+</body>
+</html>

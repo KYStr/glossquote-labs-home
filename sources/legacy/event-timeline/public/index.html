@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>GlossQuote 活動時間表｜安排活動流程與結束時間</title>
+  <meta name="description" content="輸入開始時間與每段活動分鐘數，排出逐段起訖、跨午夜標記和目標結束時間差。活動資料只留在目前頁面記憶體。">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至工作表</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools</a><span>活動時間表</span><a id="language-link" href="/en/index.html" lang="en">English</a></header>
+  <main id="main">
+    <h1>把每一段流程排成看得懂的時間表</h1>
+    <p class="intro">填入開始時間、活動名稱和分鐘數，然後排出時間表。需要和目標結束時間比較時，輸入目標並說明它是否在次日。</p>
+    <p class="privacy">資料只留在本頁，離開即清除；本工具不保存草稿。首次載入仍需下載網站檔案。</p>
+    <noscript><p class="error">請啟用 JavaScript 才能在本頁計算時間表；資料不會送往伺服器。</p></noscript>
+    <form id="timeline-form" autocomplete="off" novalidate>
+      <div class="clock-fields">
+        <div class="field"><label for="start-time">開始時間</label><input id="start-time" type="text" inputmode="text" maxlength="256" placeholder="09:00" spellcheck="false" aria-describedby="clock-help" autocomplete="off"></div>
+        <div class="field"><label for="target-time">目標結束時間（選填）</label><input id="target-time" type="text" inputmode="text" maxlength="256" placeholder="10:00" spellcheck="false" aria-describedby="clock-help" autocomplete="off"></div>
+        <div class="target-day"><label for="target-next-day"><input id="target-next-day" type="checkbox" aria-describedby="target-day-help" disabled>目標在次日</label><p id="target-day-help">先填入目標時間，才能選擇次日。</p></div>
+      </div>
+      <p id="clock-help" class="hint">24 小時制 ASCII HH:MM，例如 09:00；不接受 9:00 或 24:00。</p>
+      <section aria-labelledby="activities-heading">
+        <div class="section-heading"><h2 id="activities-heading">活動流程</h2><span id="row-count" class="hint">1 / 60</span></div>
+        <p id="row-help" class="hint">依順序填寫。每段 1–720 整分鐘，全程最多 1440 分鐘。休息也是一段活動。</p>
+        <div id="activity-rows" class="activity-rows"></div>
+        <div class="add-row"><button id="add-activity" type="button" aria-describedby="row-limit">新增活動</button><span id="row-limit" class="hint">最多 60 段；至少保留一段。</span></div>
+      </section>
+      <p id="field-error" class="error" role="alert" hidden></p>
+      <div class="build-actions"><button id="clear-all" type="button">清除全部</button><button id="build-timeline" class="primary" type="submit">排出時間表</button></div>
+    </form>
+    <p id="notice" class="notice" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p id="empty-result" class="empty-result">輸入開始時間，再填寫至少一段活動。</p>
+    <section id="result" aria-labelledby="result-heading" hidden>
+      <div class="section-heading"><h2 id="result-heading">時間表</h2><span>已排出的結果</span></div>
+      <ol id="schedule-rows" class="schedule-rows"></ol>
+      <dl id="schedule-summary" class="schedule-summary"></dl>
+    </section>
+    <section class="report-section" aria-labelledby="report-heading">
+      <h2 id="report-heading">純文字報告</h2>
+      <label for="report">目前時間表的文字報告（唯讀）</label>
+      <textarea id="report" rows="9" readonly spellcheck="false" wrap="soft" aria-describedby="report-help"></textarea>
+      <p id="report-help" class="hint">排出時間表後，可選取文字手動複製。下載為 UTF-8 TXT，不含 BOM。編輯後需重新排程。</p>
+      <div class="report-actions"><button id="copy-report" type="button" disabled>複製報告</button><button id="download-report" type="button" aria-describedby="download-help" disabled>下載 TXT</button></div>
+      <p id="download-help" class="hint">每次按下載只建立一份報告。最多同時處理 8 份，60 秒後釋放下載資源。</p>
+    </section>
+    <section class="help" aria-labelledby="help-heading">
+      <h2 id="help-heading">使用說明</h2>
+      <p>輸入開始時間與各段活動的名稱、整分鐘數，可加上備註。使用上移／下移調整順序，再按「排出時間表」。更動任何欄位會立即清除舊結果。</p>
+      <p>沒有日期、時區、夏令時間或提醒功能。語言切換會離開本頁並清除資料。瀏覽器已開始的剪貼簿寫入無法撤回；剪貼簿與下載檔由你和瀏覽器管理。</p>
+      <h2>常見問題</h2>
+      <details><summary>這裡會保存我的時間表嗎？</summary><p>不會。欄位和結果只留在目前頁面記憶體；離開頁面會清除。</p></details>
+      <details><summary>流程跨過午夜會怎麼顯示？</summary><p>跨日後的時刻會標示「次日」。工具不需要日期、時區或夏令時間。</p></details>
+      <details><summary>沒有目標結束時間也能排程嗎？</summary><p>可以；留白並取消「目標在次日」，結果不會顯示提早／超時比較。</p></details>
+      <details><summary>每段活動可以多長？</summary><p>每段 1 到 720 分鐘，全流程最多 1440 分鐘，最多 60 段。</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">返回 Gloss Tools</a><span>Gloss Tools by GlossQuote</span></footer>
+</body>
+</html>

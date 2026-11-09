@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cron 表達式解說 | GlossQuote 工具</title>
+<meta name="description" content="解說標準五欄位 cron 表達式：逐欄說明、下 10 次執行時間（本地時區）、欄位建構器雙向同步。不支援 Quartz 的 ?、L、W、# 與秒／年欄位，會明白報錯。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Cron 表達式解說</h1>
+  <p class="intro">本工具解說的是標準五欄位 Vixie/POSIX cron（分鐘、小時、日期、月份、星期）。貼上表達式，立刻看到逐欄說明、整體排程白話，以及下 10 次執行時間（本地時區）。Quartz 方言的 <span class="mono">?</span>、<span class="mono">L</span>、<span class="mono">W</span>、<span class="mono">#</span>、秒／年欄位與 <span class="mono">@reboot</span> 都不在支援範圍——出現時會明白報錯，不會假裝看懂。</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="expression-input">Cron 表達式（五欄位）</label>
+      <input id="expression-input" type="text" autocomplete="off" spellcheck="false" class="mono" value="0 9 * * 1-5">
+      <p id="expression-error" class="error" role="alert" hidden></p>
+    </div>
+    <div class="field">
+      <label for="start-input">起始時間（留空＝現在；以本地時間計）</label>
+      <input id="start-input" type="datetime-local">
+      <button type="button" id="start-reset">重設為現在</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>解說</h2>
+    <ul id="field-lines" class="field-lines"></ul>
+    <p id="schedule-line"></p>
+  </section>
+
+  <section class="card">
+    <h2>下次執行時間</h2>
+    <p id="runs-heading" class="note"></p>
+    <table>
+      <thead>
+        <tr><th>日期</th><th>星期</th><th>時間</th></tr>
+      </thead>
+      <tbody id="runs-body"></tbody>
+    </table>
+    <p id="runs-note" class="note"></p>
+  </section>
+
+  <section class="card">
+    <h2>欄位建構器</h2>
+    <p class="note">用下拉與勾選組欄位，上方文字會同步改寫成正規形式；直接改文字時，建構器會跟著反映——無法表示的寫法會標示為「自訂」，且不會被擅自改寫。</p>
+    <div id="builder-rows"></div>
+  </section>
+
+  <section class="card">
+    <h2>規則說明</h2>
+    <ul>
+      <li>日期與星期的 OR 規則：兩個欄位都有指定（都不是 <span class="mono">*</span> 開頭）時，任一符合就會執行——這是最常見的 cron 誤解，本工具的解說會特別點明。</li>
+      <li><span class="mono">a/n</span> 的意思：<span class="mono">5/15</span> 等於 <span class="mono">5-59/15</span>（從 a 到最大值每 n 個），不是只在 a 執行。</li>
+      <li>星期欄位 0 與 7 都是星期日；名稱（JAN–DEC、SUN–SAT）不分大小寫。</li>
+      <li>支援的 macros：<span class="mono">@hourly</span>、<span class="mono">@daily</span>、<span class="mono">@midnight</span>、<span class="mono">@weekly</span>、<span class="mono">@monthly</span>、<span class="mono">@yearly</span>、<span class="mono">@annually</span>，輸入後會展開成欄位顯示。</li>
+      <li>日光節約時間切換時不存在的本地時間（例如春季跳過的 02:30）不會觸發；本工具照平台時間語意列舉，不特別補償。</li>
+      <li>找不到執行時間時會明說：搜尋窗是四年又一天（涵蓋閏日週期）；像 2 月 31 日的排程永遠不會觸發。</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

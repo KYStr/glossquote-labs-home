@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word and Character Frequency Counter | GlossQuote Tools</title>
+<meta name="description" content="Count text frequencies locally: words from letters and digits outside the CJK classes (Greek and Cyrillic included), Han/kana/Hangul characters, and Han bigrams — with fixed published rules, stopwords, minimums and CSV export. No network, no storage.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Word and Character Frequency Counter</h1>
+  <p class="intro">Paste text and get three ranked tables: Words (tokens of letters and digits outside the CJK classes — Greek, Cyrillic and every other script included), Characters (Han, kana and Hangul counted one by one), and Bigrams (adjacent Han pairs). This tool does not segment Chinese — segmentation is a research problem; characters and bigrams keep every number reproducible by hand from the stated rules. Word matching uses Unicode simple case folding, not ordinary lowercasing.</p>
+
+  <section class="card" aria-labelledby="tool-heading">
+    <h2 id="tool-heading">Count</h2>
+    <div class="field">
+      <label for="input-text">Input text (cap 200,000 characters)</label>
+      <textarea id="input-text" rows="8" spellcheck="false"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label><input id="opt-stopwords" type="checkbox"> Enable stopwords</label>
+      <label><input id="opt-numbers" type="checkbox" checked> Include pure-number tokens</label>
+      <label><input id="opt-showall" type="checkbox"> Show all rows (default top 100)</label>
+    </div>
+    <div class="field">
+      <label for="opt-mincount">Minimum count</label>
+      <input id="opt-mincount" type="number" min="1" step="1" value="1">
+      <label for="opt-minlength">Minimum word length (Words table, folded length)</label>
+      <input id="opt-minlength" type="number" min="1" step="1" value="1">
+    </div>
+    <div class="field">
+      <label for="stopwords-text">Stopwords (one per line, editable; this session only)</label>
+      <textarea id="stopwords-text" rows="6" spellcheck="false"></textarea>
+      <button type="button" id="stopwords-restore">Restore default stopwords</button>
+    </div>
+    <div class="field">
+      <button type="button" id="tab-words">Words</button>
+      <button type="button" id="tab-chars">Characters</button>
+      <button type="button" id="tab-bigrams">Bigrams</button>
+      <button type="button" id="export-csv">Export CSV (current table)</button>
+    </div>
+    <p id="totals-line" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>Rank</th><th>Item</th><th>Count</th><th>Percent</th></tr></thead>
+      <tbody id="result-body"></tbody>
+    </table>
+    <p id="rows-note" class="note"></p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <details class="card">
+    <summary>Counting rules (shown beside the results, so every number can be rechecked)</summary>
+    <ul>
+      <li>Classes: Han (U+4E00–U+9FFF, U+3400–U+4DBF), kana (U+3040–U+30FF) and Hangul (U+AC00–U+D7AF) count per character; every other Unicode letter or digit forms words — so Greek, Cyrillic, Arabic and other scripts land in the Words table. It is not a Latin-only table.</li>
+      <li>Words: an apostrophe joins only with a word character on both sides (don't is one token; 'tis counts as tis); hyphens and all other punctuation separate. Matching folds with Unicode simple case folding (the simple case folding entries — C and S — of CaseFolding.txt, Unicode 16.0.0): Σ and ς both fold to σ — unlike lowercasing, under which ς stays ς. The display form is the most frequent original casing, ties going to the first occurrence.</li>
+      <li>Bigrams: adjacent pairs inside a Han run only; punctuation ends a run; kana and Hangul form no bigrams. The Characters table does not normalise: visually identical text in different Unicode normalisation forms can count differently.</li>
+      <li>Stopwords apply after tokenisation and before totals, so totals are after filters; a bigram is filtered when either character is a stopword character. Ordering is count descending, then first-occurrence position; percentages are shares of the table's filtered total, one decimal, rounded half away from zero.</li>
+      <li>Default stopwords (English): a, about, above, after, again, against, all, am, an, and, any, are, as, at, be, because, been, before, being, below, between, both, but, by, could, did, do, does, doing, down, during, each, few, for, from, further, had, has, have, having, he, her, here, hers, herself, him, himself, his, how, i, if, in, into, is, it, its, itself, just, me, more, most, my, no, nor, not, now, of, off, on, once, only, or, other, our, ours, out, over, own, same, she, should, so, some, such, than, that, the, their, theirs, them, themselves, then, there, these, they, this, those, through, to, too, under, until, up, very, was, we, were, what, when, where, which, while, who, whom, why, will, with, you, your, yours, yourself</li>
+      <li>Default stopwords (Chinese characters): 的了是在和也不這我你他她它們就都而及與或個中有被把從到對為以於其之者嗎呢吧啊所將但若如因由向跟給讓只</li>
+      <li>CSV always exports the full filtered table (not just the displayed top 100); the filename is frequency.csv.</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

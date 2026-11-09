@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="貼上 SRT 字幕，整份提前或延後指定秒數，檢查完整結果並下載。純文字處理，不讀取影片或音訊。">
+  <title>字幕時間平移｜GlossQuote Tools</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到字幕工作區</a>
+  <header><div class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">GlossQuote Tools</a>
+    <nav aria-label="網站導覽"><a href="https://glossquote.com/index.html">所有工具</a><a id="language" href="./en/index.html" lang="en" hreflang="en">English</a></nav>
+  </div></header>
+  <main id="main">
+    <div class="intro">
+      <h1>字幕時間平移</h1>
+      <p>貼上 SRT，將每列字幕提前或延後相同秒數。檢查完整結果後，再決定是否下載。</p>
+      <p class="muted">內容只在此頁記憶體處理；切換語言或離開頁面會清除草稿。</p>
+    </div>
+    <noscript><p class="error">此工具需要 JavaScript 才能處理文字。此頁不會提交或上傳字幕。</p></noscript>
+    <section id="workspace" class="workspace" aria-label="字幕工作區">
+      <div class="editor">
+        <label for="srt-input">SRT 字幕文字</label>
+        <textarea id="srt-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="input-help error" disabled></textarea>
+        <p id="input-help" class="help">貼上文字即可，不讀取影片或音訊。最多 2,000 列、原始 UTF-8 1,048,576 bytes；格式限制見下方說明。</p>
+        <div class="controls">
+          <div><label for="direction">平移方向</label><select id="direction" aria-describedby="error" disabled><option value="earlier" selected>提前</option><option value="later">延後</option></select></div>
+          <div><label for="seconds">秒數（最多三位小數）</label><input id="seconds" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false" aria-describedby="seconds-help error" disabled><p id="seconds-help" class="help">0 至 3,600 秒，例如 1.25。請使用半形 ASCII 數字。</p></div>
+        </div>
+        <div class="actions"><button id="shift" type="button" class="primary" disabled>平移字幕</button><button id="cancel-job" type="button" hidden>取消處理</button><button id="clear" type="button" disabled>清除草稿</button></div>
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">貼上 SRT，選擇方向與秒數後平移。</p>
+        <p id="error" class="error" role="alert" aria-atomic="true" hidden></p>
+      </div>
+      <section id="result" class="output" aria-labelledby="output-heading" hidden>
+        <h2 id="output-heading">平移結果</h2>
+        <label for="srt-output">完整輸出 SRT（唯讀）</label>
+        <textarea id="srt-output" readonly spellcheck="false" autocomplete="off" aria-describedby="download-help"></textarea>
+        <dl class="summary">
+          <div><dt>第一列原始時間（依輸入順序）</dt><dd id="first-input"></dd></div>
+          <div><dt>第一列平移後時間</dt><dd id="first-output"></dd></div>
+          <div><dt>最後一列原始時間（依輸入順序）</dt><dd id="last-input"></dd></div>
+          <div><dt>最後一列平移後時間</dt><dd id="last-output"></dd></div>
+        </dl>
+        <a id="download" class="download" download="subtitles-shifted.srt" aria-disabled="true" tabindex="-1">下載 subtitles-shifted.srt</a>
+        <p id="download-help" class="help">下載為 UTF-8、無 BOM、LF 換行。每個下載連結有效 30 秒，最多同時八個。瀏覽器設定可能顯示儲存提示；本站無法確認檔案是否已儲存。</p>
+      </section>
+    </section>
+    <section class="guidance" aria-labelledby="help-heading">
+      <h2 id="help-heading">格式與使用限制</h2>
+      <p>SRT 支援為本工具明列的子集合，並非所有方言。<a href="https://www.loc.gov/preservation/digital/formats/fdd/fdd000569.shtml" rel="noreferrer">國會圖書館的 SubRip 格式介紹</a>。</p>
+      <details><summary>檢查可接受的 SRT 格式</summary><ul>
+        <li>每列依序為索引、時間行及一至十行字幕文字；區塊間需有空白分隔行。只有 ASCII 空格或 tab 的行也算分隔。</li>
+        <li>索引為一至六個 ASCII 數字，數值 1 至 999999，需嚴格遞增。允許前置零與跳號，輸出不重編號。</li>
+        <li>時間格式為 <code>00:00:01,000 --&gt; 00:00:02,500</code>；箭頭兩側至少一個 ASCII 空格或 tab。小時兩位 00 至 99，分、秒為 00 至 59，毫秒三位；不可加整行周圍空格或設定。起點需早於終點。</li>
+        <li>每行文字最多 1,000 個 Unicode 字元。保留文字兩端空格與看似 HTML 的字面文字。文字中的「數字索引行後接時間行」組合不支援，請檢查是否漏分隔行。</li>
+        <li>原始輸入最多 1,048,576 個 UTF-16 單位及 1,048,576 UTF-8 bytes，含 BOM 與原始換行。拒絕 NUL 或不完整 Unicode 字元。只移除一個開頭 BOM，CRLF／CR 正規化為 LF。</li>
+        <li>保留索引與輸入順序，允許重疊與非時間排序。輸出箭頭兩側各一個空格、區塊間一個空白行，結尾恰一個 LF。</li>
+      </ul></details>
+      <details><summary>如何平移 SRT 字幕時間？</summary><p>貼上符合本工具格式的 SRT，選提前或延後並輸入秒數，然後檢查完整結果。</p></details>
+      <details><summary>可以平移多少？</summary><p>秒數可為 0 到 3,600 秒，最多三位小數；移動後所有時間仍須位於 00:00:00,000 到 99:59:59,999。</p></details>
+      <details><summary>為什麼整份字幕被拒絕？</summary><p>本工具只接受明列的 SRT 子集合；若格式不符或任一 cue 超出時間範圍，整份不輸出部分結果。</p></details>
+      <details><summary>會讀取影片或上傳字幕嗎？</summary><p>不會。貼上的文字在本頁記憶體處理，沒有影片、音訊或雲端處理。首次開啟仍需下載網站檔案；本版不保存資料，不保證完整離線。</p></details>
+      <details><summary>能修正逐漸累積的不同步嗎？</summary><p>不能。本工具只做每個 cue 完全相同的時間平移，不轉錄、不轉 VTT、不推測秒數，也不保證與特定影片同步。</p></details>
+    </section>
+  </main>
+  <footer><p>Gloss Tools by GlossQuote · 本機預覽版</p><a href="https://glossquote.com/index.html">返回所有工具</a></footer>
+  <dialog id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-body"><h2 id="confirm-title">確認清除草稿</h2><p id="confirm-body">繼續會丟棄目前草稿與結果。</p><div class="actions"><button id="confirm-cancel" type="button" autofocus>取消</button><button id="confirm-continue" type="button">繼續</button></div></dialog>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Enter total and completed pages, a date range, and the weekdays you can read. Distribute remaining pages across those dates and check a daily page cap. The tool does not track reading.">
+  <title>Reading Plan: Set Pages by Reading Day | GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to reading planner</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <a href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a>
+  </header>
+  <div class="page">
+    <p class="language-note">Changing language clears your inputs and plan.</p>
+    <main id="main">
+      <h1>Plan your reading progress</h1>
+      <p class="intro">Choose the dates and weekdays you can read, then split the remaining pages across them. If you fall behind, update the pages completed and the start date to calculate again.</p>
+      <noscript><p class="notice">Enable JavaScript to calculate a reading plan in this tab.</p></noscript>
+      <div class="worksheet">
+        <form id="reading-form" novalidate autocomplete="off">
+          <fieldset id="input-controls" disabled>
+          <h2>Your book and reading days</h2>
+          <div class="field"><label for="titleRaw">Book title (optional)</label><input id="titleRaw" type="text" maxlength="256" spellcheck="false" aria-describedby="titleRaw-help titleRaw-error"><p class="help" id="titleRaw-help">Use a short title. Outer spaces are omitted from the report.</p><p class="field-error" id="titleRaw-error"></p></div>
+          <div class="field-pair">
+            <div class="field"><label for="totalPagesRaw">Total pages</label><input id="totalPagesRaw" type="text" inputmode="numeric" maxlength="256" required aria-describedby="totalPagesRaw-help totalPagesRaw-error"><p class="help" id="totalPagesRaw-help">1–10000; digits 0–9, no commas.</p><p class="field-error" id="totalPagesRaw-error"></p></div>
+            <div class="field"><label for="completedPagesRaw">Pages completed</label><input id="completedPagesRaw" type="text" inputmode="numeric" maxlength="256" value="0" required aria-describedby="completedPagesRaw-help completedPagesRaw-error"><p class="help" id="completedPagesRaw-help">0 through total; enter 0 to start.</p><p class="field-error" id="completedPagesRaw-error"></p></div>
+          </div>
+          <div class="date-controls"><h3>Date range</h3><button type="button" class="quiet" id="date-mode" aria-pressed="false">Use text dates</button></div>
+          <p id="date-help" class="help">Choose dates from 1900-01-01 through 2100-12-31. Both dates are included; at most 366 days.</p>
+          <p id="date-mode-error" class="field-error" role="status"></p>
+          <div class="field-pair dates">
+            <div class="field"><label for="startDateRaw">Start date</label><input id="startDateRaw" type="date" inputmode="numeric" min="1900-01-01" max="2100-12-31" required aria-describedby="startDateRaw-help startDateRaw-error"><p class="help" id="startDateRaw-help">YYYY-MM-DD</p><p class="field-error" id="startDateRaw-error"></p></div>
+            <div class="field"><label for="endDateRaw">End date</label><input id="endDateRaw" type="date" inputmode="numeric" min="1900-01-01" max="2100-12-31" required aria-describedby="endDateRaw-help endDateRaw-error"><p class="help" id="endDateRaw-help">YYYY-MM-DD</p><p class="field-error" id="endDateRaw-error"></p></div>
+          </div>
+          <fieldset id="weekdays" aria-describedby="weekdays-help weekdays-error">
+            <legend>Weekdays you can read</legend>
+            <p class="help" id="weekdays-help">Choose at least one. Holidays are not checked.</p>
+            <div class="weekday-choices"><label class="weekday-choice"><input type="checkbox" name="weekday" value="1" checked><span>Monday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="2" checked><span>Tuesday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="3" checked><span>Wednesday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="4" checked><span>Thursday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="5" checked><span>Friday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="6" ><span>Saturday</span></label><label class="weekday-choice"><input type="checkbox" name="weekday" value="7" ><span>Sunday</span></label></div>
+            <p class="field-error" id="weekdays-error"></p>
+          </fieldset>
+          <div class="field"><label for="dailyCapRaw">Daily page cap (optional)</label><input id="dailyCapRaw" type="text" inputmode="numeric" maxlength="256" aria-describedby="dailyCapRaw-help dailyCapRaw-error"><p class="help" id="dailyCapRaw-help">1–10000; digits 0–9. Leave blank for no cap.</p><p class="field-error" id="dailyCapRaw-error"></p></div>
+          <div class="actions"><button id="create" type="submit" class="primary" disabled>Create reading plan</button><button id="clear" type="button">Clear</button></div>
+          <div id="errors" class="notice error-notice" hidden></div>
+          <p class="privacy">This is a plan only; it does not track pages you actually read. Inputs stay in this tab and are cleared when you leave or reload.</p>
+          </fieldset>
+        </form>
+        <div class="output-area">
+          <p id="status" role="status" class="status">Choose a start and end date, enter the page counts, then create a plan.</p>
+          <section id="result" aria-labelledby="result-title" hidden>
+            <h2 id="result-title"></h2>
+            <p id="book-name" class="book-name"></p>
+            <p id="result-note" class="result-note"></p>
+            <dl id="summary" class="summary"></dl>
+            <ol id="schedule" class="schedule" aria-label="Daily page assignments" hidden></ol>
+          </section>
+          <section id="exports" aria-labelledby="report-label" hidden>
+            <label id="report-label" for="report">Text report (read only)</label>
+            <p class="help">Select the text to copy manually. The TXT contains only this plan.</p>
+            <textarea id="report" readonly rows="9" spellcheck="false" aria-describedby="copy-status"></textarea>
+            <div class="actions"><button type="button" id="copy" disabled>Copy plan</button><button type="button" id="download" disabled>Download TXT</button></div>
+            <p id="copy-status" class="help" role="status"></p><p id="download-status" class="help" role="status"></p>
+          </section>
+        </div>
+      </div>
+      <section class="faq" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Planning and your data</h2>
+        <details><summary>How are the remaining pages split?</summary><p>The tool counts selected weekdays inside your date range and divides the remaining pages evenly. Earlier reading days receive the extra pages first. If fewer pages remain, later available dates become flexible / rest days.</p></details>
+        <details><summary>How do I update a plan after falling behind?</summary><p>Change the completed page count and your new start date, then recalculate. The tool does not track reading or automatically move the start date to today.</p></details>
+        <details><summary>Does it skip public holidays?</summary><p>No. It uses only the weekdays you select and does not check local holidays or school calendars. Adjust your dates and selected weekdays yourself.</p></details>
+        <details><summary>Are my book details saved or uploaded?</summary><p>No account or cloud storage is used. Data stays in this tab and is cleared when you leave or reload. Copy and download happen only after you choose those actions. The initial load still downloads website files. Your browser manages copied or downloaded content.</p></details>
+      </section>
+    </main>
+    <footer><a href="https://glossquote.com/en/index.html">Back to Gloss Tools</a><span>Calculated in this tab · No saved data</span></footer>
+  </div>
+  <dialog id="clear-dialog" aria-labelledby="clear-heading" aria-describedby="clear-description">
+    <h2 id="clear-heading">Clear this book’s plan?</h2>
+    <p id="clear-description">Clear the title, page counts, dates, weekdays, plan, and report?</p>
+    <div class="actions"><button id="keep-data" type="button" autofocus>Keep current data</button><button id="confirm-clear" type="button" class="primary">Clear data</button></div>
+  </dialog>
+</body>
+</html>

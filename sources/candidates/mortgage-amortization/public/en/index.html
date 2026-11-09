@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mortgage Amortization Calculator | GlossQuote Tools</title>
+<meta name="description" content="Compute a month-by-month mortgage amortization schedule offline: annuity or equal principal, grace period, two-tranche rates and prepayments, exact integer-cent arithmetic with CSV export.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Mortgage Amortization Calculator</h1>
+  <p class="intro">The month-by-month schedule is computed entirely in your browser — nothing is uploaded or stored. All money is integer cents and interest is rounded half-up to the cent each month, so anyone can re-derive the table from the stated formulas.</p>
+
+  <section class="card" aria-label="Loan terms">
+    <fieldset>
+      <legend>Repayment method</legend>
+      <div class="radios">
+        <label for="method-annuity"><input type="radio" id="method-annuity" name="method" value="annuity" checked> Equal total payment (annuity)</label>
+        <label for="method-principal"><input type="radio" id="method-principal" name="method" value="principal"> Equal principal</label>
+      </div>
+    </fieldset>
+    <div class="grid">
+      <div>
+        <label for="principal">Principal (dollars)</label>
+        <input id="principal" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-principal" placeholder="e.g. 8000000">
+        <p id="err-principal" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="rate">Annual rate (%)</label>
+        <input id="rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-rate" placeholder="e.g. 2.095">
+        <p id="err-rate" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="term-years">Term (years)</label>
+        <input id="term-years" type="number" min="1" max="40" step="1" value="20" aria-describedby="err-term">
+        <p id="err-term" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="grace-months">Grace period (months)</label>
+        <input id="grace-months" type="number" min="0" step="1" value="0" aria-describedby="err-grace">
+        <p id="err-grace" class="error" hidden></p>
+      </div>
+    </div>
+    <label class="checkline" for="tranche-enabled"><input id="tranche-enabled" type="checkbox"> Enable a second rate tranche</label>
+    <div id="tranche-fields" hidden>
+      <div class="grid">
+        <div>
+          <label for="tranche-rate">Second annual rate (%)</label>
+          <input id="tranche-rate" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-tranche-rate">
+          <p id="err-tranche-rate" class="error" hidden></p>
+        </div>
+        <div>
+          <label for="tranche-month">Starting month</label>
+          <input id="tranche-month" type="number" min="2" step="1" aria-describedby="err-tranche-month">
+          <p id="err-tranche-month" class="error" hidden></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Prepayments">
+    <h2>Prepayments</h2>
+    <div class="grid">
+      <div>
+        <label for="prepay-month">Month</label>
+        <input id="prepay-month" type="number" min="1" step="1" aria-describedby="err-prepay-month">
+        <p id="err-prepay-month" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="prepay-amount">Amount (dollars)</label>
+        <input id="prepay-amount" type="text" inputmode="decimal" autocomplete="off" aria-describedby="err-prepay-amount">
+        <p id="err-prepay-amount" class="error" hidden></p>
+      </div>
+      <div>
+        <label for="prepay-mode">Mode</label>
+        <select id="prepay-mode">
+          <option value="reduce-term" selected>Reduce term (payment unchanged)</option>
+          <option value="reduce-payment">Reduce payment (term unchanged)</option>
+        </select>
+      </div>
+    </div>
+    <p><button type="button" id="prepay-add">Add prepayment</button></p>
+    <p id="prepay-error" class="error" hidden></p>
+    <ul id="prepay-list"></ul>
+  </section>
+
+  <section class="card" aria-label="Results">
+    <p class="disclaimer">Results are reproducible estimates computed from the figures you type; they are not a bank quotation, an approval, or financial advice. Your actual loan terms are governed by your bank contract.</p>
+    <p id="state-message" aria-live="polite">Enter the principal and annual rate to see the month-by-month schedule.</p>
+    <div id="results-tables" hidden>
+      <dl class="readout">
+        <div><dt>Total paid</dt><dd id="total-paid">–</dd></div>
+        <div><dt>Total interest</dt><dd id="total-interest">–</dd></div>
+        <div id="saved-row" hidden><dt>Interest saved vs no prepayment</dt><dd id="interest-saved">–</dd></div>
+      </dl>
+      <h2>Yearly roll-up</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Year</th><th scope="col">Months</th><th scope="col">Paid</th><th scope="col">Interest</th><th scope="col">Principal</th><th scope="col">Closing balance</th></tr></thead>
+          <tbody id="yearly-body"></tbody>
+        </table>
+      </div>
+      <h2>Monthly ledger</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Month</th><th scope="col">Opening</th><th scope="col">Payment</th><th scope="col">Interest</th><th scope="col">Principal</th><th scope="col">Closing</th></tr></thead>
+          <tbody id="ledger-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="export-csv" disabled>Export CSV</button>
+      <button type="button" id="reset-button">Reset all</button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Everything is computed locally in your browser: no network, no storage, no tracking. Leaving or reloading discards your input.</p>
+  </footer>
+</main>
+</body>
+</html>

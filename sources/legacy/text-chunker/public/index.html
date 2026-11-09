@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="依 Unicode code points 上限把長文字切成可複製片段，並可選擇優先在換行處切。保留原始內容，不套用平台字數規則。">
+  <title>文字分段與字數限制工具｜GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至文字工具</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">GlossQuote Tools</a>
+    <nav aria-label="語言"><span aria-current="page">繁中</span><a href="/en/index.html" lang="en" hreflang="en">English</a></nav>
+  </header>
+  <main id="main" class="canvas">
+    <h1>文字分段與字數限制</h1>
+    <p class="intro">指定每段最多 code points，檢視完整分段；切出的片段串接後與輸入相同。</p>
+    <form id="chunk-form" novalidate autocomplete="off" aria-busy="false">
+      <div class="source-field">
+        <label for="source">要分段的文字</label>
+        <textarea id="source" name="source" rows="7" spellcheck="false" autocomplete="off" aria-describedby="source-hint source-count source-error" aria-invalid="false" placeholder="在這裡貼入文字"></textarea>
+        <div class="source-meta"><p id="source-hint">最多 100,000 UTF-16 code units；原文與片段只在本頁記憶體處理，不上傳。</p><p id="source-count" class="measurement"></p></div>
+        <p id="source-error" class="field-error" hidden></p>
+      </div>
+      <div class="settings">
+        <div class="field">
+          <label for="limit">每段上限（Unicode code points）</label>
+          <input id="limit" name="limit" type="text" inputmode="numeric" value="280" autocomplete="off" spellcheck="false" aria-describedby="limit-range limit-hint limit-error" aria-invalid="false">
+          <p id="limit-range">可設定 1–10,000，最多產生 1,000 段。</p>
+          <p id="limit-hint">這不是 emoji 圖形數，也不代表任何平台的字數限制。</p>
+          <p id="limit-error" class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="mode">切割方式</label>
+          <select id="mode" name="mode" aria-describedby="mode-hint mode-error" aria-invalid="false">
+            <option value="strict">依上限直接切</option>
+            <option value="prefer-lf">優先在換行處切</option>
+          </select>
+          <p id="mode-hint">優先換行只在目前上限內找最後一個 LF，並把換行留在前段；沒有 LF 就依上限切。</p>
+          <p id="mode-error" class="field-error" hidden></p>
+        </div>
+      </div>
+      <p class="character-note">一個畫面上的 emoji 可能由多個 code points 組成；分段可能切開它或其他組合字元。</p>
+      <div class="actions"><button id="split" class="primary" type="submit">分段</button><button id="clear" type="button">清除文字</button></div>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true" data-kind="info"></p>
+    <p id="refresh-notice" class="refresh-notice">重新載入會清除文字和分段結果。</p>
+    <section id="results" aria-labelledby="results-title" aria-busy="false">
+      <h2 id="results-title">可複製的片段</h2>
+      <p id="empty">貼上文字並選擇上限，再按分段。</p>
+      <p id="result-summary" class="measurement" hidden></p>
+      <div id="pagination" class="pagination" hidden>
+        <p id="page-range"></p>
+        <div class="page-controls"><button id="previous" type="button">上一頁</button><div class="page-field"><label for="page-choice">跳至頁面</label><select id="page-choice"></select></div><button id="next" type="button">下一頁</button></div>
+      </div>
+      <ol id="chunks" class="chunks"></ol>
+    </section>
+    <section class="help" aria-labelledby="help-title">
+      <h2 id="help-title">關於計數與原文</h2>
+      <details><summary>它會依照某個社群平台的限制嗎？</summary><p>不會。上限由你設定，數的是 Unicode code points，不是任何平台的字數。</p></details>
+      <details><summary>emoji 算幾個字？</summary><p>本工具不按畫面上的 emoji 圖形計數。一個字形可能由多個 code points 組成，分段可能切開它。</p></details>
+      <details><summary>切段會保留換行嗎？</summary><p>會保留文字欄目前的來源，不加段號、分隔符或移除空白。瀏覽器可能在貼上時先把 CRLF 或 CR 換行正規化成 LF；本工具不還原貼入前的檔案位元組。優先換行只尋找 LF 切點。</p></details>
+    </section>
+    <noscript><p class="field-error">請啟用 JavaScript 以在瀏覽器本機分段。</p></noscript>
+  </main>
+  <footer class="footer">文字只保留在目前分頁。複製只在你選擇該段時執行。</footer>
+</body>
+</html>

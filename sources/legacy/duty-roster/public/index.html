@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<meta name="description" content="為班級、社團與家庭建立簡單輪值表。設定日期、輪值星期與成員可輪值日，逐日列出已排與未排；不提供多班最佳化或法規判斷。"><title>輪值排班表｜依成員順序安排每日輪值 | GlossQuote</title>
+<link rel="stylesheet" href="/styles/app.css"><script type="module" src="/js/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳至排班工作區</a>
+<header class="topbar"><a href="https://glossquote.com/index.html">Gloss Tools</a><span>輪值排班表</span><nav aria-label="語言"><span aria-current="page">繁中</span><a href="/en/index.html" lang="en" aria-describedby="language-note">English</a></nav></header>
+<main id="main">
+<div class="intro"><h1>按成員順序排好輪值日</h1><p>選擇日期範圍與每週輪值日，按目前名單順序輪流安排。若當天沒有人可輪值，結果會保留該日期並明列未排。</p><p class="muted" id="language-note">切換語言會離開此頁並清除未保存的輸入。</p></div>
+<p class="notice" id="boot-status" role="status">工具尚未啟用。若此訊息持續顯示，請啟用 JavaScript 或重新載入頁面；表單會保持停用。</p><noscript><p class="notice">這個輪值工具需要 JavaScript。沒有啟用時，表單無法使用，也不會送出資料。</p></noscript>
+<div class="worksheet"><form id="roster-form" novalidate autocomplete="off">
+<section class="form-section" aria-labelledby="date-heading"><h2 id="date-heading">日期與輪值日</h2><p id="date-help" class="muted">日期格式：YYYY-MM-DD。起訖日都包含在範圍內。年份限 1900–2099，最多 366 日。</p>
+<div class="date-fields"><div class="field"><label for="start-date">開始日期</label><input id="start-date" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" aria-describedby="date-help start-error" disabled><p id="start-error" class="field-error" hidden></p></div>
+<div class="field"><label for="end-date">結束日期</label><input id="end-date" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" aria-describedby="date-help end-error" disabled><p id="end-error" class="field-error" hidden></p></div></div>
+<fieldset id="duty-fieldset" aria-describedby="duty-help duty-error"><legend>每週哪些天要輪值？</legend><p id="duty-help" class="muted">只列出勾選的星期，預設週一至週五。</p><div class="weekdays" id="duty-days"></div><p id="duty-error" class="field-error" hidden></p></fieldset></section>
+<section class="form-section" aria-labelledby="members-heading"><div class="section-heading"><h2 id="members-heading">成員名單</h2><span id="member-count" class="muted"></span></div><p class="muted">由第一位開始輪替；同名可以並存，以當次序號區分。可輪值星期留空表示全週不可用。</p><div id="people"></div><p id="people-error" class="field-error" hidden></p><button type="button" id="add-member" disabled>新增成員</button></section>
+<div class="actionbar"><div class="secondary-actions"><button type="button" id="load-example" disabled>載入範例</button><button type="button" id="clear-all" disabled>清除全部</button></div><button type="submit" class="primary" id="generate" disabled>產生輪值表</button></div><p id="example-note" class="muted" hidden>目前為示例：2026-10-19 至 10-23，A 可週一／三／五，B 可週二／四。請按「產生輪值表」。</p><p id="form-error" class="notice error" role="alert" tabindex="-1" hidden></p></form>
+<section class="result-section" aria-labelledby="result-heading"><h2 id="result-heading">輪值結果</h2><p id="result-status" role="status" aria-live="polite">尚未產生輪值表。輸入日期與成員後，選擇「產生輪值表」。</p><div id="result-content" hidden><p id="result-totals" class="totals"></p><div class="table-region" role="region" aria-label="逐日輪值表，可捲動" tabindex="0"><table><caption>依日期排列的輪值表</caption><thead><tr><th scope="col">日期</th><th scope="col">星期</th><th scope="col">輪值人員</th></tr></thead><tbody id="roster-body"></tbody></table></div><h3>成員統計</h3><ul id="member-totals" class="member-totals"></ul><div class="report-actions"><button type="button" id="copy-report" disabled>複製報告</button><button type="button" id="download-report" disabled>下載報告 .txt</button></div><p id="report-status" role="status" aria-live="polite"></p><details id="report-details"><summary>報告預覽與手動選取</summary><label for="report-text" class="sr-only">完整純文字報告</label><textarea id="report-text" readonly spellcheck="false" disabled></textarea></details><p class="muted">複製與下載只在按下按鈕時執行。清除頁面不會刪掉已交給瀏覽器的檔案。</p></div></section></div>
+<aside class="guidance" aria-labelledby="help-heading"><h2 id="help-heading">使用說明</h2><p>選擇日期範圍後，依成員順序安排輪值日。資料只保留在此頁面。首次載入需要取得網站檔案；此版本不保存排班資料。</p><p>每個輪值日只排一人。此工具不提供多班排程、工作量公平最佳化或法規判斷。</p><details><summary>輪值人員是怎麼選出來的？</summary><p>從目前名單第一位開始，按日期順序逐日輪流；當天會循環尋找第一位可在該星期輪值的人。選中後從下一位繼續。若一整圈都不可用，該日期保留為未排，輪替位置不前進。</p></details>
+<details><summary>某位成員的可輪值星期留空代表什麼？</summary><p>留空代表該成員任何星期都不可輪值。介面會持續顯示這個狀態；你可以勾選可輪值的星期後重新產生。</p></details>
+<details><summary>這份結果會讓工作量公平嗎？</summary><p>不會。工具依名單順序和星期可用性排出單人輪值，不計算歷史工作量、時數、假日或其他公平條件，也不能代替排班法規判斷。</p></details>
+<details><summary>排班資料會保存或同步嗎？</summary><p>不會。輸入和結果只在目前頁面記憶體中；重新載入、清除、切換語言或離開頁面後不會恢復。你可自行選擇複製或下載報告。</p></details></aside>
+<footer><a href="https://glossquote.com/index.html">返回 Gloss Tools 首頁</a><span>Gloss Tools by GlossQuote</span></footer></main>
+<dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message"><h2 id="confirm-title">確認清除</h2><p id="confirm-message"></p><div class="dialog-actions"><button type="button" id="confirm-cancel" disabled autofocus>取消</button><button type="button" id="confirm-accept" disabled>確認清除</button></div></dialog>
+</body>
+</html>

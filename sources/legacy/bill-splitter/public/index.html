@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>分帳結算｜填已付金額，算出誰付給誰 — GlossQuote</title>
+<meta name="description" content="填入每人的已付金額，沒付填0，自動加總並平均或依份數分攤，算出誰付給誰多少。本機計算，不需帳號。">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/app.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<header><div class="topbar"><a class="brand" href="https://glossquote.com/index.html">GlossQuote</a><nav aria-label="工具首頁"><a href="https://glossquote.com/index.html">工具首頁</a><a href="/en/index.html" lang="en">English</a></nav></div></header>
+<main>
+<div class="intro"><p class="preview" data-preview>本機預覽</p><h1>算出誰付給誰</h1><p>填每人實際付了多少，沒付也列入並填0。快速平均分攤，進階可依份數分攤。</p><p class="hint">分帳內容只在目前頁面處理；由你決定是否複製或下載。</p><p class="hint">切換語言會清除目前內容。</p></div>
+<div class="worksheet">
+<noscript><p>請啟用 JavaScript 以計算。所有運算都在目前頁面進行。</p></noscript>
+<form id="bill-form" autocomplete="off" novalidate>
+<fieldset class="workflow-choice"><legend>使用方式</legend><div class="workflow-options"><label class="mode-choice" for="workflow-quick"><input id="workflow-quick" name="workflow" type="radio" value="quick" checked>快速結算</label><label class="mode-choice" for="workflow-advanced"><input id="workflow-advanced" name="workflow" type="radio" value="advanced">進階分帳</label></div></fieldset>
+<p id="quick-help" class="hint">每人先加總自己付的共同費用，填在「已付金額」。空白視為0；所有列入的人平均承擔全部費用。</p>
+<div class="bill-settings"><div><label for="precision">小數位數</label><select id="precision" name="precision" aria-describedby="amount-hint"><option value="2">2位小數</option><option value="0">0位小數</option></select></div></div>
+<p class="hint" id="amount-hint">請用一般數字，不加逗號或符號。每人及合計上限：99,999,999.99（2位）／99,999,999（0位）。</p><p class="hint">所有金額須使用同一幣別；共同費用請包含稅與服務費。</p>
+<div id="advanced-options" hidden><div class="options"><div class="method"><label for="mode">分攤方式</label><select id="mode" name="mode"><option value="equal">平均</option><option value="shares">依份數</option></select></div></div></div>
+<div class="people-heading"><h2 id="people-title">參與者</h2><span id="people-count" class="hint"></span></div>
+<div id="people" aria-labelledby="people-title"></div>
+<div class="people-actions"><button id="add-person" type="button" aria-describedby="people-limit">新增人員</button><span id="people-limit" class="hint"></span></div>
+<div class="actions"><button id="calculate" class="primary" type="submit">算出誰付給誰</button><button id="clear" type="button">清除</button><button id="example" type="button">載入900／300／0範例</button></div>
+<p id="form-error" class="form-error" tabindex="-1"></p><p id="draft-state" class="hint">填入每人已付的共同費用，沒付的人也列入並填0。</p><p id="calculation-status" class="sr-only" role="status" aria-atomic="true"></p>
+</form>
+<section class="results" aria-labelledby="results-title"><h2 id="results-title">結算與分帳結果</h2><p id="empty-result" class="hint">填入每人已付的共同費用，按計算查看建議。</p><div id="result-content"></div><div class="actions"><button id="copy" type="button" disabled>複製明細</button><button id="download" type="button" disabled>下載TXT</button></div><p id="output-status" role="status" aria-atomic="true"></p><div id="output" hidden><label class="report-label" for="report">文字明細</label><textarea id="report" readonly spellcheck="false"></textarea></div></section>
+</div>
+<section class="help" aria-labelledby="help-title"><h2 id="help-title">如何使用</h2><p>先選0位或2位小數，由一人在這頁整理大家的共同費用。每人加總自己實際付過的金額，沒付的人也加入並填0。兩種模式都自動加總並列出誰付給誰，不必另填總額。快速結算由全部人平均承擔；進階可選平均或依份數。0份者不分攤但仍可代墊，所有份數不能全0。全部已付為0也可計算。姓名、已付及精度共用，進階份數草稿保留；切換或修改後都須重算。本頁不處理逐筆帳本或不同子群，支援2至50人，同一幣別、本機處理，不保存歷史或轉帳。</p>
+<details><summary>尾數如何分配？</summary><p>使用最大餘數法分配最小單位；餘數相同時，由較前建立的人員取得。應付合計恰等總額。</p></details>
+<details><summary>能直接轉帳嗎？</summary><p>不能。這裡只產生可重現的結算建議，不轉帳、催款或連結帳號，也不宣稱轉帳筆數最少。</p></details>
+<details><summary>可混用幣別嗎？</summary><p>不可。工具沒有匯率轉換，請為同一幣別選擇適合的0位或2位小數，並自行核對精度。</p></details>
+<details><summary>快速與進階有什麼不同？</summary><p>兩種都用各人的已付金額自動加總並算出轉帳建議。快速一律平均分攤；進階可選平均或依份數。0份者不用分攤，但已付金額仍列入應收款計算。</p></details>
+</section>
+<footer><p>Gloss Tools by GlossQuote</p><p>沒有帳號或分析追蹤。網站載入仍需要連線；分帳內容不會上傳。清除不會抹除已下載或複製的內容。</p></footer>
+</main>
+</body>
+</html>

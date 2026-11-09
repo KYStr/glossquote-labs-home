@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Check JSON syntax and duplicate keys in your browser. Format with two spaces or compact to one line while preserving original number and string spellings. No content uploads.">
+  <title>JSON validator and formatter · Preserve number spellings | GlossQuote-Labs</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#source">Skip to JSON source</a>
+  <header class="topbar"><a href="https://glossquote.com/en/index.html">GlossQuote-Labs <span class="location">/ JSON</span></a><nav aria-label="Language"><a href="../index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav></header>
+  <main>
+    <div class="intro"><h1>JSON validator and formatter</h1><p>Keep original number and string spellings. Stop on duplicate keys.</p></div>
+    <noscript><p class="notice">JavaScript and Web Worker are required to process JSON locally. You can still read the instructions below.</p></noscript>
+    <div class="workbench">
+      <div class="source-pane">
+        <label for="source">JSON source</label>
+        <p id="source-help" class="field-help">Paste JSON, up to 256 KiB. Your clipboard is never read automatically.</p>
+        <textarea id="source" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="source-help status"></textarea>
+      </div>
+      <div class="controls">
+        <fieldset><legend>Output format</legend><div class="modes"><label><input type="radio" name="mode" value="pretty" checked>Two-space formatting</label><label><input type="radio" name="mode" value="compact">Compact to one line</label></div></fieldset>
+        <div class="actions"><button id="run" class="primary" type="button" disabled>Check and format</button><button id="cancel" type="button" disabled>Cancel</button><button id="clear" class="quiet" type="button">Clear all</button></div>
+      </div>
+      <div class="feedback">
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Paste JSON, then check it to get a formatted result.</p>
+        <div id="error-actions" class="actions error-actions" hidden><button id="go-to-error" type="button" disabled aria-controls="source" aria-describedby="status error-help">Go to error</button><p id="error-help" class="field-help">Moves the caret. Your source stays unchanged.</p></div>
+      </div>
+      <div class="result-pane">
+        <label for="output">Formatted result</label>
+        <p id="output-help" class="field-help">Your result appears here after a successful check.</p>
+        <textarea id="output" wrap="off" spellcheck="false" readonly aria-describedby="output-help"></textarea>
+        <div class="actions export-actions"><button id="copy" type="button" disabled>Copy result</button><button id="download" type="button" disabled>Download JSON</button></div>
+        <p id="export-status" class="field-help" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <p class="privacy">Content is processed in this page's memory. Your source is not sent to a processing server.</p>
+    <section class="help" aria-labelledby="help-title">
+      <h2 id="help-title">How to check and format JSON</h2>
+      <p>Paste JSON, check its syntax and duplicate keys, then copy a more readable result. The original text of large integers and decimals is preserved. Other software may handle their precision differently.</p>
+      <ol><li>Paste your JSON source and choose two-space formatting or compact one-line output.</li><li>Choose “Check and format”. If an error has a position, choose “Go to error” to move the caret. Correct your source, then check again. Nothing is repaired automatically.</li><li>Copy the result or download formatted.json, encoded as UTF-8 without a BOM.</li></ol>
+      <details><summary>Size, structure and interoperability limits</summary><ul>
+        <li>Input: up to 262,144 UTF-8 bytes (256 KiB). UTF-16 length is checked first, with a 262,144 code-unit limit.</li>
+        <li>Up to 50,000 tokens, including punctuation and excluding whitespace. Up to 64 nested container levels.</li>
+        <li>A raw string token, including quotes, can contain up to 65,536 UTF-16 code units. A number token can contain up to 4,096.</li>
+        <li>Output: up to 4,194,304 UTF-8 bytes (4 MiB). Processing stops after 5 seconds. Limits never produce a partial result.</li>
+        <li>One complete JSON value is required. Scalar roots are accepted. Comments, trailing commas, BOMs, duplicate keys and unpaired Unicode surrogates are rejected.</li>
+      </ul><p>Line and column numbers start at 1; offsets start at 0. Columns count UTF-16 code units. CRLF is one line break. Schema validation, JSON5 and automatic repair are not provided.</p></details>
+      <h2 class="faq-title">Frequently asked questions</h2>
+      <details><summary>Will long numbers change?</summary><p>Only whitespace between tokens changes. Numbers are not converted to JavaScript Number, so spellings such as -0, 1.2300, 1e400 and large integers remain intact. This does not guarantee that other software can use them precisely.</p></details>
+      <details><summary>Why are duplicate keys rejected?</summary><p>Different software may keep different entries. This tool stops instead, so you can choose which entry to keep in your source. Keys are compared as exact decoded strings, without trimming, case conversion or Unicode normalization.</p></details>
+      <details><summary>Are comments or trailing commas supported?</summary><p>No. This tool accepts strict JSON within the stated limits and does not guess how to repair it.</p></details>
+      <details><summary>Is my JSON saved?</summary><p>Content stays in this page's memory. Reloading does not restore it, and source and results are not written to the URL or browser storage. Loading the website still requests HTML, CSS and program resources. Your work is not sent to a processing server.</p><p>“Clear all” removes content held by this page, stops work and restores the default format. It cannot retract downloaded files or clipboard contents, or physically erase underlying memory. Processing works offline after loading. Reopening the site offline after closing it is not guaranteed.</p></details>
+    </section>
+  </main>
+  <footer>GlossQuote-Labs</footer>
+</body>
+</html>

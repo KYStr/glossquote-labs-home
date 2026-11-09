@@ -7,7 +7,7 @@
 - 原始碼與主頁入口：`KYStr/glossquote-labs-home`，目前預設分支 `codex/initial-publication`。
 - 唯一承接登記：[`coordination/work-registry.json`](../coordination/work-registry.json)，必須讀遠端最新 blob SHA。
 - 工作說明與驗收條件：GitHub 上已提交的文件；登記保存 repository、40 字元 commit、path。
-- 製作候選：工具自身 GitHub repo 的固定 commit，透過 PR 交驗；提交、驗收與部署各自留證據。
+- 製作候選：共用 repo 中 tools/<slug>/ 的固定 commit（既有候選保留原 repo/commit），透過 PR 交驗；提交、驗收與部署各自留證據。
 - 任務板：這些資料與代理實際執行回報的檢視入口。工位偏好、訊息、卡片與口頭指派都不能取代 GitHub 所有權。
 
 `catalog.json` 是公開展示目錄。此次讀取的 47 個 published、9 個 draft 只能描述目錄狀態，不代表 47 個本輪已驗收，亦不代表 9 份可以開工的完整預案。
@@ -91,3 +91,7 @@ accepted 只表示該候選與約定範圍已驗收，不等於正式發布。�
 - 逐件完成後先用原有 block 保存真實完成 checkpoint／候選定位，blocker 明寫「待整批交驗，非退修」，resumeCondition 明寫 `batch submit ready`，不能顯示為正在製作或在等修正。全部製作完成後再一次保存 GitHub 產品來源批次；GitHub commit 與 registry submit 是兩個不同步驟，仍需原批准範圍。
 - 整批交驗以各件原 claim 的 resume→submit 操作列逐件固定 candidate/PR/evidence，暫存期間各件都已 block；resume 只恢復交驗前狀態，不是新的實作執行證據。一次 CAS 可容納 5 組 resume/submit。每件均獨立審查相同固定候選的完整約定面向，禁止混分、自評或把預領當執行；未完成檢查仍 NOT_RUN。交驗、accepted、merge、部署分開，不擴發布/分享/憑證/費用權限。
 - 單件 apply 保留相容與修復用途，但同樣受未交付 5 件與 working 1 件上限限制。正式批領使用 apply-batch；不是以五次單領繞過整批不足檢查。既有本地盤點、主頁 baseline、他人 owner 完全不變。
+
+## 2026-11-09 單一來源入口
+
+[START-HERE](../START-HERE.md)與[完整接續說明書](AGENT-HANDBOOK.md)整合來源/預案/承接/驗收。舊repo保留；新製作與後續正式遷移使用共用repo tools/<slug>/。來源搬移不改owner、不等於產品accepted或部署，不重設兩端原始reconciliation。
