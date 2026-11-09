@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcel Billable Weight | Gloss Tools</title>
+<meta name="description" content="Check parcel dimensional and billable weights against entered service limits and increments.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/en/index.html">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching language leaves this page; the draft you are editing is not kept.</span></p>
+</header>
+<main>
+  <h1>Parcel Billable Weight</h1>
+  <p class="intro">Measure each parcel's three sides (mm) and actual weight (g), then enter each service's divisor, gram step, minimum billable weight and optional limits, and press “Compare billable weights” to see each parcel's dimensional weight, billable weight and limit reasons per service.</p>
+
+  <form id="parcel-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Parcel measurements</legend>
+          <p class="help">1–12 parcels. One short name per parcel (1–24 characters, first character a letter or digit), three sides of 1–3000 mm each (any order; the tool finds the longest side), actual weight 1–100000 g.</p>
+          <div id="parcels-body" class="rows"></div>
+          <button type="button" id="add-parcel" class="secondary">Add a parcel</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Service rules</legend>
+          <p class="help">1–4 service rules of your own. Divisor and gram step are 1–100000 each, minimum billable weight is 0–100000 g (default 0); leave a limit blank for no limit.</p>
+          <div id="services-body" class="rows"></div>
+          <button type="button" id="add-service" class="secondary">Add a service</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="update" class="primary">Compare billable weights</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed fake data (two parcels, services A and B; B's longest-side limit of 299 mm rejects parcel P); press “Compare billable weights” after loading to calculate.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Comparison results"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
