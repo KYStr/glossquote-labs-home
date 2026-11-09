@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pickup Window Route | Gloss Tools</title>
+<meta name="description" content="Find an earliest-return pickup order from your own travel times and pickup windows.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../en/">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching languages leaves this page; the draft you are editing will not be kept.</span></p>
+</header>
+<main>
+  <h1>Pickup Window Route</h1>
+  <p class="intro">Set the same-day departure and latest return, enter each stop's pickup window and service time, then fill in the directed travel minutes; press “Find a pickup route” to get the earliest-return visit order and the waiting time at each stop.</p>
+
+  <form id="route-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Departure and return</legend>
+          <p class="help">Format HH:MM, e.g. 08:00. 24:00 is only allowed for the latest return or a closing time.</p>
+          <div class="field-row">
+            <div class="field field-time">
+              <label for="start">Departure time</label>
+              <input type="text" id="start" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="HH:MM">
+            </div>
+            <div class="field field-time">
+              <label for="deadline">Latest return time</label>
+              <input type="text" id="deadline" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="HH:MM">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Pickup stops</legend>
+          <p class="help">1–8 stops. Each stop needs a code, a pickup window and a service time.</p>
+          <div id="stops-body" class="rows"></div>
+          <button type="button" id="add-stop" class="secondary">Add a stop</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Directed travel-time matrix (minutes)</legend>
+          <p class="help">Rows are the origin, columns the destination; 0 is the departure point, 1…n follow stop order. The diagonal is fixed at 0. Tick “No direct route” where a direction cannot be travelled.</p>
+          <div class="field">
+            <label for="matrix-source">Show origin</label>
+            <select id="matrix-source"></select>
+          </div>
+          <div id="matrix-wrap" class="matrix-wrap">
+            <table id="matrix-table" class="matrix-table"></table>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="find" class="primary">Find a pickup route</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (B first, then A, back by 08:50); press “Find a pickup route” after loading to calculate.</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Pickup results"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
