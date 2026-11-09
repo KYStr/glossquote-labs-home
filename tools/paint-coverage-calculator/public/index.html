@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>油漆用量計算機｜GlossQuote Labs</title>
+<meta name="description" content="輸入房間長、寬、牆高、門窗數量與油漆覆蓋率，精確算出可漆面積、需要公升數、要買幾罐與剩餘量。天花板可一併計算。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← GlossQuote Labs 首頁</a>
+  <p class="lang-switch"><a href="en/" hreflang="en">English</a></p>
+</header>
+<main>
+  <h1>油漆用量計算機</h1>
+  <p class="intro">為一間長方形房間算油漆：四面牆扣掉門窗，乘上層數，除以罐身標示的覆蓋率，再換成整罐購買數量與剩餘量。所有計算在本機完成，不傳送、不儲存。</p>
+
+  <form id="paint-form" novalidate>
+    <fieldset>
+      <legend>房間尺寸</legend>
+      <div class="field">
+        <label for="length">房間長度（公尺）</label>
+        <input id="length" name="length" type="number" inputmode="decimal" step="0.01" min="0.1" max="100" value="4" aria-describedby="err-length">
+        <p class="field-error" id="err-length" hidden></p>
+      </div>
+      <div class="field">
+        <label for="width">房間寬度（公尺）</label>
+        <input id="width" name="width" type="number" inputmode="decimal" step="0.01" min="0.1" max="100" value="5" aria-describedby="err-width">
+        <p class="field-error" id="err-width" hidden></p>
+      </div>
+      <div class="field">
+        <label for="height">牆面高度（公尺）</label>
+        <input id="height" name="height" type="number" inputmode="decimal" step="0.01" min="0.1" max="10" value="2.8" aria-describedby="err-height">
+        <p class="field-error" id="err-height" hidden></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>開口（不漆的部分）</legend>
+      <div class="field">
+        <label for="doors">門的數量（標準門 0.9 × 2.1 公尺）</label>
+        <input id="doors" name="doors" type="number" inputmode="numeric" step="1" min="0" max="20" value="1" aria-describedby="err-doors">
+        <p class="field-error" id="err-doors" hidden></p>
+      </div>
+      <div class="field">
+        <label for="windows">窗的數量（標準窗 1.5 × 1.2 公尺）</label>
+        <input id="windows" name="windows" type="number" inputmode="numeric" step="1" min="0" max="20" value="2" aria-describedby="err-windows">
+        <p class="field-error" id="err-windows" hidden></p>
+      </div>
+      <div class="field">
+        <label for="customOpenings">其他開口面積（平方公尺，如衣櫃、拱門）</label>
+        <input id="customOpenings" name="customOpenings" type="number" inputmode="decimal" step="0.01" min="0" max="1000" value="0" aria-describedby="err-customOpenings">
+        <p class="field-error" id="err-customOpenings" hidden></p>
+      </div>
+      <div class="field field-check">
+        <input id="ceiling" name="ceiling" type="checkbox">
+        <label for="ceiling">天花板也要漆（加上長 × 寬）</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>油漆與購買</legend>
+      <div class="field">
+        <label for="coats">塗刷層數</label>
+        <input id="coats" name="coats" type="number" inputmode="numeric" step="1" min="1" max="4" value="2" aria-describedby="err-coats">
+        <p class="field-error" id="err-coats" hidden></p>
+      </div>
+      <div class="field">
+        <label for="coverage">覆蓋率（平方公尺／公升，罐身標示，每層）</label>
+        <input id="coverage" name="coverage" type="number" inputmode="decimal" step="0.01" min="1" max="30" value="10" aria-describedby="err-coverage">
+        <p class="field-error" id="err-coverage" hidden></p>
+      </div>
+      <div class="field">
+        <label for="canSize">罐裝大小（公升）</label>
+        <select id="canSize" name="canSize">
+          <option value="0.5">0.5 公升</option>
+          <option value="1">1 公升</option>
+          <option value="2.5">2.5 公升</option>
+          <option value="5" selected>5 公升</option>
+          <option value="10">10 公升</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <p class="form-actions"><button type="button" id="reset">重設為範例數值</button></p>
+  </form>
+
+  <section class="results" aria-labelledby="results-heading">
+    <h2 id="results-heading">計算結果</h2>
+    <p class="stale" id="stale" hidden>有欄位需要修正，下方顯示的是上一次的有效結果（已過期）。</p>
+    <p class="compute-error" id="compute-error" role="alert" hidden>扣除的開口面積已達到或超過牆面總面積，請檢查輸入的尺寸與開口數量。</p>
+    <div id="results-body" aria-live="polite">
+      <h3>面積明細</h3>
+      <dl class="breakdown">
+        <div><dt>牆面總面積</dt><dd id="r-gross">—</dd></div>
+        <div><dt>扣除開口（門、窗、其他）</dt><dd id="r-deductions">—</dd></div>
+        <div id="r-ceiling-row" hidden><dt>加上天花板</dt><dd id="r-ceiling">—</dd></div>
+        <div class="total"><dt>可漆面積</dt><dd id="r-paintable">—</dd></div>
+      </dl>
+      <h3>購買建議</h3>
+      <dl class="breakdown">
+        <div><dt>需要油漆</dt><dd id="r-litres">—</dd></div>
+        <div class="total"><dt>要買</dt><dd id="r-cans">—</dd></div>
+        <div><dt>購買總量</dt><dd id="r-purchased">—</dd></div>
+        <div><dt>剩餘油漆</dt><dd id="r-leftover">—</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="explainer" aria-labelledby="explainer-heading">
+    <h2 id="explainer-heading">計算方式與假設</h2>
+    <ul>
+      <li>牆面總面積 ＝ 2 ×（長 ＋ 寬）× 牆高；可漆面積 ＝ 牆面總面積 − 開口 ＋ 天花板（有勾選時）。</li>
+      <li>標準門以 0.9 × 2.1 公尺（1.89 平方公尺）、標準窗以 1.5 × 1.2 公尺（1.80 平方公尺）估算；不是這個尺寸的開口請填到「其他開口面積」。</li>
+      <li>覆蓋率是油漆罐廠商標示、在標準表面上的數字；實際覆蓋率會隨牆面質地與塗法不同而變化。</li>
+      <li>需要公升數 ＝ 可漆面積 × 層數 ÷ 覆蓋率，以精確值計算；要買的罐數永遠向上湊滿整罐，不會向下取整讓你漆到一半沒漆。</li>
+      <li>剩餘量是買了整罐之後會剩下的油漆，用精確公升數計算，所以可能和「購買總量 − 顯示的需要公升數」差 0.01 公升。</li>
+    </ul>
+  </section>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
