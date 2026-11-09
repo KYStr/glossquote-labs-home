@@ -1,0 +1,3 @@
+import{mkdir,readFile,writeFile,rm}from'node:fs/promises';import{createHash}from'node:crypto';
+// 僅五個固定runtime檔；生成器/測試/原始翻譯檔不得進入產物。
+const files=[['public/index.html','index.html'],['public/en/index.html','en/index.html'],['src/app.js','assets/app.js'],['src/core.js','assets/core.js'],['public/styles.css','assets/styles.css']];await rm('dist',{recursive:true,force:true});await mkdir('dist/en',{recursive:true});await mkdir('dist/assets',{recursive:true});const manifest=[];for(const[s,d]of files){const b=await readFile(s);await writeFile('dist/'+d,b);manifest.push({path:d,bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}await writeFile('BUILD-MANIFEST.json',JSON.stringify(manifest,null,2)+'\n');console.log('Built exactly5 allowlisted files');

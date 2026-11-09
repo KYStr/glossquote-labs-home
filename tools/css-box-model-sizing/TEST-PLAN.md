@@ -1,0 +1,7 @@
+# Author test plan and independent handoff
+
+Run parser per-field minimum/maximum/adjacent errors, raw grammar/length and integer border restrictions. Compare both-axis tables for default, zero, floor, fraction, maximum and equality against fixed literal expectations; cover side permutation and full ordered CSS. Exercise controller dirty/invalid/valid/reset/language and 100 bounded synchronous cycles. Inspect source sinks, immutable snapshots, no dependencies, fixed routes/header output. Build twice and compare nine artifact hashes.
+
+Normal UI plan: bilingual defaults; edit removes every result; multiple errors preserve raw and focus first field; language retains error; repair via Generate/Enter; floor warning and zero-content equivalence; maximum local-scroll native box versus scaled diagram; canonical fractional table/CSS; manual CSS selection; keyboard reset and scroll-region reachability; real 200% zoom then restore100; direct English bootstrap/reload defaults. These are author observations, not nonauthor usability acceptance.
+
+Pending independent matrix: fixed SPEC §§6–7 in full, including precise native geometry/computed style at required viewports, raw-error boundary paths, all keyboard and measured contrast states, complete privacy/CSP audit, lifecycle/BFCache, 100 native cycles and fixed 5+20 rAF timing. Do not substitute Node timings or author test count for product scores.
