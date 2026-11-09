@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>澆水補壺路線｜Gloss Tools</title>
+<meta name="description" content="依每盆指定水量、水壺容量和沿途水龍頭規劃補水停點。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>澆水補壺路線</h1>
+  <p class="intro">輸入水壺容量與沿路每盆的水量，標記哪些盆前可以補滿，按下「排出補水點」，就得到補水停點、每盆後的剩量與最少補水次數。</p>
+
+  <form id="water-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>水壺容量</legend>
+          <div class="field">
+            <label for="capacity">水壺容量（毫升）</label>
+            <input type="text" id="capacity" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            <p class="help">1–20,000 毫升。出發時水壺是滿的。</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>澆水路線</legend>
+          <p class="help">1–60 盆。每盆一個短名（1–24 字，首字為字母或數字），重名不允許；水量 1–20,000 毫升；勾選表示該盆前有水龍頭可以補滿。</p>
+          <div id="plants-body" class="rows"></div>
+          <button type="button" id="add-plant" class="secondary">新增一盆</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="plan" class="primary">排出補水點</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（1,000 毫升水壺，A、B、C、D 各 350、300、300、500 毫升，B、C 盆前有水）；載入後仍需按「排出補水點」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="澆水路線結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
