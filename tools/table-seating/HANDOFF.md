@@ -20,8 +20,13 @@
 
 ## Candidate
 - Branch: `muse/table-seating-production-20261109`
-- Candidate commit: (filled in VERIFICATION.md after the final push)
-- Draft PR: (filled in VERIFICATION.md; base `codex/initial-publication`)
+- Candidate commit: `8dd84325d2036139642b8580055f4bd966c96f0c` (tool commit; the
+  follow-up commit below only fills this SHA and the PR URL into
+  HANDOFF.md / VERIFICATION.md)
+- Final head (candidate): recorded in the follow-up commit; verify with
+  `gh pr view 116 --json headRefOid` (the follow-up commit only fills
+  this SHA and the PR URL into HANDOFF.md / VERIFICATION.md)
+- Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/116 (base `codex/initial-publication`)
 
 ## Allowed scope
 Only `tools/table-seating/` was created or changed. No other path, no

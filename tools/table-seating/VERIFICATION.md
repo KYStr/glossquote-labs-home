@@ -1,7 +1,10 @@
 # Verification — Party Table Seating (table-seating)
 
-Candidate commit: (to be filled after the final push)
-Draft PR: (to be filled after the final push)
+Candidate commit: `8dd84325d2036139642b8580055f4bd966c96f0c` (tool commit; the
+follow-up commit only fills this SHA and the PR URL into HANDOFF.md /
+VERIFICATION.md — the final head is the candidate; verify with
+`gh pr view 116 --json headRefOid`)
+Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/116 (base `codex/initial-publication`)
 Base: `codex/initial-publication` at `5e8fab03c00fba01bca68b1dd80280eb380b9bd6`
 Environment: Node v24.22.1, no network use during build/test.
 
