@@ -12,7 +12,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PORT = 44217;
+// Dynamic loopback port: the child server listens on port 0 and announces
+// the actual address; never a fixed port, never kill-by-port.
+let port;
 const CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'";
 
 function run(args) {
@@ -26,7 +28,7 @@ function run(args) {
 
 function request(method, reqPath) {
   return new Promise((resolve, reject) => {
-    const req = http.request({ host: '127.0.0.1', port: PORT, path: reqPath, method }, (res) => {
+    const req = http.request({ host: '127.0.0.1', port, path: reqPath, method }, (res) => {
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
       res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
@@ -41,7 +43,23 @@ before(async () => {
   await run(['scripts/build.mjs', '--mode=preview']);
   const gen = await run(['scripts/check-generated.mjs', '--mode=preview']);
   assert.ok(gen.includes('CHECK-GENERATED PASS'), gen);
-  server = spawn(process.execPath, ['scripts/serve.mjs', '--port=' + PORT], { cwd: root });
+  server = spawn(process.execPath, ['scripts/serve.mjs', '--port=0'], { cwd: root });
+  server.stdout.setEncoding('utf8');
+  // Read the actual address the child announced (listen on port 0); the
+  // readiness probe below then confirms it answers at that address.
+  port = await new Promise((resolve, reject) => {
+    let announced = '';
+    const timer = setTimeout(() => reject(new Error('preview server did not announce a port')), 8000);
+    server.stdout.on('data', (chunk) => {
+      announced += chunk;
+      const m = /http:\/\/127\.0\.0\.1:(\d+)\//.exec(announced);
+      if (m) { clearTimeout(timer); resolve(Number(m[1])); }
+    });
+    server.once('exit', (code) => {
+      clearTimeout(timer);
+      reject(new Error('preview server exited early with code ' + code));
+    });
+  });
   const deadline = Date.now() + 8000;
   while (true) {
     try {

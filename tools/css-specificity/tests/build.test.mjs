@@ -25,7 +25,9 @@ async function collect(dir, base, out) {
   for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) await collect(full, base, out);
-    else out.set(path.relative(base, full), await readFile(full));
+    else out.set(path.relative(base, full).split(path.sep).join('/'), await readFile(full));
+    // Keys are POSIX-style: path.relative uses backslashes on Windows, but
+    // the expected artifact list and downstream lookups use slashes.
   }
   return out;
 }

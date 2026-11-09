@@ -60,6 +60,34 @@ candidate commit hash itself is recorded in the registry submission.
   as specified. No approved origin exists for this candidate, so no
   production artifacts were produced and none are claimed.
 
+## Revision fix — independent review 2026-11-03 (local-codex, PRIMARY-REVIEW.md)
+
+The review returned verdict `revision` with exactly two defects, both in
+tests; the product calculator itself was not faulted. Fixed in this commit,
+product behaviour unchanged, no assertion meaning changed beyond the two
+prescribed fixes:
+
+- **CSS-WIN-PATH** — `tests/build.test.mjs`: the `collect` helper used
+  platform `path.relative`, producing backslash-separated index keys
+  (`assets\app.mjs`, `en\index.html`) on Windows while the expected keys and
+  downstream lookups use POSIX slashes. Fix: index keys are normalised to
+  POSIX separators (`.split(path.sep).join('/')`). All existing byte / SEO /
+  rejection-origin assertions preserved.
+- **CSS-SERVE-NOT-RUN** — `tests/serve.test.mjs`: the suite used fixed port
+  44217. Fix: the child server is spawned with `--port=0`; the test reads the
+  actual address from the child's announced `serve: http://127.0.0.1:<port>/`
+  line, confirms readiness with a `GET /` probe at that address, and closes
+  only the child process it started (`server.kill()` in `after`); nothing is
+  ever killed by port.
+
+Re-run in this Linux environment (Node v24.22.1), all exit 0:
+`npm test` **34/34 pass** (incl. the 2 serve tests, previously NOT_RUN in the
+review), `npm run check` PASS, `npm run build:preview` twice byte-identical
+(`diff -r` clean, 10 files), `npm run check:generated:preview` PASS.
+Windows re-run is NOT_RUN here: this environment has no Windows host, and
+the separator failure mode is removed by construction (keys are normalised
+before any comparison). Windows confirmation belongs to the reviewer.
+
 ## Evidence NOT_RUN (explicit; nothing below is claimed)
 
 - All real-browser rendering and interaction (no browser binary exists in
