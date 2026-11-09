@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>咖啡因代謝計算機｜Gloss Tools</title>
+<meta name="description" content="輸入今天喝下的咖啡、茶或能量飲料的時間與咖啡因量，用你設定的半衰期估算查詢時間與就寢時體內還剩多少咖啡因。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>咖啡因代謝計算機</h1>
+  <p class="lede">輸入今天喝下的咖啡、茶或能量飲料的時間與咖啡因量，用你設定的半衰期估算查詢時間與就寢時體內還剩多少咖啡因。</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">今天的攝取紀錄</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <span class="field-label" id="entries-label">攝取紀錄（時間、飲品預設或自訂毫克）</span>
+          <div id="entry-rows" role="group" aria-labelledby="entries-label"></div>
+          <div class="actions">
+            <button id="add-entry-btn" type="button">新增一筆</button>
+          </div>
+          <p class="help">1–8 筆。每筆選飲品預設，或選「自訂毫克」自行填毫克；兩者只能擇一。</p>
+          <p class="field-error" id="error-entries" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="half-life">半衰期（小時）</label>
+          <p class="help" id="help-half-life">預設 5，可填 3–8（一位小數）。</p>
+          <input id="half-life" type="text" value="5" autocomplete="off" spellcheck="false" aria-describedby="help-half-life error-halfLifeHours">
+          <p class="field-error" id="error-halfLifeHours" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="query-time">查詢時間</label>
+          <p class="help" id="help-query-time">格式 HH:MM，例如 15:30。</p>
+          <input id="query-time" type="text" placeholder="HH:MM" autocomplete="off" spellcheck="false" aria-describedby="help-query-time error-queryTime">
+          <p class="field-error" id="error-queryTime" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="bedtime">就寢時間（選填）</label>
+          <p class="help" id="help-bedtime">格式 HH:MM。早於查詢時間時視為隔日凌晨（今晚就寢）。</p>
+          <input id="bedtime" type="text" placeholder="HH:MM" autocomplete="off" spellcheck="false" aria-describedby="help-bedtime error-bedtime">
+          <p class="field-error" id="error-bedtime" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">計算殘留量</button>
+          <button id="example-btn" type="button">載入範例</button>
+          <button id="cancel-btn" type="button" hidden>取消</button>
+          <button id="reset-btn" type="button">重設</button>
+        </div>
+        <p class="help" id="example-note" hidden>已載入範例（合成資料），請按「計算殘留量」執行。</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">查詢時間的殘留量</h2>
+      <p id="status" class="status" role="status" aria-live="polite">輸入攝取紀錄或載入範例後，按「計算殘留量」。</p>
+      <div id="results" hidden>
+        <p class="result-total-line">查詢時間 <span id="result-query-time">—</span> 的總殘留量：<strong id="result-total">—</strong> mg</p>
+        <p class="help" id="result-notyet-all" hidden>查詢時間還沒到任何一筆的攝取時間，所以總量為 0.0。</p>
+        <table class="result-table">
+          <thead>
+            <tr><th scope="col">時間</th><th scope="col">毫克</th><th scope="col">已過（分鐘）</th><th scope="col">殘留（mg）</th></tr>
+          </thead>
+          <tbody id="result-entries"></tbody>
+        </table>
+        <h3>之後 6 小時</h3>
+        <ul id="result-series" class="result-series"></ul>
+        <div id="result-bedtime-block" hidden>
+          <h3>就寢時間</h3>
+          <p id="result-bedtime"></p>
+        </div>
+        <p class="result-note">半衰期因人而異（約 3–8 小時），本工具以你設定的半衰期估算，數值僅供參考，不是醫療建議。</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">運作方式與限制</h2>
+    <ul>
+      <li>每筆自攝取時刻起以同一個半衰期指數衰減：經過 t 分鐘後剩 mg × 2^(−t／半衰期分鐘)。查詢時間早於某筆攝取時，該筆不計入（不回捲到前一日）。</li>
+      <li>總量由未捨入的逐筆貢獻加總後再四捨五入到一位小數；逐筆各自捨入，顯示總量可能與顯示逐筆之和差 0.1 mg。</li>
+      <li>飲品預設毫克為固定表：義式濃縮（30 ml）63、濾泡咖啡（240 ml）95、紅茶（240 ml）47、綠茶（240 ml）28、可樂（355 ml）34、能量飲料（250 ml）80。</li>
+      <li>只用單日時間模型；不含吸收延遲、多日追蹤或睡眠品質預測。資料只留在目前頁面，不上傳、不儲存；離開頁面即丟棄。本工具沒有下載或匯出。</li>
+    </ul>
+    <h3>查詢時間比某杯的時間早，怎麼算？</h3>
+    <p>在那杯之前它不計入；之後的小時數列會在它的時間過後開始計入。</p>
+    <h3>這能告訴我今晚睡得好不好嗎？</h3>
+    <p>不能。這只是用單一半衰期做的衰減估算，個人代謝差異很大。</p>
+  </section>
+</main>
+</body>
+</html>
