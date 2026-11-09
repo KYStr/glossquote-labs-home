@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>重試時間預算試算｜Gloss Tools</title>
+<meta name="description" content="工程師調整批次任務的 retry timeout 時，先在假設每次都耗完整 timeout 的條件下，確認可在時間預算內完成幾次、何時第一次超界。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>重試時間預算試算</h1>
+  <p class="lede">工程師調整批次任務的 retry timeout 時，先在假設每次都耗完整 timeout 的條件下，確認可在時間預算內完成幾次、何時第一次超界。這是時間模型，不會實際發出重試。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">總預算、單次逾時</h2>
+      <form id="retry-form" novalidate>
+        <div class="field">
+          <label for="field-budget">總預算（毫秒）</label>
+          <p class="help" id="help-budget">整數，0 至 86,400,000 毫秒。</p>
+          <input id="field-budget" name="budget" type="text" inputmode="numeric" autocomplete="off" value="10000" aria-describedby="help-budget">
+          <p class="field-error" id="error-budget" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-timeout">單次逾時（毫秒）</label>
+          <p class="help" id="help-timeout">整數，1 至 600,000 毫秒。每次嘗試假設用滿這個時間。</p>
+          <input id="field-timeout" name="timeout" type="text" inputmode="numeric" autocomplete="off" value="1500" aria-describedby="help-timeout">
+          <p class="field-error" id="error-timeout" role="alert"></p>
+        </div>
+        <h2>嘗試上限、初始間隔、倍率、間隔上限</h2>
+        <div class="field">
+          <label for="field-attemptLimit">嘗試上限（次，含第一次）</label>
+          <p class="help" id="help-attemptLimit">整數，1 至 16 次。</p>
+          <input id="field-attemptLimit" name="attemptLimit" type="text" inputmode="numeric" autocomplete="off" value="5" aria-describedby="help-attemptLimit">
+          <p class="field-error" id="error-attemptLimit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-initialDelay">初始間隔（毫秒）</label>
+          <p class="help" id="help-initialDelay">整數，0 至 600,000 毫秒。第一次嘗試前沒有間隔；第二次起才有間隔。</p>
+          <input id="field-initialDelay" name="initialDelay" type="text" inputmode="numeric" autocomplete="off" value="500" aria-describedby="help-initialDelay">
+          <p class="field-error" id="error-initialDelay" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-factor">倍率</label>
+          <p class="help" id="help-factor">整數，1 至 8。每次間隔乘以倍率，直到間隔上限。</p>
+          <input id="field-factor" name="factor" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="help-factor">
+          <p class="field-error" id="error-factor" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-maxDelay">間隔上限（毫秒）</label>
+          <p class="help" id="help-maxDelay">整數，0 至 600,000 毫秒。初始間隔大於上限時，從第二次起即套用上限。</p>
+          <input id="field-maxDelay" name="maxDelay" type="text" inputmode="numeric" autocomplete="off" value="2000" aria-describedby="help-maxDelay">
+          <p class="field-error" id="error-maxDelay" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算重試時間表</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">可完成的嘗試與第一次超界</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="重試時間表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">嘗試</th><th scope="col">間隔（毫秒）</th><th scope="col">開始（毫秒）</th><th scope="col">結束（毫秒）</th></tr>
+          </thead>
+          <tbody id="attempt-rows"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination" hidden>
+        <button type="button" id="prev-page" class="button-secondary">上一頁</button>
+        <span id="page-label" aria-live="polite"></span>
+        <button type="button" id="next-page" class="button-secondary">下一頁</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>第一次嘗試沒有間隔，從 0 毫秒開始，結束時間為單次逾時。第 i 次（i ≥ 2）嘗試的間隔是初始間隔乘以倍率的 i−2 次方，再取與間隔上限的較小值；間隔加在前一次結束時間之後。第一次結束時間超過總預算的嘗試不會被保留，該次的等待時間也不扣掉；結束時間恰好等於總預算算容納。未使用時間是總預算減去最後一次被保留嘗試的結束時間；一次都沒有保留時為 0。</p>
+    <p>所有欄位只接受 ASCII 十進位整數字串，不含空白、符號、小數或指數，每欄最多 8 位數字。下載的報告檔名固定為 retry-budget-report.json，內容是結果的精簡 JSON，鍵按 UTF-16 碼元升序排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>總預算相等算容納嗎？</dt>
+      <dd>單次結束時間等於預算可容納。</dd>
+      <dt>會實際重試嗎？</dt>
+      <dd>這是每次用滿逾時的時間模型。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
