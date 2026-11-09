@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Night Scorecard | Gloss Tools</title>
+<meta name="description" content="Rank game-night scores with optional dropped rounds and a best-round tiebreak.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/en/index.html">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching language leaves this page; the draft you are editing is not kept.</span></p>
+</header>
+<main>
+  <h1>Game Night Scorecard</h1>
+  <p class="intro">Enter the players and each round's integer scores, pick high-score or low-score wins and how many rounds to drop, then press “Update round standings” to get kept totals, best kept rounds, dropped rounds and shared ranks.</p>
+
+  <form id="score-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Players</legend>
+          <p class="help">2–12 players. One short name per player (1–24 characters, first character a letter or digit); duplicates are not allowed.</p>
+          <div id="players-body" class="rows"></div>
+          <button type="button" id="add-player" class="secondary">Add a player</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Rules</legend>
+          <div class="field">
+            <span class="group-label" id="mode-label">Who wins</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="mode-label">
+              <label><input type="radio" id="mode-high" name="mode" value="high" checked> High score wins</label>
+              <label><input type="radio" id="mode-low" name="mode" value="low"> Low score wins</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="drop">Rounds to drop</label>
+            <input type="text" id="drop" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–3 rounds, and fewer than the number of rounds. Each player drops their own worst rounds.</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Round scores</legend>
+          <p class="help">1–30 rounds. Each round needs a name and one integer score per player (-999–999, negatives allowed).</p>
+          <div id="rounds-body" class="rows"></div>
+          <button type="button" id="add-round" class="secondary">Add a round</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="update" class="primary">Update round standings</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (high-score wins, drop 1, A and B tie on kept total and are split by best round); press “Update round standings” to compute it.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Standings"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
