@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>特休假計算機｜Gloss Tools</title>
+<meta name="description" content="輸入到職日與基準日，依勞動基準法第 38 條算出本週期特休天數、本週期起訖與剩餘天數。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../index.html">Gloss Tools</a>
+  <span class="topbar-title">特休假計算機</span>
+  <span class="lang-switch">
+    <a href="en/index.html" hreflang="en" lang="en">English</a>
+    <span class="draft-warning">切換語言或離開頁面會失去目前草稿。</span>
+  </span>
+</header>
+<main class="layout">
+  <section class="panel input-panel" aria-labelledby="page-title">
+    <h1 id="page-title">特休假計算機</h1>
+    <p class="lede">輸入到職日與基準日，依勞動基準法第 38 條算出本週期特休天數、本週期起訖與剩餘天數。單一員工、週年制、整數天數；資料只保留在目前頁面草稿，不會傳送或儲存。</p>
+    <form id="leave-form" novalidate>
+      <div class="field">
+        <label for="start-date">到職日</label>
+        <input id="start-date" name="startDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="start-date-error">
+        <p class="field-error" id="start-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="reference-date">基準日</label>
+        <input id="reference-date" name="referenceDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="reference-date-error">
+        <p class="field-error" id="reference-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="used-days">本週期已休天數（選填）</label>
+        <input id="used-days" name="usedDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0" aria-describedby="used-days-hint used-days-error">
+        <p class="field-hint" id="used-days-hint">只計目前週期已休的天數，留空視為 0。</p>
+        <p class="field-error" id="used-days-error" role="alert" hidden></p>
+      </div>
+      <div class="actions">
+        <button type="submit" class="button primary" id="run-btn">計算特休</button>
+        <button type="button" class="button" id="cancel-btn" hidden>取消</button>
+        <button type="button" class="button" id="example-btn">載入範例</button>
+        <button type="button" class="button" id="today-btn">填入今天</button>
+        <button type="button" class="button quiet" id="reset-btn">重設</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <section class="panel result-panel" id="result-panel" aria-labelledby="result-heading" aria-busy="false">
+    <h2 id="result-heading">剩餘天數與本週期</h2>
+    <p class="result-empty" id="result-empty">尚無結果。輸入到職日與基準日後按「計算特休」。</p>
+    <div id="result-body" hidden>
+      <p class="remaining"><span class="remaining-label">剩餘天數</span> <span class="remaining-value" id="remaining-value">0</span> <span class="remaining-unit">天</span></p>
+      <p class="stage-message" id="stage-message" hidden></p>
+      <dl class="details">
+        <div class="detail-row"><dt>年資（年）</dt><dd id="tenure-years">0</dd></div>
+        <div class="detail-row"><dt>年資（月）</dt><dd id="tenure-months">0</dd></div>
+        <div class="detail-row"><dt>年資（日）</dt><dd id="tenure-days">0</dd></div>
+        <div class="detail-row"><dt>本週期特休天數</dt><dd id="entitlement-value">0</dd></div>
+        <div class="detail-row"><dt>本週期已休天數</dt><dd id="used-value">0</dd></div>
+        <div class="detail-row"><dt>剩餘天數</dt><dd id="remaining-value-detail">0</dd></div>
+        <div class="detail-row"><dt>本週期起訖</dt><dd id="period-value">—</dd></div>
+        <div class="detail-row"><dt>下次給假日與天數</dt><dd id="next-grant-value">—</dd></div>
+      </dl>
+      <p class="feb29-note" id="feb29-note" hidden></p>
+    </div>
+  </section>
+  <section class="panel info-panel" aria-labelledby="info-heading">
+    <h2 id="info-heading">法定天數與依據</h2>
+    <h3>勞動基準法第 38 條特休天數表</h3>
+    <table class="leave-table">
+      <thead><tr><th scope="col">年資</th><th scope="col">特休天數</th></tr></thead>
+      <tbody>
+        <tr><td>未滿 6 個月</td><td>0 天</td></tr>
+        <tr><td>滿 6 個月未滿 1 年</td><td>3 天</td></tr>
+        <tr><td>滿 1 年</td><td>7 天</td></tr>
+        <tr><td>滿 2 年</td><td>10 天</td></tr>
+        <tr><td>滿 3 年未滿 5 年</td><td>14 天</td></tr>
+        <tr><td>滿 5 年未滿 10 年</td><td>15 天</td></tr>
+        <tr><td>滿 10 年以上</td><td>每年加 1 天，最多 30 天</td></tr>
+      </tbody>
+    </table>
+    <p>法規出處：勞動基準法第 38 條（2017 年 1 月 1 日施行版本）。本工具只依年資與日期試算，不含曆年制等公司自訂週期、特休遞延與屆期結清、半日或小時單位、離職結算或公司加給天數。日期以 Asia/Taipei 曆日計算，年份限 1900–2100。</p>
+    <h3>常見問題</h3>
+    <dl class="faq">
+      <div class="faq-item"><dt>2 月 29 日到職，周年怎麼算？</dt><dd>非閏年以 2 月 28 日為周年日。</dd></div>
+      <div class="faq-item"><dt>特休天數的依據是什麼？</dt><dd>勞動基準法第 38 條（2017 年 1 月 1 日施行版本）的年資天數表。</dd></div>
+      <div class="faq-item"><dt>這是公司正式的請假系統嗎？</dt><dd>不是，只依年資與日期試算，不含遞延、結清或公司加給。</dd></div>
+    </dl>
+  </section>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
