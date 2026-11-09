@@ -1,0 +1,20 @@
+// 實際 app 模組搭配最小 DOM 表面；不冒稱排版、原生焦點或瀏覽器實證。
+import test from 'node:test';import assert from 'node:assert/strict';
+// 依此檔案的固定契約處理下列明列資料，不擴大輸入或檔案範圍。
+const nodes=new Map(),events=new Map(),docEvents=new Map(),styleValues=new Map();
+// 此局部函式集中處理 node 的固定狀態轉換。
+function node(tag='div'){return {tag,attrs:{},children:[],handlers:{},value:'',disabled:false,hidden:false,open:false,setAttribute(k,v){this.attrs[k]=v;if(k==='id')nodes.set(v,this);},removeAttribute(k){delete this.attrs[k];},append(...x){this.children.push(...x);},replaceChildren(...x){this.children=x;},addEventListener(k,fn){this.handlers[k]=fn;},focus(){document.activeElement=this;},showModal(){this.open=true;},close(){this.open=false;},remove(){},select(){},click(){if(!this.disabled)this.handlers.click?.({preventDefault(){}});}};}
+// 導航只走兩個固定已顯示連結，確認後才清除結果。
+for(const id of ['stop-count','home','language','angle','work','form','stops','add','generate','clear','copy','download','select','result','css','summary','status','dialog','keep','accept','faq']){const n=node();n.setAttribute('id',id);}nodes.get('angle').value='90';nodes.get('work').disabled=true;
+// 依此檔案的固定契約處理下列明列資料，不擴大輸入或檔案範圍。
+globalThis.document={documentElement:{lang:'en'},body:node('body'),activeElement:null,hidden:false,createElement:node,getElementById:id=>nodes.get(id),querySelectorAll:q=>q==='[aria-invalid]'?[...nodes.values()].filter(n=>n.attrs['aria-invalid']):[],styleSheets:[{href:'https://example.test/style.css',cssRules:[{selectorText:'#gradient-preview',style:{setProperty:(k,v)=>styleValues.set(k,v),removeProperty:k=>styleValues.delete(k)}}]}],addEventListener:(k,fn)=>docEvents.set(k,fn)};
+// 依此檔案的固定契約處理下列明列資料，不擴大輸入或檔案範圍。
+globalThis.window={addEventListener:(k,fn)=>events.set(k,fn)};globalThis.location={origin:'https://example.test',assign(){}};globalThis.CSS={supports:()=>true};await import('../public/app.mjs');
+// 依此檔案的固定契約處理下列明列資料，不擴大輸入或檔案範圍。
+const rows=()=>nodes.get('stops').children;const input=(row,key)=>rows()[row].children.find(n=>n.attrs.id?.endsWith('-'+key));const submit=()=>nodes.get('form').handlers.submit({preventDefault(){}});
+// 執行下列具名固定斷言；只證受控案例，不換算產品品質分數。
+test('initial disabled gate opens; explicit generation uses CSSOM and edit clears',()=>{assert.equal(nodes.get('work').disabled,false);assert.equal(rows().length,2);input(0,'hex').value='#ff0000';input(1,'hex').value='#0000ff';submit();assert.equal(nodes.get('result').hidden,false);assert.equal(styleValues.get('background-image'),'linear-gradient(90deg, #FF0000 0%, #0000FF 100%)');input(0,'hex').handlers.input();assert.equal(nodes.get('css').value,'');assert.equal(styleValues.has('background-image'),false);});
+// 執行下列具名固定斷言；只證受控案例，不換算產品品質分數。
+test('invalid first field is identified; hidden preserves raw, pageshow resets modal and raw',()=>{nodes.get('angle').value='360';submit();assert.equal(document.activeElement,nodes.get('angle'));assert.equal(nodes.get('angle').attrs['aria-invalid'],'true');nodes.get('clear').click();assert.equal(nodes.get('dialog').open,true);nodes.get('keep').click();assert.equal(nodes.get('angle').value,'360');nodes.get('clear').click();events.get('pagehide')();events.get('pageshow')({persisted:true});assert.equal(nodes.get('dialog').open,false);nodes.get('accept').click();assert.equal(rows().length,2);assert.equal(input(0,'hex').value,'');assert.equal(nodes.get('angle').value,'90');});
+// 執行下列具名固定斷言；只證受控案例，不換算產品品質分數。
+test('equal position hard cut is literal; unsupported CSS fails closed',()=>{input(0,'hex').value='#ff0000';input(1,'hex').value='#0000ff';input(0,'position').value='50';input(1,'position').value='50';submit();assert.ok(nodes.get('css').value.includes('#FF0000 50%, #0000FF 50%'));document.hidden=true;docEvents.get('visibilitychange')();assert.equal(nodes.get('css').value,'');assert.equal(input(0,'hex').value,'#ff0000');CSS.supports=()=>false;submit();assert.equal(nodes.get('result').hidden,true);assert.equal(nodes.get('copy').disabled,true);assert.ok(nodes.get('status').textContent.includes('UNSUPPORTED'));});
