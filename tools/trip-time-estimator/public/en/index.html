@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Trip Time Estimator | Gloss Tools</title>
+<meta name="description" content="Convert a departure date and time across fixed UTC offsets with a travel duration or an arrival time, and see the arrival date, day shift and duration. Fixed offsets; no daylight-saving database.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="../index.html">繁體中文</a>
+    <a href="../../en/">Back to the tools home</a>
+  </span>
+</div>
+<p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+
+<header class="page-head">
+  <h1>Trip Time Estimator</h1>
+  <p class="lede">Convert a departure date and time across fixed UTC offsets with a travel duration or an arrival time, and see the arrival date, day shift and duration. Fixed offsets; no daylight-saving database.</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Departure, offsets and travel time</h2>
+      <form id="trip-form" novalidate>
+        <fieldset class="field">
+          <legend>Mode</legend>
+          <p class="help" id="help-mode">Switching mode immediately clears the other mode's exclusive fields; the rest of the draft is kept.</p>
+          <label class="radio-row">
+            <input type="radio" name="mode" id="field-mode" value="duration">
+            <span>From travel duration</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="mode" id="field-mode-arrival" value="arrival">
+            <span>From arrival time</span>
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-departureDate">Departure date</label>
+          <p class="help" id="help-departureDate">Format YYYY-MM-DD, from 2000-01-01 to 2099-12-31.</p>
+          <input type="text" id="field-departureDate" aria-describedby="help-departureDate" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-departureDate" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-departureTime">Departure time (departure zone)</label>
+          <p class="help" id="help-departureTime">24-hour HH:MM, local time at the departure place.</p>
+          <input type="text" id="field-departureTime" aria-describedby="help-departureTime" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-departureTime" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-departureOffset">Departure UTC offset</label>
+          <p class="help" id="help-departureOffset">The fixed offset of the departure place from UTC, -12:00 to +14:00 in 15-minute steps.</p>
+          <select id="field-departureOffset" aria-describedby="help-departureOffset"></select>
+          <p class="field-error" id="error-departureOffset" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-arrivalOffset">Arrival UTC offset</label>
+          <p class="help" id="help-arrivalOffset">The fixed offset of the arrival place from UTC, -12:00 to +14:00 in 15-minute steps.</p>
+          <select id="field-arrivalOffset" aria-describedby="help-arrivalOffset"></select>
+          <p class="field-error" id="error-arrivalOffset" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <span class="field-label" id="preset-label">Common routes (standard time)</span>
+          <div class="preset-row" id="preset-row" role="group" aria-labelledby="preset-label"></div>
+          <p class="help">Choosing a route fills only the two offsets; it does not run the calculation. Standard time; adjust the offset yourself during daylight saving time.</p>
+        </div>
+
+        <div id="mode-duration-fields">
+          <div class="field">
+            <label for="field-duration">Travel duration (flight time)</label>
+            <p class="help" id="help-duration">Format H:MM, for example 3:05; from 0:01 to 48:00.</p>
+            <input type="text" id="field-duration" aria-describedby="help-duration" autocomplete="off" spellcheck="false">
+            <p class="field-error" id="error-duration" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="mode-arrival-fields" hidden>
+          <div class="field">
+            <label for="field-arrivalTime">Arrival time (arrival zone)</label>
+            <p class="help" id="help-arrivalTime">24-hour HH:MM, local time at the arrival place.</p>
+            <input type="text" id="field-arrivalTime" aria-describedby="help-arrivalTime" autocomplete="off" spellcheck="false">
+            <p class="field-error" id="error-arrivalTime" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label class="radio-row" for="field-arrivalNextDay">
+              <input type="checkbox" id="field-arrivalNextDay">
+              <span>Arrival is on the day after the departure date</span>
+            </label>
+            <p class="help" id="help-arrivalNextDay">Turn this on when arrival falls on the day after departure. The tool never adds 24 hours on its own; the arrival date comes only from this toggle.</p>
+            <p class="field-error" id="error-arrivalNextDay" role="alert"></p>
+          </div>
+        </div>
+
+        <p class="disclaimer">This tool uses fixed UTC offsets with no daylight-saving or time-zone database; check your flight's actual times with the carrier.</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">Calculate trip time</button>
+          <button type="button" class="button-secondary" id="example-btn">Load example</button>
+          <button type="button" class="button-secondary" id="reset-btn">Reset</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Arrival and duration</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>All four readings</h3>
+      <ul class="readings-list" id="readings-list"></ul>
+      <p class="disclaimer">This tool uses fixed UTC offsets with no daylight-saving or time-zone database; check your flight's actual times with the carrier.</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>Download report (JSON)</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>Method and rules</summary>
+    <p>Everything is first converted to absolute minutes: the departure date becomes a civil day number, times 1440 plus the departure clock time, minus the departure offset, giving one absolute instant; the arrival instant is then read back at the arrival offset as a local date and time. The day-shift label is the difference in day numbers between the arrival date and the departure date.</p>
+    <p>In "From arrival time" mode, the arrival date is the departure date, or one day later when the next-day toggle is on — nothing else. The tool never adds 24 hours just because the arrival clock reading is smaller. The implied duration must be greater than 0 and at most 48 hours, otherwise an error is reported.</p>
+    <p>Crossing the date line, the arrival date can be one day — even two days — before the departure date; with long flights plus an offset difference the day shift can reach +4 days. Trust the date and the day-shift label, not the clock reading alone.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <h3>Why can the arrival clock time look earlier than the departure time?</h3>
+    <p>The destination may be in a later-offset zone, so the clock reading moves backwards, even to the day before; check the day-shift label and the arrival date.</p>
+    <h3>Does it handle daylight saving time?</h3>
+    <p>No. It uses only the fixed UTC offsets you enter; during daylight saving time, enter the offset actually in effect, and always confirm real flight times with the carrier.</p>
+  </section>
+
+  <p class="privacy-note">All computation happens in your browser; nothing is sent anywhere.</p>
+</main>
+</body>
+</html>
