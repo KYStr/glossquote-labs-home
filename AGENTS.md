@@ -25,3 +25,7 @@
 - 逐件完成後先用原有 block 保存真實完成 checkpoint／候選定位，blocker 明寫「待整批交驗，非退修」，resumeCondition 明寫 `batch submit ready`，不能顯示為正在製作或在等修正。全部製作完成後再一次保存 GitHub 產品來源批次；GitHub commit 與 registry submit 是兩個不同步驟，仍需原批准範圍。
 - 整批交驗以各件原 claim 的 resume→submit 操作列逐件固定 candidate/PR/evidence，暫存期間各件都已 block；resume 只恢復交驗前狀態，不是新的實作執行證據。一次 CAS 可容納 5 組 resume/submit。每件均獨立審查相同固定候選的完整約定面向，禁止混分、自評或把預領當執行；未完成檢查仍 NOT_RUN。交驗、accepted、merge、部署分開，不擴發布/分享/憑證/費用權限。
 - 單件 apply 保留相容與修復用途，但同樣受未交付 5 件與 working 1 件上限限制。正式批領使用 apply-batch；不是以五次單領繞過整批不足檢查。既有本地盤點、主頁 baseline、他人 owner 完全不變。
+
+## Primary local/cloud oversight (user instruction, 2026-11-02)
+
+The primary local conversation retains technical coordination and final delivery responsibility under the user. Follow [the shared oversight goal](docs/LOCAL-CLOUD-OVERSIGHT-GOAL.md): inspect current GitHub rules, registry, cloud proposals/production, exact PR candidates and independent evidence on every work round; preserve actor ownership and return defects to the original owner. Specification review is a separate gate: once complete and independently verified, record document acceptance/readiness promptly so authorized cloud/local partners can claim production. Do not wait for future product/browser/deployment checks to approve a sound specification, and do not treat document approval as product acceptance. This does not waive current CAS, independent review, capacity, credentials, focus, or deployment rules, nor claim that other actors have acknowledged this addition.
