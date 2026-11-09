@@ -1,5 +1,8 @@
 # Verification — Event Ticket Range Check
 
+Candidate commit: `744739995046e46bbc6855701794830bef22cc7e`
+Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/126
+
 Candidate build for `tools/event-ticket-ranges/` in `KYStr/glossquote-labs-home`.
 Base: `23c1d5f70db16e8bd0086259156243c5a57f8785` (`codex/initial-publication`).
 Environment: Node v24.22.1, offline, no network access during tests/build.

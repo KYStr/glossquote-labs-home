@@ -13,6 +13,9 @@ Production candidate for the GlossQuote Labs consolidated format.
   (claimed by the parent actor; this build ran no registry commands)
 - Branch: `muse/event-ticket-ranges-production-20261109`
 - Base: `23c1d5f70db16e8bd0086259156243c5a57f8785` (`codex/initial-publication`)
+- Candidate commit: `744739995046e46bbc6855701794830bef22cc7e` (tool commit)
+- Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/126
+  (base `codex/initial-publication`, OPEN + draft, head verified == candidate)
 
 ## Allowed scope
 
