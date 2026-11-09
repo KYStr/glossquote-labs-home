@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./index.html">
+    <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+    <link rel="alternate" hreflang="en" href="./index.html">
+    <link rel="alternate" hreflang="x-default" href="../index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Classical Cipher Lab: Caesar, Atbash and Vigenère practice | GlossQuote Labs</title>
+    <meta name="description" content="Practise the Caesar shift, Atbash mirror and Vigenère classical ciphers, with a 25-row Caesar brute-force table. A learning and puzzle tool: everything runs locally in your browser, and input is never sent anywhere or stored.">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../en/">GlossQuote Labs</a>
+      <nav class="language-links" aria-label="Language">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="../index.html">繁體中文</a>
+        <a lang="en" hreflang="en" href="./index.html" aria-current="page">English</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Classical Cipher Lab</h1>
+      <p class="lede">Pick a classical cipher, type some text, and watch it change. The rules are fixed on this page: only the letters A–Z and a–z transform, case is preserved letter by letter, and digits, punctuation and every other character pass through unchanged.</p>
+
+      <aside class="banner" aria-label="Educational notice">
+        <p><strong>Read this first:</strong> these are classical ciphers from before modern cryptography. They can be broken in seconds and must never be used to protect real information. For real security, use modern, publicly reviewed encryption instead. Every cipher here is for learning and puzzles only.</p>
+      </aside>
+
+      <section class="workbench" aria-label="Cipher workbench">
+        <div
+          id="strings"
+          hidden
+          data-key-empty="The key is empty: enter 1 to 64 letters."
+          data-key-non-letter="The key may contain letters A–Z only: remove digits, spaces or other symbols (this tool never removes characters for you)."
+          data-key-too-long="The key is too long: at most 64 letters."
+          data-stale="The key needs fixing; the output below is paused and shows the previous result."
+          data-copied="Result copied."
+          data-copy-failed="Copy failed; please select the output text manually."
+          data-truncated="Input reached the 10,000 character limit; pasted text was cut at the limit."
+          data-shift-label="Shift {n}"
+          data-row-chosen="The shift {n} candidate is now in the output area."
+        ></div>
+
+        <div class="field">
+          <label for="cipher-select">Cipher</label>
+          <select id="cipher-select">
+            <option value="caesar" selected>Caesar (shift)</option>
+            <option value="atbash">Atbash (letter mirror)</option>
+            <option value="vigenere">Vigenère (keyword)</option>
+          </select>
+        </div>
+
+        <fieldset class="field" id="direction-field">
+          <legend>Direction</legend>
+          <label class="radio"><input type="radio" name="direction" value="encrypt" checked> Encrypt (plain → cipher)</label>
+          <label class="radio"><input type="radio" name="direction" value="decrypt"> Decrypt (cipher → plain)</label>
+        </fieldset>
+
+        <div class="field" id="shift-field">
+          <label for="shift-input">Shift (0–25)</label>
+          <div class="row">
+            <input id="shift-input" type="number" min="0" max="25" step="1" value="3" inputmode="numeric">
+            <button type="button" id="rot13-button">ROT13 (shift 13)</button>
+          </div>
+          <p class="hint">ROT13 is the Caesar cipher at shift 13; encrypting and decrypting are the same operation.</p>
+          <p class="hint" id="shift-zero-note" hidden>Shift 0 = no change: the output equals the input.</p>
+        </div>
+
+        <div class="field" id="key-field" hidden>
+          <label for="key-input">Key (1–64 letters)</label>
+          <input id="key-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="key-error">
+          <p class="hint">The key repeats letter by letter and advances only when a letter is transformed; punctuation and spaces never consume key letters.</p>
+          <p class="error" id="key-error" role="alert" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="input-text">Input text</label>
+          <textarea id="input-text" rows="5" spellcheck="false">Hello, World!</textarea>
+          <p class="hint"><span id="input-count">13</span> / 10,000 characters</p>
+          <p class="hint" id="truncate-note" hidden></p>
+        </div>
+
+        <div class="field" id="output-wrap">
+          <label for="output-text">Output</label>
+          <textarea id="output-text" rows="5" readonly spellcheck="false"></textarea>
+          <p class="hint" id="stale-note" hidden></p>
+          <div class="row">
+            <button type="button" id="copy-button">Copy result</button>
+            <button type="button" id="swap-button">Swap: output becomes input</button>
+          </div>
+          <p class="hint" id="action-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="brute" id="brute-section" aria-label="Caesar brute-force table">
+        <h2>Caesar brute-force table</h2>
+        <p>Treat the input as ciphertext and list the decryption at all 25 shifts at once. Which row is the original is your call: this tool never ranks rows and never marks a “most likely” one.</p>
+        <button type="button" id="brute-toggle" aria-expanded="false" data-show-label="Show the table" data-hide-label="Hide the table">Show the table</button>
+        <div id="brute-wrap" hidden>
+          <table>
+            <thead>
+              <tr><th scope="col">Shift</th><th scope="col">Candidate text (click a row to put it in the output)</th></tr>
+            </thead>
+            <tbody id="brute-body"></tbody>
+          </table>
+          <p class="hint" id="brute-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <footer>
+        <p>This page never sends or stores the text or key you type; reload the page and everything is gone. Switching language returns to the example content.</p>
+        <p><a href="../../en/">Back to the GlossQuote Labs home page</a></p>
+      </footer>
+    </main>
+  </body>
+</html>

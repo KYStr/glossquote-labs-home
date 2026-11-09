@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./index.html">
+    <link rel="alternate" hreflang="zh-Hant" href="./index.html">
+    <link rel="alternate" hreflang="en" href="./en/index.html">
+    <link rel="alternate" hreflang="x-default" href="./index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>古典密碼實驗室：凱撒、Atbash、Vigenère 動手練習｜GlossQuote Labs</title>
+    <meta name="description" content="練習凱撒位移、Atbash 鏡像與 Vigenère 古典密碼，附凱撒 25 格位移解密對照表。純教學與解謎工具，全部在瀏覽器本機運算，輸入不會送出，也不會被保存。">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../">GlossQuote Labs</a>
+      <nav class="language-links" aria-label="語言">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="./index.html" aria-current="page">繁體中文</a>
+        <a lang="en" hreflang="en" href="./en/index.html">English</a>
+      </nav>
+    </header>
+    <main>
+      <h1>古典密碼實驗室</h1>
+      <p class="lede">選一種古典密碼，輸入文字，即時看它怎麼變。規則寫死在這一頁：只有英文字母 A–Z、a–z 會變形，大小寫逐字保留，數字、標點與中文等其他字元原樣通過。</p>
+
+      <aside class="banner" aria-label="教學提醒">
+        <p><strong>先看這段：</strong>這些是現代密碼學出現之前的古典密碼，以今天的標準幾秒內就能破解，絕對不可以用來保護真正的資訊。若需要真正的安全，請改用現代且經過公開審查的加密方式。這裡的每一種密碼都只適合學習與解謎。</p>
+      </aside>
+
+      <section class="workbench" aria-label="密碼工作區">
+        <div
+          id="strings"
+          hidden
+          data-key-empty="金鑰是空的：請輸入 1 到 64 個英文字母。"
+          data-key-non-letter="金鑰只能包含英文字母 A–Z：請移除數字、空格或其他符號（本工具不會自動刪字元）。"
+          data-key-too-long="金鑰太長：最多 64 個英文字母。"
+          data-stale="金鑰需要修正；輸出已暫停更新，下方顯示的是上一次的結果。"
+          data-copied="已複製結果。"
+          data-copy-failed="複製失敗，請手動選取輸出文字。"
+          data-truncated="輸入已達 10,000 字上限，貼上的內容已截到上限為止。"
+          data-shift-label="移位 {n}"
+          data-row-chosen="已把移位 {n} 的候選放入輸出區。"
+        ></div>
+
+        <div class="field">
+          <label for="cipher-select">密碼種類</label>
+          <select id="cipher-select">
+            <option value="caesar" selected>凱撒密碼（位移）</option>
+            <option value="atbash">Atbash（字母鏡像）</option>
+            <option value="vigenere">Vigenère（金鑰字）</option>
+          </select>
+        </div>
+
+        <fieldset class="field" id="direction-field">
+          <legend>方向</legend>
+          <label class="radio"><input type="radio" name="direction" value="encrypt" checked> 加密（原文 → 密文）</label>
+          <label class="radio"><input type="radio" name="direction" value="decrypt"> 解密（密文 → 原文）</label>
+        </fieldset>
+
+        <div class="field" id="shift-field">
+          <label for="shift-input">位移（0–25）</label>
+          <div class="row">
+            <input id="shift-input" type="number" min="0" max="25" step="1" value="3" inputmode="numeric">
+            <button type="button" id="rot13-button">ROT13（位移 13）</button>
+          </div>
+          <p class="hint">ROT13 是位移 13 的凱撒密碼，加密與解密是同一個操作。</p>
+          <p class="hint" id="shift-zero-note" hidden>位移 0 ＝ 無變化，輸出會與輸入相同。</p>
+        </div>
+
+        <div class="field" id="key-field" hidden>
+          <label for="key-input">金鑰（1–64 個英文字母）</label>
+          <input id="key-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="key-error">
+          <p class="hint">金鑰逐字重複使用，只有在字母被變形時才往前推進；標點與空格不消耗金鑰。</p>
+          <p class="error" id="key-error" role="alert" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="input-text">輸入文字</label>
+          <textarea id="input-text" rows="5" spellcheck="false">Hello, World!</textarea>
+          <p class="hint"><span id="input-count">13</span> / 10,000 字</p>
+          <p class="hint" id="truncate-note" hidden></p>
+        </div>
+
+        <div class="field" id="output-wrap">
+          <label for="output-text">輸出</label>
+          <textarea id="output-text" rows="5" readonly spellcheck="false"></textarea>
+          <p class="hint" id="stale-note" hidden></p>
+          <div class="row">
+            <button type="button" id="copy-button">複製結果</button>
+            <button type="button" id="swap-button">交換：輸出變輸入</button>
+          </div>
+          <p class="hint" id="action-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="brute" id="brute-section" aria-label="凱撒暴力破解對照表">
+        <h2>凱撒暴力破解對照表</h2>
+        <p>把輸入當成密文，一次列出 25 種位移的解密結果。哪一行是原文由你判斷，本工具不排名、不標示「最可能」。</p>
+        <button type="button" id="brute-toggle" aria-expanded="false" data-show-label="顯示對照表" data-hide-label="隱藏對照表">顯示對照表</button>
+        <div id="brute-wrap" hidden>
+          <table>
+            <thead>
+              <tr><th scope="col">位移</th><th scope="col">候選文字（點一行放入輸出區）</th></tr>
+            </thead>
+            <tbody id="brute-body"></tbody>
+          </table>
+          <p class="hint" id="brute-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <footer>
+        <p>這一頁不會送出或保存你輸入的文字與金鑰，重新整理後全部消失。切換語言會回到範例內容。</p>
+        <p><a href="../../">回 GlossQuote Labs 首頁</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
