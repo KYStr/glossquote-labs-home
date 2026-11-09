@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuel Cost Calculator | GlossQuote Tools</title>
+<meta name="description" content="Estimate how much fuel a trip needs and what it costs: mix distance, consumption (L/100km, km/L, US or UK MPG) and price units freely, with exact conversions and an optional per-person split. Runs entirely on your device — nothing is uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../../en/">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Fuel Cost Calculator</h1>
+  <p class="intro">Enter the distance, your car's consumption and the fuel price to estimate how much fuel the trip takes and what it costs in total. Consumption can be given in L/100km, km/L, US MPG or UK MPG, and the price per litre, per US gallon or per Imperial gallon; you can also split the cost among the car's occupants. Everything is computed in your browser — nothing is uploaded or stored.</p>
+
+  <form id="fuel-form" novalidate>
+    <section class="card" aria-labelledby="distance-heading">
+      <h2 id="distance-heading">Distance</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="distance-value">Distance</label>
+          <input id="distance-value" name="distance" type="text" inputmode="decimal" autocomplete="off" value="250" aria-describedby="distance-error">
+          <p class="error" id="distance-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="distance-unit">Unit</label>
+          <select id="distance-unit" name="distanceUnit">
+            <option value="km" selected>Kilometres (km)</option>
+            <option value="mi">Miles</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="consumption-heading">
+      <h2 id="consumption-heading">Consumption</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="consumption-value">Consumption</label>
+          <input id="consumption-value" name="consumption" type="text" inputmode="decimal" autocomplete="off" value="6.5" aria-describedby="consumption-error">
+          <p class="error" id="consumption-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="consumption-unit">Unit</label>
+          <select id="consumption-unit" name="consumptionUnit">
+            <option value="l100km" selected>Litres per 100 km (L/100km)</option>
+            <option value="kml">Kilometres per litre (km/L)</option>
+            <option value="mpg-us">Miles per gallon (MPG, US)</option>
+            <option value="mpg-uk">Miles per gallon (MPG, UK)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="price-heading">
+      <h2 id="price-heading">Fuel price</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="price-value">Price</label>
+          <input id="price-value" name="price" type="text" inputmode="decimal" autocomplete="off" value="1.80" aria-describedby="price-error">
+          <p class="error" id="price-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="price-unit">Priced per</label>
+          <select id="price-unit" name="priceUnit">
+            <option value="litre" selected>Per litre</option>
+            <option value="gal-us">Per US gallon</option>
+            <option value="gal-uk">Per Imperial gallon</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="price-currency">Currency (symbol only)</label>
+          <select id="price-currency" name="currency">
+            <option value="TWD">NT$ (TWD)</option>
+            <option value="USD" selected>US$ (USD)</option>
+            <option value="EUR">€ (EUR)</option>
+            <option value="GBP">£ (GBP)</option>
+            <option value="JPY">¥ (JPY)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="split-heading">
+      <h2 id="split-heading">Split (optional)</h2>
+      <div class="field">
+        <label class="toggle" for="split-toggle">
+          <input id="split-toggle" name="splitOn" type="checkbox">
+          Split the fuel cost among the car's occupants
+        </label>
+      </div>
+      <div class="field" id="people-field" hidden>
+        <label for="people-value">People (1–12)</label>
+        <input id="people-value" name="people" type="text" inputmode="numeric" autocomplete="off" value="4" aria-describedby="people-error">
+        <p class="error" id="people-error" hidden></p>
+      </div>
+    </section>
+
+    <section class="card results" aria-labelledby="results-heading">
+      <h2 id="results-heading">Results</h2>
+      <p class="stale" id="stale-badge" hidden>Invalid input — showing the last valid result, which is out of date.</p>
+      <dl class="outputs" aria-live="polite">
+        <div class="output-row">
+          <dt>Fuel needed</dt>
+          <dd id="out-fuel">16.25 L</dd>
+        </div>
+        <div class="output-row">
+          <dt>Total cost</dt>
+          <dd id="out-total">$29.25</dd>
+        </div>
+        <div class="output-row" id="share-row" hidden>
+          <dt>Per person</dt>
+          <dd id="out-share"></dd>
+        </div>
+        <div class="output-row">
+          <dt>Consumption, converted</dt>
+          <dd id="out-echo">6.50 L/100km</dd>
+        </div>
+      </dl>
+      <p class="note" id="split-note" hidden>Each share is rounded to the nearest cent; the shares may add up a cent or two differently from the total.</p>
+      <button type="button" id="reset-button">Reset to defaults</button>
+    </section>
+  </form>
+
+  <section class="card explainer" aria-labelledby="explainer-heading">
+    <h2 id="explainer-heading">How it works</h2>
+    <ul>
+      <li>Results are estimates from the consumption figure you enter; real consumption varies with traffic, speed and driving style.</li>
+      <li>The currency selector changes the displayed symbol only and performs no exchange conversion; enter a price in the currency you select.</li>
+      <li>US and Imperial gallons differ: 1 US gallon = 3.785411784 litres and 1 Imperial gallon = 4.54609 litres. Always pick the right country for MPG — the two are never interchangeable.</li>
+      <li>Switching a unit never rescales the number you typed: the number stays as typed and is reinterpreted in the new unit. Check the converted-consumption line to sanity-check the result.</li>
+      <li>Amounts are rounded to cents only when displayed, never during the calculation, so the same inputs give the same cents everywhere.</li>
+    </ul>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote Tools — computed entirely on your device; no network, no storage.</p>
+</footer>
+</body>
+</html>
