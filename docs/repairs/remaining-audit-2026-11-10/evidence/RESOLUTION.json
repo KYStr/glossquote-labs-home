@@ -1,0 +1,188 @@
+{
+  "inputSha256": "280f9d1c6ae082a0e74f3c9b9ba9d01651d1a179b66c035b2a7cc3d9b9ea7e5e",
+  "newFunctional": [
+    {
+      "id": "FUNC-R3-01",
+      "slug": "percentage-calculator",
+      "severity": "high",
+      "priority": "P1",
+      "title": "Worker完成狀態未渲染，正常計算及錯誤停留處理中",
+      "status": "independently reproduced with actual built app fixture; parent separately reproduced live GUI",
+      "cases": [
+        "PCT-UI-01",
+        "PCT-UI-02",
+        "PCT-UI-03",
+        "PCT-UI-04"
+      ],
+      "rootCause": "app的onmessage/onerror/constructor-failure microtask只呼叫controller.deliver；controller無訂閱/通知機制，deliver不render。",
+      "observed": "20% of150 completion後仍Working、aria-busy=true、Run disabled、結果與下載hidden；點仍可見Cancel才因其外層render顯示30。",
+      "impact": "主要成功、輸入錯誤及Worker錯誤回報都不自動顯示。",
+      "fix": "建立單一完成通知／render橋接，涵蓋成功、驗證錯誤、onerror及constructor failure，保留generation guard與Reset後stale結果丟棄。",
+      "limits": "Fixture不是實際瀏覽器/CSP測試；live GUI由主代理另留證據。其餘38款只有來源接線篩查，不宣稱全部GUI通過。",
+      "resolution": "FIXED_DEPLOYED_AWAITING_EXTERNAL_RETEST",
+      "sourceCommit": "069bd37af1a6100f366afaebe5afb26aa953c5a3",
+      "candidate": "56e11511d3c7f9053133bafb985ab175687da2a5"
+    },
+    {
+      "id": "FUNC-R3-02",
+      "slug": "overtime-pay-calculator",
+      "severity": "high",
+      "priority": "P1",
+      "title": "月彙總輸入遺失每日分布，造成加班費模型錯誤",
+      "status": "reproduced core + UI/spec source, official primary-source cross-check",
+      "cases": [
+        "OT-N06",
+        "OT-N07"
+      ],
+      "rootCause": "UI與spec要求單月彙總，但核心把每類總時數當作單次每日出勤套級距與一日假日工資；輸入不足以唯一決定月總額。",
+      "examples": [
+        {
+          "assumptions": "月薪36000、一般每日8小時、採聲明基本倍率；三個不同平日各延時1h",
+          "input": {
+            "monthlySalary": "36000",
+            "weekdayOtHours": "3",
+            "restDayHours": "0",
+            "holidayHours": "0"
+          },
+          "expected": 600,
+          "actual": 650
+        },
+        {
+          "assumptions": "月薪36000；兩個未調移且符合加發規則的國定假日各出勤1h",
+          "input": {
+            "monthlySalary": "36000",
+            "weekdayOtHours": "0",
+            "restDayHours": "0",
+            "holidayHours": "2"
+          },
+          "expected": 2400,
+          "actual": 1200
+        }
+      ],
+      "relatedConstraint": "原輸入上限使countedOtHours最大4+12+(12-8)=20，聲稱的>46h capNote提醒永不可達。此為同一模型缺陷相關限制，不另重複算finding。",
+      "officialSources": [
+        "MOL-01",
+        "MOL-02",
+        "MOL-03"
+      ],
+      "fix": "若保留月彙總用途，需逐日明細或足以還原每日費率級距及假日出勤天數的資料；逐日計算再月加總。若改為單次/單日試算，需同步修正規格、雙語用途、欄位與月上限宣稱，不能只更改倍率。",
+      "limits": "有限範圍的官方核對，非全工具法規驗收。",
+      "resolution": "FIXED_DEPLOYED_AWAITING_EXTERNAL_RETEST",
+      "sourceCommit": "069bd37af1a6100f366afaebe5afb26aa953c5a3",
+      "candidate": "56e11511d3c7f9053133bafb985ab175687da2a5"
+    },
+    {
+      "id": "FUNC-R3-03",
+      "slug": "overtime-pay-calculator",
+      "severity": "low",
+      "priority": "P3",
+      "title": "own-data schema契約未拒絕accessor且執行getter",
+      "status": "reproduced pure API contract case",
+      "cases": [
+        "OT-N05"
+      ],
+      "expected": {
+        "ok": false,
+        "code": "SCHEMA",
+        "getterReads": 0
+      },
+      "actual": {
+        "ok": true,
+        "code": null,
+        "getterReads": 1
+      },
+      "rootCause": "validateInput用input[field]讀值，與聲稱只讀own data且拒絕accessor不符。",
+      "fix": "驗證普通物件與own property descriptors，先拒絕getter/setter再讀descriptor.value，補getter不執行反例。",
+      "limits": "正常表單提供字串且Worker structured clone輸入，本例本身不證明可利用XSS、越權或外流。",
+      "resolution": "FIXED_DEPLOYED_AWAITING_EXTERNAL_RETEST",
+      "sourceCommit": "069bd37af1a6100f366afaebe5afb26aa953c5a3",
+      "candidate": "56e11511d3c7f9053133bafb985ab175687da2a5"
+    }
+  ],
+  "priorExternalReport": {
+    "openSEO": [
+      {
+        "id": "SEO-01",
+        "priority": "P3",
+        "severity": "low",
+        "title": "本輪80頁未提供og:image",
+        "scope": "分享預覽最佳化；不直接推論排名下降"
+      },
+      {
+        "id": "SEO-03",
+        "priority": "P3",
+        "severity": "low",
+        "title": "media兩個index入口仍多一次307",
+        "scope": "非阻擋最佳化，終點200且canonical正確"
+      }
+    ],
+    "priorRetest": [
+      {
+        "id": "SEC-01",
+        "state": "FIXED_REPRESENTATIVES_CONFIRMED",
+        "title": "file-bundler framing保護",
+        "evidence": "本輪只補驗兩個雙語代表頁；frame-ancestors none與XFO DENY仍在。原94頁全面檢查屬上一輪。"
+      },
+      {
+        "id": "SEC-02",
+        "state": "FIXED_SCOPE_CONFIRMED",
+        "title": "HSTS",
+        "evidence": "新39站78頁均有唯一max-age=31536000，另file-bundler2頁通過。本輪未重抓舊47站94頁。"
+      },
+      {
+        "id": "SEO-01",
+        "state": "OPEN_IN_CURRENT_SAMPLE",
+        "title": "缺少og:image",
+        "evidence": "本輪首頁2＋新工具78，共80頁缺少；不是舊94頁全面回驗。"
+      },
+      {
+        "id": "SEO-02",
+        "state": "FIXED_STILL_CONFIRMED",
+        "title": "英文首頁og:locale",
+        "evidence": "本輪仍為en_US。"
+      },
+      {
+        "id": "SEO-03",
+        "state": "OPEN_NONBLOCKING_OPTIMIZATION",
+        "title": "media入口多一次307",
+        "evidence": "中文與英文入口仍307，各終點200；不屬站點無法使用。"
+      },
+      {
+        "id": "FUNC-M2-01",
+        "state": "FIXED_ON_LATER_LIVE_VERSION",
+        "title": "TTS Unicode空白分句",
+        "evidence": "U+3000、U+00A0、ASCII實際GUI均切2句；live core逐byte等於PR246 e9eb。6dd附包仍是舊版。"
+      },
+      {
+        "id": "FUNC-M2-02",
+        "state": "FIXED_ON_LATER_LIVE_VERSION",
+        "title": "Fluid重複語言入口清空草稿",
+        "evidence": "live已移除通知列重複語言入口；原#language中英來回保留fmax3、自訂文字及CSS。6dd附包仍保有舊入口。"
+      }
+    ],
+    "observations": [
+      {
+        "id": "SEC-OBS-R3-01",
+        "title": "rent-budget-planner多餘Blob Worker允許",
+        "priority": "P3-hardening",
+        "confirmedVulnerability": false,
+        "description": "31站允許blob Worker，30站有Worker建構；rent目前只主執行緒計算/Blob下載，可移除未用worker-src blob:。"
+      }
+    ]
+  },
+  "retainedNotRun": [
+    "full tool acceptance",
+    "individual legal/domain review",
+    "native download dialog and downloaded file UX",
+    "real devices and OS sleep",
+    "screen reader",
+    "320px and actual 200% zoom",
+    "full Network/Storage capture",
+    "external retest of this candidate"
+  ],
+  "outOfScopeBacklog": [
+    "SEO-01 og:image",
+    "SEO-03 media extra 307",
+    "SEC-OBS-R3-01 unused rent worker-src blob permission"
+  ]
+}
