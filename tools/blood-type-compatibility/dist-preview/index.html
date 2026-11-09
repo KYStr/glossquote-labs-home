@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="選一個血型，立刻看到紅血球與血漿各自能捐給誰、能接受自誰與萬用徽章；也能直接核對捐贈者與受血者兩人的相容性。">
+<title>血型相容查詢｜Gloss Tools</title>
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="頁面">
+    <a href="./en/index.html">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">Gloss Tools 首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>血型相容查詢</h1>
+  <p class="lede">在捐血或陪同就醫前，先依標準相容表確認血型相容性。選一個血型，看到紅血球與血漿各自的可捐給、可接受自名單與萬用徽章；或切換到配對模式，直接核對捐贈者與受血者兩人。全部在本機查詢，不登入、不送出任何資料。</p>
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">查詢條件</h2>
+      <form id="lookup-form" novalidate>
+        <fieldset class="field">
+          <legend>模式</legend>
+          <p class="help" id="help-mode">單一血型查一個血型的四份名單；配對直接核對兩個人。</p>
+          <label class="radio-row">
+            <input type="radio" id="field-mode-single" name="mode" value="single">
+            單一血型
+          </label>
+          <label class="radio-row">
+            <input type="radio" id="field-mode-pair" name="mode" value="pair">
+            捐贈者與受血者
+          </label>
+        </fieldset>
+        <div id="group-single">
+          <div class="field">
+            <label for="field-bloodType">血型</label>
+            <p class="help" id="help-bloodType">八種 ABO/Rh 血型代碼，與醫院使用的代碼相同。</p>
+            <select id="field-bloodType" aria-describedby="help-bloodType error-bloodType">
+              <option value="">請選擇</option>
+              <option value="O-">O-</option>
+              <option value="O+">O+</option>
+              <option value="A-">A-</option>
+              <option value="A+">A+</option>
+              <option value="B-">B-</option>
+              <option value="B+">B+</option>
+              <option value="AB-">AB-</option>
+              <option value="AB+">AB+</option>
+            </select>
+            <p class="field-error" id="error-bloodType" aria-live="polite"></p>
+          </div>
+        </div>
+        <div id="group-pair" hidden>
+          <div class="field">
+            <label for="field-donor">捐贈者血型</label>
+            <p class="help" id="help-donor">提供血液或血漿的一方。</p>
+            <select id="field-donor" aria-describedby="help-donor error-donor">
+              <option value="">請選擇</option>
+              <option value="O-">O-</option>
+              <option value="O+">O+</option>
+              <option value="A-">A-</option>
+              <option value="A+">A+</option>
+              <option value="B-">B-</option>
+              <option value="B+">B+</option>
+              <option value="AB-">AB-</option>
+              <option value="AB+">AB+</option>
+            </select>
+            <p class="field-error" id="error-donor" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="field-recipient">受血者血型</label>
+            <p class="help" id="help-recipient">接受輸血的一方。</p>
+            <select id="field-recipient" aria-describedby="help-recipient error-recipient">
+              <option value="">請選擇</option>
+              <option value="O-">O-</option>
+              <option value="O+">O+</option>
+              <option value="A-">A-</option>
+              <option value="A+">A+</option>
+              <option value="B-">B-</option>
+              <option value="B+">B+</option>
+              <option value="AB-">AB-</option>
+              <option value="AB+">AB+</option>
+            </select>
+            <p class="field-error" id="error-recipient" aria-live="polite"></p>
+          </div>
+        </div>
+        <p class="status" id="status-line" role="status" aria-live="polite"></p>
+        <p class="example-note" id="example-note" hidden>已載入範例（合成案例），請按「查詢相容性」執行。</p>
+        <div class="actions">
+          <button type="submit" class="button-primary" id="action-run">查詢相容性</button>
+          <button type="button" class="button-secondary" id="action-example">載入範例</button>
+          <button type="button" class="button-secondary" id="action-reset">重設</button>
+          <button type="button" class="button-secondary" id="action-cancel" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">相容結果</h2>
+      <div id="result-content" hidden>
+        <div class="badges" id="result-badges"></div>
+        <div id="single-results">
+          <h3>紅血球可捐給</h3>
+          <p class="code-list" id="list-rbc-give"></p>
+          <h3>紅血球可接受自</h3>
+          <p class="code-list" id="list-rbc-receive"></p>
+          <h3>血漿可捐給</h3>
+          <p class="code-list" id="list-plasma-give"></p>
+          <h3>血漿可接受自</h3>
+          <p class="code-list" id="list-plasma-receive"></p>
+          <p class="plasma-note">血漿相容不看 Rh 因子，名單以 ABO 血型判定，同 ABO 的 Rh 陰性與陽性一併列出。</p>
+        </div>
+        <div id="pair-results">
+          <dl class="summary-list">
+            <div class="summary-row">
+              <dt>紅血球</dt>
+              <dd id="verdict-rbc"></dd>
+            </div>
+            <div class="summary-row">
+              <dt>血漿</dt>
+              <dd id="verdict-plasma"></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="action-download" hidden>下載報告</button>
+      </div>
+      <p class="status" id="download-status" role="status" aria-live="polite" hidden></p>
+      <p class="disclaimer">本工具僅供教育參考，依標準血型相容表整理；實際輸血以血庫交叉配血與醫療專業判斷為準。</p>
+    </section>
+  </div>
+  <details class="details">
+    <summary>判定方式</summary>
+    <p>紅血球相容依抗原規則判定：捐贈者紅血球的抗原集合（O 為空集合、A 為 {A}、B 為 {B}、AB 為 {A,B}，Rh 陽性再加 D）必須是受血者抗原集合的子集。可接受自名單由同一份 8×8 矩陣轉置推導，不另立第二份表。血漿方向相反：受血者的 ABO 抗原集合必須是捐贈者 ABO 抗原集合的子集，且不看 Rh；名單展開為八種血型，同 ABO 的 Rh 陰性與陽性一併列出。</p>
+  </details>
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼 O 型 Rh 陰性是紅血球萬用捐贈者？</dt>
+      <dd>O 型紅血球沒有 A、B 抗原，Rh 陰性也沒有 D 抗原，不會被任何受血者的抗體攻擊，所以能捐給全部八種血型。</dd>
+      <dt>為什麼血漿的萬用捐贈者正好相反，是 AB 型？</dt>
+      <dd>血漿相容看捐贈者血漿裡的抗體：AB 型血漿沒有抗 A、抗 B 抗體，能捐給所有 ABO 血型；O 型血漿兩種抗體都有，只能捐給 O 型。血漿相容不看 Rh 因子。</dd>
+    </dl>
+  </section>
+  <p class="privacy-note">全部查詢都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
