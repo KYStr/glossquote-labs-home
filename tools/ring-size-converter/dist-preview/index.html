@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>戒圍換算｜Gloss Tools</title>
+<meta name="description" content="輸入任一戒圍系統（內圍、內徑、美圍、歐圍、日圍、英圍），立即換算全部系統與最接近的標準尺寸。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>戒圍換算</h1>
+  <p class="lede">輸入任一戒圍系統（內圍、內徑、美圍、歐圍、日圍、英圍），立即換算全部系統與最接近的標準尺寸。手邊只有一枚在台灣買的戒指、想在日本品牌官網下單時，先在這裡核對日圍與內圍 mm，再決定要不要去店面實測。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">來源系統與數值</h2>
+      <form id="ring-form" novalidate>
+        <div class="field">
+          <label for="field-source">來源系統</label>
+          <p class="help" id="help-source">手邊已知的戒圍標示屬於哪個系統。</p>
+          <select id="field-source" name="source" aria-describedby="help-source">
+            <option value="circumference" selected>內圍（mm）</option>
+            <option value="diameter">內徑（mm）</option>
+            <option value="us">美圍（US）</option>
+            <option value="eu">歐圍（EU）</option>
+            <option value="jp">日圍（JP）</option>
+            <option value="uk">英圍（UK）</option>
+          </select>
+          <p class="field-error" id="error-source" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-value">數值</label>
+          <p class="help" id="help-value">內圍長度，40.0–70.0 mm，最多兩位小數。</p>
+          <input id="field-value" name="value" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-value">
+          <select id="field-value-uk" name="valueUk" aria-describedby="help-value" hidden>
+            <option value="" selected>請選擇</option>
+            <option value="F½">F½</option>
+            <option value="G½">G½</option>
+            <option value="H½">H½</option>
+            <option value="I½">I½</option>
+            <option value="J½">J½</option>
+            <option value="K½">K½</option>
+            <option value="L½">L½</option>
+            <option value="M½">M½</option>
+            <option value="N½">N½</option>
+            <option value="O½">O½</option>
+            <option value="P½">P½</option>
+            <option value="Q½">Q½</option>
+            <option value="R½">R½</option>
+            <option value="S½">S½</option>
+            <option value="T½">T½</option>
+            <option value="U½">U½</option>
+            <option value="V½">V½</option>
+            <option value="W½">W½</option>
+            <option value="X½">X½</option>
+            <option value="Y½">Y½</option>
+            <option value="Z½">Z½</option>
+          </select>
+          <p class="field-error" id="error-value" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。請選擇來源系統、輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="換算結果" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數值</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note" id="tolerance-note"></p>
+      <p class="result-note">各品牌尺寸可能略有差異，購買前請先實測。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>換算方式與固定標準尺寸表</summary>
+    <p>全部換算以內圍（mm）為正規錨點：任一系統的輸入先換成內圍，所有輸出再由內圍推導，不回讀原始輸入。歐圍即 ISO 8653 的內圍整數標籤；日圍依 JIS S 4700 直徑定義反推（1 號內徑 13.0 mm、每號 +1/3 mm，即日圍 = 內徑 × 3 − 38 四捨五入）；美圍與英圍只查下方固定 21 列標準表（美圍 3.0–13.0 每 0.5 一列），不插值。</p>
+    <p>最接近的標準尺寸是表中與內圍差距最小的一列；恰在兩列正中點時取較大的一列。差距 0.30 mm 以內視為吻合，超過時顯示「介於兩尺寸之間」並列出相鄰的另一列。不支援四分之一美圍尺寸（如 6.25）、內圍 40.0–70.0 mm 正規窗以外的尺寸，以及港圍／中國圍等其他系統。下載的報告檔名固定為 ring-size-report.json。</p>
+    <div class="table-scroll" role="region" aria-label="固定標準尺寸表" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">內圍 mm</th><th scope="col">內徑 mm</th><th scope="col">美圍 US</th><th scope="col">歐圍 EU</th><th scope="col">日圍 JP</th><th scope="col">英圍 UK</th></tr>
+        </thead>
+        <tbody id="size-table-rows"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>日圍怎麼算？</dt>
+      <dd>依日本 JIS S 4700 的直徑定義：1 號內徑 13.0 mm，每升一號內徑增加 1/3 mm；本工具由內圍換算內徑後四捨五入得出，各品牌可能差一號。</dd>
+      <dt>顯示「介於兩尺寸之間」怎麼辦？</dt>
+      <dd>內圍與最接近的標準尺寸差距超過 0.3 mm 時，會同時列出相鄰的另一尺寸；配戴上通常建議選較大的一邊，並以實測為準。</dd>
+    </dl>
+    <p>各品牌尺寸可能略有差異，購買前請先實測。</p>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
