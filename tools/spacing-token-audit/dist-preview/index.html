@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>設計間距 Token 對照｜Gloss Tools</title>
+<meta name="description" content="設計或前端同事拿到版面標註值，想知道每筆量測最接近哪個設計間距 token，並交付超出可接受偏差的列。">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a href="../../">Gloss Tools 首頁</a>
+  <a href="en/" lang="en">English</a>
+</header>
+<main>
+  <h1>設計間距 Token 對照</h1>
+  <p class="lede">設計或前端同事拿到版面標註值，想知道每筆量測最接近哪個設計間距 token，並交付超出可接受偏差的列。所有資料只留在這個頁面，不會上傳或儲存。</p>
+  <p class="draft-note">切換語言或離開頁面會遺失草稿。</p>
+
+  <form id="audit-form" novalidate>
+    <div class="inputs">
+      <div class="field">
+        <label for="tokens">設計 Token 與 px</label>
+        <textarea id="tokens" name="tokens" rows="8" aria-describedby="tokens-hint" spellcheck="false"></textarea>
+        <p class="hint" id="tokens-hint">每列「名稱 + Tab + px」，1–64 列。例如：large⇥12</p>
+      </div>
+      <div class="field">
+        <label for="measurements">量測名稱與 px</label>
+        <textarea id="measurements" name="measurements" rows="8" aria-describedby="measurements-hint" spellcheck="false"></textarea>
+        <p class="hint" id="measurements-hint">每列「名稱 + Tab + px」，1–100 列。例如：gap⇥10</p>
+      </div>
+      <div class="field tolerance">
+        <label for="tolerance">容許偏差（px）</label>
+        <input id="tolerance" name="tolerance" type="text" inputmode="decimal" value="1" aria-describedby="tolerance-hint" autocomplete="off">
+        <p class="hint" id="tolerance-hint">0–2048 的數字，最多三位小數，預設 1。</p>
+      </div>
+    </div>
+
+    <details>
+      <summary>輸入格式</summary>
+      <p>每列以一個 Tab 分隔名稱與 px。名稱以英文字母開頭，可含英文字母、數字、底線與連字號，最多 32 個字元；同一份表內不可重名。px 是 0–2048 的無符號十進數，最多三位小數，不可帶單位、空格、逗號或指數。每份表最多 8,192 個字元。</p>
+      <p>每筆量測會找出絕對差最小的 token；等距時取 px 較小者，數值仍相同時取表內較前列。偏差為量測減去 token：為 0 是「相符」，絕對值在容許偏差內是「容許內」，否則是「超出」。</p>
+      <p>報告檔名固定為 <code>spacing-token-audit-report.json</code>，內容是結果的 compact JSON，鍵按 UTF-16 排序，末尾一個換行。</p>
+    </details>
+
+    <div class="actions">
+      <button type="submit" id="run" class="primary">對照間距 Token</button>
+      <button type="button" id="example">載入範例</button>
+      <button type="button" id="cancel" disabled>取消</button>
+      <button type="button" id="reset">重設</button>
+    </div>
+  </form>
+
+  <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <section id="results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">匹配與超差列</h2>
+    <p id="summary"></p>
+    <div class="table-wrap" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">量測</th>
+            <th scope="col">px</th>
+            <th scope="col">Token</th>
+            <th scope="col">Token px</th>
+            <th scope="col">偏差</th>
+            <th scope="col">狀態</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+    <nav id="pager" class="pager" aria-label="結果分頁" hidden>
+      <button type="button" id="prev">上一頁</button>
+      <span id="page-label"></span>
+      <button type="button" id="next">下一頁</button>
+    </nav>
+    <div class="actions">
+      <button type="button" id="download" class="primary" hidden>下載報告</button>
+    </div>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>等距時會選哪個 Token？</dt>
+      <dd>取 px 較小的，數值仍相同時依輸入先後。</dd>
+      <dt>會把量測改成 Token 值嗎？</dt>
+      <dd>報告只顯示匹配及偏差，原值仍可查看。</dd>
+    </dl>
+  </section>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
