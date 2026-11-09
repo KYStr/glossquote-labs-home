@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>日出日落時間計算｜Gloss Tools</title>
+<meta name="description" content="輸入日期與地點的緯度、經度、UTC 偏移，以 NOAA 近似公式計算日出、太陽正午、日落與日長，並辨識極晝與極夜。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>日出日落時間計算</h1>
+  <p class="lede">輸入日期和地點的緯度、經度與固定 UTC 偏移，用 NOAA 近似公式算出當地日出、太陽正午、日落與日長。高緯度地區若當天是極晝或極夜，會直接說明狀態，不會給假時間。內建八個城市預設，夏令時間請自行把偏移加一小時。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="sun-form" novalidate>
+        <div class="field">
+          <label for="field-date">日期</label>
+          <p class="help" id="help-date">格式 YYYY-MM-DD，1900-01-01 至 2100-12-31。</p>
+          <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-date">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-preset">城市預設</label>
+          <p class="help" id="help-preset">選取後填入該市緯度、經度與標準時間偏移，三欄可再手動改，改後顯示為自訂。</p>
+          <select id="field-preset" name="preset" aria-describedby="help-preset">
+            <option value="">自訂</option>
+            <option value="taipei" selected>台北</option>
+            <option value="taichung">台中</option>
+            <option value="kaohsiung">高雄</option>
+            <option value="tokyo">東京</option>
+            <option value="sydney">雪梨</option>
+            <option value="london">倫敦</option>
+            <option value="newyork">紐約</option>
+            <option value="reykjavik">雷克雅維克</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-latitude">緯度</label>
+          <p class="help" id="help-latitude">−89.9 至 89.9，北緯為正，最多 4 位小數。</p>
+          <input id="field-latitude" name="latitude" type="text" inputmode="decimal" autocomplete="off" value="25.0330" aria-describedby="help-latitude">
+          <p class="field-error" id="error-latitude" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-longitude">經度（東經為正）</label>
+          <p class="help" id="help-longitude">−180 至 180，東經為正，最多 4 位小數。</p>
+          <input id="field-longitude" name="longitude" type="text" inputmode="decimal" autocomplete="off" value="121.5654" aria-describedby="help-longitude">
+          <p class="field-error" id="error-longitude" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-utcOffset">UTC 偏移</label>
+          <p class="help" id="help-utcOffset">格式 ±HH:MM，分鐘須為 00、15、30 或 45，範圍 −12:00 至 +14:00。夏令時間請自行加 1 小時。</p>
+          <input id="field-utcOffset" name="utcOffset" type="text" autocomplete="off" value="+08:00" aria-describedby="help-utcOffset">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入日期與座標，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算日出日落</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">日出、太陽正午、日落與日長</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p id="polar-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具採 NOAA 近似公式，結果可能與實際觀測或官方曆象相差數分鐘。無時區資料庫、不處理日光節約時間；偏移請依當地當日實際時制自行確認。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與公式出處</summary>
+    <p>算法固定為 NOAA Global Monitoring Laboratory 公布的 Solar Calculator 近似式：由日期算當年日序與分數年 γ（固定在當地正午取值），再算均時差與太陽赤緯，最後以固定天頂角 90.833°（已含大氣折射與太陽視半徑）解時角，得到日出、太陽正午與日落時刻；日長由未捨入的日出日落相減後一次捨入。</p>
+    <p>緯度限於 ±89.9 而非 ±90，是因為公式在極點上退化（cos φ 為 0、tan φ 發散）；極晝與極夜改由時角 cos 值的定義域判定，與緯度邊界無關。結果只用固定偏移換算當地時間，沒有時區資料庫，也不判斷日光節約時間。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼和氣象局公布的時間差一兩分鐘？</dt>
+      <dd>本工具是 NOAA 近似公式，γ 只以當地正午取值，且只用固定偏移，不含當地時區規則與更精確的曆算，差數分鐘屬預期。</dd>
+      <dt>為什麼沒有日光節約時間選項？</dt>
+      <dd>偏移是固定輸入；夏令時間請自行把偏移加一小時，例如雪梨夏季改填 +11:00。</dd>
+      <dt>什麼是太陽正午？</dt>
+      <dd>太陽通過當地子午線的時刻，在固定偏移下通常不是 12:00。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
