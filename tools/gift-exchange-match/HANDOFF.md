@@ -7,7 +7,10 @@
 - Branch: `muse/gift-exchange-match-production-20261109`.
 - Registry production task: `labs-prod-gift-exchange-match-20261109`.
 - Registry claim: `muse-main-claim-gift-exchange-match-20261109T082402Z-w5` (claimed by the parent actor; workMayStart verified by the parent).
-- Candidate commit and PR: recorded in `VERIFICATION.md` after the parent verifies the PR head.
+- Candidate commit and PR: the PR head (verified by the parent, then
+  submitted to the registry). Implementation commit:
+  `d241a8b8d8dc6baab83fa1f510ec493e32672d6f`; draft PR:
+  https://github.com/KYStr/glossquote-labs-home/pull/127.
 
 ## Allowed scope
 

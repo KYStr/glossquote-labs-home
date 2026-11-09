@@ -7,8 +7,10 @@
   `muse/gift-exchange-match-production-20261109`, base
   `23c1d5f70db16e8bd0086259156243c5a57f8785`
   (`codex/initial-publication`).
-- Candidate commit: (filled in after the parent verifies the PR head;
-  see the PR below).
+- Candidate commit: the PR head below (the parent verifies it and
+  submits it to the registry). Implementation commit:
+  `d241a8b8d8dc6baab83fa1f510ec493e32672d6f`; draft PR:
+  https://github.com/KYStr/glossquote-labs-home/pull/127.
 
 ## Commands and results
 
