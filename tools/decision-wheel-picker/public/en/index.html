@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decision Wheel — Fair Random Picker | GlossQuote Labs</title>
+<meta name="description" content="Paste one option per line, spin the wheel, and get one pick drawn fairly with cryptographic randomness and rejection sampling; elimination mode narrows the list down to one.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p class="home-link"><a href="../../../en/">← GlossQuote Labs home</a></p>
+  <h1>Decision Wheel</h1>
+  <p class="intro">What is for lunch, who presents first, whose turn is it on duty — hand the options to the wheel and draw one fairly, with no arguing about who picked it.</p>
+</header>
+<main>
+  <div id="crypto-error" class="error-banner" role="alert" hidden>
+    Your browser does not support crypto.getRandomValues, so this tool cannot make a fair draw and is disabled. Please use a current browser.
+  </div>
+
+  <section aria-labelledby="editor-heading">
+    <h2 id="editor-heading">Options</h2>
+    <label for="options">One option per line (2–50 options, at most 60 characters per line)</label>
+    <textarea id="options" rows="8">Sushi
+Ramen
+Hot pot
+Pasta</textarea>
+    <p id="count" class="count"></p>
+    <ul id="errors" class="errors"></ul>
+    <p id="lock-note" class="lock-note" hidden></p>
+    <div class="controls">
+      <label class="toggle" for="elimination">
+        <input type="checkbox" id="elimination">
+        Elimination mode (each pick leaves the wheel, until one remains)
+      </label>
+    </div>
+    <div class="controls">
+      <button type="button" id="spin">Spin</button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+    <p id="spin-reason" class="spin-reason"></p>
+  </section>
+
+  <section aria-labelledby="wheel-heading">
+    <h2 id="wheel-heading">Wheel</h2>
+    <div class="wheel-wrap">
+      <div id="pointer" aria-hidden="true"></div>
+      <svg id="wheel" viewBox="0 0 320 320" role="img" aria-label="Option wheel"></svg>
+    </div>
+    <p id="result" class="result" aria-live="polite"></p>
+    <h3>Current options</h3>
+    <ul id="active-list" class="active-list"></ul>
+  </section>
+
+  <section aria-labelledby="history-heading">
+    <h2 id="history-heading">Pick history</h2>
+    <p id="history-empty">No picks yet.</p>
+    <ol id="history" class="history"></ol>
+  </section>
+
+  <section aria-labelledby="fairness-heading">
+    <h2 id="fairness-heading">How the pick is made</h2>
+    <ul>
+      <li>Every option gets an equally sized slice of the wheel and exactly the same probability of being picked. There are no weights.</li>
+      <li>The draw uses the browser's crypto.getRandomValues to produce 32-bit random numbers, with rejection sampling discarding the values that would cause bias, so every option's probability is exactly equal.</li>
+      <li>The result is drawn before the wheel animation starts; the animation only shows you the outcome and cannot change which slice was picked.</li>
+      <li>An option entered twice keeps two slices, so it has exactly twice the chance of an option entered once — this rule is stated openly and duplicates are never merged silently.</li>
+      <li>In elimination mode, the last entry left is called the “final remaining” entry; it was not drawn and is never listed as a pick.</li>
+    </ul>
+    <p class="note">This tool is for everyday low-stakes choices only. It is not for gambling, admissions, employment, or any decision involving money or rights. Your options stay on this page: they are never stored, never uploaded, and never appear in the URL.</p>
+  </section>
+</main>
+<footer>
+  <p><a href="../../../en/">← GlossQuote Labs home</a> · <a href="../index.html">繁體中文</a></p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

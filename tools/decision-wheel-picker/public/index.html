@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>決定轉盤 — 公平隨機抽選 | GlossQuote Labs</title>
+<meta name="description" content="把選項一行一個貼上，按下轉盤，用密碼學亂數與拒絕取樣公平抽出一個；可開淘汰模式逐一抽到剩下最後一個。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <p class="home-link"><a href="../../">← GlossQuote Labs 首頁</a></p>
+  <h1>決定轉盤</h1>
+  <p class="intro">午餐吃什麼、誰先上台、輪到誰值日——把選項交給轉盤，公平抽出一個，不用再猜拳猜半天。</p>
+</header>
+<main>
+  <div id="crypto-error" class="error-banner" role="alert" hidden>
+    你的瀏覽器不支援 crypto.getRandomValues，本工具無法進行公平抽選，因此停用。請改用較新的瀏覽器。
+  </div>
+
+  <section aria-labelledby="editor-heading">
+    <h2 id="editor-heading">選項</h2>
+    <label for="options">一行一個選項（2–50 個，每行最多 60 個字）</label>
+    <textarea id="options" rows="8">壽司
+拉麵
+火鍋
+義大利麵</textarea>
+    <p id="count" class="count"></p>
+    <ul id="errors" class="errors"></ul>
+    <p id="lock-note" class="lock-note" hidden></p>
+    <div class="controls">
+      <label class="toggle" for="elimination">
+        <input type="checkbox" id="elimination">
+        淘汰模式（抽中的選項離開轉盤，抽到剩下最後一個）
+      </label>
+    </div>
+    <div class="controls">
+      <button type="button" id="spin">轉一下</button>
+      <button type="button" id="reset">重置</button>
+    </div>
+    <p id="spin-reason" class="spin-reason"></p>
+  </section>
+
+  <section aria-labelledby="wheel-heading">
+    <h2 id="wheel-heading">轉盤</h2>
+    <div class="wheel-wrap">
+      <div id="pointer" aria-hidden="true"></div>
+      <svg id="wheel" viewBox="0 0 320 320" role="img" aria-label="選項轉盤"></svg>
+    </div>
+    <p id="result" class="result" aria-live="polite"></p>
+    <h3>目前選項</h3>
+    <ul id="active-list" class="active-list"></ul>
+  </section>
+
+  <section aria-labelledby="history-heading">
+    <h2 id="history-heading">抽選紀錄</h2>
+    <p id="history-empty">還沒有抽過。</p>
+    <ol id="history" class="history"></ol>
+  </section>
+
+  <section aria-labelledby="fairness-heading">
+    <h2 id="fairness-heading">公平方式</h2>
+    <ul>
+      <li>每個選項在轉盤上佔一樣大的扇形，被抽中的機率完全相同，沒有任何加權。</li>
+      <li>抽選用瀏覽器的 crypto.getRandomValues 產生 32 位元亂數，並以「拒絕取樣」丟棄會造成偏差的數值，保證每個選項的機率精確相等。</li>
+      <li>結果在轉盤開始動畫之前就已經抽定；動畫只是把結果轉給你看，不會影響抽到哪一個。</li>
+      <li>重複輸入的選項會保留成兩個扇形，所以同一個選項出現兩次，被抽中的機會就是兩倍——這是刻意公開的規則，不會偷偷合併。</li>
+      <li>淘汰模式下，最後剩下的一個選項稱為「最後剩下」，它沒有被抽中，也不會被列為一次抽選。</li>
+    </ul>
+    <p class="note">本工具只適合日常小事的決定，不適合賭博、錄取、工作或其他涉及金錢與權益的重要決定。選項只留在這個頁面上，不會儲存、不會上傳，也不會出現在網址裡。</p>
+  </section>
+</main>
+<footer>
+  <p><a href="../../">← GlossQuote Labs 首頁</a> · <a href="./en/index.html">English</a></p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
