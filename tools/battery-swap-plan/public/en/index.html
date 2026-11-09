@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Battery Swap Plan | Gloss Tools</title>
+<meta name="description" content="Plan spare battery swaps for event equipment using measured runtime and active periods.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p class="topbar"><a href="../../../en/">← Back to the GlossQuote Labs home page</a> · <a href="../index.html" hreflang="zh-Hant">繁體中文</a> <span class="reset-note">Leaving this page clears your input</span></p>
+  <h1>Event Battery Swap Plan</h1>
+  <p>Stock spare packs for event equipment that shares one battery type: enter how many packs are charged, each device's measured runtime and its planned active periods, and get the day's load and swap list in time order, with the first shortage marked. The calculation happens only on this page; nothing is uploaded or stored.</p>
+</header>
+<main>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Charged packs and devices</h2>
+      <form id="plan-form" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="charged">Charged packs on hand</label>
+          <input id="charged" name="charged" type="text" inputmode="numeric" maxlength="12" aria-describedby="charged-hint charged-error">
+          <p class="hint" id="charged-hint">For example, enter 3 if you have 3 charged packs. 0 means none on hand; the demand list is still planned.</p>
+          <p class="error" id="charged-error"></p>
+        </div>
+
+        <fieldset>
+          <legend>Devices and active periods (1–8 devices)</legend>
+          <ol class="devices" id="devices"></ol>
+          <p><button type="button" id="add-device">＋ Add a device</button></p>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submit">Plan battery swaps</button>
+          <button type="button" id="cancel" hidden>Cancel</button>
+          <button type="button" id="load-example">Load example</button>
+          <button type="button" id="clear-draft">Clear draft</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Loads, swaps and shortage</h2>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="result" hidden>
+        <div class="summary">
+          <dl>
+            <dt>Packs needed for the day</dt><dd id="sum-required"></dd>
+            <dt>Above stock</dt><dd id="sum-extra"></dd>
+            <dt>Unused stock</dt><dd id="sum-unused"></dd>
+            <dt>First shortage</dt><dd id="sum-first-missing"></dd>
+          </dl>
+        </div>
+        <p id="shortage-note" class="shortfall" hidden></p>
+        <p id="enough-note" class="exact" hidden></p>
+        <table id="result-table">
+          <thead>
+            <tr><th scope="col">Time</th><th scope="col">Device</th><th scope="col">Type</th><th scope="col">Pack</th></tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="result-empty">No result yet. Enter the charged packs and the devices, then press “Plan battery swaps”.</p>
+    </section>
+  </div>
+</main>
+<footer>
+  <p>Swap rule: each device loads a pack at its first working minute with full measured runtime; idle gaps do not consume minutes; when the runtime runs out and more work follows, a swap is placed at the next minute that needs power. Events are sorted by time, ties by device input order; event i takes pack i, and events beyond stock are marked missing.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
