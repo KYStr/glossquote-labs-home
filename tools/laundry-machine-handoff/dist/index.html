@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>洗烘兩機接續表｜Gloss Tools</title>
+<meta name="description" content="依共用洗烘機的空檔、批次與最長等待時間規劃同日接續。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>洗烘兩機接續表</h1>
+  <p class="intro">輸入同一天的作業窗口、兩台機器的保留時段與各批洗烘分鐘數，按下「排出洗烘接續」，就得到每批的洗衣、等待與烘衣時刻。</p>
+
+  <form id="plan-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>作業窗口</legend>
+          <p class="help">同一天內可操作的開始與截止時間。開始 00:00–23:59，截止 00:00–24:00。</p>
+          <div class="row">
+            <div class="field">
+              <label for="window-start">開始時間</label>
+              <input type="text" id="window-start" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="08:00">
+            </div>
+            <div class="field">
+              <label for="window-end">截止時間</label>
+              <input type="text" id="window-end" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="12:00">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>洗衣機保留時段</legend>
+          <p class="help">每台最多 16 段。半開區間 [開始, 截止)，相接不重疊；可跨出作業窗口，空白列會被忽略。</p>
+          <div id="washer-body" class="rows"></div>
+          <button type="button" id="add-washer" class="secondary">新增一段保留時段</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>烘衣機保留時段</legend>
+          <p class="help">每台最多 16 段。半開區間 [開始, 截止)，相接不重疊；可跨出作業窗口，空白列會被忽略。</p>
+          <div id="dryer-body" class="rows"></div>
+          <button type="button" id="add-dryer" class="secondary">新增一段保留時段</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>洗烘批次</legend>
+          <p class="help">1–8 批，依輸入順序排入。每批一個短名（1–24 字，首字為字母或數字），批名不可重複。</p>
+          <div id="loads-body" class="rows"></div>
+          <button type="button" id="add-load" class="secondary">新增一批</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="plan" class="primary">排出洗烘接續</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（洗機被占到 08:20、烘機被占到 09:10，首批改從 08:30 洗）；載入後仍需按「排出洗烘接續」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite">尚未輸入。請填寫作業窗口與批次。</p>
+        <p id="missing" class="missing-note"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="接續結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

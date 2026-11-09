@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laundry Machine Handoff | Gloss Tools</title>
+<meta name="description" content="Find washer and dryer slots in load order while keeping each transfer within its wait limit.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/en/index.html">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching language leaves this page; the draft you are editing is not kept.</span></p>
+</header>
+<main>
+  <h1>Laundry Machine Handoff</h1>
+  <p class="intro">Enter the day's working window, both machines' busy intervals and each load's wash and dry minutes, then press “Plan washer-to-dryer slots” to get every load's wash, wait and dry times.</p>
+
+  <form id="plan-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Working window</legend>
+          <p class="help">Start and end of the same day. Start 00:00–23:59, end 00:00–24:00.</p>
+          <div class="row">
+            <div class="field">
+              <label for="window-start">Start time</label>
+              <input type="text" id="window-start" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="08:00">
+            </div>
+            <div class="field">
+              <label for="window-end">End time</label>
+              <input type="text" id="window-end" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="12:00">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Washer busy intervals</legend>
+          <p class="help">Up to 16 intervals per machine. Half-open [start, end); touching intervals do not overlap. Intervals may extend outside the window; blank rows are ignored.</p>
+          <div id="washer-body" class="rows"></div>
+          <button type="button" id="add-washer" class="secondary">Add a busy interval</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Dryer busy intervals</legend>
+          <p class="help">Up to 16 intervals per machine. Half-open [start, end); touching intervals do not overlap. Intervals may extend outside the window; blank rows are ignored.</p>
+          <div id="dryer-body" class="rows"></div>
+          <button type="button" id="add-dryer" class="secondary">Add a busy interval</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Laundry loads</legend>
+          <p class="help">1–8 loads, scheduled in input order. One short name per load (1–24 characters, first character a letter or digit); names must be unique.</p>
+          <div id="loads-body" class="rows"></div>
+          <button type="button" id="add-load" class="secondary">Add a load</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="plan" class="primary">Plan washer-to-dryer slots</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (washer busy until 08:20, dryer busy until 09:10, first load starts washing at 08:30); press “Plan washer-to-dryer slots” to compute it.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite">Nothing entered yet. Fill in the working window and loads.</p>
+        <p id="missing" class="missing-note"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Planned slots"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
