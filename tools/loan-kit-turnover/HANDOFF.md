@@ -9,8 +9,8 @@
 - **Registry task:** `labs-prod-loan-kit-turnover-20261109`
 - **Claim:** `muse-main-claim-loan-kit-turnover-20261109T083325Z-w6`
   (claimed by the parent actor; workMayStart verified by the parent)
-- **Candidate:** (filled below after the PR is opened)
-- **Draft PR:** (filled below after the PR is opened)
+- **Candidate:** `45ec9666d583f82602f9dbc17894f7cb1aa0e135`
+- **Draft PR:** https://github.com/KYStr/glossquote-labs-home/pull/128
 - **Allowed scope:** `tools/loan-kit-turnover/` only. Nothing outside it
   was touched; no registry commands were run by this builder.
 

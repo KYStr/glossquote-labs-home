@@ -3,7 +3,10 @@
 - **Spec:** `spec-loan-kit-turnover-20261109` v1
   (`docs/specs/loan-kit-turnover/`, base
   `fb55ef262642744147d01db9b2fcbc82cc8b76e1`)
-- **Candidate:** (filled below after the PR is opened)
+- **Candidate:** `45ec9666d583f82602f9dbc17894f7cb1aa0e135`
+  (tool commit; the follow-up commit records this SHA and the PR URL
+  in HANDOFF.md / VERIFICATION.md)
+- **Draft PR:** https://github.com/KYStr/glossquote-labs-home/pull/128
 - **Environment:** Node v24.22.1, offline, Linux (this VM)
 
 ## Commands run
