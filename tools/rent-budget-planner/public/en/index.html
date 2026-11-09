@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rent Budget Planner | Gloss Tools</title>
+<meta name="description" content="Work out the most rent you can afford from your monthly income and rent ratio, plus the full move-in cash: first month, deposit and agency fee.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site navigation">
+    <a href="../../en/">Gloss Tools home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+  <p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+</header>
+<main class="page" id="app-main">
+  <h1>Rent Budget Planner</h1>
+  <p class="intro">Start from your monthly take-home income and a rent ratio you choose to find the most rent you can afford. Then, for one candidate home, work out the full move-in cash (first month, deposit and agency fee) and what is left each month after rent. Everything runs offline on this page; nothing is uploaded or stored.</p>
+
+  <section class="workspace" id="workspace" aria-busy="false">
+    <form id="budget-form" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="income">Monthly take-home income (NT$)</label>
+          <input id="income" type="text" inputmode="numeric" autocomplete="off" value="45000" aria-describedby="err-income">
+          <p class="error" id="err-income" hidden></p>
+        </div>
+        <div class="field">
+          <label for="ratio-preset">Rent ratio</label>
+          <select id="ratio-preset" aria-describedby="err-ratio-preset">
+            <option value="P25">25%</option>
+            <option value="P30" selected>30%</option>
+            <option value="P33">33⅓ (one third)</option>
+            <option value="CUSTOM">Custom</option>
+          </select>
+          <p class="error" id="err-ratio-preset" hidden></p>
+        </div>
+        <div class="field">
+          <label for="custom-ratio">Custom ratio (%, whole number 1–100)</label>
+          <input id="custom-ratio" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="err-custom-ratio">
+          <p class="error" id="err-custom-ratio" hidden></p>
+        </div>
+        <div class="field">
+          <label for="candidate-rent">Candidate rent (NT$ / month)</label>
+          <input id="candidate-rent" type="text" inputmode="numeric" autocomplete="off" value="12000" aria-describedby="err-candidate-rent">
+          <p class="error" id="err-candidate-rent" hidden></p>
+        </div>
+        <div class="field">
+          <label for="deposit-months">Deposit months</label>
+          <select id="deposit-months" aria-describedby="err-deposit-months">
+            <option value="0">0 months</option>
+            <option value="1">1 month</option>
+            <option value="2" selected>2 months</option>
+            <option value="3">3 months</option>
+          </select>
+          <p class="error" id="err-deposit-months" hidden></p>
+        </div>
+        <div class="field">
+          <label for="agency-fee">Agency fee (months)</label>
+          <select id="agency-fee" aria-describedby="err-agency-fee">
+            <option value="0">0 months</option>
+            <option value="0.5" selected>0.5 month</option>
+            <option value="1">1 month</option>
+          </select>
+          <p class="error" id="err-agency-fee" hidden></p>
+        </div>
+      </div>
+
+      <details class="notes">
+        <summary>Input format and limits</summary>
+        <ul>
+          <li>Amounts are whole New Taiwan dollars only: no separators, signs or decimals. Income up to 999,999,999; candidate rent up to 99,999,999.</li>
+          <li>The custom ratio is only used when the ratio is set to Custom: a whole number from 1 to 100. Otherwise the field is ignored.</li>
+          <li>Deposit and agency-fee months are planning parameters. The defaults (2 months deposit, half a month agency fee) are common Taiwan market rates, not signing advice.</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="submit" id="calculate" class="primary">Calculate rent budget</button>
+        <button type="button" id="load-example">Load example</button>
+        <button type="button" id="cancel" hidden>Cancel</button>
+        <button type="button" id="reset">Reset</button>
+      </div>
+      <p class="status" id="status-message" role="status" aria-live="polite"></p>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <section class="results" id="results" hidden aria-label="Results">
+      <h2>Affordable cap and move-in cash</h2>
+      <dl class="result-list">
+        <div><dt>Affordable rent cap</dt><dd id="result-max-rent">—</dd></div>
+        <div><dt>Candidate share of income</dt><dd id="result-share">—</dd></div>
+        <div><dt>Within budget?</dt><dd id="result-verdict">—</dd></div>
+        <div><dt>First month rent</dt><dd id="result-first-month">—</dd></div>
+        <div><dt>Deposit</dt><dd id="result-deposit">—</dd></div>
+        <div><dt>Agency fee</dt><dd id="result-agency-fee">—</dd></div>
+        <div><dt>Total move-in cash</dt><dd id="result-total">—</dd></div>
+        <div><dt>Monthly remainder</dt><dd id="result-remainder">—</dd></div>
+      </dl>
+      <p class="warning" id="result-warning" hidden></p>
+      <button type="button" id="download-report" hidden>Download report</button>
+    </section>
+  </section>
+
+  <section class="faq" aria-label="Frequently asked questions">
+    <h2>Frequently asked questions</h2>
+    <h3>How does the 33⅓ preset work?</h3>
+    <p>It takes exactly one third of income, rounded down to whole dollars so it never exceeds the ratio.</p>
+    <h3>Is the half-month agency fee fixed?</h3>
+    <p>No — you can set 0 or 1 month; half a month is a common Taiwan market rate and this is an estimate only.</p>
+  </section>
+</main>
+</body>
+</html>
