@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sleep Cycle Calculator | GlossQuote Labs</title>
+<meta name="description" content="Work out bedtimes and wake times in 90-minute sleep cycles: enter a wake time to get four bedtimes, or a bedtime to get four wake times. Time to fall asleep is counted separately, and every suggestion is labelled previous evening, same morning or next morning.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <a href="../../">GlossQuote home</a>
+  <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Sleep Cycle Calculator</h1>
+  <p>One sleep cycle is counted as 90 minutes. Enter the time you need to wake up and get four bedtimes, or enter a bedtime and get four wake times. The time you need to fall asleep is added on its own — never quietly absorbed into the first cycle.</p>
+  <p>One sleep cycle averages about 90 minutes, but cycle length varies from person to person and from night to night; 90 minutes is only the conventional planning average. The suggestions here are planning estimates worked out from the time you enter — not medical advice — and cannot guarantee you will wake in any particular sleep stage. Most adults are commonly advised to get 7–9 hours of sleep, but individual needs vary.</p>
+
+  <fieldset>
+    <legend>Direction</legend>
+    <label><input type="radio" name="direction" id="dir-wake" value="wake" checked> I need to wake at…</label>
+    <label><input type="radio" name="direction" id="dir-bed" value="bed"> I'm going to bed at…</label>
+  </fieldset>
+
+  <div id="wake-panel">
+    <label for="wake-time">Wake-up time</label>
+    <input type="time" id="wake-time" value="07:00" step="60" required>
+  </div>
+
+  <div id="bed-panel" hidden>
+    <label for="bed-time">Bedtime</label>
+    <input type="time" id="bed-time" value="23:00" step="60" required>
+    <button type="button" id="sleep-now">Going to sleep now</button>
+  </div>
+
+  <div>
+    <label for="latency">Time to fall asleep (minutes)</label>
+    <input type="number" id="latency" value="15" min="0" max="60" step="1" inputmode="numeric" required>
+  </div>
+
+  <p id="error" role="alert" hidden></p>
+  <p id="stale-note" hidden></p>
+  <p id="status" aria-live="polite"></p>
+
+  <table>
+    <caption>Suggested times (whole sleep cycles)</caption>
+    <thead>
+      <tr>
+        <th scope="col">Suggested time</th>
+        <th scope="col">Day</th>
+        <th scope="col">Cycles</th>
+        <th scope="col">Sleep</th>
+        <th scope="col">Time in bed</th>
+        <th scope="col">Note</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

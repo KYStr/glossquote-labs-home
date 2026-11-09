@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>睡眠週期計算器｜GlossQuote Labs</title>
+<meta name="description" content="用 90 分鐘睡眠週期反推就寢或起床時間：輸入起床時間得到四個就寢時間，或輸入就寢時間得到四個起床時間，入睡所需時間分開計算，每個建議都標明是前一晚、同日清晨或隔天早上。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <a href="../../">GlossQuote 首頁</a>
+  <a href="./en/index.html" hreflang="en">English</a>
+</header>
+<main>
+  <h1>睡眠週期計算器</h1>
+  <p>一個睡眠週期以 90 分鐘計算。輸入你想起床的時間，這裡會反推四個就寢時間；或輸入就寢時間，得到四個起床時間。入睡需要的時間會另外加上，不會偷偷併進第一個週期。</p>
+  <p>一個睡眠週期平均約 90 分鐘，但每個人的週期長短不同、同一人每晚也不同；90 分鐘只是常用的規劃平均值。本工具的建議是依你輸入的時間做整數週期加減的規劃估算，不是醫療建議，也不能保證你會在某個睡眠階段醒來。多數成人一般建議睡 7–9 小時，但每個人需要的睡眠長短不同。</p>
+
+  <fieldset>
+    <legend>計算方向</legend>
+    <label><input type="radio" name="direction" id="dir-wake" value="wake" checked> 我要幾點起床</label>
+    <label><input type="radio" name="direction" id="dir-bed" value="bed"> 我幾點上床睡</label>
+  </fieldset>
+
+  <div id="wake-panel">
+    <label for="wake-time">想起床的時間</label>
+    <input type="time" id="wake-time" value="07:00" step="60" required>
+  </div>
+
+  <div id="bed-panel" hidden>
+    <label for="bed-time">就寢時間</label>
+    <input type="time" id="bed-time" value="23:00" step="60" required>
+    <button type="button" id="sleep-now">現在就要睡</button>
+  </div>
+
+  <div>
+    <label for="latency">入睡所需時間（分鐘）</label>
+    <input type="number" id="latency" value="15" min="0" max="60" step="1" inputmode="numeric" required>
+  </div>
+
+  <p id="error" role="alert" hidden></p>
+  <p id="stale-note" hidden></p>
+  <p id="status" aria-live="polite"></p>
+
+  <table>
+    <caption>建議時間（依完整週期計算）</caption>
+    <thead>
+      <tr>
+        <th scope="col">建議時間</th>
+        <th scope="col">日期標示</th>
+        <th scope="col">週期數</th>
+        <th scope="col">睡眠時間</th>
+        <th scope="col">在床時間</th>
+        <th scope="col">備註</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
