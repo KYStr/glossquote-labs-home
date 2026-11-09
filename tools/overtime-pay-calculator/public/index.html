@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>加班費計算機｜Gloss Tools</title>
+<meta name="description" content="輸入月薪與平日延時、休息日、國定假日出勤時數，依勞動基準法第24、39條現行費率逐段試算加班費。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>加班費計算機</h1>
+  <p class="lede">輸入月薪與單月彙總的平日延時、休息日、國定假日出勤時數，依勞動基準法第 24、39 條現行費率逐段試算加班費，與薪資單逐段核對。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">月薪與三種時數</h2>
+      <form id="overtime-form" novalidate>
+        <div class="field">
+          <label for="field-monthlySalary">月薪（新台幣）</label>
+          <p class="help" id="help-monthlySalary">整數，1 至 99,999,999 元；不含千分位逗號、小數或符號。月薪視為勞動基準法第 2 條「工資」全額。</p>
+          <input id="field-monthlySalary" name="monthlySalary" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-monthlySalary">
+          <p class="field-error" id="error-monthlySalary" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weekdayOtHours">平日延時時數</label>
+          <p class="help" id="help-weekdayOtHours">單月彙總 0 至 4 小時，以 0.5 小時為單位。前 2 小時加給 4/3 倍，其後 2 小時 5/3 倍。</p>
+          <input id="field-weekdayOtHours" name="weekdayOtHours" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="help-weekdayOtHours">
+          <p class="field-error" id="error-weekdayOtHours" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-restDayHours">休息日時數</label>
+          <p class="help" id="help-restDayHours">單月彙總 0 至 12 小時，以 0.5 小時為單位；依實際出勤時數核實計算，前 2 小時 4/3 倍、第 3 至 8 小時 5/3 倍、第 9 小時起 8/3 倍。</p>
+          <input id="field-restDayHours" name="restDayHours" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="help-restDayHours">
+          <p class="field-error" id="error-restDayHours" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-holidayHours">休假日時數</label>
+          <p class="help" id="help-holidayHours">單月彙總 0 至 12 小時，以 0.5 小時為單位；指國定假日出勤。出勤 8 小時內再加發一日工資，逾 8 小時部分比照平日延時費率。</p>
+          <input id="field-holidayHours" name="holidayHours" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="help-holidayHours">
+          <p class="field-error" id="error-holidayHours" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入月薪與時數，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算加班費</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">加班費明細</h2>
+      <p id="summary"></p>
+      <p id="result-meta"></p>
+      <div id="breakdown"></div>
+      <p class="cap-note" id="cap-note" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與法規說明</summary>
+    <p>平日每小時工資額＝月薪 ÷ 30 日 ÷ 8 小時；一日工資＝月薪 ÷ 30。平日延時依勞動基準法第 24 條第 1 項：前 2 小時每小時加給 4/3 倍，再延長 2 小時 5/3 倍。休息日出勤依第 24 條第 2 項，自民國 107 年 3 月 1 日起依實際出勤時數核實計算：前 2 小時 4/3 倍、第 3 至 8 小時 5/3 倍、第 9 至 12 小時 8/3 倍。國定假日出勤依第 37、39 條：出勤 8 小時以內一律再加發一日工資，逾 8 小時部分比照平日延時費率。</p>
+    <p>金額以精確分數計算，每類小計各自四捨五入至整數元，合計為三個小計之和。計入每月延長工時上限的時數＝平日延時＋休息日實際時數＋休假日逾 8 小時部分；超過 46 小時會附提醒（經工會或勞資會議同意單月得至 54 小時）。例假日出勤、加班補休換算與變形工時不在本工具範圍。</p>
+    <p>所有欄位只接受 ASCII 十進位字串：月薪為整數，時數為整數或一位小數且小數位限 .0／.5。下載的報告檔名固定為 overtime-pay-report.json，內容是結果的精簡 JSON，鍵按 UTF-16 碼元升序排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>休息日出勤 1 小時算幾小時？</dt>
+      <dd>自民國 107 年 3 月 1 日起已刪除擬制工時，休息日工資與工時都依實際出勤時數計算。</dd>
+      <dt>平日每小時工資額怎麼算？</dt>
+      <dd>月薪制為月薪 ÷ 30 日 ÷ 8 小時。</dd>
+      <dt>國定假日出勤未滿 8 小時怎麼算？</dt>
+      <dd>只要出勤，8 小時以內一律再加發一日工資。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">試算結果僅供參考，實際金額以勞雇約定及主管機關認定為準。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
