@@ -1,0 +1,1036 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-ping-area-converter-20261109",
+  "slug": "ping-area-converter",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "example-thirty-ping",
+      "kind": "core",
+      "purpose": "範例：30 坪換算其餘三單位",
+      "input": {
+        "amount": "30",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 30,
+          "m2": 99.17,
+          "ft2": 1067.5,
+          "tatami": 61.2
+        }
+      }
+    },
+    {
+      "id": "one-ping",
+      "kind": "core",
+      "purpose": "1 坪基準值：400/121 m²",
+      "input": {
+        "amount": "1",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 1,
+          "m2": 3.31,
+          "ft2": 35.58,
+          "tatami": 2
+        }
+      }
+    },
+    {
+      "id": "hundred-m2",
+      "kind": "core",
+      "purpose": "100 m² → 坪恰為 30.25（121/400 整數結果）",
+      "input": {
+        "amount": "100",
+        "unit": "m2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 30.25,
+          "m2": 100,
+          "ft2": 1076.39,
+          "tatami": 61.7
+        }
+      }
+    },
+    {
+      "id": "thousand-ft2",
+      "kind": "core",
+      "purpose": "1000 ft² → m² 為 92.90304 的整數倍",
+      "input": {
+        "amount": "1000",
+        "unit": "ft2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 28.1,
+          "m2": 92.9,
+          "ft2": 1000,
+          "tatami": 57.3
+        }
+      }
+    },
+    {
+      "id": "ten-tatami",
+      "kind": "core",
+      "purpose": "10 畳以慣例值 1.62 m² 換算",
+      "input": {
+        "amount": "10",
+        "unit": "tatami"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 4.9,
+          "m2": 16.2,
+          "ft2": 174.38,
+          "tatami": 10
+        }
+      }
+    },
+    {
+      "id": "half-ping",
+      "kind": "core",
+      "purpose": "0.5 坪小數輸入",
+      "input": {
+        "amount": "0.5",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 0.5,
+          "m2": 1.65,
+          "ft2": 17.79,
+          "tatami": 1
+        }
+      }
+    },
+    {
+      "id": "max-ft2",
+      "kind": "core",
+      "purpose": "上限邊界 1,000,000 ft²，大數輸出不溢位",
+      "input": {
+        "amount": "1000000",
+        "unit": "ft2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 28103.17,
+          "m2": 92903.04,
+          "ft2": 1000000,
+          "tatami": 57347.6
+        }
+      }
+    },
+    {
+      "id": "tie-tatami-half-up",
+      "kind": "core",
+      "purpose": "1.701 m² 的畳數恰為 1.05，half-up 進位為 1.1（非銀行家捨入）",
+      "input": {
+        "amount": "1.701",
+        "unit": "m2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 0.51,
+          "m2": 1.7,
+          "ft2": 18.31,
+          "tatami": 1.1
+        }
+      }
+    },
+    {
+      "id": "tie-ping-half-up",
+      "kind": "core",
+      "purpose": "2 m² 的坪數恰為 0.605，half-up 進位為 0.61",
+      "input": {
+        "amount": "2",
+        "unit": "m2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 0.61,
+          "m2": 2,
+          "ft2": 21.53,
+          "tatami": 1.2
+        }
+      }
+    },
+    {
+      "id": "min-amount-rounds-to-zero",
+      "kind": "core",
+      "purpose": "最小輸入 0.001 坪：坪與 m² 四捨五入後為 0，ft² 仍有 0.04",
+      "input": {
+        "amount": "0.001",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 0,
+          "m2": 0,
+          "ft2": 0.04,
+          "tatami": 0
+        }
+      }
+    },
+    {
+      "id": "error-empty-amount",
+      "kind": "core",
+      "purpose": "amount 空字串",
+      "input": {
+        "amount": "",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-decimal-places",
+      "kind": "core",
+      "purpose": "小數超過 3 位",
+      "input": {
+        "amount": "1.0001",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-leading-zero",
+      "kind": "core",
+      "purpose": "整數部前導零",
+      "input": {
+        "amount": "03",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-grouped",
+      "kind": "core",
+      "purpose": "千分位逗號不接受",
+      "input": {
+        "amount": "1,000",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-zero",
+      "kind": "core",
+      "purpose": "零面積",
+      "input": {
+        "amount": "0",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-over-max",
+      "kind": "core",
+      "purpose": "剛好超過上限 1,000,000",
+      "input": {
+        "amount": "1000000.001",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-input-limit",
+      "kind": "core",
+      "purpose": "raw 長度 13 單位超過容量 12（先於文法）",
+      "input": {
+        "amount": "1234567890123",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-unicode",
+      "kind": "core",
+      "purpose": "amount 含未成對 surrogate（檔案中以 JSON 轉義 \\ud800 表示）",
+      "input": {
+        "amount": "1\ud800",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-field-order",
+      "kind": "core",
+      "purpose": "amount 與 unit 同時錯誤時先報 amount",
+      "input": {
+        "amount": "",
+        "unit": "yard"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-unit-enum",
+      "kind": "core",
+      "purpose": "未知單位代碼",
+      "input": {
+        "amount": "10",
+        "unit": "yard"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "unit",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-unit-empty",
+      "kind": "core",
+      "purpose": "unit 空字串",
+      "input": {
+        "amount": "10",
+        "unit": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "unit",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-schema-missing",
+      "kind": "core",
+      "purpose": "缺 unit 欄位",
+      "input": {
+        "amount": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-schema-type",
+      "kind": "core",
+      "purpose": "amount 為數字而非字串",
+      "input": {
+        "amount": 10,
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "quick-table-1-100",
+      "kind": "table",
+      "purpose": "固定速查表：1–100 坪 → m²／ft² 全 100 列字面值",
+      "input": null,
+      "expected": {
+        "rows": [
+          {
+            "ping": 1,
+            "m2": 3.31,
+            "ft2": 35.58
+          },
+          {
+            "ping": 2,
+            "m2": 6.61,
+            "ft2": 71.17
+          },
+          {
+            "ping": 3,
+            "m2": 9.92,
+            "ft2": 106.75
+          },
+          {
+            "ping": 4,
+            "m2": 13.22,
+            "ft2": 142.33
+          },
+          {
+            "ping": 5,
+            "m2": 16.53,
+            "ft2": 177.92
+          },
+          {
+            "ping": 6,
+            "m2": 19.83,
+            "ft2": 213.5
+          },
+          {
+            "ping": 7,
+            "m2": 23.14,
+            "ft2": 249.08
+          },
+          {
+            "ping": 8,
+            "m2": 26.45,
+            "ft2": 284.67
+          },
+          {
+            "ping": 9,
+            "m2": 29.75,
+            "ft2": 320.25
+          },
+          {
+            "ping": 10,
+            "m2": 33.06,
+            "ft2": 355.83
+          },
+          {
+            "ping": 11,
+            "m2": 36.36,
+            "ft2": 391.41
+          },
+          {
+            "ping": 12,
+            "m2": 39.67,
+            "ft2": 427
+          },
+          {
+            "ping": 13,
+            "m2": 42.98,
+            "ft2": 462.58
+          },
+          {
+            "ping": 14,
+            "m2": 46.28,
+            "ft2": 498.16
+          },
+          {
+            "ping": 15,
+            "m2": 49.59,
+            "ft2": 533.75
+          },
+          {
+            "ping": 16,
+            "m2": 52.89,
+            "ft2": 569.33
+          },
+          {
+            "ping": 17,
+            "m2": 56.2,
+            "ft2": 604.91
+          },
+          {
+            "ping": 18,
+            "m2": 59.5,
+            "ft2": 640.5
+          },
+          {
+            "ping": 19,
+            "m2": 62.81,
+            "ft2": 676.08
+          },
+          {
+            "ping": 20,
+            "m2": 66.12,
+            "ft2": 711.66
+          },
+          {
+            "ping": 21,
+            "m2": 69.42,
+            "ft2": 747.25
+          },
+          {
+            "ping": 22,
+            "m2": 72.73,
+            "ft2": 782.83
+          },
+          {
+            "ping": 23,
+            "m2": 76.03,
+            "ft2": 818.41
+          },
+          {
+            "ping": 24,
+            "m2": 79.34,
+            "ft2": 854
+          },
+          {
+            "ping": 25,
+            "m2": 82.64,
+            "ft2": 889.58
+          },
+          {
+            "ping": 26,
+            "m2": 85.95,
+            "ft2": 925.16
+          },
+          {
+            "ping": 27,
+            "m2": 89.26,
+            "ft2": 960.75
+          },
+          {
+            "ping": 28,
+            "m2": 92.56,
+            "ft2": 996.33
+          },
+          {
+            "ping": 29,
+            "m2": 95.87,
+            "ft2": 1031.91
+          },
+          {
+            "ping": 30,
+            "m2": 99.17,
+            "ft2": 1067.5
+          },
+          {
+            "ping": 31,
+            "m2": 102.48,
+            "ft2": 1103.08
+          },
+          {
+            "ping": 32,
+            "m2": 105.79,
+            "ft2": 1138.66
+          },
+          {
+            "ping": 33,
+            "m2": 109.09,
+            "ft2": 1174.24
+          },
+          {
+            "ping": 34,
+            "m2": 112.4,
+            "ft2": 1209.83
+          },
+          {
+            "ping": 35,
+            "m2": 115.7,
+            "ft2": 1245.41
+          },
+          {
+            "ping": 36,
+            "m2": 119.01,
+            "ft2": 1280.99
+          },
+          {
+            "ping": 37,
+            "m2": 122.31,
+            "ft2": 1316.58
+          },
+          {
+            "ping": 38,
+            "m2": 125.62,
+            "ft2": 1352.16
+          },
+          {
+            "ping": 39,
+            "m2": 128.93,
+            "ft2": 1387.74
+          },
+          {
+            "ping": 40,
+            "m2": 132.23,
+            "ft2": 1423.33
+          },
+          {
+            "ping": 41,
+            "m2": 135.54,
+            "ft2": 1458.91
+          },
+          {
+            "ping": 42,
+            "m2": 138.84,
+            "ft2": 1494.49
+          },
+          {
+            "ping": 43,
+            "m2": 142.15,
+            "ft2": 1530.08
+          },
+          {
+            "ping": 44,
+            "m2": 145.45,
+            "ft2": 1565.66
+          },
+          {
+            "ping": 45,
+            "m2": 148.76,
+            "ft2": 1601.24
+          },
+          {
+            "ping": 46,
+            "m2": 152.07,
+            "ft2": 1636.83
+          },
+          {
+            "ping": 47,
+            "m2": 155.37,
+            "ft2": 1672.41
+          },
+          {
+            "ping": 48,
+            "m2": 158.68,
+            "ft2": 1707.99
+          },
+          {
+            "ping": 49,
+            "m2": 161.98,
+            "ft2": 1743.58
+          },
+          {
+            "ping": 50,
+            "m2": 165.29,
+            "ft2": 1779.16
+          },
+          {
+            "ping": 51,
+            "m2": 168.6,
+            "ft2": 1814.74
+          },
+          {
+            "ping": 52,
+            "m2": 171.9,
+            "ft2": 1850.33
+          },
+          {
+            "ping": 53,
+            "m2": 175.21,
+            "ft2": 1885.91
+          },
+          {
+            "ping": 54,
+            "m2": 178.51,
+            "ft2": 1921.49
+          },
+          {
+            "ping": 55,
+            "m2": 181.82,
+            "ft2": 1957.07
+          },
+          {
+            "ping": 56,
+            "m2": 185.12,
+            "ft2": 1992.66
+          },
+          {
+            "ping": 57,
+            "m2": 188.43,
+            "ft2": 2028.24
+          },
+          {
+            "ping": 58,
+            "m2": 191.74,
+            "ft2": 2063.82
+          },
+          {
+            "ping": 59,
+            "m2": 195.04,
+            "ft2": 2099.41
+          },
+          {
+            "ping": 60,
+            "m2": 198.35,
+            "ft2": 2134.99
+          },
+          {
+            "ping": 61,
+            "m2": 201.65,
+            "ft2": 2170.57
+          },
+          {
+            "ping": 62,
+            "m2": 204.96,
+            "ft2": 2206.16
+          },
+          {
+            "ping": 63,
+            "m2": 208.26,
+            "ft2": 2241.74
+          },
+          {
+            "ping": 64,
+            "m2": 211.57,
+            "ft2": 2277.32
+          },
+          {
+            "ping": 65,
+            "m2": 214.88,
+            "ft2": 2312.91
+          },
+          {
+            "ping": 66,
+            "m2": 218.18,
+            "ft2": 2348.49
+          },
+          {
+            "ping": 67,
+            "m2": 221.49,
+            "ft2": 2384.07
+          },
+          {
+            "ping": 68,
+            "m2": 224.79,
+            "ft2": 2419.66
+          },
+          {
+            "ping": 69,
+            "m2": 228.1,
+            "ft2": 2455.24
+          },
+          {
+            "ping": 70,
+            "m2": 231.4,
+            "ft2": 2490.82
+          },
+          {
+            "ping": 71,
+            "m2": 234.71,
+            "ft2": 2526.41
+          },
+          {
+            "ping": 72,
+            "m2": 238.02,
+            "ft2": 2561.99
+          },
+          {
+            "ping": 73,
+            "m2": 241.32,
+            "ft2": 2597.57
+          },
+          {
+            "ping": 74,
+            "m2": 244.63,
+            "ft2": 2633.15
+          },
+          {
+            "ping": 75,
+            "m2": 247.93,
+            "ft2": 2668.74
+          },
+          {
+            "ping": 76,
+            "m2": 251.24,
+            "ft2": 2704.32
+          },
+          {
+            "ping": 77,
+            "m2": 254.55,
+            "ft2": 2739.9
+          },
+          {
+            "ping": 78,
+            "m2": 257.85,
+            "ft2": 2775.49
+          },
+          {
+            "ping": 79,
+            "m2": 261.16,
+            "ft2": 2811.07
+          },
+          {
+            "ping": 80,
+            "m2": 264.46,
+            "ft2": 2846.65
+          },
+          {
+            "ping": 81,
+            "m2": 267.77,
+            "ft2": 2882.24
+          },
+          {
+            "ping": 82,
+            "m2": 271.07,
+            "ft2": 2917.82
+          },
+          {
+            "ping": 83,
+            "m2": 274.38,
+            "ft2": 2953.4
+          },
+          {
+            "ping": 84,
+            "m2": 277.69,
+            "ft2": 2988.99
+          },
+          {
+            "ping": 85,
+            "m2": 280.99,
+            "ft2": 3024.57
+          },
+          {
+            "ping": 86,
+            "m2": 284.3,
+            "ft2": 3060.15
+          },
+          {
+            "ping": 87,
+            "m2": 287.6,
+            "ft2": 3095.74
+          },
+          {
+            "ping": 88,
+            "m2": 290.91,
+            "ft2": 3131.32
+          },
+          {
+            "ping": 89,
+            "m2": 294.21,
+            "ft2": 3166.9
+          },
+          {
+            "ping": 90,
+            "m2": 297.52,
+            "ft2": 3202.49
+          },
+          {
+            "ping": 91,
+            "m2": 300.83,
+            "ft2": 3238.07
+          },
+          {
+            "ping": 92,
+            "m2": 304.13,
+            "ft2": 3273.65
+          },
+          {
+            "ping": 93,
+            "m2": 307.44,
+            "ft2": 3309.24
+          },
+          {
+            "ping": 94,
+            "m2": 310.74,
+            "ft2": 3344.82
+          },
+          {
+            "ping": 95,
+            "m2": 314.05,
+            "ft2": 3380.4
+          },
+          {
+            "ping": 96,
+            "m2": 317.36,
+            "ft2": 3415.98
+          },
+          {
+            "ping": 97,
+            "m2": 320.66,
+            "ft2": 3451.57
+          },
+          {
+            "ping": 98,
+            "m2": 323.97,
+            "ft2": 3487.15
+          },
+          {
+            "ping": 99,
+            "m2": 327.27,
+            "ft2": 3522.73
+          },
+          {
+            "ping": 100,
+            "m2": 330.58,
+            "ft2": 3558.32
+          }
+        ]
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "amount": "30",
+          "unit": "ping"
+        },
+        "edit": {
+          "amount": "0",
+          "unit": "ping"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "amount",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "amount": "25",
+          "unit": "m2"
+        },
+        "lateResult": {
+          "ping": 7.56,
+          "m2": 25,
+          "ft2": 269.1,
+          "tatami": 15.4
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "amount": "25",
+            "unit": "m2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "amount": "",
+            "unit": "ping"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "amount": "25",
+          "unit": "m2"
+        },
+        "newerDraft": {
+          "amount": "1.0001",
+          "unit": "ping"
+        },
+        "olderLateResult": {
+          "ping": 7.56,
+          "m2": 25,
+          "ft2": 269.1,
+          "tatami": 15.4
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "DECIMAL_FORMAT",
+            "field": "amount",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "DECIMAL_FORMAT",
+            "field": "amount",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
