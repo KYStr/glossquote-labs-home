@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Dew Point Calculator | Gloss Tools</title>
+<meta name="description" content="Calculate the dew point, absolute humidity and comfort band from air temperature and relative humidity with the Magnus formula.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Dew Point Calculator</h1>
+  <p class="lede">Calculate the dew point, absolute humidity and comfort band from air temperature and relative humidity with the Magnus formula. The dew point measures the actual water content of the air: the same 70% relative humidity holds very different amounts of water at 15 °C and at 30 °C, and a surface colder than the dew point collects condensation.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Air temperature and relative humidity</h2>
+      <form id="dew-point-form" novalidate>
+        <div class="field">
+          <label for="field-temperature">Air temperature (°C)</label>
+          <p class="help" id="help-temperature">Range −50 to 60 °C. Digits and one decimal point only, with an optional minus sign; leading zeros are allowed.</p>
+          <input id="field-temperature" name="temperature" type="text" inputmode="decimal" autocomplete="off" value="25" aria-describedby="help-temperature">
+          <p class="field-error" id="error-temperature" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-relativeHumidity">Relative humidity (%)</label>
+          <p class="help" id="help-relativeHumidity">Above 0 and at most 100 (%). Digits and one decimal point only; 0 is not a valid input.</p>
+          <input id="field-relativeHumidity" name="relativeHumidity" type="text" inputmode="decimal" autocomplete="off" value="60" aria-describedby="help-relativeHumidity">
+          <p class="field-error" id="error-relativeHumidity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the air temperature and relative humidity, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate dew point</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+      <p class="disclosure">The comfort bands are a meteorological rule of thumb, not a medical or building standard.</p>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Dew point, absolute humidity and comfort</h2>
+      <p id="summary"></p>
+      <p class="dew-point-figure"><span id="result-dew-point"></span></p>
+      <dl class="result-rows">
+        <div>
+          <dt>Absolute humidity</dt>
+          <dd id="result-humidity"></dd>
+        </div>
+        <div>
+          <dt>Comfort band</dt>
+          <dd id="result-band"></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Comfort band table and formula notes</summary>
+    <p>The comfort band is looked up from the rounded dew point, lower bound inclusive, upper bound exclusive:</p>
+    <table>
+      <thead>
+        <tr><th scope="col">Dew point (°C)</th><th scope="col">Band</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Below 10</th><td>Dry</td></tr>
+        <tr><th scope="row">10 to below 13</th><td>Comfortable</td></tr>
+        <tr><th scope="row">13 to below 16</th><td>Mostly comfortable</td></tr>
+        <tr><th scope="row">16 to below 18</th><td>Slightly humid</td></tr>
+        <tr><th scope="row">18 to below 21</th><td>Humid</td></tr>
+        <tr><th scope="row">21 to below 24</th><td>Oppressive</td></tr>
+        <tr><th scope="row">24 and above</th><td>Extremely oppressive</td></tr>
+      </tbody>
+    </table>
+    <p>The formula is the Magnus form over water with pinned constants a = 17.27, b = 237.7 °C and es(0 °C) = 6.112 hPa: first γ = ln(RH/100) + aT/(b+T), then the dew point Td = bγ/(a − γ); the saturation vapor pressure is es = 6.112 × exp(aT/(b+T)), the actual vapor pressure e = es × RH/100, and the absolute humidity is 216.7 × e/(273.15 + T) g/m³. Each output is rounded once, at the end, to one decimal place.</p>
+    <p>The over-water form is used throughout: below 0 °C the result is the dew point over supercooled water, not the frost point. Below −45 °C the formula is extrapolated and the accuracy statement does not cover it. The downloaded report is always named dew-point-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Does the dew point equal the air temperature at 100% RH?</dt>
+      <dd>Yes — with the pinned formula the two are exactly equal at 100% RH.</dd>
+      <dt>Is the below-zero result a frost point?</dt>
+      <dd>No — the over-water Magnus form is used throughout, so below 0 °C the result is the dew point over supercooled water, not the frost point.</dd>
+      <dt>How does dew point differ from relative humidity?</dt>
+      <dd>The dew point measures the actual water content of the air; relative humidity also depends on temperature, so the same 70% can mean very different amounts of water.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

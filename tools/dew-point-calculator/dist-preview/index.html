@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>露點計算機｜Gloss Tools</title>
+<meta name="description" content="輸入氣溫與相對濕度，用 Magnus 公式算出露點溫度、絕對濕度（g/m³）與舒適度分級。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>露點計算機</h1>
+  <p class="lede">輸入氣溫與相對濕度，用 Magnus 公式算出露點溫度、絕對濕度（g/m³）與舒適度分級。露點直接表示空氣含水量：相對濕度同樣是 70%，在 15 °C 和 30 °C 的含水量差很多；表面溫度降到露點以下就會結露。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">氣溫與相對濕度</h2>
+      <form id="dew-point-form" novalidate>
+        <div class="field">
+          <label for="field-temperature">氣溫（°C）</label>
+          <p class="help" id="help-temperature">範圍 −50–60 °C。只接受數字與一個小數點，可帶負號；前導零允許。</p>
+          <input id="field-temperature" name="temperature" type="text" inputmode="decimal" autocomplete="off" value="25" aria-describedby="help-temperature">
+          <p class="field-error" id="error-temperature" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-relativeHumidity">相對濕度（%）</label>
+          <p class="help" id="help-relativeHumidity">大於 0、最多 100（%）。只接受數字與一個小數點；0 不是有效輸入。</p>
+          <input id="field-relativeHumidity" name="relativeHumidity" type="text" inputmode="decimal" autocomplete="off" value="60" aria-describedby="help-relativeHumidity">
+          <p class="field-error" id="error-relativeHumidity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入氣溫與相對濕度，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算露點</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+      <p class="disclosure">舒適度分級為氣象慣用經驗分級，非醫療或建築規範。</p>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">露點、絕對濕度與舒適度</h2>
+      <p id="summary"></p>
+      <p class="dew-point-figure"><span id="result-dew-point"></span></p>
+      <dl class="result-rows">
+        <div>
+          <dt>絕對濕度</dt>
+          <dd id="result-humidity"></dd>
+        </div>
+        <div>
+          <dt>舒適度分級</dt>
+          <dd id="result-band"></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>舒適度分級表與公式說明</summary>
+    <p>舒適度依捨入後的露點查表，下限含、上限不含：</p>
+    <table>
+      <thead>
+        <tr><th scope="col">露點（°C）</th><th scope="col">分級</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">未滿 10</th><td>乾燥</td></tr>
+        <tr><th scope="row">10–未滿 13</th><td>舒適</td></tr>
+        <tr><th scope="row">13–未滿 16</th><td>大致舒適</td></tr>
+        <tr><th scope="row">16–未滿 18</th><td>略感潮濕</td></tr>
+        <tr><th scope="row">18–未滿 21</th><td>潮濕悶熱</td></tr>
+        <tr><th scope="row">21–未滿 24</th><td>非常悶熱</td></tr>
+        <tr><th scope="row">24 以上</th><td>極度悶熱</td></tr>
+      </tbody>
+    </table>
+    <p>公式為 Magnus 水面公式，常數釘版 a = 17.27、b = 237.7 °C、es(0 °C) = 6.112 hPa：先算 γ = ln(RH/100) + aT/(b+T)，露點 Td = bγ/(a − γ)；飽和水氣壓 es = 6.112 × exp(aT/(b+T))，實際水氣壓 e = es × RH/100，絕對濕度 = 216.7 × e/(273.15 + T) g/m³。每個輸出只在最後捨入一次到 1 位小數。</p>
+    <p>本工具全程用水面公式：0 °C 以下得到的是過冷水露點，不是霜點。氣溫 −45 °C 以下屬公式外推，精度聲明不涵蓋。下載的報告檔名固定為 dew-point-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>相對濕度 100% 時露點等於氣溫嗎？</dt>
+      <dd>是，本工具釘版公式在 RH = 100% 時露點恰等於氣溫。</dd>
+      <dt>0 °C 以下算的是霜點嗎？</dt>
+      <dd>不是，本工具全程用水面 Magnus 公式，0 °C 以下得到的是過冷水露點，不是霜點。</dd>
+      <dt>露點和相對濕度差在哪？</dt>
+      <dd>露點直接表示空氣含水量；相對濕度還取決於氣溫，同樣 70% 在不同氣溫下含水量差很多。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
