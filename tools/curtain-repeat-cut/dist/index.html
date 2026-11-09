@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>窗簾同花位落剪｜Gloss Tools</title>
+<meta name="description" content="按花距、布頭位置與摺邊規劃窗簾剪線，查看逐片對花耗料。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; worker-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <a href="../../">GlossQuote 首頁</a>
+  <a href="./en/index.html" hreflang="en">English</a>
+</header>
+<main>
+  <h1>窗簾同花位落剪</h1>
+  <p>量好布頭相位與花距，依縫製次序輸入每片成品高與上下摺邊，就能從同一布頭算出逐片起剪與終剪位置、跳花耗料，以及整卷夠不夠用。</p>
+  <p id="leave-note">離開本頁或切換語言會重設草稿。</p>
+
+  <div class="work">
+  <form id="cut-form" novalidate>
+    <fieldset>
+      <legend>布頭與花距</legend>
+      <div class="field">
+        <label for="stock-mm">可用布長（mm）</label>
+        <input type="text" id="stock-mm" name="stock-mm" inputmode="numeric" maxlength="12" autocomplete="off">
+        <p class="hint">從布頭到可用布尾的長度，1–100000 mm。</p>
+      </div>
+      <div class="field">
+        <label for="repeat-mm">直向花距（mm）</label>
+        <input type="text" id="repeat-mm" name="repeat-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">一個完整花樣的直向長度；素布填 0。</p>
+      </div>
+      <div class="field">
+        <label for="head-phase-mm">布頭相位（mm）</label>
+        <input type="text" id="head-phase-mm" name="head-phase-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">布頭所在的花樣位置，以一個花距內的同一識別點為 0。</p>
+      </div>
+      <div class="field">
+        <label for="motif-phase-mm">成品頂緣相位（mm）</label>
+        <input type="text" id="motif-phase-mm" name="motif-phase-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">希望每片成品頂緣落下的花樣位置。</p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>片序表</legend>
+      <p class="hint">按縫製次序輸入，每片名稱不可重複，最多 16 片。</p>
+      <div id="panels"></div>
+      <button type="button" id="add-panel">新增一片</button>
+    </fieldset>
+
+    <div class="actions">
+      <button type="button" id="plan">列出同花位剪線</button>
+      <button type="button" id="cancel" hidden>取消</button>
+      <button type="button" id="clear-draft">清除草稿</button>
+      <button type="button" id="load-sample">載入範例</button>
+    </div>
+  </form>
+
+  <section aria-labelledby="results-heading">
+    <p id="error" role="alert" hidden></p>
+    <p id="status" aria-live="polite"></p>
+    <div id="results" hidden>
+      <h2 id="results-heading">剪線清單</h2>
+      <dl>
+        <div><dt>整卷所需</dt><dd id="summary-needed"></dd></div>
+        <div><dt>跳花總長</dt><dd id="summary-waste"></dd></div>
+        <div><dt>布料剩餘</dt><dd id="summary-spare"></dd></div>
+        <div><dt>布料不足</dt><dd id="summary-shortage"></dd></div>
+      </dl>
+      <p id="shortage-note" hidden>布料不足：這是超出布料的試算，請先重新量測或換一卷布。</p>
+      <p id="trial-note" hidden>試算結果，超出布料。</p>
+      <h3>連續剪線標尺</h3>
+      <p class="hint">標尺與下表是同一份結果；長度按比例顯示，空白段是跳花的耗料。</p>
+      <div id="ruler" role="img" aria-label="連續剪線標尺，與下表相同"></div>
+      <h3>逐片起訖</h3>
+      <table>
+        <caption>逐片起訖（單位 mm，從布頭量起）</caption>
+        <thead>
+          <tr>
+            <th scope="col">片名</th>
+            <th scope="col">跳過（mm）</th>
+            <th scope="col">起剪（mm）</th>
+            <th scope="col">終剪（mm）</th>
+          </tr>
+        </thead>
+        <tbody id="cuts-body"></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
