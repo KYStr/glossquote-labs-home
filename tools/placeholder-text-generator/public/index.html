@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>填充文字產生器 | GlossQuote 工具</title>
+<meta name="description" content="用固定種子產生可重現的填充文字：拉丁文 Lorem 風格或繁體中文範例句，可選段落、句子、字詞或精確字元數，全部在本機離線產生。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>填充文字產生器</h1>
+  <p class="intro">為版面預留空間用的填充文字：選語言、單位、數量與種子，按同樣設定在任何地方重跑，都會得到一模一樣的結果。全部在本機產生，不上傳、不儲存。</p>
+
+  <p class="placeholder-label">填充文字——沒有意義，只用來佔據版面空間。</p>
+  <p class="zh-note" id="zh-note" hidden>中文句子是為本工具撰寫的中性範例句，隨機組合而成，單獨看通順、合起來沒有意義。</p>
+
+  <form class="card" id="controls" aria-label="產生設定">
+    <fieldset>
+      <legend>文字語言</legend>
+      <label><input type="radio" name="content-lang" value="latin" checked> 拉丁文（Lorem 風格）</label>
+      <label><input type="radio" name="content-lang" value="zh"> 繁體中文</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="unit">單位</label>
+      <select id="unit" name="unit">
+        <option value="paragraphs" selected>段落</option>
+        <option value="sentences">句子</option>
+        <option value="words" id="unit-words">字詞（僅拉丁文）</option>
+        <option value="characters">字元（精確）</option>
+      </select>
+      <p class="hint" id="words-note" hidden>中文沒有字間空白，字數單位不適用，所以不提供。</p>
+    </div>
+
+    <div class="field">
+      <label for="count">數量</label>
+      <input type="number" id="count" name="count" value="3" step="1" inputmode="numeric">
+      <p class="hint" id="count-range"></p>
+      <p class="error" id="count-error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="seed">種子（同種子，同文字）</label>
+      <span class="seed-row">
+        <input type="number" id="seed" name="seed" value="42" step="1" inputmode="numeric">
+        <button type="button" id="new-seed">新種子（+1）</button>
+      </span>
+      <p class="hint">0 到 4294967295 之間的整數。把種子記下來，之後用同樣設定就能重現同一份文字。</p>
+      <p class="error" id="seed-error" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="opening-field">
+      <label><input type="checkbox" id="opening" name="opening" checked> 以經典開頭句起頭（Lorem ipsum dolor sit amet…）</label>
+    </div>
+  </form>
+
+  <section class="card" aria-label="產生結果">
+    <p class="stale" id="stale" hidden>已過期：設定目前無效，下面顯示的是上一次有效的產生結果。</p>
+    <p class="facts" id="facts" aria-live="polite"></p>
+    <div class="view-toggle" role="group" aria-label="檢視方式">
+      <button type="button" id="view-rendered" aria-pressed="true">排版檢視</button>
+      <button type="button" id="view-raw" aria-pressed="false">純文字檢視</button>
+    </div>
+    <div id="output-rendered" class="output"></div>
+    <pre id="output-raw" class="output raw" hidden></pre>
+    <div class="copy-row">
+      <button type="button" id="copy-plain">複製純文字</button>
+      <button type="button" id="copy-html">複製 HTML</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card" aria-label="說明與資料池">
+    <h2>運作方式</h2>
+    <p>產生器使用固定算法（mulberry32 亂數）與下面兩個公開的資料池：同一個種子與設定，永遠產生同一份文字。產生的文字不是密碼，也沒有任何意義，請勿拿來當真內容。</p>
+    <h3>拉丁文字詞池（63 個詞）</h3>
+    <p>取自傳統 Lorem ipsum 段落（源出西塞羅的公開領域文本）的全部不同字詞，每個只收一次、小寫：</p>
+    <p class="pool" id="latin-pool"></p>
+    <h3>中文句子池（30 句）</h3>
+    <p>為本工具撰寫的中性範例句，隨機抽取、可重複出現：</p>
+    <ol class="pool" id="zh-pool"></ol>
+  </section>
+</main>
+</body>
+</html>
