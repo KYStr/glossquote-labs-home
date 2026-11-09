@@ -3,8 +3,8 @@
 - **Fixed spec source:** `docs/specs/plant-watering-route/` (`spec-plant-watering-route-20261109`, v1) at base `fb55ef262642744147d01db9b2fcbc82cc8b76e1` (`codex/initial-publication`)
 - **Registry task:** `labs-prod-plant-watering-route-20261109`
 - **Claim:** `muse-main-claim-plant-watering-route-20261109T083325Z-w6`
-- **Candidate commit:** `TOOL_COMMIT` (tool commit; this follow-up commit records it and the PR URL below)
-- **Draft PR:** `PR_URL` (base `codex/initial-publication`, OPEN + draft, head verified == candidate commit)
+- **Candidate commit:** `12ec112e898ff8acb94ee01e49932b3a37fcdcd6` (tool commit; this follow-up commit records it and the PR URL below)
+- **Draft PR:** https://github.com/KYStr/glossquote-labs-home/pull/129 (base `codex/initial-publication`, OPEN + draft, head verified == candidate commit)
 - **Environment:** Node v24.22.1, offline, Linux
 
 ## Commands and results (all exit 0)
