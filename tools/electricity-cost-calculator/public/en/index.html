@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./">
+    <link rel="alternate" hreflang="zh-Hant" href="../">
+    <link rel="alternate" hreflang="en" href="./">
+    <link rel="alternate" hreflang="x-default" href="../">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Electricity Cost Calculator: appliance energy and cost｜GlossQuote-Labs</title>
+    <meta name="description" content="Enter an appliance's watts, hours per day, days and quantity, then the per-kWh rate from your own electricity bill — flat, or up to three volume tiers — to get energy per day and per period in kWh and what it costs. No built-in tariff table to go stale; everything is computed locally, nothing is saved or uploaded.">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../en/">GlossQuote-Labs home</a>
+      <nav class="language-links" aria-label="Language">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="../">繁體中文</a>
+        <a lang="en" hreflang="en" href="./" aria-current="page">English</a>
+      </nav>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">Electricity Cost Calculator</h1>
+        <p class="intro">What is one appliance actually costing you? Enter its watts and running time, then the rate from <strong>your own electricity bill</strong> — this site ships no utility tariff table, because rates differ by plan and go stale. Choose a single flat rate, or a tiered tariff of up to three bands.</p>
+
+        <noscript><p class="unsupported-note">This tool needs JavaScript to calculate. The formulas below remain readable.</p></noscript>
+
+        <form id="tool-form" novalidate>
+          <fieldset>
+            <legend>Usage</legend>
+            <div class="field">
+              <label for="label">Appliance label (optional, shown in the result heading only)</label>
+              <input id="label" name="label" type="text" value="Electric heater" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="watts">Power (watts, W)</label>
+              <input id="watts" name="watts" type="text" inputmode="decimal" value="1000" aria-describedby="watts-hint err-watts">
+              <p class="hint" id="watts-hint">Find the wattage on the appliance's nameplate or in its manual. More than 0, at most 50,000, up to one decimal place.</p>
+              <p class="error" id="err-watts" hidden></p>
+            </div>
+            <div class="field">
+              <label for="hours">Hours per day</label>
+              <input id="hours" name="hours" type="text" inputmode="decimal" value="3" aria-describedby="hours-hint err-hours">
+              <p class="hint" id="hours-hint">More than 0, at most 24, up to two decimal places.</p>
+              <p class="error" id="err-hours" hidden></p>
+            </div>
+            <div class="field">
+              <label for="days">Period length (days)</label>
+              <input id="days" name="days" type="text" inputmode="numeric" value="30" aria-describedby="days-hint err-days">
+              <p class="hint" id="days-hint">A whole number, 1–366 days.</p>
+              <p class="error" id="err-days" hidden></p>
+            </div>
+            <div class="field">
+              <label for="quantity">Quantity (identical units)</label>
+              <input id="quantity" name="quantity" type="text" inputmode="numeric" value="1" aria-describedby="quantity-hint err-quantity">
+              <p class="hint" id="quantity-hint">A whole number, 1–100.</p>
+              <p class="error" id="err-quantity" hidden></p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Rate and currency</legend>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency" name="currency">
+                <option value="TWD" selected>TWD — New Taiwan dollar (NT$)</option>
+                <option value="USD">USD — US dollar (US$)</option>
+                <option value="EUR">EUR — Euro (€)</option>
+                <option value="GBP">GBP — Pound sterling (£)</option>
+                <option value="JPY">JPY — Japanese yen (¥)</option>
+              </select>
+            </div>
+            <div class="radio-group" role="radiogroup" aria-label="Tariff mode">
+              <label class="radio-option"><input type="radio" name="tariff-mode" value="flat" checked> Flat rate</label>
+              <label class="radio-option"><input type="radio" name="tariff-mode" value="tiered"> Tiered bands</label>
+            </div>
+            <div id="flat-fields">
+              <div class="field">
+                <label for="rate">Rate (per kWh)</label>
+                <input id="rate" name="rate" type="text" inputmode="decimal" value="5.000" aria-describedby="rate-hint err-rate">
+                <p class="hint" id="rate-hint">Copy it from your electricity bill. More than 0, at most 999.999, up to three decimal places.</p>
+                <p class="error" id="err-rate" hidden></p>
+              </div>
+            </div>
+            <div id="tiered-fields" hidden>
+              <div id="bands"></div>
+              <p class="error" id="err-bands" hidden></p>
+              <button type="button" id="add-band">Add band</button>
+              <p class="hint">Two or three bands: give each bounded band an upper threshold (whole kWh) and a rate; the final band is open-ended.</p>
+            </div>
+          </fieldset>
+        </form>
+
+        <section class="results" aria-labelledby="result-heading">
+          <h2 id="result-heading">Results</h2>
+          <p class="stale-note" id="stale-note" hidden>Some inputs have errors; showing the last valid result (out of date).</p>
+          <table class="result-table">
+            <tbody>
+              <tr><th scope="row">Energy per day</th><td><span id="out-kwh-day">–</span> kWh</td></tr>
+              <tr><th scope="row">Energy per period</th><td><span id="out-kwh-period">–</span> kWh</td></tr>
+              <tr><th scope="row" id="cost-day-label">Cost per day</th><td id="out-cost-day">–</td></tr>
+              <tr><th scope="row">Cost per period</th><td id="out-cost-period">–</td></tr>
+            </tbody>
+          </table>
+          <div id="breakdown-wrap" hidden>
+            <h3>Band breakdown</h3>
+            <table class="breakdown-table">
+              <thead>
+                <tr><th scope="col">Band range</th><th scope="col">Energy (kWh)</th><th scope="col">Rate</th><th scope="col">Subtotal</th></tr>
+              </thead>
+              <tbody id="breakdown-body"></tbody>
+              <tfoot>
+                <tr><th scope="row">Total cost per period</th><td></td><td></td><td id="breakdown-total">–</td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="limitation-note" id="limitation-note" hidden>This treats the usage above as your whole billed consumption for the period. On a real tiered bill, one appliance's share of each band depends on your household's total usage, so treat this as an estimate for the usage entered, not a slice of an actual bill.</p>
+        </section>
+
+        <section class="formula-note" aria-labelledby="formula-title">
+          <h2 id="formula-title">Formulas and rounding</h2>
+          <p>Energy per day (kWh) = watts ÷ 1,000 × hours per day × quantity; energy per period = energy per day × days; cost = energy × rate. In tiered mode the period energy is priced band by band, and the per-day figure is the period cost divided by the days — an average.</p>
+          <p>Costs are computed from the unrounded energy and rounded only once, for display. So a displayed per-day cost multiplied by the days may differ from the period cost by a cent or two; the period figure is the exact one. Thousands are grouped with commas and the decimal separator is a point. The period cost is the price of the usage you entered at the rates you entered — not a prediction of your whole bill. Taxes and fixed monthly fees are not included; you can fold them into your rate yourself.</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

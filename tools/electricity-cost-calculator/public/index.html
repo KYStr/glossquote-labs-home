@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./">
+    <link rel="alternate" hreflang="zh-Hant" href="./">
+    <link rel="alternate" hreflang="en" href="./en/">
+    <link rel="alternate" hreflang="x-default" href="./">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>電費計算器：電器用電量與電費試算｜GlossQuote-Labs</title>
+    <meta name="description" content="輸入電器的瓦特數、每日使用時數、天數與數量，再填入你電費帳單上的單價（單一費率或最多三段累進級距），即時算出每日與期間的用電量（kWh）與電費。費率不內建、不過期，計算全在本機完成，不保存、不上傳。">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../">GlossQuote-Labs 首頁</a>
+      <nav class="language-links" aria-label="語言">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="./" aria-current="page">繁體中文</a>
+        <a lang="en" hreflang="en" href="./en/">English</a>
+      </nav>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">電費計算器</h1>
+        <p class="intro">想知道一台電器到底花你多少電費？輸入瓦特數與使用時間，再填入<strong>你自己電費帳單上的單價</strong>——本站不內建任何電力公司的費率表，因為費率因方案而異、也會過期。支援單一費率，或最多三段的累進級距。</p>
+
+        <noscript><p class="unsupported-note">此工具需要 JavaScript 才能計算。下方公式說明仍可閱讀。</p></noscript>
+
+        <form id="tool-form" novalidate>
+          <fieldset>
+            <legend>用電量</legend>
+            <div class="field">
+              <label for="label">電器名稱（選填，只顯示在結果標題）</label>
+              <input id="label" name="label" type="text" value="電熱器" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="watts">功率（瓦特 W）</label>
+              <input id="watts" name="watts" type="text" inputmode="decimal" value="1000" aria-describedby="watts-hint err-watts">
+              <p class="hint" id="watts-hint">看電器機身銘牌或說明書上的瓦特數。大於 0、最多 50,000，可到小數一位。</p>
+              <p class="error" id="err-watts" hidden></p>
+            </div>
+            <div class="field">
+              <label for="hours">每日使用時數（小時）</label>
+              <input id="hours" name="hours" type="text" inputmode="decimal" value="3" aria-describedby="hours-hint err-hours">
+              <p class="hint" id="hours-hint">大於 0、最多 24，可到小數兩位。</p>
+              <p class="error" id="err-hours" hidden></p>
+            </div>
+            <div class="field">
+              <label for="days">期間天數（天）</label>
+              <input id="days" name="days" type="text" inputmode="numeric" value="30" aria-describedby="days-hint err-days">
+              <p class="hint" id="days-hint">整數，1–366 天。</p>
+              <p class="error" id="err-days" hidden></p>
+            </div>
+            <div class="field">
+              <label for="quantity">數量（台／顆）</label>
+              <input id="quantity" name="quantity" type="text" inputmode="numeric" value="1" aria-describedby="quantity-hint err-quantity">
+              <p class="hint" id="quantity-hint">相同電器的數量，整數，1–100。</p>
+              <p class="error" id="err-quantity" hidden></p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>費率與幣別</legend>
+            <div class="field">
+              <label for="currency">幣別</label>
+              <select id="currency" name="currency">
+                <option value="TWD" selected>TWD 新台幣（NT$）</option>
+                <option value="USD">USD 美元（US$）</option>
+                <option value="EUR">EUR 歐元（€）</option>
+                <option value="GBP">GBP 英鎊（£）</option>
+                <option value="JPY">JPY 日圓（¥）</option>
+              </select>
+            </div>
+            <div class="radio-group" role="radiogroup" aria-label="費率模式">
+              <label class="radio-option"><input type="radio" name="tariff-mode" value="flat" checked> 單一費率</label>
+              <label class="radio-option"><input type="radio" name="tariff-mode" value="tiered"> 累進級距</label>
+            </div>
+            <div id="flat-fields">
+              <div class="field">
+                <label for="rate">單價（每 kWh）</label>
+                <input id="rate" name="rate" type="text" inputmode="decimal" value="5.000" aria-describedby="rate-hint err-rate">
+                <p class="hint" id="rate-hint">照你的電費帳單填寫。大於 0、最多 999.999，可到小數三位。</p>
+                <p class="error" id="err-rate" hidden></p>
+              </div>
+            </div>
+            <div id="tiered-fields" hidden>
+              <div id="bands"></div>
+              <p class="error" id="err-bands" hidden></p>
+              <button type="button" id="add-band">新增級距</button>
+              <p class="hint">兩到三段級距：每段填上限（整數 kWh）與單價，最後一段為上限以上、不限量。</p>
+            </div>
+          </fieldset>
+        </form>
+
+        <section class="results" aria-labelledby="result-heading">
+          <h2 id="result-heading">計算結果</h2>
+          <p class="stale-note" id="stale-note" hidden>輸入有誤，以下為上一次的有效結果（已過時）。</p>
+          <table class="result-table">
+            <tbody>
+              <tr><th scope="row">每日用電量</th><td><span id="out-kwh-day">–</span> kWh</td></tr>
+              <tr><th scope="row">期間用電量</th><td><span id="out-kwh-period">–</span> kWh</td></tr>
+              <tr><th scope="row" id="cost-day-label">每日電費</th><td id="out-cost-day">–</td></tr>
+              <tr><th scope="row">期間電費</th><td id="out-cost-period">–</td></tr>
+            </tbody>
+          </table>
+          <div id="breakdown-wrap" hidden>
+            <h3>級距明細</h3>
+            <table class="breakdown-table">
+              <thead>
+                <tr><th scope="col">級距範圍</th><th scope="col">用電量（kWh）</th><th scope="col">單價</th><th scope="col">小計</th></tr>
+              </thead>
+              <tbody id="breakdown-body"></tbody>
+              <tfoot>
+                <tr><th scope="row">期間電費合計</th><td></td><td></td><td id="breakdown-total">–</td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="limitation-note" id="limitation-note" hidden>此計算把上方輸入的用電量當作該期間的全部計費用電量。在實際的累進費率帳單中，單一電器落在各級距的量取決於全戶總用電量，因此請把這個結果看作對所輸入用電量的估算，而不是實際帳單的一部分。</p>
+        </section>
+
+        <section class="formula-note" aria-labelledby="formula-title">
+          <h2 id="formula-title">計算公式與取捨</h2>
+          <p>每日用電量（kWh）＝ 瓦特 ÷ 1,000 × 每日時數 × 數量；期間用電量 ＝ 每日用電量 × 天數；電費 ＝ 用電量 × 單價。累進模式下，期間用電量依級距逐段計價；每日電費為期間電費除以天數的平均值。</p>
+          <p>費用以未四捨五入的用電量計算，只在顯示時進位一次。因此顯示的每日電費乘以天數，可能與期間電費差一兩分——以期間電費為準。數字以逗號分隔千位、小數點為點號。期間電費是「所輸入用電量按所輸入費率的價格」，不是你整張帳單的預測；稅金與固定月費未計入，你可以自行把它們折進單價。</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
