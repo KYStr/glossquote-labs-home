@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barcode Generator (Code 128 / EAN-13 / UPC-A) | GlossQuote Tools</title>
+<meta name="description" content="Generate printable 1D barcodes locally: Code 128, EAN-13 and UPC-A with openly computed check digits, stated module counts and physical print width. Download PNG or SVG; your payload never leaves your device.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="../">
+<link rel="alternate" hreflang="en" href="./">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="stylesheet" href="../styles/main.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../../en/">GlossQuote home</a>
+    <a href="../" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Barcode Generator</h1>
+  <p class="intro">Turn a number into a printable, scannable 1D barcode. Code 128 suits internal codes (SKUs, assets, shelf labels); EAN-13 and UPC-A are the retail number formats, with the check digit computed or validated in the open. The module count, quiet zones and the physical print width at your chosen module width are stated beside the preview, and the PNG/SVG downloads contain exactly the bars on screen. Everything runs locally - nothing is uploaded or stored.</p>
+  <p class="gs1-note">Please note: retail EAN/UPC numbers are allocated by GS1. This tool only performs the check-digit and bar arithmetic. A number you invent yourself is fine for internal use; do not present it as a registered product barcode.</p>
+
+  <section class="card" aria-label="Barcode settings">
+    <fieldset class="symbology">
+      <legend>Symbology</legend>
+      <label><input type="radio" name="symbology" value="code128" checked> Code 128</label>
+      <label><input type="radio" name="symbology" value="ean13"> EAN-13</label>
+      <label><input type="radio" name="symbology" value="upca"> UPC-A</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="payload">Payload</label>
+      <input id="payload" type="text" value="SKU-1024" autocomplete="off" spellcheck="false" aria-describedby="payload-error switch-note">
+      <p id="payload-error" class="error" role="alert"></p>
+      <p id="switch-note" class="note"></p>
+    </div>
+
+    <div class="options">
+      <div class="field">
+        <label for="module-width">Module width X (mm, 0.25-1.00)</label>
+        <input id="module-width" type="number" min="0.25" max="1.00" step="0.01" value="0.33">
+      </div>
+      <div class="field">
+        <label for="bar-height">Bar height (mm, 10-60)</label>
+        <input id="bar-height" type="number" min="10" max="60" step="1" value="25">
+      </div>
+      <div class="field">
+        <label for="png-scale">PNG pixels per module (1-10)</label>
+        <select id="png-scale">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="field checkbox">
+        <label><input id="show-text" type="checkbox" checked> Show human-readable text</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Preview and facts">
+    <div id="preview-wrap" class="preview-wrap">
+      <div id="svg-host" class="svg-host"></div>
+      <p id="stale-badge" class="stale-badge" hidden>Out of date</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Symbology</dt><dd id="fact-symbology">Code 128</dd></div>
+      <div><dt>Symbol count</dt><dd id="fact-symbols">-</dd></div>
+      <div><dt>Total modules (incl. quiet zones)</dt><dd id="fact-modules">-</dd></div>
+      <div><dt>Total print width</dt><dd id="fact-width">-</dd></div>
+      <div id="fact-check-row" hidden><dt>Check digit</dt><dd id="fact-check">-</dd></div>
+    </dl>
+    <div class="downloads">
+      <button id="download-svg" type="button">Download SVG</button>
+      <button id="download-png" type="button">Download PNG</button>
+    </div>
+    <p class="note">Barcodes are black bars on white only: contrast is a scanning requirement, not a style choice. While the payload has an error, the preview keeps the last valid barcode, marked out of date, and downloads are disabled so a stale barcode is never printed as if it were current.</p>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote Tools - runs fully offline; your input never leaves this device.</p>
+</footer>
+</body>
+</html>
