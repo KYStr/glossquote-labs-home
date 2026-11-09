@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>聚會回合計分表｜Gloss Tools</title>
+<meta name="description" content="輸入桌遊各回合分數，按高／低分、棄局與最佳單局更新排名。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>聚會回合計分表</h1>
+  <p class="intro">先輸入參加者與每回合的整數分數，選高分或低分勝出與棄局數，按下「更新回合排名」，就得到保留總分、最佳保留單局、棄局與同名次的排名表。</p>
+
+  <form id="score-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>參加者</legend>
+          <p class="help">2–12 人。每人一個短名（1–24 字，首字為字母或數字），重名不允許。</p>
+          <div id="players-body" class="rows"></div>
+          <button type="button" id="add-player" class="secondary">新增一位玩家</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>規則</legend>
+          <div class="field">
+            <span class="group-label" id="mode-label">勝出方式</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="mode-label">
+              <label><input type="radio" id="mode-high" name="mode" value="high" checked> 高分勝出</label>
+              <label><input type="radio" id="mode-low" name="mode" value="low"> 低分勝出</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="drop">棄局數</label>
+            <input type="text" id="drop" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–3 局，且必須少於回合數。每人各自棄掉最差的回合。</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>回合分數</legend>
+          <p class="help">1–30 回合。每回合要有回合名，每位玩家一個整數分數（-999–999，可為負數）。</p>
+          <div id="rounds-body" class="rows"></div>
+          <button type="button" id="add-round" class="secondary">新增一回合</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="update" class="primary">更新回合排名</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（高分制、棄一局、A 與 B 同分由最佳單局決勝）；載入後仍需按「更新回合排名」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="排名結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
