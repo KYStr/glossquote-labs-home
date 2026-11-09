@@ -9,7 +9,11 @@
 - Claim: `muse-main-claim-court-queue-rotation-20261109T081158Z-w4`
   (claimed by the parent actor; workMayStart verified). This builder ran no
   registry commands; the parent submits the candidate after verifying the PR.
-- Candidate branch: `muse/court-queue-rotation-production-20261109`
+- Candidate commit: `8d82f60b3c73da1eeb092c0b9c5580ca60213bd8` (tool commit; this
+  follow-up commit only fills this SHA and the PR URL into HANDOFF.md /
+  VERIFICATION.md — the final head is the candidate; verify with
+  `gh pr view 121 --json headRefOid`)
+- Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/121 (base `codex/initial-publication`)
 - Allowed scope: `tools/court-queue-rotation/` only. Nothing outside it was
   touched.
 - Next owner: independent reviewer (parent submits the candidate to the

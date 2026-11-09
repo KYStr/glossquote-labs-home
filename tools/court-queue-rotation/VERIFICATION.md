@@ -1,8 +1,10 @@
 # Verification — Drop-In Court Queue （單場散打輪轉板）
 
-Candidate commit: (tool commit SHA; the follow-up commit fills this SHA and
-the PR URL into HANDOFF.md / VERIFICATION.md — the final head is the
-candidate; verify with `gh pr view <PR> --json headRefOid`)
+Candidate commit: `8d82f60b3c73da1eeb092c0b9c5580ca60213bd8` (tool commit; the
+follow-up commit fills this SHA and the PR URL into HANDOFF.md /
+VERIFICATION.md — the final head is the candidate; verify with
+`gh pr view 121 --json headRefOid`)
+Draft PR: https://github.com/KYStr/glossquote-labs-home/pull/121 (base `codex/initial-publication`)
 Branch: `muse/court-queue-rotation-production-20261109`
 Base: `c0a7fa3601da3de3d726f1c74d139395e40223f3` (`codex/initial-publication`)
 Spec: `spec-court-queue-rotation-20261109` v1, `docs/specs/court-queue-rotation/`
