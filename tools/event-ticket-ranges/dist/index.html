@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活動票本連號盤點｜Gloss Tools</title>
+<meta name="description" content="輸入發放票號和每疊首尾，查缺號、重號與超出區間。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>活動票本連號盤點</h1>
+  <p class="intro">收桌時按票疊輸入首尾，和發放號段比對：一次看到已覆蓋、缺號、重複張與超段張。票號保留前導零，每段都標出是哪幾疊，方便再翻對應紙疊。</p>
+
+  <form id="ticket-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>印刷位數與發放號段</legend>
+          <p class="help">先確認所有票號的印刷位數，再輸入發放首尾，包含前導零。</p>
+          <div class="field">
+            <label for="digits">印刷位數（位）</label>
+            <input type="text" id="digits" inputmode="numeric" maxlength="12" autocomplete="off" value="4">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="issued-first">發放首號</label>
+              <input type="text" id="issued-first" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="0001">
+            </div>
+            <div class="field">
+              <label for="issued-last">發放末號</label>
+              <input type="text" id="issued-last" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="0010">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>票疊</legend>
+          <p class="help">每疊填一個短名與首尾，最多 64 疊。短名不可重複；若一疊中間斷號，請先分成兩列。空白的列不會送出核對。</p>
+          <div id="bundles-body" class="rows"></div>
+          <button type="button" id="add-bundle" class="secondary">新增一疊</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="check" class="primary">核對票號區間</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（發放 0001–0010，三疊 A、B、C），用來示範核對；載入後仍需按「核對票號區間」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="核對結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
