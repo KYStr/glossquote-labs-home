@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Shared Electricity Split | Gloss Tools</title>
+<meta name="description" content="Enter the total bill and each room's submeter readings: common-area usage is shared equally first, then the bill is allocated by usage with the largest remainder method, so the room amounts always sum exactly to the total.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Shared Electricity Split</h1>
+  <p class="lede">Given a bill with a known total, enter each room's submeter start and end readings: common-area usage is shared equally first, then the bill is allocated by usage, and the room amounts always sum exactly to the total — no rounding leftovers to argue about.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Total bill and total meter delta</h2>
+      <form id="split-form" novalidate>
+        <div class="field">
+          <label for="field-totalBill">Total bill (NT$)</label>
+          <p class="help" id="help-totalBill">Required. Whole NT dollars, 0 to 99,999,999.</p>
+          <input id="field-totalBill" name="totalBill" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-totalBill">
+          <p class="field-error" id="error-totalBill" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-totalDelta">Total meter delta (kWh, optional)</label>
+          <p class="help" id="help-totalDelta">Leave blank if there is no total meter reading; the bill is then split by room usage only. At most one decimal place, 0 to 999,999.9 kWh.</p>
+          <input id="field-totalDelta" name="totalDelta" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-totalDelta">
+          <p class="field-error" id="error-totalDelta" role="alert"></p>
+        </div>
+
+        <h2>Room submeters</h2>
+        <p class="field-error" id="error-rooms" role="alert"></p>
+        <div id="rooms"></div>
+        <div class="actions">
+          <button type="button" id="add-room-btn" class="button-secondary">Add room</button>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter values or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate split</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Amount per room</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Per-room split table" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Room</th>
+              <th scope="col">Usage (kWh)</th>
+              <th scope="col" id="col-common">Common share (kWh)</th>
+              <th scope="col">Billable (kWh)</th>
+              <th scope="col">Share</th>
+              <th scope="col">Amount (NT$)</th>
+            </tr>
+          </thead>
+          <tbody id="room-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How the split is calculated</summary>
+    <p>When a total meter delta is provided, common-area usage is the total meter delta minus the sum of the room submeters. It is shared equally across rooms first, then added to each room's own usage to form its weight. Amounts are allocated by weight with the largest remainder method: each room first gets its whole-dollar floor, and the remaining dollars go one each to the largest remainders, ties broken by input order, so the room amounts always sum exactly to the total bill. Without a total meter delta, the bill is split by room usage only. If every room used 0 kWh and there is no common usage, the bill is split equally instead.</p>
+    <p>Shares are shown to one decimal place, and the common-share and billable readings are each rounded independently, so displayed values may not add up to the total meter delta or exactly 100.0%; amounts are always computed from the exact weights, never from the displayed readings. Room names are NFC-normalized and trimmed of leading and trailing spaces, at most 24 characters.</p>
+    <p>The downloaded report is always named shared-electricity-split-report.json. It contains the result as compact JSON with keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is common-area usage handled?</dt>
+      <dd>The total meter delta minus the sum of the room submeters is split equally across rooms first, then added to each room's own usage before the proportional split.</dd>
+      <dt>Why don't the shares add up to 100%?</dt>
+      <dd>Shares are shown to one decimal place and may not total exactly 100% after rounding; the amounts are allocated by the largest remainder method and always sum exactly to the bill.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
