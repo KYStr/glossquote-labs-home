@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>時區換算工具 | GlossQuote Labs</title>
+<meta name="description" content="把一個日期時間從來源時區換算到最多 20 個目標時區：顯示各地時間、UTC 偏移與日期位移；夏令時間的跳過與重複時段會明確標示，換算基準的 UTC 時間點永遠顯示。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← GlossQuote Labs 首頁</a>
+</header>
+<main>
+  <h1>時區換算工具</h1>
+  <p class="intro">輸入一個日期、時間和來源時區，再挑最多 20 個目標時區：每一列都由同一個換算基準（UTC 時間點）推導，附上當地時間、UTC 偏移和日期位移。來源時間若落在夏令時間的「跳過」或「重複」時段，頁面會明講，不會默默給你一個看起來合理的答案。</p>
+
+  <form id="converter" novalidate>
+    <div class="field-row">
+      <div class="field">
+        <label for="date">來源日期</label>
+        <input id="date" name="date" type="date" min="2000-01-01" max="2099-12-31" value="2026-01-15" required>
+      </div>
+      <div class="field">
+        <label for="time">來源時間</label>
+        <input id="time" name="time" type="time" value="09:00" required>
+      </div>
+      <div class="field">
+        <label for="source-zone">來源時區</label>
+        <select id="source-zone" name="source-zone"></select>
+      </div>
+    </div>
+    <p id="field-error" class="field-error" role="alert" hidden></p>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="target-zone">加入目標時區</label>
+        <select id="target-zone" name="target-zone"></select>
+      </div>
+      <div class="field field-action">
+        <button id="add-target" type="button">加入</button>
+      </div>
+    </div>
+    <p id="target-note" class="target-note" aria-live="polite"></p>
+    <ul id="target-list" class="target-list" aria-label="已選的目標時區"></ul>
+  </form>
+
+  <p class="instant-line">換算基準（UTC 時間點）：<output id="utc-instant">—</output></p>
+  <div id="banner" class="banner" hidden></div>
+  <p id="stale-note" class="stale-note" hidden>輸入有誤，下方表格是上一次的有效結果，已經過時。</p>
+
+  <div id="table-wrap">
+    <table id="results">
+      <thead>
+        <tr>
+          <th scope="col">時區</th>
+          <th scope="col">當地日期</th>
+          <th scope="col">當地時間</th>
+          <th scope="col">UTC 偏移</th>
+          <th scope="col">日期位移</th>
+        </tr>
+      </thead>
+      <tbody id="result-rows"></tbody>
+    </table>
+  </div>
+  <p id="empty-prompt" class="empty-prompt" hidden>尚未選取任何目標時區。從上方清單加入至少一個，這裡就會顯示換算結果。</p>
+
+  <p class="provenance">換算依據你瀏覽器／裝置內建的時區資料庫。若某地政府更改時區規則，資料庫較舊的裝置在更新前可能顯示不同的結果。</p>
+  <p class="local-note">本工具完全在你的裝置上運算，不連網、不儲存你輸入的日期時間。</p>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
