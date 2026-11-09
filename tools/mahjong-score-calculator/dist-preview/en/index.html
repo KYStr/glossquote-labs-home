@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mahjong Score Calculator | Gloss Tools</title>
+<meta name="description" content="Score a Taiwan 16-tile mahjong winning hand from a fixed family-game tai table, with combined and non-stacking rules applied, and get the per-player payout for self-draw and discard wins.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Mahjong Score Calculator</h1>
+  <p class="lede">Tick the patterns and circumstances of one winning hand and the tool applies one fixed rule set — Taiwan 16-tile mahjong, common family-game conventions — to list every tai: a concealed self-draw combines into 3 tai, Big Three Dragons does not stack the dragon pungs again, dealer tai joins the total, and the cap applies last. It then works out the payout from the base and the per-tai amount: what each opponent pays on a self-draw, and what the discarder pays on a discard win. There is only this one table; patterns outside it never score. The tai for All Sequences, All Five Categories, Heavenly/Earthly Ready, Flower Set, each honor flower, and Three/Four Kongs can be edited next to each item. Data stays on this page; no real money is involved.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Input</h2>
+      <form id="score-form" novalidate>
+        <fieldset>
+          <legend>Win method and dealer</legend>
+          <div class="field">
+            <span class="field-label" id="win-method-label">Win method</span>
+            <div class="radio-row" role="radiogroup" aria-labelledby="win-method-label">
+              <label><input type="radio" name="winMethod" id="win-self-draw" value="self-draw"> Self draw</label>
+              <label><input type="radio" name="winMethod" id="win-discard" value="discard" checked> Discard</label>
+            </div>
+            <p class="field-error" id="error-for-win-self-draw" role="alert"></p>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="winner-dealer"> Winner is dealer</label>
+            <p class="field-error" id="error-for-winner-dealer" role="alert"></p>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="discarder-dealer"> Discarder is dealer</label>
+            <p class="help">Only enabled for discard wins; ignored on a self draw.</p>
+            <p class="field-error" id="error-for-discarder-dealer" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="dealer-streak">Dealer streak</label>
+            <p class="help" id="help-dealer-streak">An integer from 0 to 8. Dealer tai is 1 + the streak.</p>
+            <input id="dealer-streak" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-dealer-streak">
+            <p class="field-error" id="error-for-dealer-streak" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Hand patterns</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-ALL_HONORS"> All Honors (16 tai)</label><p class="field-error" id="error-for-sel-ALL_HONORS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-BIG_DRAGONS"> Big Three Dragons (8 tai)</label><p class="field-error" id="error-for-sel-BIG_DRAGONS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-SMALL_DRAGONS"> Small Three Dragons (4 tai)</label><p class="field-error" id="error-for-sel-SMALL_DRAGONS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-FULL_FLUSH"> Full Flush (8 tai)</label><p class="field-error" id="error-for-sel-FULL_FLUSH" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-HALF_FLUSH"> Half Flush (4 tai)</label><p class="field-error" id="error-for-sel-HALF_FLUSH" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_PUNGS"> All Pungs (4 tai)</label><p class="field-error" id="error-for-sel-ALL_PUNGS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-PING_HU"> All Sequences</label><span class="override"><label for="ovr-PING_HU">Tai</label><input id="ovr-PING_HU" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="2"></span><p class="field-error" id="error-for-sel-PING_HU" role="alert"></p><p class="field-error" id="error-for-ovr-PING_HU" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-FIVE_SUITED"> All Five Categories</label><span class="override"><label for="ovr-FIVE_SUITED">Tai</label><input id="ovr-FIVE_SUITED" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span><p class="field-error" id="error-for-sel-FIVE_SUITED" role="alert"></p><p class="field-error" id="error-for-ovr-FIVE_SUITED" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_FROM_ONE"> All Exposed (2 tai)</label><p class="field-error" id="error-for-sel-ALL_FROM_ONE" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>Situational</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-MENQING"> Concealed Hand</label><p class="help">On a self draw it combines with Self Draw into 3 tai.</p><p class="field-error" id="error-for-sel-MENQING" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-HEAVENLY_LISTEN"> Heavenly Ready</label><span class="override"><label for="ovr-HEAVENLY_LISTEN">Tai</label><input id="ovr-HEAVENLY_LISTEN" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="8"></span><p class="field-error" id="error-for-sel-HEAVENLY_LISTEN" role="alert"></p><p class="field-error" id="error-for-ovr-HEAVENLY_LISTEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-EARTHLY_LISTEN"> Earthly Ready</label><span class="override"><label for="ovr-EARTHLY_LISTEN">Tai</label><input id="ovr-EARTHLY_LISTEN" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="4"></span><p class="field-error" id="error-for-sel-EARTHLY_LISTEN" role="alert"></p><p class="field-error" id="error-for-ovr-EARTHLY_LISTEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-KONG_WIN"> Win on Kong Supplement (1 tai)</label><p class="field-error" id="error-for-sel-KONG_WIN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-LAST_TILE_SELF"> Last Tile Self Draw (1 tai)</label><p class="field-error" id="error-for-sel-LAST_TILE_SELF" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-LAST_TILE_DISCARD"> Last Tile Discard (1 tai)</label><p class="field-error" id="error-for-sel-LAST_TILE_DISCARD" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ROB_KONG"> Robbing the Kong (1 tai)</label><p class="field-error" id="error-for-sel-ROB_KONG" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>Winds and dragon pungs</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-SEAT_WIND_PONG"> Seat Wind Pung (1 tai)</label><p class="field-error" id="error-for-sel-SEAT_WIND_PONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ROUND_WIND_PONG"> Round Wind Pung (1 tai)</label><p class="help">The same pung can count as both when it is both winds (double wind, 2 tai).</p><p class="field-error" id="error-for-sel-ROUND_WIND_PONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_RED"> Red Dragon Pung (1 tai)</label><p class="field-error" id="error-for-sel-DRAGON_RED" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_GREEN"> Green Dragon Pung (1 tai)</label><p class="field-error" id="error-for-sel-DRAGON_GREEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_WHITE"> White Dragon Pung (1 tai)</label><p class="field-error" id="error-for-sel-DRAGON_WHITE" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>Flowers and kongs</legend>
+          <div class="field">
+            <label for="honor-flowers">Honor flowers</label>
+            <p class="help" id="help-honor-flowers">An integer from 0 to 8; honor and off flowers together must not exceed 8. The tai per flower can be edited on the right (default 1).</p>
+            <input id="honor-flowers" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-honor-flowers">
+            <span class="override"><label for="ovr-HONOR_FLOWER_EACH">Tai per honor flower</label><input id="ovr-HONOR_FLOWER_EACH" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span>
+            <p class="field-error" id="error-for-honor-flowers" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-HONOR_FLOWER_EACH" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="off-flowers">Off flowers</label>
+            <p class="help" id="help-off-flowers">An integer from 0 to 8; 0 tai each, echoed in the result only.</p>
+            <input id="off-flowers" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-off-flowers">
+            <p class="field-error" id="error-for-off-flowers" role="alert"></p>
+          </div>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-FLOWER_KONG"> Flower Set</label><span class="override"><label for="ovr-FLOWER_KONG">Tai</label><input id="ovr-FLOWER_KONG" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span><p class="field-error" id="error-for-sel-FLOWER_KONG" role="alert"></p><p class="field-error" id="error-for-ovr-FLOWER_KONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-SEVEN_ROB_ONE"> Seven Flowers Rob One (8 tai)</label><p class="field-error" id="error-for-sel-SEVEN_ROB_ONE" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_FLOWERS"> All Eight Flowers (8 tai)</label><p class="field-error" id="error-for-sel-ALL_FLOWERS" role="alert"></p></li>
+          </ul>
+          <div class="field">
+            <label for="kong-count">Kong count</label>
+            <p class="help" id="help-kong-count">An integer from 0 to 4. Three kongs score Three Kongs, four score Four Kongs; both tai values can be edited on the right (defaults 2 / 5).</p>
+            <input id="kong-count" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-kong-count">
+            <span class="override"><label for="ovr-THREE_KONGS">Three Kongs tai</label><input id="ovr-THREE_KONGS" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="2"></span>
+            <span class="override"><label for="ovr-FOUR_KONGS">Four Kongs tai</label><input id="ovr-FOUR_KONGS" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="5"></span>
+            <p class="field-error" id="error-for-kong-count" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-THREE_KONGS" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-FOUR_KONGS" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Stakes and cap</legend>
+          <div class="field">
+            <label for="base">Base</label>
+            <p class="help" id="help-base">An integer from 0 to 100,000.</p>
+            <input id="base" type="text" inputmode="numeric" autocomplete="off" value="100" aria-describedby="help-base">
+            <p class="field-error" id="error-for-base" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="per-tai">Amount per tai</label>
+            <p class="help" id="help-per-tai">An integer from 0 to 10,000.</p>
+            <input id="per-tai" type="text" inputmode="numeric" autocomplete="off" value="50" aria-describedby="help-per-tai">
+            <p class="field-error" id="error-for-per-tai" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="cap">Tai cap</label>
+            <p class="help" id="help-cap">The cap applies to the total after dealer tai is included.</p>
+            <select id="cap" aria-describedby="help-cap">
+              <option value="none" selected>No cap</option>
+              <option value="8">8 tai</option>
+              <option value="12">12 tai</option>
+              <option value="16">16 tai</option>
+            </select>
+            <p class="field-error" id="error-for-cap" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <div id="error-box" class="error-box" hidden>
+          <span id="error-text"></span>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Not calculated yet. Select the hand's patterns, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate tai &amp; payout</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Tai breakdown and payout</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p class="flowers-echo" id="flowers-echo"></p>
+      <div class="table-scroll" role="region" aria-label="Scoring item details" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Scoring item</th><th scope="col">Tai</th></tr></thead>
+          <tbody id="result-lines"></tbody>
+        </table>
+      </div>
+      <p id="no-items" hidden></p>
+      <div id="excluded-block" hidden>
+        <h3>Items not counted</h3>
+        <ul id="excluded-list"></ul>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-primary" disabled>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <details>
+      <summary>Why is a concealed self-draw 3 tai, not 2?</summary>
+      <p>Under the common family rules used here, concealed hand and self draw combine into a single 3-tai item instead of 1 + 1.</p>
+    </details>
+    <details>
+      <summary>What if our house counts differently?</summary>
+      <p>The tai values for All Sequences, All Five Categories, Heavenly/Earthly Ready, Flower Set, each honor flower, and Three/Four Kongs can be edited next to each item; all other items follow the fixed table in this spec.</p>
+    </details>
+  </section>
+</main>
+</body>
+</html>
