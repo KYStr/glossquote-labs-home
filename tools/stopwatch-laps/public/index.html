@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>碼錶計圈 | GlossQuote 工具</title>
+<meta name="description" content="單一單調時鐘的計圈碼錶：每圈時間由分段讀數推導，圈數永遠精確加總；標示最快與最慢圈、平均圈速，並可匯出 CSV。完全在本機運作，不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>碼錶計圈</h1>
+  <p class="intro">按下開始後，每完成一圈按一次「計圈」。每圈時間由同一個時鐘的分段讀數推導，因此所有圈數永遠精確加總到最後的分段時間。暫停休息的時間不會被計入。</p>
+  <p class="note">顯示精度為百分之一秒，由毫秒計時截尾顯示（不四捨五入）；這不是官方或終點攝影等級的計時精度。</p>
+
+  <section class="card" aria-label="碼錶">
+    <div id="display" class="display">00:00.00</div>
+    <p class="current-lap">目前這一圈（進行中）：<span id="current-lap">00:00.00</span></p>
+    <div class="controls">
+      <button id="btn-toggle" type="button">開始</button>
+      <button id="btn-lap" type="button" disabled>計圈</button>
+      <button id="btn-reset" type="button">重設</button>
+      <button id="btn-export" type="button" disabled>匯出 CSV</button>
+    </div>
+    <p id="limit-note" class="warning" hidden>已達到 500 圈上限，無法再計圈；碼錶仍繼續計時，既有圈數仍可匯出。</p>
+  </section>
+
+  <section id="stats" class="card" hidden>
+    <h2>統計（已完成圈數）</h2>
+    <ul class="stats-list">
+      <li>最快一圈：<span id="stat-fastest">—</span></li>
+      <li>最慢一圈：<span id="stat-slowest">—</span></li>
+      <li>平均一圈：<span id="stat-average">—</span></li>
+    </ul>
+  </section>
+
+  <section id="laps-section" class="card" hidden>
+    <h2>圈數紀錄</h2>
+    <table class="laps">
+      <thead>
+        <tr><th scope="col">圈</th><th scope="col">單圈時間</th><th scope="col">累計分段</th><th scope="col">標記</th></tr>
+      </thead>
+      <tbody id="laps-body"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>鍵盤快捷鍵</h2>
+    <ul class="shortcuts">
+      <li><kbd>Space</kbd>：開始／暫停／繼續</li>
+      <li><kbd>L</kbd>：計圈（計時中才有效）</li>
+      <li><kbd>R</kbd>：重設</li>
+    </ul>
+    <p class="note">本頁不連網、不儲存任何資料；關閉或重新整理後所有紀錄都會消失。圈數資料只會在你按下「匯出 CSV」時以檔案下載到你的裝置。</p>
+  </section>
+  <div id="announcer" class="visually-hidden" aria-live="polite"></div>
+</main>
+</body>
+</html>
