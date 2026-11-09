@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>油耗成本計算器 | GlossQuote 工具</title>
+<meta name="description" content="估算一趟路程要多少油、花多少錢：距離、油耗（公升/100公里、公里/公升、美國或英國 MPG）與油價自由混搭單位，精確換算，還可分攤給同車的人。全部在本機計算，不上傳、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>油耗成本計算器</h1>
+  <p class="intro">輸入距離、愛車的油耗和油價，就能估出這一趟要多少油、總共多少錢。油耗可以用公升/100公里、公里/公升、美制或英制 MPG 輸入，油價可按公升、美制加侖或英制加侖計；還能把油錢分攤給同車的人。全部在你的瀏覽器本機計算，不上傳、不儲存。</p>
+
+  <form id="fuel-form" novalidate>
+    <section class="card" aria-labelledby="distance-heading">
+      <h2 id="distance-heading">距離</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="distance-value">距離</label>
+          <input id="distance-value" name="distance" type="text" inputmode="decimal" autocomplete="off" value="250" aria-describedby="distance-error">
+          <p class="error" id="distance-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="distance-unit">單位</label>
+          <select id="distance-unit" name="distanceUnit">
+            <option value="km" selected>公里（km）</option>
+            <option value="mi">英里（miles）</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="consumption-heading">
+      <h2 id="consumption-heading">油耗</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="consumption-value">油耗</label>
+          <input id="consumption-value" name="consumption" type="text" inputmode="decimal" autocomplete="off" value="6.5" aria-describedby="consumption-error">
+          <p class="error" id="consumption-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="consumption-unit">單位</label>
+          <select id="consumption-unit" name="consumptionUnit">
+            <option value="l100km" selected>公升/100公里（L/100km）</option>
+            <option value="kml">公里/公升（km/L）</option>
+            <option value="mpg-us">英里/加侖（美國 MPG）</option>
+            <option value="mpg-uk">英里/加侖（英國 MPG）</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="price-heading">
+      <h2 id="price-heading">油價</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="price-value">油價</label>
+          <input id="price-value" name="price" type="text" inputmode="decimal" autocomplete="off" value="1.80" aria-describedby="price-error">
+          <p class="error" id="price-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="price-unit">計價單位</label>
+          <select id="price-unit" name="priceUnit">
+            <option value="litre" selected>每公升</option>
+            <option value="gal-us">每美制加侖</option>
+            <option value="gal-uk">每英制加侖</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="price-currency">貨幣（只換符號）</label>
+          <select id="price-currency" name="currency">
+            <option value="TWD">NT$ 新台幣</option>
+            <option value="USD" selected>US$ 美元</option>
+            <option value="EUR">€ 歐元</option>
+            <option value="GBP">£ 英鎊</option>
+            <option value="JPY">¥ 日圓</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="split-heading">
+      <h2 id="split-heading">分攤（可選）</h2>
+      <div class="field">
+        <label class="toggle" for="split-toggle">
+          <input id="split-toggle" name="splitOn" type="checkbox">
+          把油錢分攤給同車的人
+        </label>
+      </div>
+      <div class="field" id="people-field" hidden>
+        <label for="people-value">人數（1–12）</label>
+        <input id="people-value" name="people" type="text" inputmode="numeric" autocomplete="off" value="4" aria-describedby="people-error">
+        <p class="error" id="people-error" hidden></p>
+      </div>
+    </section>
+
+    <section class="card results" aria-labelledby="results-heading">
+      <h2 id="results-heading">結果</h2>
+      <p class="stale" id="stale-badge" hidden>輸入有誤 — 以下為上次有效結果，已過時。</p>
+      <dl class="outputs" aria-live="polite">
+        <div class="output-row">
+          <dt>需要油量</dt>
+          <dd id="out-fuel">16.25 L</dd>
+        </div>
+        <div class="output-row">
+          <dt>總油費</dt>
+          <dd id="out-total">$29.25</dd>
+        </div>
+        <div class="output-row" id="share-row" hidden>
+          <dt>每人分攤</dt>
+          <dd id="out-share"></dd>
+        </div>
+        <div class="output-row">
+          <dt>油耗換算</dt>
+          <dd id="out-echo">6.50 L/100km</dd>
+        </div>
+      </dl>
+      <p class="note" id="split-note" hidden>每人的金額會四捨五入到分；各人金額加總可能與總額差一兩分。</p>
+      <button type="button" id="reset-button">重設為預設值</button>
+    </section>
+  </form>
+
+  <section class="card explainer" aria-labelledby="explainer-heading">
+    <h2 id="explainer-heading">計算說明</h2>
+    <ul>
+      <li>結果是依你輸入的油耗數字估算的；實際油耗會隨路況、車速與開法不同。</li>
+      <li>貨幣選擇只更換顯示的符號，不做任何匯率換算；請輸入與所選貨幣相同的油價。</li>
+      <li>美制加侖與英制加侖大小不同：1 美制加侖 = 3.785411784 公升，1 英制加侖 = 4.54609 公升。MPG 一定要選對國家，兩者不能混用。</li>
+      <li>切換單位不會換算你已經輸入的數字：數字保持不變，改以新單位重新解讀。請看「油耗換算」欄位確認換算結果是否合理。</li>
+      <li>金額在顯示時才四捨五入到分，計算過程不先捨入，所以同一組輸入在哪裡算都一樣。</li>
+    </ul>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote 工具 — 全部在本機計算，不連網、不儲存。</p>
+</footer>
+</body>
+</html>
