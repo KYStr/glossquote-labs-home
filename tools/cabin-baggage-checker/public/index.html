@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>手提行李規定檢查｜Gloss Tools</title>
+<meta name="description" content="輸入手提行李的三邊尺寸與重量，一次比對長榮、中華、星宇、台灣虎航、全日空與日本航空經濟艙的登機行李規定，逐家列出符合與否和差距。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>手提行李規定檢查</h1>
+  <p class="lede">填入主行李的三邊尺寸與重量（個人物品選填），一次比對六家航空公司經濟艙（國際線）的登機行李規定：三邊排序後逐邊比較、重量依各家規則判定，逐家列出符合與否與差距。比對依據為 2026-11-09 查核的公開規定表，不是即時查詢。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">行李與航空公司</h2>
+      <form id="baggage-form" novalidate>
+        <fieldset class="field">
+          <legend>主行李尺寸（公分）：長、寬、高</legend>
+          <p class="help" id="help-bag-size">三邊填入順序不限，工具會排序後比對。尺寸含輪子、把手與側袋；每邊大於 0、至多 200 公分，最多一位小數。</p>
+          <div class="field-grid">
+            <div class="subfield">
+              <label for="field-bagLength">長（公分）</label>
+              <input id="field-bagLength" name="bagLength" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+            <div class="subfield">
+              <label for="field-bagWidth">寬（公分）</label>
+              <input id="field-bagWidth" name="bagWidth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+            <div class="subfield">
+              <label for="field-bagHeight">高（公分）</label>
+              <input id="field-bagHeight" name="bagHeight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+          </div>
+          <p class="field-error" id="error-bagLength" role="alert"></p>
+          <p class="field-error" id="error-bagWidth" role="alert"></p>
+          <p class="field-error" id="error-bagHeight" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-bagWeightKg">主行李重量（公斤）</label>
+          <p class="help" id="help-bagWeightKg">大於 0、至多 100 公斤，最多一位小數。</p>
+          <input id="field-bagWeightKg" name="bagWeightKg" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bagWeightKg">
+          <p class="field-error" id="error-bagWeightKg" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>個人物品（選填）：長、寬、高、重量</legend>
+          <p class="help" id="help-personal">四欄全空表示沒有個人物品；只要填了任一欄，四欄都必填。尺寸規則與主行李相同，重量至多 100 公斤。</p>
+          <div class="field-grid">
+            <div class="subfield">
+              <label for="field-personalLength">長（公分）</label>
+              <input id="field-personalLength" name="personalLength" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalWidth">寬（公分）</label>
+              <input id="field-personalWidth" name="personalWidth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalHeight">高（公分）</label>
+              <input id="field-personalHeight" name="personalHeight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalWeightKg">重量（公斤）</label>
+              <input id="field-personalWeightKg" name="personalWeightKg" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+          </div>
+          <p class="field-error" id="error-personalLength" role="alert"></p>
+          <p class="field-error" id="error-personalWidth" role="alert"></p>
+          <p class="field-error" id="error-personalHeight" role="alert"></p>
+          <p class="field-error" id="error-personalWeightKg" role="alert"></p>
+        </fieldset>
+        <fieldset class="field">
+          <legend>要比對的航空公司</legend>
+          <p class="help" id="help-airlines">預設全選，至少選一家。</p>
+          <label class="check-row" for="field-airline-eva">
+            <input id="field-airline-eva" name="airlines" type="checkbox" value="eva" checked>
+            長榮航空
+          </label>
+          <label class="check-row" for="field-airline-china-airlines">
+            <input id="field-airline-china-airlines" name="airlines" type="checkbox" value="china-airlines" checked>
+            中華航空
+          </label>
+          <label class="check-row" for="field-airline-starlux">
+            <input id="field-airline-starlux" name="airlines" type="checkbox" value="starlux" checked>
+            星宇航空
+          </label>
+          <label class="check-row" for="field-airline-tigerair-taiwan">
+            <input id="field-airline-tigerair-taiwan" name="airlines" type="checkbox" value="tigerair-taiwan" checked>
+            台灣虎航
+          </label>
+          <label class="check-row" for="field-airline-ana">
+            <input id="field-airline-ana" name="airlines" type="checkbox" value="ana" checked>
+            全日空
+          </label>
+          <label class="check-row" for="field-airline-jal">
+            <input id="field-airline-jal" name="airlines" type="checkbox" value="jal" checked>
+            日本航空
+          </label>
+          <p class="field-error" id="error-airlines" role="alert"></p>
+        </fieldset>
+        <p class="field-error" id="error-form" role="alert"></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未檢查。輸入行李尺寸與重量，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">檢查行李</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">逐家比對結果</h2>
+      <p id="summary"></p>
+      <p id="sorted-note"></p>
+      <div class="table-scroll" role="region" aria-label="逐家比對結果" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">航空公司</th><th scope="col">判定</th><th scope="col">尺寸上限（公分）</th><th scope="col">三邊差距（公分）</th><th scope="col">重量</th><th scope="col">個人物品</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">比對結果依 2026-11-09 查核之各航空公司公開規定（經濟艙），僅供參考。規定可能變更，行李是否可登機以航空公司官網與現場認定為準。 / Checked against each airline's published economy-class rules as verified on 2026-11-09, for reference only. Rules can change; the airline's official website and airport staff have the final say.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>比對方式與規定表說明</summary>
+    <p>三邊會先由大到小排序，再與各家上限逐邊比較，任一邊超過即尺寸不合格；本工具不採各家公告的「三邊總和 ≤ 115 cm」替代判定。重量分兩種：長榮與中華的 7 kg 只計主行李一件（主行李制）；星宇 7 kg、台灣虎航與全日空、日本航空 10 kg 為主行李加個人物品合計（合計制）。個人物品尺寸：長榮、星宇 40×30×10 cm，中華 40×30×15 cm，全日空 40×30×20 cm；台灣虎航與日本航空未公告尺寸，只顯示「未公告尺寸」且不影響判定。全日空與日本航空以國際線 100 座以上機型公告為準。報告 cabin-baggage-report.json 是結果的固定格式 JSON，可下載存檔。所有數字固定一位小數，不加千分位。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>尺寸要含輪子和把手嗎？</dt>
+      <dd>要。六家規定都把輪子、把手和側袋計入尺寸，請量裝滿後行李箱的外側三邊。</dd>
+      <dt>為什麼星宇的重量比較嚴？</dt>
+      <dd>星宇經濟艙規定主行李與個人物品合計 7 kg；長榮與中華的 7 kg 只計主行李一件。</dd>
+      <dt>三邊填的順序有關係嗎？</dt>
+      <dd>沒有。工具會把三邊由大到小排序後再跟各家上限逐邊比對。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部比對都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
