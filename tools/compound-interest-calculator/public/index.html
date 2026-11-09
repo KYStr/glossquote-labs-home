@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>複利與儲蓄目標計算機 | GlossQuote Labs</title>
+<meta name="description" content="逐月模擬複利成長：每月利息四捨五入到分、月底提撥。可算期末餘額、達標月數，以及達標所需的最小每月提撥（精確到分）。純本地計算，不傳送不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="/tools/compound-interest-calculator/">
+<link rel="alternate" hreflang="zh-Hant" href="/tools/compound-interest-calculator/">
+<link rel="alternate" hreflang="en" href="/tools/compound-interest-calculator/en/">
+<link rel="alternate" hreflang="x-default" href="/tools/compound-interest-calculator/">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <p class="home"><a href="../../">← GlossQuote Labs 首頁</a></p>
+  <h1>複利與儲蓄目標計算機</h1>
+  <p class="model">本工具的模型：利息按名目年利率 ÷ 12 每月複利計算，每月利息四捨五入到分，每月提撥在月底入帳；結果是此模型的試算，不是任何商品的報酬承諾。所有數字都來自逐月模擬 — 與連續複利公式可能差一分（公式不逐月四捨五入），本頁一律以模擬為準。</p>
+</header>
+<main>
+  <div class="currency-row">
+    <label for="currency">金額標示（僅影響顯示）</label>
+    <select id="currency">
+      <option value="NT$" selected>NT$ 新台幣</option>
+      <option value="US$">US$ 美元</option>
+      <option value="">不顯示符號</option>
+    </select>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="計算模式">
+    <button type="button" role="tab" id="tab-growth" aria-controls="panel-growth" aria-selected="true">成長試算</button>
+    <button type="button" role="tab" id="tab-goala" aria-controls="panel-goala" aria-selected="false" tabindex="-1">多久達標</button>
+    <button type="button" role="tab" id="tab-goalb" aria-controls="panel-goalb" aria-selected="false" tabindex="-1">每月要存多少</button>
+  </div>
+
+  <section id="panel-growth" role="tabpanel" aria-labelledby="tab-growth">
+    <form novalidate>
+      <div class="field">
+        <label for="g-initial">期初金額</label>
+        <input id="g-initial" type="text" inputmode="decimal" autocomplete="off" value="10000">
+        <p class="error" id="err-g-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-rate">名目年利率（%）</label>
+        <input id="g-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-g-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-contribution">每月提撥（月底入帳）</label>
+        <input id="g-contribution" type="text" inputmode="decimal" autocomplete="off" value="100">
+        <p class="error" id="err-g-contribution" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-term">期間（月）</label>
+        <input id="g-term" type="text" inputmode="numeric" autocomplete="off" value="12">
+        <p class="hint" id="hint-g-term"></p>
+        <p class="error" id="err-g-term" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-growth" hidden>有欄位不正確，下方是上次的計算結果（已過期）。</p>
+    <div id="g-results">
+      <table class="summary">
+        <tbody>
+          <tr><th scope="row">期末餘額</th><td id="g-out-final"></td></tr>
+          <tr><th scope="row">期初金額</th><td id="g-out-initial"></td></tr>
+          <tr><th scope="row">每月提撥總額</th><td id="g-out-contributions"></td></tr>
+          <tr><th scope="row">利息總額</th><td id="g-out-interest"></td></tr>
+          <tr><th scope="row">有效年利率</th><td id="g-out-ear"></td></tr>
+        </tbody>
+      </table>
+      <h2>年度彙總</h2>
+      <table id="g-yearly">
+        <thead><tr>
+          <th scope="col">年度</th><th scope="col">本年提撥</th><th scope="col">本年利息</th>
+          <th scope="col">累計提撥</th><th scope="col">累計利息</th><th scope="col">期末餘額</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <h2>逐月明細</h2>
+      <table id="g-monthly">
+        <thead><tr>
+          <th scope="col">月份</th><th scope="col">當月利息</th><th scope="col">提撥</th><th scope="col">期末餘額</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="actions">
+        <button type="button" id="g-toggle-months"></button>
+        <button type="button" id="g-csv">下載逐月明細 CSV</button>
+        <button type="button" class="reset" data-mode="growth">重設為範例</button>
+      </p>
+    </div>
+  </section>
+
+  <section id="panel-goala" role="tabpanel" aria-labelledby="tab-goala" hidden>
+    <form novalidate>
+      <div class="field">
+        <label for="a-initial">期初金額</label>
+        <input id="a-initial" type="text" inputmode="decimal" autocomplete="off" value="0">
+        <p class="error" id="err-a-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-rate">名目年利率（%）</label>
+        <input id="a-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-a-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-contribution">每月提撥（月底入帳）</label>
+        <input id="a-contribution" type="text" inputmode="decimal" autocomplete="off" value="100">
+        <p class="error" id="err-a-contribution" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-target">目標金額</label>
+        <input id="a-target" type="text" inputmode="decimal" autocomplete="off" value="1000">
+        <p class="error" id="err-a-target" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-goala" hidden>有欄位不正確，下方是上次的計算結果（已過期）。</p>
+    <p class="goal-result" id="a-result" aria-live="polite"></p>
+    <p class="actions"><button type="button" class="reset" data-mode="goala">重設為範例</button></p>
+  </section>
+
+  <section id="panel-goalb" role="tabpanel" aria-labelledby="tab-goalb" hidden>
+    <form novalidate>
+      <div class="field">
+        <label for="b-initial">期初金額</label>
+        <input id="b-initial" type="text" inputmode="decimal" autocomplete="off" value="0">
+        <p class="error" id="err-b-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-rate">名目年利率（%）</label>
+        <input id="b-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-b-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-target">目標金額</label>
+        <input id="b-target" type="text" inputmode="decimal" autocomplete="off" value="12000">
+        <p class="error" id="err-b-target" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-term">期間（月）</label>
+        <input id="b-term" type="text" inputmode="numeric" autocomplete="off" value="12">
+        <p class="hint" id="hint-b-term"></p>
+        <p class="error" id="err-b-term" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-goalb" hidden>有欄位不正確，下方是上次的計算結果（已過期）。</p>
+    <div id="b-result" aria-live="polite">
+      <p class="goal-result" id="b-out-main"></p>
+      <p id="b-out-pair"></p>
+    </div>
+    <p class="actions"><button type="button" class="reset" data-mode="goalb">重設為範例</button></p>
+  </section>
+</main>
+<footer>
+  <p>純本地計算：你的數字不會傳送到任何地方，也不會被儲存；重新整理後不保留。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

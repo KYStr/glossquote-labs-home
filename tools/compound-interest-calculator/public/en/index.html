@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compound Interest &amp; Savings Goal Calculator | GlossQuote Labs</title>
+<meta name="description" content="Month-by-month compound growth simulation: interest rounded to the cent every month, contributions at month end. See the final balance, months to your target, and the exact minimum monthly contribution to the cent. Fully local, nothing sent or stored.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="/tools/compound-interest-calculator/en/">
+<link rel="alternate" hreflang="zh-Hant" href="/tools/compound-interest-calculator/">
+<link rel="alternate" hreflang="en" href="/tools/compound-interest-calculator/en/">
+<link rel="alternate" hreflang="x-default" href="/tools/compound-interest-calculator/">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p class="home"><a href="../../../en/">← GlossQuote Labs home</a></p>
+  <h1>Compound Interest &amp; Savings Goal Calculator</h1>
+  <p class="model">The model used here: interest is compounded monthly at the nominal annual rate ÷ 12, each month's interest is rounded to the cent, and contributions land at month end. Results are a projection of that model, not a promise of any product's return. Every number comes from the month-by-month simulation — a continuous-compounding formula can differ by one cent (it never rounds monthly interest), and the simulation governs on this page.</p>
+</header>
+<main>
+  <div class="currency-row">
+    <label for="currency">Currency label (display only)</label>
+    <select id="currency">
+      <option value="NT$" selected>NT$ (New Taiwan Dollar)</option>
+      <option value="US$">US$ (US Dollar)</option>
+      <option value="">No symbol</option>
+    </select>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Calculation mode">
+    <button type="button" role="tab" id="tab-growth" aria-controls="panel-growth" aria-selected="true">Growth</button>
+    <button type="button" role="tab" id="tab-goala" aria-controls="panel-goala" aria-selected="false" tabindex="-1">Months to target</button>
+    <button type="button" role="tab" id="tab-goalb" aria-controls="panel-goalb" aria-selected="false" tabindex="-1">Required contribution</button>
+  </div>
+
+  <section id="panel-growth" role="tabpanel" aria-labelledby="tab-growth">
+    <form novalidate>
+      <div class="field">
+        <label for="g-initial">Initial amount</label>
+        <input id="g-initial" type="text" inputmode="decimal" autocomplete="off" value="10000">
+        <p class="error" id="err-g-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-rate">Nominal annual rate (%)</label>
+        <input id="g-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-g-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-contribution">Monthly contribution (at month end)</label>
+        <input id="g-contribution" type="text" inputmode="decimal" autocomplete="off" value="100">
+        <p class="error" id="err-g-contribution" hidden></p>
+      </div>
+      <div class="field">
+        <label for="g-term">Term (months)</label>
+        <input id="g-term" type="text" inputmode="numeric" autocomplete="off" value="12">
+        <p class="hint" id="hint-g-term"></p>
+        <p class="error" id="err-g-term" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-growth" hidden>Some fields are invalid; the results below are from the last valid calculation (out of date).</p>
+    <div id="g-results">
+      <table class="summary">
+        <tbody>
+          <tr><th scope="row">Final balance</th><td id="g-out-final"></td></tr>
+          <tr><th scope="row">Initial amount</th><td id="g-out-initial"></td></tr>
+          <tr><th scope="row">Total monthly contributions</th><td id="g-out-contributions"></td></tr>
+          <tr><th scope="row">Total interest</th><td id="g-out-interest"></td></tr>
+          <tr><th scope="row">Effective annual rate</th><td id="g-out-ear"></td></tr>
+        </tbody>
+      </table>
+      <h2>Yearly summary</h2>
+      <table id="g-yearly">
+        <thead><tr>
+          <th scope="col">Year</th><th scope="col">Contributed</th><th scope="col">Interest</th>
+          <th scope="col">Cumulative contributions</th><th scope="col">Cumulative interest</th><th scope="col">End balance</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <h2>Monthly detail</h2>
+      <table id="g-monthly">
+        <thead><tr>
+          <th scope="col">Month</th><th scope="col">Interest</th><th scope="col">Contribution</th><th scope="col">End balance</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="actions">
+        <button type="button" id="g-toggle-months"></button>
+        <button type="button" id="g-csv">Download monthly detail (CSV)</button>
+        <button type="button" class="reset" data-mode="growth">Reset to example</button>
+      </p>
+    </div>
+  </section>
+
+  <section id="panel-goala" role="tabpanel" aria-labelledby="tab-goala" hidden>
+    <form novalidate>
+      <div class="field">
+        <label for="a-initial">Initial amount</label>
+        <input id="a-initial" type="text" inputmode="decimal" autocomplete="off" value="0">
+        <p class="error" id="err-a-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-rate">Nominal annual rate (%)</label>
+        <input id="a-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-a-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-contribution">Monthly contribution (at month end)</label>
+        <input id="a-contribution" type="text" inputmode="decimal" autocomplete="off" value="100">
+        <p class="error" id="err-a-contribution" hidden></p>
+      </div>
+      <div class="field">
+        <label for="a-target">Target amount</label>
+        <input id="a-target" type="text" inputmode="decimal" autocomplete="off" value="1000">
+        <p class="error" id="err-a-target" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-goala" hidden>Some fields are invalid; the result below is from the last valid calculation (out of date).</p>
+    <p class="goal-result" id="a-result" aria-live="polite"></p>
+    <p class="actions"><button type="button" class="reset" data-mode="goala">Reset to example</button></p>
+  </section>
+
+  <section id="panel-goalb" role="tabpanel" aria-labelledby="tab-goalb" hidden>
+    <form novalidate>
+      <div class="field">
+        <label for="b-initial">Initial amount</label>
+        <input id="b-initial" type="text" inputmode="decimal" autocomplete="off" value="0">
+        <p class="error" id="err-b-initial" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-rate">Nominal annual rate (%)</label>
+        <input id="b-rate" type="text" inputmode="decimal" autocomplete="off" value="12">
+        <p class="error" id="err-b-rate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-target">Target amount</label>
+        <input id="b-target" type="text" inputmode="decimal" autocomplete="off" value="12000">
+        <p class="error" id="err-b-target" hidden></p>
+      </div>
+      <div class="field">
+        <label for="b-term">Term (months)</label>
+        <input id="b-term" type="text" inputmode="numeric" autocomplete="off" value="12">
+        <p class="hint" id="hint-b-term"></p>
+        <p class="error" id="err-b-term" hidden></p>
+      </div>
+    </form>
+    <p class="stale" id="stale-goalb" hidden>Some fields are invalid; the results below are from the last valid calculation (out of date).</p>
+    <div id="b-result" aria-live="polite">
+      <p class="goal-result" id="b-out-main"></p>
+      <p id="b-out-pair"></p>
+    </div>
+    <p class="actions"><button type="button" class="reset" data-mode="goalb">Reset to example</button></p>
+  </section>
+</main>
+<footer>
+  <p>Fully local: your numbers are never sent anywhere or stored, and nothing is kept after a reload.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
