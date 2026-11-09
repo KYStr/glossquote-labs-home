@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活動借用周轉檢查｜Gloss Tools</title>
+<meta name="description" content="以借出、歸還與整備時間查活動道具的占用尖峰和短缺區間。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>活動借用周轉檢查</h1>
+  <p class="intro">先輸入道具代號、可借件數與每次歸還後的整備分鐘，再填每筆借用的領取與歸還時間，按下「找出道具短缺」，就得到各道具的占用尖峰、最多需增備件數與每段短缺區間。</p>
+
+  <form id="turnover-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>道具</legend>
+          <p class="help">1–12 種道具。代號 1–24 字，首字為字母或數字，重名不允許；可借件數 0–1000 件，整備分鐘 0–120 分。</p>
+          <div id="kits-body" class="rows"></div>
+          <button type="button" id="add-kit" class="secondary">新增一種道具</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>借用</legend>
+          <p class="help">0–60 筆借用。借用代號唯一，道具須為上方已填的代號；領取與歸還用 HH:MM（同日 00:00 起算，24:00 只作歸還端點），數量 1–1000 件。</p>
+          <div id="loans-body" class="rows"></div>
+          <button type="button" id="add-loan" class="secondary">新增一筆借用</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="check" class="primary">找出道具短缺</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（4 件道具 K，A 借 2 件 00:10–00:30，B 借 3 件 00:30–00:50，整備 10 分；00:30–00:40 缺 1 件）；載入後仍需按「找出道具短缺」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="道具尖峰與短缺結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
