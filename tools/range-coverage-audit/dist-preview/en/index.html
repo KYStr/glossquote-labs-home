@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Numeric Range Coverage Audit | Gloss Tools</title>
+<meta name="description" content="Check half-open decimal ranges for gaps and overlaps. Review exact lengths and the source rows active in each span.">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="spacer"></span>
+  <span class="status-badge" id="status-badge" data-state="empty">Not audited yet</span>
+  <nav aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main>
+  <h1>Numeric Range Coverage Audit</h1>
+  <p class="lede">Check half-open decimal ranges for gaps and overlaps. Review exact lengths and the source rows active in each span. Everything is computed locally; nothing leaves this page. Switching languages or leaving the page discards your draft.</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Input</h2>
+      <div id="audit-form">
+        <div class="domain-row">
+          <div class="field">
+            <label for="domain-start">Domain start</label>
+            <p class="help" id="domain-start-help">Decimal, at most 3 fraction digits.</p>
+            <input type="text" id="domain-start" value="0" inputmode="decimal" autocomplete="off"
+              aria-describedby="domain-start-help domain-start-error" aria-errormessage="domain-start-error">
+            <p class="field-error" id="domain-start-error"></p>
+          </div>
+          <div class="field">
+            <label for="domain-end">Domain end</label>
+            <p class="help" id="domain-end-help">Decimal, at most 3 fraction digits, larger than the start.</p>
+            <input type="text" id="domain-end" value="10" inputmode="decimal" autocomplete="off"
+              aria-describedby="domain-end-help domain-end-error" aria-errormessage="domain-end-error">
+            <p class="field-error" id="domain-end-error"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="intervals">Interval endpoints, separated by Tab</label>
+          <p class="help" id="intervals-help">One interval per row: “start Tab end”, half-open [start, end), right endpoint excluded. At most 200 rows.</p>
+          <textarea id="intervals" rows="10" spellcheck="false"
+            aria-describedby="intervals-help intervals-error" aria-errormessage="intervals-error"></textarea>
+          <p class="field-error" id="intervals-error"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="run-btn">Audit coverage</button>
+          <button type="button" id="load-example-btn">Load example</button>
+          <button type="button" id="reset-btn">Reset</button>
+          <button type="button" id="cancel-btn" hidden>Cancel</button>
+          <button type="button" id="download-btn" hidden>Download report</button>
+        </div>
+      </div>
+      <p class="notice info" id="example-note" hidden>Example loaded (one overlap and one gap). Press “Audit coverage” to run it.</p>
+      <div id="status-text" role="status" aria-live="polite" aria-busy="false">Enter a domain and intervals, or load the example.</div>
+      <div class="notice error" id="error-box" role="alert" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">Gaps, coverage and overlap sources</h2>
+      <p class="empty-state" id="empty-state">No results yet. Enter intervals and run the audit; a summary appears first, followed by the source rows for each span.</p>
+      <div id="results" hidden>
+        <div class="summary-grid">
+          <div class="summary-card"><div class="value" id="summary-covered">—</div><div class="label">Covered length</div></div>
+          <div class="summary-card"><div class="value" id="summary-uncovered">—</div><div class="label">Gap length</div></div>
+          <div class="summary-card"><div class="value" id="summary-overlapped">—</div><div class="label">Overlap length</div></div>
+        </div>
+        <p class="help">Lengths use the same unit as your inputs; intervals exclude the right endpoint. Overlap length is counted once, never multiplied by depth.</p>
+        <div class="table-scroll" id="spans-region" aria-label="Span details">
+          <table>
+            <thead>
+              <tr><th scope="col" class="num">From</th><th scope="col" class="num">To</th><th scope="col" class="num">Depth</th><th scope="col">Source rows</th></tr>
+            </thead>
+            <tbody id="spans-body"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <button type="button" id="prev-page">Previous page</button>
+          <span id="page-info"></span>
+          <button type="button" id="next-page">Next page</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <details>
+    <summary>Format and limits</summary>
+    <div class="panel">
+      <ul>
+        <li>Number format: <code>-?(0|[1-9][0-9]{0,9})(\.[0-9]{1,3})?</code> — no surrounding whitespace, plus sign, or exponent; range -1,000,000,000 to 1,000,000,000.</li>
+        <li>Intervals text is at most 16,384 characters and 200 rows; each row is exactly “start Tab end”, with start smaller than end and inside the domain (never clipped).</li>
+        <li>Intervals are half-open <code>[start, end)</code>: touching endpoints do not overlap, and the same interval twice has depth 2.</li>
+        <li>The report is <code>range-coverage-audit-report.json</code>, capped at 2,097,152 bytes; over the cap no download is offered.</li>
+        <li>Input is never uploaded, stored, or placed in the URL or logs; leaving the page discards it.</li>
+      </ul>
+    </div>
+  </details>
+
+  <section aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl class="faq">
+      <dt>Do touching endpoints overlap?</dt>
+      <dd>The right endpoint is excluded, so touching ranges do not overlap.</dd>
+      <dt>Is a three-way overlap counted three times?</dt>
+      <dd>Its length is counted once, with depth shown as three.</dd>
+    </dl>
+  </section>
+</main>
+<footer>
+  <p>This tool is a preview build: all computation runs locally and no input is sent or stored. Switching languages or leaving the page discards your draft.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
