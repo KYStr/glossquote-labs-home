@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Visit Fee Breakpoints | Gloss Tools</title>
+<meta name="description" content="Compare two studio visit fee rules and see where block and progressive totals cross.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/en/index.html">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching language leaves this page; the draft you are editing is not kept.</span></p>
+</header>
+<main>
+  <h1>Studio Visit Fee Breakpoints</h1>
+  <p class="intro">Enter two studio plans' fixed fees, included visits and progressive or block pricing, then press “Compare visit counts” to see the amount for every count from 0 to the maximum, and the continuous ranges where the cheaper plan changes.</p>
+
+  <form id="compare-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Comparison range</legend>
+          <div class="field">
+            <label for="max-visits">Maximum visit count</label>
+            <input type="text" id="max-visits" inputmode="numeric" maxlength="12" autocomplete="off" value="12">
+            <p class="help">0–240 visits. The result lists every count from 0 up to this number.</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Plan A</legend>
+          <div class="field">
+            <label for="a-name">Plan name</label>
+            <input type="text" id="a-name" maxlength="128" autocomplete="off" value="">
+            <p class="help">1–24 characters, first character a letter or digit; the two names must differ.</p>
+          </div>
+          <div class="field">
+            <span class="group-label" id="a-type-label">Pricing mode</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="a-type-label">
+              <label><input type="radio" id="a-type-progressive" name="a-type" value="progressive" checked> Per extra visit in bands</label>
+              <label><input type="radio" id="a-type-blocks" name="a-type" value="blocks"> Per block</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="a-base">Fixed fee (minor units)</label>
+            <input type="text" id="a-base" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            <p class="help">0–1,000,000. Charged even at 0 visits.</p>
+          </div>
+          <div class="field">
+            <label for="a-included">Included visits</label>
+            <input type="text" id="a-included" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–240 visits. Visits within this count are not charged extra.</p>
+          </div>
+          <div id="a-bands-wrap">
+            <p class="group-label">Per-visit band prices</p>
+            <p class="help">1–5 bands. Each band takes a cumulative extra-visit upper bound and a per-visit price; only the last band has no bound (unlimited). Bounds must strictly increase.</p>
+            <div id="a-bands-body" class="rows"></div>
+            <button type="button" id="a-add-band" class="secondary">Add a band</button>
+          </div>
+          <div id="a-blocks-wrap" hidden>
+            <div class="field">
+              <label for="a-block-size">Visits per block</label>
+              <input type="text" id="a-block-size" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+              <p class="help">1–240 visits. A partial block still counts as one block.</p>
+            </div>
+            <div class="field">
+              <label for="a-block-minor">Price per block (minor units)</label>
+              <input type="text" id="a-block-minor" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Plan B</legend>
+          <div class="field">
+            <label for="b-name">Plan name</label>
+            <input type="text" id="b-name" maxlength="128" autocomplete="off" value="">
+            <p class="help">1–24 characters, first character a letter or digit; the two names must differ.</p>
+          </div>
+          <div class="field">
+            <span class="group-label" id="b-type-label">Pricing mode</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="b-type-label">
+              <label><input type="radio" id="b-type-progressive" name="b-type" value="progressive" checked> Per extra visit in bands</label>
+              <label><input type="radio" id="b-type-blocks" name="b-type" value="blocks"> Per block</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-base">Fixed fee (minor units)</label>
+            <input type="text" id="b-base" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            <p class="help">0–1,000,000. Charged even at 0 visits.</p>
+          </div>
+          <div class="field">
+            <label for="b-included">Included visits</label>
+            <input type="text" id="b-included" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–240 visits. Visits within this count are not charged extra.</p>
+          </div>
+          <div id="b-bands-wrap">
+            <p class="group-label">Per-visit band prices</p>
+            <p class="help">1–5 bands. Each band takes a cumulative extra-visit upper bound and a per-visit price; only the last band has no bound (unlimited). Bounds must strictly increase.</p>
+            <div id="b-bands-body" class="rows"></div>
+            <button type="button" id="b-add-band" class="secondary">Add a band</button>
+          </div>
+          <div id="b-blocks-wrap" hidden>
+            <div class="field">
+              <label for="b-block-size">Visits per block</label>
+              <input type="text" id="b-block-size" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+              <p class="help">1–240 visits. A partial block still counts as one block.</p>
+            </div>
+            <div class="field">
+              <label for="b-block-minor">Price per block (minor units)</label>
+              <input type="text" id="b-block-minor" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="compare" class="primary">Compare visit counts</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (a block of 2 visits for 600 against 350 per visit, compared up to 4 visits); press “Compare visit counts” to compute it.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Comparison results"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作室次數費用交會表｜Gloss Tools</title>
+<meta name="description" content="比較兩個工作室次數費用，找出整包與分段計價的金額交會。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>工作室次數費用交會表</h1>
+  <p class="intro">輸入兩個工作室方案的固定額、包含次數與分段或整包計價，按下「比較各使用次數」，就看到 0 到最高次數每個次數的金額，以及高低互換的連續區間。</p>
+
+  <form id="compare-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>比較範圍</legend>
+          <div class="field">
+            <label for="max-visits">最高比較次數</label>
+            <input type="text" id="max-visits" inputmode="numeric" maxlength="12" autocomplete="off" value="12">
+            <p class="help">0–240 次。結果列出 0 到這個次數的每一筆金額。</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>方案 A</legend>
+          <div class="field">
+            <label for="a-name">方案名稱</label>
+            <input type="text" id="a-name" maxlength="128" autocomplete="off" value="">
+            <p class="help">1–24 字，首字為字母或數字；兩方案名稱不可相同。</p>
+          </div>
+          <div class="field">
+            <span class="group-label" id="a-type-label">計價方式</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="a-type-label">
+              <label><input type="radio" id="a-type-progressive" name="a-type" value="progressive" checked> 每段額外次數</label>
+              <label><input type="radio" id="a-type-blocks" name="a-type" value="blocks"> 按整包</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="a-base">固定額（最小單位）</label>
+            <input type="text" id="a-base" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            <p class="help">0–1,000,000。即使 0 次也會加入。</p>
+          </div>
+          <div class="field">
+            <label for="a-included">包含次數</label>
+            <input type="text" id="a-included" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–240 次。這個次數以內不另外計價。</p>
+          </div>
+          <div id="a-bands-wrap">
+            <p class="group-label">分段每次價格</p>
+            <p class="help">1–5 段。每段填累計額外次數上界與每次價格；只有最後一段不填上界（不限）。上界必須嚴格上升。</p>
+            <div id="a-bands-body" class="rows"></div>
+            <button type="button" id="a-add-band" class="secondary">新增一段</button>
+          </div>
+          <div id="a-blocks-wrap" hidden>
+            <div class="field">
+              <label for="a-block-size">每包次數</label>
+              <input type="text" id="a-block-size" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+              <p class="help">1–240 次。不足一包也算一包。</p>
+            </div>
+            <div class="field">
+              <label for="a-block-minor">每包價格（最小單位）</label>
+              <input type="text" id="a-block-minor" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>方案 B</legend>
+          <div class="field">
+            <label for="b-name">方案名稱</label>
+            <input type="text" id="b-name" maxlength="128" autocomplete="off" value="">
+            <p class="help">1–24 字，首字為字母或數字；兩方案名稱不可相同。</p>
+          </div>
+          <div class="field">
+            <span class="group-label" id="b-type-label">計價方式</span>
+            <div class="choice-group" role="radiogroup" aria-labelledby="b-type-label">
+              <label><input type="radio" id="b-type-progressive" name="b-type" value="progressive" checked> 每段額外次數</label>
+              <label><input type="radio" id="b-type-blocks" name="b-type" value="blocks"> 按整包</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-base">固定額（最小單位）</label>
+            <input type="text" id="b-base" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            <p class="help">0–1,000,000。即使 0 次也會加入。</p>
+          </div>
+          <div class="field">
+            <label for="b-included">包含次數</label>
+            <input type="text" id="b-included" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            <p class="help">0–240 次。這個次數以內不另外計價。</p>
+          </div>
+          <div id="b-bands-wrap">
+            <p class="group-label">分段每次價格</p>
+            <p class="help">1–5 段。每段填累計額外次數上界與每次價格；只有最後一段不填上界（不限）。上界必須嚴格上升。</p>
+            <div id="b-bands-body" class="rows"></div>
+            <button type="button" id="b-add-band" class="secondary">新增一段</button>
+          </div>
+          <div id="b-blocks-wrap" hidden>
+            <div class="field">
+              <label for="b-block-size">每包次數</label>
+              <input type="text" id="b-block-size" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+              <p class="help">1–240 次。不足一包也算一包。</p>
+            </div>
+            <div class="field">
+              <label for="b-block-minor">每包價格（最小單位）</label>
+              <input type="text" id="b-block-minor" inputmode="numeric" maxlength="12" autocomplete="off" value="">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="compare" class="primary">比較各使用次數</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（整包每 2 次 600，對分段每次 350，比較到 4 次）；載入後仍需按「比較各使用次數」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="比較結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
