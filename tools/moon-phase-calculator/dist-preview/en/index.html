@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Moon Phase Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a date to see the Moon's age, illumination and phase name, plus the dates of the next new and full moons.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Moon Phase Calculator</h1>
+  <p class="lede">Enter a Gregorian date to see the Moon's age, illumination, and eight-phase name for that day (evaluated at 12:00 UTC), plus how many days remain until the next new and full moons and their dates in UTC and in your chosen offset — handy for planning moon watching, photography, or camping. Everything is computed locally with a fixed average synodic month; no network, no almanac lookup.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Date and offset</h2>
+      <form id="moon-form" novalidate>
+        <div class="field">
+          <label for="field-date">Date</label>
+          <p class="help" id="help-date">A Gregorian date in YYYY-MM-DD format, from 1900-01-01 to 2100-12-31.</p>
+          <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-date">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-utcOffset">UTC offset</label>
+          <p class="help" id="help-utcOffset">Format +HH:MM or −HH:MM; minutes must be 00, 15, 30 or 45; range −12:00 to +14:00. It only changes the local dates shown for the next new and full moons; it does not affect the evaluation moment or any other output.</p>
+          <input id="field-utcOffset" name="utcOffset" type="text" inputmode="numeric" autocomplete="off" value="+08:00" aria-describedby="help-utcOffset">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a date or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate moon phase</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Moon phase result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">This tool uses the average synodic month; actual new and full moon times can differ by several hours. The phase is evaluated at 12:00 UTC on the chosen date.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it works</summary>
+    <p>The evaluation moment is fixed at 12:00 UTC on the chosen date. The Moon's age uses the fixed synodic month S = 29.530588853 days and the reference new moon JD 2451550.1: age = (JD − 2451550.1) mod S (positive modulo, in [0, S)). The eight phases are segments of width S/8 centred on the cardinal moments; illumination = (1 − cos(2π × age / S)) / 2. The next new and full moons come from the unrounded age, and their dates are converted to your UTC offset for the local view. Age, illumination, and day counts are displayed rounded half-up to one decimal; the phase and the event dates always use the unrounded values. Date and Julian-day conversions use integer algorithms only — no Date object, no dependence on your device's timezone.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Which moment is the phase for?</dt>
+      <dd>Noon UTC on the chosen date; a single night can straddle a boundary, so the daily value is representative.</dd>
+      <dt>Why can the full moon differ by a day from an almanac?</dt>
+      <dd>The average synodic month is an approximation; actual times vary by hours and can fall on the other side of midnight.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculations run locally on this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

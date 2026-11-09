@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-moon-phase-calculator-20261109",
+  "slug": "moon-phase-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "reference-epoch",
+      "kind": "core",
+      "purpose": "參考朔日當日：月齡 29.4、新月、照亮比 0.0、下一個朔即當日",
+      "input": { "date": "2000-01-06", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2451550,
+          "ageDays": 29.4,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.0,
+          "daysToNextNewMoon": 0.1,
+          "nextNewMoonDate": "2000-01-06",
+          "nextNewMoonDateLocal": "2000-01-06",
+          "daysToNextFullMoon": 14.9,
+          "nextFullMoonDate": "2000-01-21",
+          "nextFullMoonDateLocal": "2000-01-21"
+        }
+      }
+    },
+    {
+      "id": "day-after-epoch",
+      "kind": "core",
+      "purpose": "epoch 次日：月齡 0.9、仍新月段、照亮比 0.9",
+      "input": { "date": "2000-01-07", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2451551,
+          "ageDays": 0.9,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.9,
+          "daysToNextNewMoon": 28.6,
+          "nextNewMoonDate": "2000-02-05",
+          "nextNewMoonDateLocal": "2000-02-05",
+          "daysToNextFullMoon": 13.9,
+          "nextFullMoonDate": "2000-01-21",
+          "nextFullMoonDateLocal": "2000-01-21"
+        }
+      }
+    },
+    {
+      "id": "model-first-full",
+      "kind": "core",
+      "purpose": "模型首個滿月 2000-01-21；下一個滿月當地日期與 UTC 差一天",
+      "input": { "date": "2000-01-21", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2451565,
+          "ageDays": 14.9,
+          "phaseIndex": 4,
+          "phaseZh": "滿月",
+          "phaseEn": "Full Moon",
+          "illuminationPercent": 100.0,
+          "daysToNextNewMoon": 14.6,
+          "nextNewMoonDate": "2000-02-05",
+          "nextNewMoonDateLocal": "2000-02-05",
+          "daysToNextFullMoon": 29.4,
+          "nextFullMoonDate": "2000-02-19",
+          "nextFullMoonDateLocal": "2000-02-20"
+        }
+      }
+    },
+    {
+      "id": "offset-negative-local",
+      "kind": "core",
+      "purpose": "負偏移只改當地日期，其餘輸出與 model-first-full 相同",
+      "input": { "date": "2000-01-21", "utcOffset": "-05:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2451565,
+          "ageDays": 14.9,
+          "phaseIndex": 4,
+          "phaseZh": "滿月",
+          "phaseEn": "Full Moon",
+          "illuminationPercent": 100.0,
+          "daysToNextNewMoon": 14.6,
+          "nextNewMoonDate": "2000-02-05",
+          "nextNewMoonDateLocal": "2000-02-04",
+          "daysToNextFullMoon": 29.4,
+          "nextFullMoonDate": "2000-02-19",
+          "nextFullMoonDateLocal": "2000-02-19"
+        }
+      }
+    },
+    {
+      "id": "pre-epoch-last-quarter",
+      "kind": "core",
+      "purpose": "epoch 之前日期：正餘數月齡、下弦月、下一個朔即 epoch 日",
+      "input": { "date": "1999-12-31", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2451544,
+          "ageDays": 23.4,
+          "phaseIndex": 6,
+          "phaseZh": "下弦月",
+          "phaseEn": "Last Quarter",
+          "illuminationPercent": 36.5,
+          "daysToNextNewMoon": 6.1,
+          "nextNewMoonDate": "2000-01-06",
+          "nextNewMoonDateLocal": "2000-01-06",
+          "daysToNextFullMoon": 20.9,
+          "nextFullMoonDate": "2000-01-21",
+          "nextFullMoonDateLocal": "2000-01-21"
+        }
+      }
+    },
+    {
+      "id": "known-full-moon-2025",
+      "kind": "core",
+      "purpose": "已知滿月 2025-11-05：模型同日給滿月、距下一個滿月 0.1 天",
+      "input": { "date": "2025-11-05", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2460985,
+          "ageDays": 14.6,
+          "phaseIndex": 4,
+          "phaseZh": "滿月",
+          "phaseEn": "Full Moon",
+          "illuminationPercent": 100.0,
+          "daysToNextNewMoon": 14.9,
+          "nextNewMoonDate": "2025-11-20",
+          "nextNewMoonDateLocal": "2025-11-20",
+          "daysToNextFullMoon": 0.1,
+          "nextFullMoonDate": "2025-11-05",
+          "nextFullMoonDateLocal": "2025-11-05"
+        }
+      }
+    },
+    {
+      "id": "full-moon-2026",
+      "kind": "core",
+      "purpose": "2026-11-24 滿月：距下一個滿月 0.0 天、日期即當日",
+      "input": { "date": "2026-11-24", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2461369,
+          "ageDays": 14.7,
+          "phaseIndex": 4,
+          "phaseZh": "滿月",
+          "phaseEn": "Full Moon",
+          "illuminationPercent": 100.0,
+          "daysToNextNewMoon": 14.8,
+          "nextNewMoonDate": "2026-12-09",
+          "nextNewMoonDateLocal": "2026-12-09",
+          "daysToNextFullMoon": 0.0,
+          "nextFullMoonDate": "2026-11-24",
+          "nextFullMoonDateLocal": "2026-11-24"
+        }
+      }
+    },
+    {
+      "id": "not-full-2026-11-05",
+      "kind": "core",
+      "purpose": "2026-11-05 非滿月：殘月、照亮比 19.1（校正 fixture 選日，見作者檢查）",
+      "input": { "date": "2026-11-05", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2461350,
+          "ageDays": 25.3,
+          "phaseIndex": 7,
+          "phaseZh": "殘月",
+          "phaseEn": "Waning Crescent",
+          "illuminationPercent": 19.1,
+          "daysToNextNewMoon": 4.3,
+          "nextNewMoonDate": "2026-11-09",
+          "nextNewMoonDateLocal": "2026-11-10",
+          "daysToNextFullMoon": 19.0,
+          "nextFullMoonDate": "2026-11-24",
+          "nextFullMoonDateLocal": "2026-11-24"
+        }
+      }
+    },
+    {
+      "id": "first-quarter-2026",
+      "kind": "core",
+      "purpose": "上弦月、照亮比 43.2",
+      "input": { "date": "2026-11-16", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2461361,
+          "ageDays": 6.7,
+          "phaseIndex": 2,
+          "phaseZh": "上弦月",
+          "phaseEn": "First Quarter",
+          "illuminationPercent": 43.2,
+          "daysToNextNewMoon": 22.8,
+          "nextNewMoonDate": "2026-12-09",
+          "nextNewMoonDateLocal": "2026-12-09",
+          "daysToNextFullMoon": 8.0,
+          "nextFullMoonDate": "2026-11-24",
+          "nextFullMoonDateLocal": "2026-11-24"
+        }
+      }
+    },
+    {
+      "id": "leap-day-2024",
+      "kind": "core",
+      "purpose": "2024-02-29 為真實日期、虧凸月",
+      "input": { "date": "2024-02-29", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2460370,
+          "ageDays": 19.8,
+          "phaseIndex": 5,
+          "phaseZh": "虧凸月",
+          "phaseEn": "Waning Gibbous",
+          "illuminationPercent": 74.1,
+          "daysToNextNewMoon": 9.7,
+          "nextNewMoonDate": "2024-03-10",
+          "nextNewMoonDateLocal": "2024-03-10",
+          "daysToNextFullMoon": 24.5,
+          "nextFullMoonDate": "2024-03-25",
+          "nextFullMoonDateLocal": "2024-03-25"
+        }
+      }
+    },
+    {
+      "id": "range-min-1900",
+      "kind": "core",
+      "purpose": "下限端點合法；下一個朔當地日期與 UTC 差一天",
+      "input": { "date": "1900-01-01", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2415021,
+          "ageDays": 0.2,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.1,
+          "daysToNextNewMoon": 29.3,
+          "nextNewMoonDate": "1900-01-30",
+          "nextNewMoonDateLocal": "1900-01-31",
+          "daysToNextFullMoon": 14.5,
+          "nextFullMoonDate": "1900-01-16",
+          "nextFullMoonDateLocal": "1900-01-16"
+        }
+      }
+    },
+    {
+      "id": "range-max-2100",
+      "kind": "core",
+      "purpose": "上限端點合法；下一個朔／滿月日期溢出至 2101 年不算錯誤",
+      "input": { "date": "2100-12-31", "utcOffset": "+08:00" },
+      "expected": {
+        "ok": true,
+        "result": {
+          "julianDay": 2488434,
+          "ageDays": 0.2,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.0,
+          "daysToNextNewMoon": 29.3,
+          "nextNewMoonDate": "2101-01-29",
+          "nextNewMoonDateLocal": "2101-01-30",
+          "daysToNextFullMoon": 14.6,
+          "nextFullMoonDate": "2101-01-15",
+          "nextFullMoonDateLocal": "2101-01-15"
+        }
+      }
+    },
+    {
+      "id": "err-empty-date",
+      "kind": "core",
+      "purpose": "空日期回 EMPTY",
+      "input": { "date": "", "utcOffset": "+08:00" },
+      "expected": { "ok": false, "error": { "code": "EMPTY", "field": "date", "row": null } }
+    },
+    {
+      "id": "err-date-format",
+      "kind": "core",
+      "purpose": "斜線分隔回 DATE_FORMAT",
+      "input": { "date": "2026/11/05", "utcOffset": "+08:00" },
+      "expected": { "ok": false, "error": { "code": "DATE_FORMAT", "field": "date", "row": null } }
+    },
+    {
+      "id": "err-invalid-date",
+      "kind": "core",
+      "purpose": "2023-02-29 回 INVALID_DATE",
+      "input": { "date": "2023-02-29", "utcOffset": "+08:00" },
+      "expected": { "ok": false, "error": { "code": "INVALID_DATE", "field": "date", "row": null } }
+    },
+    {
+      "id": "err-date-range",
+      "kind": "core",
+      "purpose": "1899-12-31 回 RANGE",
+      "input": { "date": "1899-12-31", "utcOffset": "+08:00" },
+      "expected": { "ok": false, "error": { "code": "RANGE", "field": "date", "row": null } }
+    },
+    {
+      "id": "err-offset-range",
+      "kind": "core",
+      "purpose": "+08:10 分鐘非 15 的倍數回 RANGE（field=utcOffset）",
+      "input": { "date": "2026-11-09", "utcOffset": "+08:10" },
+      "expected": { "ok": false, "error": { "code": "RANGE", "field": "utcOffset", "row": null } }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": { "date": "2000-01-06", "utcOffset": "+08:00" },
+        "edit": { "date": "2023-02-29", "utcOffset": "+08:00" }
+      },
+      "expected": {
+        "afterRun": { "state": "success", "reportAvailable": true },
+        "afterEdit": { "state": "dirty", "reportAvailable": false },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": { "code": "INVALID_DATE", "field": "date", "row": null }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": { "date": "2000-01-06", "utcOffset": "+08:00" },
+        "lateResult": {
+          "julianDay": 2451550,
+          "ageDays": 29.4,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.0,
+          "daysToNextNewMoon": 0.1,
+          "nextNewMoonDate": "2000-01-06",
+          "nextNewMoonDateLocal": "2000-01-06",
+          "daysToNextFullMoon": 14.9,
+          "nextFullMoonDate": "2000-01-21",
+          "nextFullMoonDateLocal": "2000-01-21"
+        }
+      },
+      "expected": {
+        "whilePending": { "state": "busy", "reportAvailable": false },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": { "date": "2000-01-06", "utcOffset": "+08:00" }
+        },
+        "afterLateResult": { "state": "cancelled", "reportAvailable": false },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": { "date": "", "utcOffset": "+08:00" }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": { "date": "2000-01-06", "utcOffset": "+08:00" },
+        "newerDraft": { "date": "2023-02-29", "utcOffset": "+08:00" },
+        "olderLateResult": {
+          "julianDay": 2451550,
+          "ageDays": 29.4,
+          "phaseIndex": 0,
+          "phaseZh": "新月",
+          "phaseEn": "New Moon",
+          "illuminationPercent": 0.0,
+          "daysToNextNewMoon": 0.1,
+          "nextNewMoonDate": "2000-01-06",
+          "nextNewMoonDateLocal": "2000-01-06",
+          "daysToNextFullMoon": 14.9,
+          "nextFullMoonDate": "2000-01-21",
+          "nextFullMoonDateLocal": "2000-01-21"
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": { "code": "INVALID_DATE", "field": "date", "row": null }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": { "code": "INVALID_DATE", "field": "date", "row": null }
+        }
+      }
+    }
+  ]
+}
