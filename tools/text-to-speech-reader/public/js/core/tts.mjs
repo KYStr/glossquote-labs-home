@@ -35,6 +35,11 @@ function isSeparatorSpace(ch) {
   return ch === " " || ch === "\t" || ch === "　";
 }
 
+function isSentenceSeparatorWhitespace(ch) {
+  // CR and LF are handled separately as unconditional boundaries.
+  return ch !== "\r" && ch !== "\n" && /\p{White_Space}/u.test(ch);
+}
+
 function isUppercaseLetter(ch) {
   return /\p{Lu}/u.test(ch);
 }
@@ -98,7 +103,7 @@ export function segmentText(text) {
         continue;
       }
       let j = i + 1;
-      while (j < chars.length && (chars[j] === " " || chars[j] === "\t")) j += 1;
+      while (j < chars.length && isSentenceSeparatorWhitespace(chars[j])) j += 1;
       if (j >= chars.length) {
         endSentence();
         i = j;

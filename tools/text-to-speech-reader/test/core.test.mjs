@@ -67,6 +67,31 @@ test("decimals never split; digit or quote after space does", () => {
   ]);
 });
 
+test("ASCII and Unicode separator whitespace is consumed before a sentence starter", () => {
+  for (const separator of [" ", "\t", "\u3000", "\u00a0", "\u3000\t\u00a0"]) {
+    for (const [first, next] of [
+      ["First.", "Second."],
+      ["Points!", "3 were bonuses."],
+      ["Really?", '"She stayed."'],
+    ]) {
+      const input = first + separator + next;
+      const result = buildChunks(input);
+      assert.deepEqual(result.sentences, [first, next], JSON.stringify(input));
+      assert.deepEqual(result.chunks.map(({ text, sentenceIndex }) => [text, sentenceIndex]),
+        [[first, 0], [next, 1]], JSON.stringify(input));
+    }
+  }
+});
+
+test("Unicode spacing keeps lowercase continuations and abbreviations intact", () => {
+  for (const separator of ["\u3000", "\u00a0"]) {
+    const first = "Dr." + separator + "Lee paid 3.14 dollars. lower case.";
+    assert.deepEqual(segmentText(first + separator + "Done."), [first, "Done."]);
+    const continuation = "First." + separator + "second.";
+    assert.deepEqual(segmentText(continuation), [continuation]);
+  }
+});
+
 test("CJK closing quotes and brackets attach to the sentence", () => {
   assert.deepEqual(segmentText("他說：「好。」然後離開。"), [
     "他說：「好。」",
@@ -86,6 +111,7 @@ test("newlines are separators, with and without terminators", () => {
     "Line two.",
   ]);
   assert.deepEqual(segmentText("a\r\nb"), ["a", "b"]);
+  assert.deepEqual(segmentText("First.\r\nlower\rLast.\n"), ["First.", "lower", "Last."]);
 });
 
 test("lowercase continuation after a period is not a boundary", () => {
