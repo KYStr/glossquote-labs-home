@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>底片張數配置｜Gloss Tools</title>
+<meta name="description" content="把有限底片張數分配給不同拍攝場景，先留最低，再按優先順序補足。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>底片張數配置</h1>
+  <p class="intro">手上只剩固定可拍張數時，先留幾張給臨時場景，再把剩下的依最低與優先級分配給各場景。結果列出每場景的已配置張數與未達理想數。</p>
+
+  <form id="budget-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>可拍總額</legend>
+          <p class="help">剩餘張數填相機實際剩餘的張數（0–200）；臨時保留張數預設 0 張，不可超過剩餘張數。</p>
+          <div class="totals-grid">
+            <div class="field">
+              <label for="remaining">剩餘張數（張）</label>
+              <input type="text" id="remaining" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="例如 24">
+            </div>
+            <div class="field">
+              <label for="reserve">臨時保留張數（張）</label>
+              <input type="text" id="reserve" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>場景</legend>
+          <p class="help">最多 16 個場景。短名 1–24 個字元，不可重複；每列填最低與理想張數（0–200，理想不可低於最低），優先級 3 最重要、2 一般、1 可略過。</p>
+          <div id="scenes-body" class="rows"></div>
+          <button type="button" id="add-scene" class="secondary">新增一場景</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="allocate" class="primary">配置剩餘張數</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（24 張剩餘、保留 4 張），用來示範優先級輪流補張；載入後仍需按「配置剩餘張數」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="配置結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
