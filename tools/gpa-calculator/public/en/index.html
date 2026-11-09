@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPA Calculator — GlossQuote Labs</title>
+<meta name="description" content="Compute an exact credit-weighted GPA on the 4.0 or 4.3 scale, and solve for the future average needed to reach a target GPA — with unreachable and guaranteed targets stated honestly.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="../">
+<link rel="alternate" hreflang="en" href="./">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<main>
+<nav class="toplinks"><a href="../../en/">← GlossQuote Labs home</a><a href="../" hreflang="zh-Hant">繁體中文</a></nav>
+<h1>GPA Calculator</h1>
+<p class="lede">Enter each course's letter grade and credits for an exact credit-weighted GPA; the solver below answers "what average do my remaining credits need to reach my target GPA".</p>
+
+<section class="panel" aria-labelledby="courses-h">
+<h2 id="courses-h">Courses and GPA</h2>
+<p>
+<label for="scale-select">Scale</label>
+<select id="scale-select">
+<option value="4.0">4.0 scale (top grade A = 4.0)</option>
+<option value="4.3">4.3 scale (top grade A+ = 4.3)</option>
+</select>
+</p>
+<div class="row-head" aria-hidden="true"><span>Course label (optional)</span><span>Grade</span><span>Credits</span><span>Exclude</span><span></span></div>
+<div id="rows"></div>
+<p>
+<button type="button" id="add-row">+ Add course</button>
+<button type="button" id="clear-all">Clear all</button>
+</p>
+<p class="note" id="row-limit-note" hidden>The 50-course limit is reached; no more rows can be added.</p>
+<div class="totals" aria-live="polite">
+<div><small>Total credits (included)</small><span class="num" id="total-credits">—</span></div>
+<div><small>Total grade points</small><span class="num" id="total-points">—</span></div>
+<div><small>GPA</small><span class="big" id="gpa-value">—</span></div>
+</div>
+<p class="note" id="totals-note">Add at least one complete, included course first.</p>
+<details>
+<summary>Scale tables</summary>
+<table class="scale-table" id="scale-table"></table>
+</details>
+</section>
+
+<section class="panel" aria-labelledby="solver-h">
+<h2 id="solver-h">Target GPA solver</h2>
+<div class="solver-grid">
+<div><label for="sv-c0">Completed credits</label><input type="number" id="sv-c0" min="0" max="1000" step="0.5" inputmode="decimal"><p class="field-error" id="err-c0" hidden></p></div>
+<div><label for="sv-g0">Current GPA</label><input type="number" id="sv-g0" min="0" step="0.01" inputmode="decimal"><p class="field-error" id="err-g0" hidden></p></div>
+<div><label for="sv-c1">Planned credits</label><input type="number" id="sv-c1" min="0.5" max="300" step="0.5" inputmode="decimal"><p class="field-error" id="err-c1" hidden></p></div>
+<div><label for="sv-t">Target GPA</label><input type="number" id="sv-t" min="0" step="0.01" inputmode="decimal"><p class="field-error" id="err-t" hidden></p></div>
+</div>
+<p class="outcome" id="solver-outcome">Fill in all four fields and the result will appear here.</p>
+</section>
+
+<p class="honesty">Institutions compute GPA differently (retakes, grade forgiveness, plus/minus variants). This tool implements only the plain credit-weighted rule of the scale tables above; results are estimates, not an official transcript figure, and imply nothing about scholarships or admissions. Your entries are computed on this page only — nothing is stored or sent anywhere.</p>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
