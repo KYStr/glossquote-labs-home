@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>搬家裝箱與物品定位｜本機處理工具 - GlossQuote</title>
+  <meta name="description" content="搬家後急找充電器或鍋子，只知道在某箱；希望裝箱時記一次就能搜尋並給搬運人員房間清單。 使用 搬家裝箱與物品定位，在瀏覽器本地整理資料並取得可下載成果。">
+  <link rel="stylesheet" href="/styles/app.css"><script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳至裝箱工作區</a>
+  <header class="topbar"><a href="https://glossquote.com/index.html">Gloss Tools</a><span>搬家裝箱與物品定位</span><nav aria-label="頁面導覽"><a href="https://glossquote.com/index.html">返回工具首頁</a><a id="language-link" href="/en/index.html" lang="en">English</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>搬家裝箱與物品定位</h1><p>裝箱時記一次，搬完直接找到物品在哪箱、哪個房間。匯出搬運清單與箱內容單，或保存 JSON 留待下次恢復。</p></div>
+    <p class="notice">只在本頁記憶體處理，不會自動保存。重新整理、關閉或切換語言會失去未匯出資料；請下載專案 JSON 備份。預覽版尚待完整驗收。</p>
+    <noscript><p class="error">本工具需要 JavaScript。未啟用前無法編輯或匯出，請使用支援的瀏覽器。</p></noscript>
+    <p id="status" class="status" role="status" aria-live="polite">正在初始化；若未完成，請確認瀏覽器支援 JavaScript 模組。</p>
+    <p id="error" class="error" role="alert" hidden></p>
+    <p id="draft-notice" class="notice" hidden></p>
+    <section id="language-confirmation" class="confirmation" aria-labelledby="language-heading" hidden tabindex="-1"><h2 id="language-heading">切換語言？</h2><p>切換頁面會失去本頁尚未匯出的資料與編輯。離開前請先下載專案 JSON。</p><div class="actions"><a class="button danger" href="/en/index.html" lang="en">切換至 English</a><button id="language-cancel" type="button">留在此頁</button></div></section>
+    <fieldset id="application-controls" disabled>
+      <legend class="sr-only">裝箱工作區</legend>
+      <section class="search-zone" aria-labelledby="search-heading">
+        <h2 id="search-heading">找物品</h2><label for="search-input">物品、備註、箱號或房間</label><input id="search-input" type="search" maxlength="1000" autocomplete="off" aria-describedby="search-help"><p id="search-help" class="help">搜尋只改變顯示，不刪除裝箱資料；空白搜尋顯示全部物品。</p>
+        <details id="search-results"><summary id="search-summary">全部物品</summary><p id="search-empty"></p><ul id="search-list" class="search-list"></ul><div id="search-pagination" class="actions"></div></details>
+      </section>
+      <div class="workspace-grid">
+        <aside class="box-rail" aria-labelledby="boxes-heading"><div class="section-heading"><h2 id="boxes-heading">箱子索引</h2><span id="counts" class="muted"></span></div>
+          <div class="compact-selector"><label for="box-select">選擇要編輯的箱子</label><select id="box-select"></select></div>
+          <nav aria-label="箱號與房間索引" class="desktop-index"><ul id="box-index"></ul></nav>
+          <form id="new-box-form" novalidate><h3>新增箱子</h3><p id="box-id-help" class="help">箱號大小寫有別：a 與 A 是不同箱子。留空會補上最小可用 BX 編號。</p>
+            <label for="new-box-id">箱號（最多 40 字，可留空自動編號）</label><input id="new-box-id" maxlength="180" autocomplete="off" aria-describedby="box-id-help error">
+            <label for="new-box-room">目的房間（必填，最多 80 字）</label><input id="new-box-room" maxlength="260" required autocomplete="off" aria-describedby="error">
+            <label class="check"><input id="new-box-priority" type="checkbox">優先開箱</label>
+            <label for="new-box-notes">箱子備註（最多 500 字，單行）</label><input id="new-box-notes" maxlength="1100" autocomplete="off" aria-describedby="error">
+            <div class="actions"><button id="add-box" type="submit" class="primary">新增箱子</button><button id="reset-box" type="button">清空欄位</button></div>
+          </form>
+        </aside>
+        <section id="workspace" class="canvas" aria-label="目前箱子與內容"></section>
+      </div>
+      <section id="confirmation" class="confirmation" aria-labelledby="confirm-heading" hidden tabindex="-1"><h2 id="confirm-heading"></h2><p id="confirm-summary"></p><p id="confirm-warning"></p><ul id="confirm-preview"></ul><div class="actions"><button id="confirm-action" type="button" class="danger"></button><button id="cancel-action" type="button">取消</button></div></section>
+      <section class="exports" aria-labelledby="export-heading"><div><h2 id="export-heading">清單與專案備份</h2><p>房間搬運清單列出各房間的箱號與開箱優先序；逐箱明細包含物品與數量。若要下次繼續編輯，請保存專案 JSON。</p></div>
+        <label for="export-mode">匯出內容（包含全部已儲存箱子）</label><select id="export-mode"><option value="rooms">房間搬運清單 · TXT</option><option value="boxes">逐箱內容明細 · TXT</option><option value="json">專案備份 · JSON</option></select>
+        <div class="actions"><button id="prepare-export" type="button">預覽匯出</button><button id="download-export" type="button" disabled>下載檔案</button></div>
+        <div id="output-panel" hidden><p id="output-filename" class="mono"></p><label for="output-text">匯出預覽（可選取文字）</label><textarea id="output-text" readonly rows="12" spellcheck="false"></textarea><p class="help">若瀏覽器阻擋下載，可自行選取並保存預覽文字。</p></div>
+      </section>
+      <section class="restore" aria-labelledby="restore-heading"><h2 id="restore-heading">恢復專案 JSON</h2><p>最多 8 MiB（8,388,608 bytes）。整份驗證後才顯示箱數與物品數；確認前不替換，取消或錯誤保留現有資料。</p><label for="import-file">選擇專案 JSON 檔</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="error"><button id="cancel-read" type="button" hidden>取消讀取</button>
+        <details><summary>或貼上專案 JSON</summary><label for="import-text">專案 JSON 文字</label><textarea id="import-text" rows="5" maxlength="8388608" spellcheck="false" autocomplete="off" aria-describedby="error"></textarea><button id="parse-import" type="button">檢查並預覽匯入</button></details>
+      </section>
+      <section class="utilities" aria-label="其他資料操作"><button id="load-example" type="button">載入標示的假例子</button><button id="clear-all" type="button" class="danger">清除本頁全部資料（無法復原）</button><p class="help">最多 100 箱、總共 1,000 項物品紀錄。文字限單行；資料不會自動保存。清除本頁不會刪除先前下載的檔案，也不承諾安全抹除記憶體。</p></section>
+    </fieldset>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">使用說明</h2><details><summary>會自動記住箱子嗎？</summary><p>不會；下載專案 JSON 才能下次恢復。本頁無帳戶、雲端同步或自動儲存。</p></details><details><summary>找不到物品會怎樣？</summary><p>顯示沒有符合項目，原清單保持不變。搜尋也會比對箱號、房間及備註。</p></details><details><summary>能移動物品到另一箱嗎？</summary><p>可以，選目的箱後一次移動，不複製出重複項。物品 ID 保持相同；同名物品仍可分別記錄。</p></details><details><summary>需要標籤印表機或網路服務嗎？</summary><p>不需要。匯出的是文字清單與專案 JSON，沒有地址、重量計價或印表機串接。本工具需要支援原生 JavaScript 模組、Blob 下載與 FileReader 的瀏覽器；不支援時會停止操作。</p></details></section>
+  </main><footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/index.html">返回工具首頁</a></footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { evaluateGenerationSnapshot as evaluate } from './generation-decision.mjs';
+
+const fixture = () => {
+  const expected = { browserPid: 100, browserCreationFileTime: '133000000000000100', jobId: 'test-job', desktopId: 'test-desktop', imagePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' };
+  const query = (pid, qpc) => ({ pid, qpc, creationFileTime: '133000000000000' + pid, running: true, inExpectedJob: true, jobId: expected.jobId, imagePath: expected.imagePath, desktopId: expected.desktopId, desktopObjectVerified: true, win32kDisabled: false });
+  return { schemaVersion: 1, expected, snapshot: { method: 'SystemInfo.getProcessInfo', target: 'browser', startQpc: '1000', endQpc: '2000', processInfo: [{ id: 100, type: 'browser', cpuTime: 1 }, { id: 104, type: 'renderer', cpuTime: 0.5 }] }, retained: [100, 104].map((pid) => ({ pid, handleToken: 'test-only-' + pid, sameHandle: true, openedQpc: '100', closedQpc: null, before: query(pid, '900'), after: query(pid, '2100') })) };
+};
+const reason = (result, code) => result.issues.some((i) => i.code === code);
+test('complete synthetic receipts are data-only; never UI authorization', () => { const r = evaluate(fixture()); assert.equal(r.decision, 'VERIFIED_DATA_ONLY'); assert.equal(r.executionAuthorized, false); });
+test('missing historical raw CDP/generation cannot be reconstructed', () => { const f = fixture(); f.snapshot = null; assert.equal(evaluate(f).decision, 'REJECT'); });
+test('unknown live helper is never inferred owned from CDP', () => { const f = fixture(); f.snapshot.processInfo.push({ id: 89564, type: 'identity-helper', cpuTime: 0 }); const r = evaluate(f); assert.equal(r.decision, 'REJECT'); assert(reason(r, 'UNKNOWN_CDP_PID_NO_RETAINED_GENERATION')); });
+test('live out-of-job helper cannot use a reuse/exit claim', () => { const f = fixture(); const r = f.retained[1]; r.after.inExpectedJob = false; r.reusedPidClaim = true; assert(reason(evaluate(f), 'LIVE_OUTSIDE_JOB')); });
+test('image identity alone does not waive job membership', () => { const f = fixture(); f.retained[1].before.inExpectedJob = false; assert(reason(evaluate(f), 'LIVE_OUTSIDE_JOB')); });
+test('closed handle fails even if other metadata matches', () => { const f = fixture(); f.retained[1].closedQpc = '2200'; assert(reason(evaluate(f), 'CONTINUOUS_HANDLE_REQUIRED')); });
+test('opening handle after CDP cannot repair historical identity', () => { const f = fixture(); f.retained[1].openedQpc = '1500'; assert(reason(evaluate(f), 'HANDLE_DID_NOT_BRACKET_CDP')); });
+test('fresh current-PID observation is not same-handle evidence', () => { const f = fixture(); f.retained[1].sameHandle = false; assert(reason(evaluate(f), 'CONTINUOUS_HANDLE_REQUIRED')); });
+test('changed creation FILETIME rejects PID generation', () => { const f = fixture(); f.retained[1].after.creationFileTime = '133000000000000999'; assert(reason(evaluate(f), 'GENERATION_OR_PID_MISMATCH')); });
+test('wrong image rejects even inside job and desktop', () => { const f = fixture(); f.retained[1].after.imagePath = 'C:/other/identity_helper.exe'; assert(reason(evaluate(f), 'UNAPPROVED_IMAGE')); });
+test('bare desktop name is insufficient', () => { const f = fixture(); f.retained[1].after.desktopObjectVerified = false; assert(reason(evaluate(f), 'DESKTOP_OR_WIN32K_PROOF_REQUIRED')); });
+test('sandboxed child Win32k denial can substitute desktop observation', () => { const f = fixture(); for (const q of [f.retained[1].before, f.retained[1].after]) { q.desktopObjectVerified = false; q.win32kDisabled = true; } assert.equal(evaluate(f).decision, 'VERIFIED_DATA_ONLY'); });
+test('browser root still needs actual desktop object proof', () => { const f = fixture(); f.retained[0].after.desktopObjectVerified = false; f.retained[0].after.win32kDisabled = true; assert(reason(evaluate(f), 'DESKTOP_OR_WIN32K_PROOF_REQUIRED')); });
+test('proven owned child exit requires refresh; no silent dropping', () => { const f = fixture(); f.retained[1].after.running = false; const r = evaluate(f); assert.equal(r.decision, 'REFRESH_REQUIRED'); assert.equal(r.executionAuthorized, false); });
+test('outside-job reject outranks another child refresh', () => { const f = fixture(); f.retained[0].after.inExpectedJob = false; f.retained[1].after.running = false; assert.equal(evaluate(f).decision, 'REJECT'); });
+test('root exit always rejects', () => { const f = fixture(); f.retained[0].after.running = false; assert(reason(evaluate(f), 'BROWSER_ROOT_EXITED')); });
+test('root must match launched generation', () => { const f = fixture(); f.expected.browserCreationFileTime = '133000000000000200'; assert(reason(evaluate(f), 'BROWSER_GENERATION_MISMATCH')); });
+test('CDP connection needs native browser root row', () => { const f = fixture(); f.snapshot.processInfo.shift(); assert(reason(evaluate(f), 'OWN_BROWSER_MISSING_FROM_RAW_CDP')); });
+test('non-browser target rejects', () => { const f = fixture(); f.snapshot.target = 'page'; assert.equal(evaluate(f).decision, 'REJECT'); });
+test('duplicate CDP PID rejects', () => { const f = fixture(); f.snapshot.processInfo.push({ ...f.snapshot.processInfo[1] }); assert(reason(evaluate(f), 'INVALID_OR_DUPLICATE_RAW_CDP_ROW')); });
+test('loss of raw type or cpuTime rejects fabricated CSV replay', () => { const f = fixture(); delete f.snapshot.processInfo[1].type; assert(reason(evaluate(f), 'INVALID_OR_DUPLICATE_RAW_CDP_ROW')); });
+test('after query must follow completed CDP reply', () => { const f = fixture(); f.retained[1].after.qpc = '1900'; assert(reason(evaluate(f), 'HANDLE_DID_NOT_BRACKET_CDP')); });
+test('unknown live outside-job remains reject with missing timestamps', () => { const f = fixture(); f.retained[1].openedQpc = null; f.retained[1].after.inExpectedJob = false; assert(reason(evaluate(f), 'LIVE_OUTSIDE_JOB')); });
+test('current absence does not fill a missing historical generation', () => { const f = fixture(); f.retained.pop(); f.currentObservation = { pid: 104, status: 'NOT_PRESENT_NOW' }; assert(reason(evaluate(f), 'UNKNOWN_CDP_PID_NO_RETAINED_GENERATION')); });
+test('CDP metric role is not an executable ownership oracle', () => { const f = fixture(); f.snapshot.processInfo[1].type = 'arbitrary-embedder-metric'; assert.equal(evaluate(f).decision, 'VERIFIED_DATA_ONLY'); });
+test('claimed other-browser row still needs exact held job proof', () => { const f = fixture(); f.snapshot.processInfo.push({ id: 200, type: 'browser', cpuTime: 0 }); assert(reason(evaluate(f), 'UNKNOWN_CDP_PID_NO_RETAINED_GENERATION')); });

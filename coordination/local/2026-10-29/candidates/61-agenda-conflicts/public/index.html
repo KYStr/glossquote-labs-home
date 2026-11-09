@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="檢查同日多軌議程的房間重疊、講者撞期和轉場不足，並查看每房間、每位講者的完整時間表。">
+  <meta name="referrer" content="no-referrer">
+  <title>多軌議程衝突檢查｜Gloss Tools</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body data-workspace="source">
+  <a class="skip-link" href="#workspace">跳到議程工作區</a>
+  <header class="topbar">
+    <a href="https://glossquote.com/index.html" class="brand">Gloss Tools</a>
+    <span>多軌議程衝突檢查</span>
+    <nav aria-label="語言"><a href="./en/index.html" lang="en">English</a></nav>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>在發布前找出多軌議程撞期</h1>
+      <p>完整比對場次對；未指派房間或講者會清楚列出，避免誤以為已檢查。</p>
+      <p class="muted">時間採同一天、同一民用時區的本地時間；不接受跨午夜場次。</p>
+    </div>
+    <p id="script-notice" class="notice">操作需要 JavaScript；資料只在目前頁面記憶體處理。請以網站預覽開啟本頁。</p>
+    <noscript><p class="notice">請啟用 JavaScript 後重新開啟本頁，以編輯及檢查議程。</p></noscript>
+    <div id="app" hidden>
+      <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">尚未檢查</p>
+      <div class="workspace-tabs" role="tablist" aria-label="議程工作區">
+        <button type="button" id="source-tab" role="tab" aria-controls="source-panel" aria-selected="true" data-workspace-tab="source">場次與資源</button>
+        <button type="button" id="results-tab" role="tab" aria-controls="results-panel" aria-selected="false" tabindex="-1" data-workspace-tab="results">檢查結果</button>
+      </div>
+      <div id="workspace" class="workspace" tabindex="-1">
+        <section id="source-panel" class="source-panel" aria-labelledby="source-heading">
+          <h2 id="source-heading">場次與資源</h2>
+          <form id="agenda-form" novalidate autocomplete="off">
+            <div class="field transition-field">
+              <label for="transition">換房轉場不足門檻（分鐘）</label>
+              <input id="transition" type="text" inputmode="numeric" maxlength="3" value="10" aria-describedby="transition-help">
+              <p id="transition-help" class="help">0–120 的整數，預設 10；同房不用轉場。這不是步行時間估算。</p>
+            </div>
+            <section class="editor-section" aria-labelledby="rooms-heading">
+              <div class="section-heading"><h3 id="rooms-heading">房間</h3><span id="rooms-count" class="data">0 / 20</span></div>
+              <p class="help">名稱最多 80 個字元。移除房間會解除對應場次的房間指派。</p>
+              <div id="rooms-list"></div>
+              <button id="add-rooms" type="button">新增房間</button>
+            </section>
+            <section class="editor-section" aria-labelledby="speakers-heading">
+              <div class="section-heading"><h3 id="speakers-heading">講者</h3><span id="speakers-count" class="data">0 / 100</span></div>
+              <p class="help">名稱最多 80 個字元。整個姓名作為一位講者，不依逗號拆開；移除會解除指派。</p>
+              <div id="speakers-list"></div>
+              <button id="add-speakers" type="button">新增講者</button>
+            </section>
+            <section class="editor-section" aria-labelledby="sessions-heading">
+              <div class="section-heading"><h3 id="sessions-heading">場次</h3><span id="session-count" class="data">0 / 200</span></div>
+              <p class="help">唯一 ID：1–32 個英數字或 . _ -。名稱最多 160 個字元。每場可選 0–5 位不同講者，時間採 HH:mm。</p>
+              <div id="session-list"></div>
+              <button id="add-session" type="button">新增場次</button>
+            </section>
+            <section id="validation" class="validation" hidden tabindex="-1" aria-labelledby="validation-heading">
+              <h3 id="validation-heading">請修正欄位後重新檢查</h3>
+              <p>所有場次都已保留；尚未進行分析。</p>
+              <ul id="validation-list"></ul>
+            </section>
+            <div class="actionbar">
+              <button id="check" class="primary" type="submit">檢查議程</button>
+              <button id="cancel" type="button" disabled>取消檢查</button>
+            </div>
+          </form>
+          <div class="clear-area">
+            <button id="clear" class="quiet" type="button">清除本頁資料</button>
+            <section id="clear-confirm" hidden aria-labelledby="clear-heading">
+              <h3 id="clear-heading">清除所有場次與資源？</h3>
+              <p>本頁的輸入、結果和下載連結會清除，無法復原；已下載的檔案需自行移除。</p>
+              <div class="actionbar"><button id="keep-data" type="button">保留資料</button><button id="confirm-clear" class="danger" type="button">清除所有資料</button></div>
+            </section>
+          </div>
+        </section>
+        <section id="results-panel" class="results-panel" aria-labelledby="results-heading">
+          <h2 id="results-heading">檢查結果</h2>
+          <div id="progress-area" hidden>
+            <p>正在檢查已填資源…</p>
+            <label for="pair-progress" id="progress-count">0 / 0 · 已檢查場次對</label>
+            <progress id="pair-progress" value="0" max="1"></progress>
+            <p class="help">完成全部配對前不顯示部分結果。取消會保留輸入。</p>
+            <button id="cancel-results" type="button" disabled>取消檢查</button>
+          </div>
+          <div id="result-empty" class="empty-result">
+            <p id="result-empty-message">尚未檢查</p>
+            <p class="muted">先建立房間、講者與場次，再檢查議程。這裡會列出每組衝突及每個資源的完整時間表。</p>
+          </div>
+          <div id="result-data" hidden>
+            <dl id="summary" class="summary"></dl>
+            <p id="coverage-notice" class="notice" hidden></p>
+            <p id="result-explanation"></p>
+            <section class="findings" aria-labelledby="overlap-heading"><h3 id="overlap-heading">! 重疊錯誤</h3><ol id="overlap-list" class="pair-list"></ol></section>
+            <section class="findings" aria-labelledby="warning-heading"><h3 id="warning-heading">! 轉場不足提醒</h3><ol id="warning-list" class="pair-list"></ol></section>
+            <section class="schedules" aria-labelledby="schedules-heading">
+              <h3 id="schedules-heading">議程時間表</h3>
+              <div class="resource-tabs" role="tablist" aria-label="時間表分類">
+                <button type="button" id="room-tab" role="tab" aria-controls="resource-content" aria-selected="true" data-resource-tab="rooms">依房間</button>
+                <button type="button" id="speaker-tab" role="tab" aria-controls="resource-content" aria-selected="false" tabindex="-1" data-resource-tab="speakers">依講者</button>
+                <button type="button" id="all-tab" role="tab" aria-controls="resource-content" aria-selected="false" tabindex="-1" data-resource-tab="all">完整場次</button>
+              </div>
+              <div id="resource-content" role="tabpanel" tabindex="0" aria-labelledby="room-tab"></div>
+            </section>
+          </div>
+          <div class="downloads">
+            <h3>下載修正清單與時間表</h3>
+            <p class="help">TXT 是可讀清單；JSON 保留完整結構。兩檔合計上限 2 MiB，不截斷。修改輸入後需重新檢查。</p>
+            <div class="actionbar"><button id="download-txt" type="button" disabled>下載 TXT</button><button id="download-json" type="button" disabled>下載 JSON</button></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <section class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">檢查範圍與資料處理</h2>
+      <p>檢查單日、同一民用時區的 1–200 場次、最多 20 個房間與 100 位講者。檢查所有場次對，不會自動修正、估算步行距離或安排人員；不處理跨午夜、跨時區或夏令時間換算。</p>
+      <p>輸入與報告只在目前頁面記憶體中處理，不上傳、不儲存在瀏覽器、不放入網址。只在你按下下載時建立本地檔案。關閉、離開或切換語言會清空本頁；請先下載。清除無法移除已下載檔案，也不代表安全抹除記憶體。</p>
+      <h2>常見問題</h2>
+      <details><summary>相接的兩場算重疊嗎？</summary><p>不算。若一場在 10:00 結束、下一場在 10:00 開始，時間區間相接但沒有共同分鐘。</p></details>
+      <details><summary>空白房間或講者會怎麼顯示？</summary><p>標成未指派；該資源的衝突不能判定，不會當作「沒有衝突」。</p></details>
+      <details><summary>轉場警告會和講者撞期重複出現嗎？</summary><p>不會。同一對重疊場次只列一筆錯誤原因；只有不重疊、共用講者且換房 gap 小於設定時才有轉場警告。</p></details>
+    </section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote · 本地候選預覽</span><a href="https://glossquote.com/index.html">返回工具首頁</a></footer>
+</body>
+</html>

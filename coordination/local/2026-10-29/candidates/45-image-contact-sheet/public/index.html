@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在本機把 JPEG/PNG 照片排成一張不裁切的聯絡表，附編號與檔名對照，下載 PNG 和 TXT。">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>照片聯絡表｜把多張圖片排成編號清單</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至工作區</a>
+  <header class="topbar">
+    <a class="family-link" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <nav aria-label="語言"><a href="./en/index.html" lang="en" hreflang="en">English</a></nav>
+  </header>
+  <main id="main">
+    <div class="intro">
+      <div><p class="product-name">照片聯絡表</p><h1>讓一組照片變成可挑選的編號表</h1></div>
+      <p class="privacy-note">在目前頁面處理，不上傳照片。<br>完整縮圖、白底、同一張 PNG。</p>
+    </div>
+    <noscript><p class="notice">請啟用 JavaScript 才能在本機處理照片；不會上傳檔案。</p></noscript>
+    <p id="capability-error" class="notice" role="alert" hidden></p>
+    <div class="app-shell">
+      <section class="sources" aria-labelledby="sources-title">
+        <div class="section-heading"><h2 id="sources-title">照片順序</h2><span id="count" class="data">0 / 30 張</span></div>
+        <label class="file-picker" for="files">加入 JPEG / PNG
+          <input id="files" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple aria-describedby="input-limits">
+        </label>
+        <p id="input-limits" class="help">最多 30 張 · 每張 8 MiB · 合計 64 MiB</p>
+        <p id="empty-list" class="empty-list">目前沒有照片。加入圖片後，先調整順序，再產生聯絡表。</p>
+        <ol id="source-list" class="source-list" aria-label="照片與編號"></ol>
+        <button id="reset" class="quiet" type="button" disabled>清空選取</button>
+      </section>
+      <section class="sheet" aria-labelledby="sheet-title">
+        <div class="sheet-toolbar">
+          <h2 id="sheet-title">聯絡表</h2>
+          <div class="settings">
+            <label class="columns-field" for="columns">欄數 <select id="columns"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+            <label class="check-field"><input id="show-names" type="checkbox"> 在 PNG 顯示檔名</label>
+          </div>
+        </div>
+        <div id="workspace" class="canvas-region" role="region" aria-label="聯絡表預覽" aria-describedby="preview-summary" aria-busy="false" tabindex="0">
+          <div id="preview-empty" class="preview-empty"><span class="empty-number" aria-hidden="true">1</span><p>每張照片都有一個編號。<br>產生後，就能把一張表交給對方挑圖。</p></div>
+          <canvas id="preview" width="0" height="0" role="img" aria-label="已產生的照片聯絡表" aria-describedby="preview-summary" hidden></canvas>
+        </div>
+        <div class="preview-meta"><p id="preview-summary" class="help">產生後，完整聯絡表會顯示在這裡。</p><label for="preview-scale">預覽 <select id="preview-scale" disabled><option value="fit">符合寬度</option><option value="actual">實際尺寸</option></select></label></div>
+        <p id="dimensions" class="dimensions data">—</p>
+        <div class="action-bar">
+          <button id="generate" class="primary" type="button" disabled>產生聯絡表</button>
+          <button id="cancel" type="button" disabled>停止處理</button>
+          <div class="downloads"><button id="download-png" type="button" disabled>下載 PNG</button><button id="download-text" type="button" disabled>下載索引 TXT</button></div>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">加入要整理的 JPEG 或 PNG。</p>
+      </section>
+    </div>
+    <section class="guide" aria-labelledby="guide-title">
+      <h2 id="guide-title">把編號交給對方，把原檔留給自己</h2>
+      <p>加入圖片 → 用上移／下移調整順序 → 選欄數並產生 → 下載 PNG 和 TXT。索引 TXT 永遠包含完整檔名，編號與 PNG 一致；更改排序或設定後，需要重新產生。</p>
+      <details><summary>格式、尺寸與處理限制</summary><div class="details-body">
+        <p>只接受通過檔頭及瀏覽器解碼檢查的靜態 JPEG / PNG。拒絕 APNG、GIF、SVG、HEIC、不明或損壞格式。實際格式以檔頭為準。</p>
+        <p>每圖最多 16 MP、任一邊 8,192 px；每張最多 8 MiB、總計 64 MiB、最多 30 張。產物最多 16 MP、任一邊 8,192 px、PNG 64 MiB、TXT 128 KiB。大型照片仍可能因瀏覽器記憶體不足而無法處理。</p>
+        <p>照片等比縮放並置中，不裁切；透明部分合成白底。檔名標籤最多 32 個字元、兩行，完整名稱保留在 TXT。檔案只在目前頁面記憶體中處理，不寫入瀏覽器儲存空間。匯出圖片不攜帶原圖定位或相機資料。</p>
+        <p>停止時需等目前圖片操作完成。清空或離開頁面會釋放本頁持有的資料；已交給瀏覽器的下載無法撤回，也不會刪除電腦上的原檔或下載檔。</p>
+      </div></details>
+      <details><summary>照片會被裁掉嗎？</summary><p class="details-body">不會。每張照片等比縮放並置中，剩餘空間留白。最後一列沒有照片的格子也會留白。</p></details>
+      <details><summary>編號與檔名如何對照？</summary><p class="details-body">PNG 永遠顯示編號，可選擇加上縮短的檔名。TXT 每列依序列出編號、完整檔名與視覺像素尺寸。檔名以 JSON 字串表示，換行、定位字元會保留為跳脫文字，不會偽造新項目。</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/index.html">返回 Gloss Tools 首頁</a><span>照片聯絡表 · 本地候選預覽</span></footer>
+</body>
+</html>

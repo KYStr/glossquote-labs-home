@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="輸入單次活動、日期與時區，在瀏覽器產生 ICS 行事曆檔。支援全天活動與夏令時間檢查，不需登入。">
+<title>行事曆檔產生器：活動時間轉 ICS｜GlossQuote Labs</title>
+<link rel="stylesheet" href="/styles/app.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳至活動內容</a>
+<header class="topbar">
+  <a class="brand" href="https://glossquote.com/index.html">GlossQuote Labs</a>
+  <nav aria-label="網站導覽"><a href="https://glossquote.com/index.html">所有工具</a><a href="/en/index.html" lang="en" hreflang="en">English</a></nav>
+</header>
+<main id="main">
+  <div class="intro"><h1>把活動時間做成行事曆檔</h1><p>填入單次活動與時區，先確認時間，再下載可自行匯入日曆的 ICS 檔。</p></div>
+  <p id="initialization" class="notice">需要啟用 JavaScript 才能產生檔案；啟動前表單保持停用。</p>
+  <noscript><p class="notice">請啟用 JavaScript 後重新載入。此工具只在目前頁面處理活動內容。</p></noscript>
+  <div class="workspace">
+    <form id="event-form" novalidate autocomplete="off" tabindex="-1">
+      <fieldset id="app-controls" disabled>
+        <legend class="sr-only">活動內容與時間</legend>
+        <section id="error-summary" class="error-summary" role="region" aria-labelledby="error-summary-title" tabindex="-1" hidden></section>
+        <fieldset class="content-fields">
+          <legend>活動內容</legend>
+          <div class="field"><label for="title">活動標題 <span class="optional">（必填）</span></label><input id="title" name="title" type="text" maxlength="240" required spellcheck="false" aria-describedby="title-help error-title"><p id="title-help" class="help">最多 120 個字元。</p><p class="field-error" id="error-title"></p></div>
+          <div class="field"><label for="location">地點 <span class="optional">（選填）</span></label><input id="location" name="location" type="text" maxlength="400" spellcheck="false" aria-describedby="location-help error-location"><p id="location-help" class="help">最多 200 個字元。</p><p class="field-error" id="error-location"></p></div>
+          <div class="field"><label for="notes">說明 <span class="optional">（選填）</span></label><textarea id="notes" name="notes" rows="3" maxlength="8000" spellcheck="false" aria-describedby="notes-help error-notes"></textarea><p id="notes-help" class="help">最多 4000 個字元，可換行。不會解析連結或寄送邀請。</p><p class="field-error" id="error-notes"></p></div>
+        </fieldset>
+        <fieldset class="mode-fields"><legend>活動類型</legend><div class="mode-options"><label><input type="radio" id="mode-timed" name="mode" value="timed" checked>定時</label><label><input type="radio" id="mode-all-day" name="mode" value="all-day">全天</label></div></fieldset>
+        <fieldset id="timed-fields">
+          <legend>日期與時間</legend><p class="help group-help">開始與結束共用一個時區；跨日請填完整結束日期。最長 366 天。</p>
+          <fieldset class="endpoint"><legend>開始</legend>
+            <div class="datetime-row">
+              <div class="field"><label for="startDate">開始日期</label><input type="date" id="startDate" name="startDate" min="2000-01-01" max="2099-12-31" required aria-describedby="error-startDate"><p class="field-error" id="error-startDate"></p></div>
+              <div class="field"><label for="startTime">開始時間</label><input type="time" id="startTime" name="startTime" step="60" required aria-describedby="error-startTime"><p class="field-error" id="error-startTime"></p></div>
+            </div>
+            <fieldset id="startChoice" class="occurrence" tabindex="-1" aria-describedby="start-choice-help error-startChoice" hidden><legend id="start-choice-legend">開始時間：選擇出現次序</legend><p id="start-choice-help" class="help">此時間出現兩次，請選擇。</p><div id="start-options"></div><p class="field-error" id="error-startChoice"></p></fieldset>
+          </fieldset>
+          <fieldset class="endpoint"><legend>結束</legend>
+            <div class="datetime-row">
+              <div class="field"><label for="endDate">結束日期</label><input type="date" id="endDate" name="endDate" min="2000-01-01" max="2099-12-31" required aria-describedby="error-endDate"><p class="field-error" id="error-endDate"></p></div>
+              <div class="field"><label for="endTime">結束時間</label><input type="time" id="endTime" name="endTime" step="60" required aria-describedby="error-endTime"><p class="field-error" id="error-endTime"></p></div>
+            </div>
+            <fieldset id="endChoice" class="occurrence" tabindex="-1" aria-describedby="end-choice-help error-endChoice" hidden><legend id="end-choice-legend">結束時間：選擇出現次序</legend><p id="end-choice-help" class="help">此時間出現兩次，請選擇。</p><div id="end-options"></div><p class="field-error" id="error-endChoice"></p></fieldset>
+          </fieldset>
+          <div class="field"><label for="zone">時區</label><select id="zone" name="zone" aria-describedby="zone-help error-zone">
+            <option value="UTC">世界協調時間 · UTC</option>
+            <option value="Asia/Taipei" selected>台北 · Asia/Taipei</option>
+            <option value="Asia/Tokyo">東京 · Asia/Tokyo</option>
+            <option value="Asia/Hong_Kong">香港 · Asia/Hong_Kong</option>
+            <option value="Asia/Singapore">新加坡 · Asia/Singapore</option>
+            <option value="America/New_York">紐約 · America/New_York</option>
+            <option value="America/Los_Angeles">洛杉磯 · America/Los_Angeles</option>
+            <option value="Europe/London">倫敦 · Europe/London</option>
+            <option value="Europe/Berlin">柏林 · Europe/Berlin</option>
+            <option value="Australia/Sydney">雪梨 · Australia/Sydney</option>
+          </select><p class="help" id="zone-help">依所選時區檢查夏令時間。日曆匯入後可能以你的當地時區顯示。</p><p class="field-error" id="error-zone"></p></div>
+        </fieldset>
+        <fieldset id="all-day-fields" disabled hidden>
+          <legend>全天日期</legend><p class="help group-help">最後一天包含在活動內。不套用時區或時間，含首尾最多 366 天。</p>
+          <div class="datetime-row">
+            <div class="field"><label for="allStartDate">開始日期</label><input type="date" id="allStartDate" name="allStartDate" min="2000-01-01" max="2099-12-30" required aria-describedby="error-allStartDate"><p class="field-error" id="error-allStartDate"></p></div>
+            <div class="field"><label for="lastDate">最後一天（包含）</label><input type="date" id="lastDate" name="lastDate" min="2000-01-01" max="2099-12-30" required aria-describedby="last-help error-lastDate"><p id="last-help" class="help">最晚 2099-12-30。</p><p class="field-error" id="error-lastDate"></p></div>
+          </div>
+        </fieldset>
+        <div class="actions"><button id="preview" type="submit" class="primary">預覽行事曆檔</button><button id="clear" type="button">清除</button></div>
+      </fieldset>
+    </form>
+    <section id="result" class="result" aria-labelledby="result-title" data-state="idle">
+      <h2 id="result-title">確認活動時間</h2><p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">尚未預覽。填好活動內容，再預覽行事曆檔。</p>
+      <dl id="summary" hidden></dl>
+      <a id="download" class="button download" aria-disabled="true" tabindex="-1">下載 ICS</a>
+      <p id="download-note" class="notice" hidden></p><p class="help">下載不會自動加入日曆，也不會寄出邀請。檔名為 glossquote-event.ics。</p>
+      <details id="raw-details" hidden><summary>檢視 ICS 文字</summary><pre tabindex="0" aria-label="產生的 ICS 文字"><code id="raw-ics"></code></pre></details>
+    </section>
+  </div>
+  <section class="guide" aria-labelledby="guide-title"><h2 id="guide-title">從時間到日曆，三個步驟</h2><ol><li>填入標題、完整日期與所選時區的時間，或切換全天。</li><li>預覽並確認當地時間；若時刻重複，明確選擇第一次或第二次。</li><li>下載 ICS，再到你的日曆匯入，確認顯示時間與日期。</li></ol><p class="help">活動內容只保留在目前頁面記憶體。離開頁面或清除後不保留草稿；已下載的檔案不會因此刪除。</p></section>
+  <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">常見問題</h2>
+    <h3>會自動加入我的日曆嗎？</h3><p>不會，工具產生 ICS 檔，你自行在日曆匯入。不同日曆的匯入方式與顯示可能不同，請在匯入時確認。</p>
+    <h3>跨時區會怎麼處理？</h3><p>定時活動先以所選時區確認，再存成 UTC；日曆可能以你的當地時區顯示。重複時間需選擇，跳過的時間不能使用。</p>
+    <h3>全天活動的最後一天算在內嗎？</h3><p>畫面輸入包含最後一天，ICS 按標準使用隔天作為結束，事件不會多一天。</p>
+    <h3>資料會上傳嗎？</h3><p>表單與檔案在頁面記憶體處理，沒有帳戶或同步。離開頁面不保留草稿，也不把輸入放進語言切換連結。</p>
+  </section>
+</main>
+<footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/index.html">返回所有工具</a></footer>
+</body>
+</html>
