@@ -204,4 +204,3 @@
 | labs-prod-bead-string-pattern-20261109 / 串珠花樣用量與順序 / Bead String Pattern | ready | 未承接 | [來源](https://github.com/KYStr/glossquote-labs-home/blob/c8edde6a8d2a83d69a5ef863057184d0ee5022d0/docs/specs/bead-string-pattern/SPEC.md) | 無catalog發布記錄 | 依原task/claim接續 |
 | labs-prod-service-block-breakpoints-20261109 / 工作室次數費用交會表 / Studio Visit Fee Breakpoints | ready | 未承接 | [來源](https://github.com/KYStr/glossquote-labs-home/blob/c8edde6a8d2a83d69a5ef863057184d0ee5022d0/docs/specs/service-block-breakpoints/SPEC.md) | 無catalog發布記錄 | 依原task/claim接續 |
 | labs-prod-battery-swap-plan-20261109 / 活動備用電池替換表 / Event Battery Swap Plan | ready | 未承接 | [來源](https://github.com/KYStr/glossquote-labs-home/blob/c8edde6a8d2a83d69a5ef863057184d0ee5022d0/docs/specs/battery-swap-plan/SPEC.md) | 無catalog發布記錄 | 依原task/claim接續 |
-
