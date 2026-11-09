@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curtain Pattern Cuts | Gloss Tools</title>
+<meta name="description" content="Find curtain cut marks, pattern-matching offsets and fabric shortfalls from one roll.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; worker-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <a href="../../en/">GlossQuote home</a>
+  <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Curtain Pattern Cuts</h1>
+  <p>Measure the roll's head phase and pattern repeat, then enter each panel's finished height and hems in sewing order to get every cut mark from the same roll head, the pattern-matching waste, and whether the roll is long enough.</p>
+  <p id="leave-note">Leaving this page or switching language resets the draft.</p>
+
+  <div class="work">
+  <form id="cut-form" novalidate>
+    <fieldset>
+      <legend>Roll head and repeat</legend>
+      <div class="field">
+        <label for="stock-mm">Usable roll length (mm)</label>
+        <input type="text" id="stock-mm" name="stock-mm" inputmode="numeric" maxlength="12" autocomplete="off">
+        <p class="hint">Length from the roll head to the usable end, 1–100000 mm.</p>
+      </div>
+      <div class="field">
+        <label for="repeat-mm">Vertical pattern repeat (mm)</label>
+        <input type="text" id="repeat-mm" name="repeat-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">The vertical length of one full motif; enter 0 for plain cloth.</p>
+      </div>
+      <div class="field">
+        <label for="head-phase-mm">Roll-head phase (mm)</label>
+        <input type="text" id="head-phase-mm" name="head-phase-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">The motif position at the roll head, measured from a fixed reference point within one repeat.</p>
+      </div>
+      <div class="field">
+        <label for="motif-phase-mm">Finished top-edge phase (mm)</label>
+        <input type="text" id="motif-phase-mm" name="motif-phase-mm" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+        <p class="hint">The motif position each finished top edge should land on.</p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Panel order</legend>
+      <p class="hint">Enter panels in sewing order. Names must be unique; at most 16 panels.</p>
+      <div id="panels"></div>
+      <button type="button" id="add-panel">Add a panel</button>
+    </fieldset>
+
+    <div class="actions">
+      <button type="button" id="plan">Plan matching cuts</button>
+      <button type="button" id="cancel" hidden>Cancel</button>
+      <button type="button" id="clear-draft">Clear draft</button>
+      <button type="button" id="load-sample">Load sample</button>
+    </div>
+  </form>
+
+  <section aria-labelledby="results-heading">
+    <p id="error" role="alert" hidden></p>
+    <p id="status" aria-live="polite"></p>
+    <div id="results" hidden>
+      <h2 id="results-heading">Cut list</h2>
+      <dl>
+        <div><dt>Total needed</dt><dd id="summary-needed"></dd></div>
+        <div><dt>Pattern-matching waste</dt><dd id="summary-waste"></dd></div>
+        <div><dt>Fabric left over</dt><dd id="summary-spare"></dd></div>
+        <div><dt>Fabric shortfall</dt><dd id="summary-shortage"></dd></div>
+      </dl>
+      <p id="shortage-note" hidden>Not enough fabric: this is a trial plan beyond the roll. Re-measure or switch rolls first.</p>
+      <p id="trial-note" hidden>Trial plan, beyond the roll.</p>
+      <h3>Continuous cut ruler</h3>
+      <p class="hint">The ruler shows the same result as the table below; lengths are to scale and the gaps are pattern-matching waste.</p>
+      <div id="ruler" role="img" aria-label="Continuous cut ruler, same as the table below"></div>
+      <h3>Panel start and end marks</h3>
+      <table>
+        <caption>Panel start and end marks (mm, measured from the roll head)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Panel</th>
+            <th scope="col">Skip (mm)</th>
+            <th scope="col">Start (mm)</th>
+            <th scope="col">End (mm)</th>
+          </tr>
+        </thead>
+        <tbody id="cuts-body"></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
