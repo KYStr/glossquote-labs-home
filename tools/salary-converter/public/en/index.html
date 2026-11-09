@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Salary Converter | Gloss Tools</title>
+<meta name="description" content="Enter pay as a monthly, daily, hourly or annual amount and convert to all four at once under common Taiwan conventions: daily is monthly ÷ 30, hourly is monthly ÷ 240, and annual includes year-end bonus months.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Salary Converter</h1>
+  <p class="lede">Enter pay as a monthly, daily, hourly or annual amount and convert to all four at once under common Taiwan conventions: daily is monthly ÷ 30, hourly is monthly ÷ 240, and annual includes year-end bonus months. Compare offers, check a payslip, or work an annual figure back to a monthly one without repeated hand calculation.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Basis, amount and bonus</h2>
+      <form id="salary-form" novalidate>
+        <fieldset class="field">
+          <legend>Salary basis</legend>
+          <p class="help" id="help-sourceBasis">Choose the basis of the amount you have; the amount below is entered on that basis.</p>
+          <div class="segments" role="radiogroup" aria-describedby="help-sourceBasis">
+            <label class="segment"><input id="field-sourceBasis-monthly" name="sourceBasis" type="radio" value="monthly" checked>Monthly</label>
+            <label class="segment"><input id="field-sourceBasis-daily" name="sourceBasis" type="radio" value="daily">Daily</label>
+            <label class="segment"><input id="field-sourceBasis-hourly" name="sourceBasis" type="radio" value="hourly">Hourly</label>
+            <label class="segment"><input id="field-sourceBasis-annual" name="sourceBasis" type="radio" value="annual">Annual</label>
+          </div>
+          <p class="field-error" id="error-sourceBasis" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-amount">Amount (NT$)</label>
+          <p class="help" id="help-amount">A whole number or up to two decimal places, greater than 0. Caps by basis: monthly 99,999,999; daily 9,999,999; hourly 999,999; annual 999,999,999.</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="40000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bonusMonths">Year-end bonus (months)</label>
+          <p class="help" id="help-bonusMonths">In units of one month's salary, at most one decimal place, from 0 to 24 months; enter 0 for no year-end bonus.</p>
+          <input id="field-bonusMonths" name="bonusMonths" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-bonusMonths">
+          <p class="field-error" id="error-bonusMonths" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing converted yet. Enter an amount, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert salary</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Conversion result</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Conversion result" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Amount (NT$)</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel conventions" aria-labelledby="conventions-heading">
+    <h2 id="conventions-heading">Conventions and rounding</h2>
+    <p>Conventions: daily pay = monthly ÷ 30; hourly pay = monthly ÷ 240 (30 days × 8 hours a day); annual pay = monthly × (12 + year-end bonus months). These are common Taiwan payroll conventions, not definitions under the Labor Standards Act; your employment contract and company rules govern the actual amounts.</p>
+    <p>Each amount is converted in one step from the unrounded monthly figure and rounded half-up to whole NT$. Hourly × 240 may therefore differ from the displayed monthly amount, and the displayed annual total may differ by NT$1 from the displayed base annual plus bonus.</p>
+  </section>
+
+  <details class="details">
+    <summary>Input format</summary>
+    <p>Amounts accept ASCII digits and one decimal point only: a whole number or up to two decimal places. Commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. Bonus months allow at most one decimal place. Whatever the input basis, the amount is first normalized to an unrounded monthly figure, and all six figures are computed from it in one step, each rounded half-up to whole NT$ exactly once. The downloaded report is always named salary-converter-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why is hourly pay the monthly salary divided by 240?</dt>
+      <dd>The convention assumes 30 days a month at 8 hours a day, and 30 × 8 = 240. The same basis is commonly used in practice for the regular hourly wage rate under the Labor Standards Act, but this tool only converts amounts; it does not determine overtime pay or legal obligations.</dd>
+      <dt>Can the bonus be a fraction of a month?</dt>
+      <dd>Yes, up to one decimal place, for example 1.5 months, within 0 to 24 months. The bonus amount is monthly × months, and the annual total is monthly × (12 + months).</dd>
+      <dt>Why don't the amounts reconcile exactly when converting from an annual salary?</dt>
+      <dd>Monthly = annual ÷ (12 + bonus months) is usually not a whole number. Each displayed amount is converted separately from that unrounded monthly figure and rounded, so figures may differ by NT$1; the annual total itself is multiplied back from the unrounded monthly figure and matches the entered annual amount after rounding.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
