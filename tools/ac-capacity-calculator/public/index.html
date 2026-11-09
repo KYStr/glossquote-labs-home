@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>冷氣噸數計算機｜Gloss Tools</title>
+<meta name="description" content="依坪數與西曬、頂樓、落地窗、廚房熱源、人數估算冷氣所需的冷房能力（kcal/h、BTU/h、kW），對照常見機型級距給建議；噸數為台灣通路慣例估算。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>冷氣噸數計算機</h1>
+  <p class="lede">依坪數與西曬、頂樓、落地窗、廚房熱源、人數估算冷氣所需的冷房能力（kcal/h、BTU/h、kW），對照常見機型級距給建議；噸數為台灣通路慣例估算。台灣冷氣的「噸」沒有統一定義，各家算法不同；本工具以冷房能力 kW 為主要輸出，選型請看 kW。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">面積單位與面積</h2>
+      <form id="ac-form" novalidate>
+        <div class="field">
+          <label for="field-sizeUnit">面積單位</label>
+          <p class="help" id="help-sizeUnit">建商資料常用 m²，自己量房間常用坪；兩種單位可擇一輸入。</p>
+          <select id="field-sizeUnit" name="sizeUnit" aria-describedby="help-sizeUnit">
+            <option value="ping" selected>坪</option>
+            <option value="m2">m²（平方公尺）</option>
+          </select>
+          <p class="field-error" id="error-sizeUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-area">面積</label>
+          <p class="help" id="help-area">坪：0.5–300；m²：1–1000。小數最多兩位。m² 以 1 坪 = 3.3058 m² 換算。</p>
+          <input id="field-area" name="area" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-area">
+          <p class="field-error" id="error-area" role="alert"></p>
+        </div>
+        <h2>人數</h2>
+        <div class="field">
+          <label for="field-occupants">人數</label>
+          <p class="help" id="help-occupants">整數，範圍 1–30，預設 2。超過 2 人時，每多一人加成 +3%。</p>
+          <input id="field-occupants" name="occupants" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="help-occupants">
+          <p class="field-error" id="error-occupants" role="alert"></p>
+        </div>
+        <h2>西曬、頂樓、大面落地窗、廚房相鄰／熱源</h2>
+        <div class="field switch-field">
+          <input id="field-westSun" name="westSun" type="checkbox" aria-describedby="help-westSun">
+          <label for="field-westSun">西曬（+10%）</label>
+          <p class="help" id="help-westSun">房間有朝西的大面窗、下午受強烈日照。</p>
+          <p class="field-error" id="error-westSun" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-topFloor" name="topFloor" type="checkbox" aria-describedby="help-topFloor">
+          <label for="field-topFloor">頂樓（+15%）</label>
+          <p class="help" id="help-topFloor">房間位在建築物最上層，屋頂直接受日照。</p>
+          <p class="field-error" id="error-topFloor" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-largeWindows" name="largeWindows" type="checkbox" aria-describedby="help-largeWindows">
+          <label for="field-largeWindows">大面落地窗（+10%）</label>
+          <p class="help" id="help-largeWindows">房間有大面積落地窗，隔熱較弱。</p>
+          <p class="field-error" id="error-largeWindows" role="alert"></p>
+        </div>
+        <div class="field switch-field">
+          <input id="field-kitchenHeat" name="kitchenHeat" type="checkbox" aria-describedby="help-kitchenHeat">
+          <label for="field-kitchenHeat">廚房相鄰／熱源（+10%）</label>
+          <p class="help" id="help-kitchenHeat">房間緊鄰廚房，或室內有明顯熱源。</p>
+          <p class="field-error" id="error-kitchenHeat" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入面積與條件，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算冷房能力</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">建議機型與所需能力</h2>
+      <p id="summary"></p>
+      <p class="overrange-note" id="overrange-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="建議機型與所需能力" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數值</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note" id="tonnage-note"></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>基準負荷固定為 500 kcal/h/坪（台灣住宅通路慣例基準）。面積以 m² 輸入時，先以固定除數 1 坪 = 3.3058 m² 換算成坪，換算後的小數不先捨入。加成採加法疊加於基準，不連乘：西曬 +10%、頂樓 +15%、大面落地窗 +10%、廚房相鄰／熱源 +10%、人數超過 2 人每多一人 +3%；人數 2 人以下不加成、也不倒扣。</p>
+    <p>換算固定：BTU/h = kcal/h × 3.968；kW = kcal/h ÷ 860。機型級距表固定為 2.2、2.8、3.6、4.5、5.0、6.3、7.1、8.0、9.0、10.0 kW；建議級距以精確未捨入的 kW 比較，取大於等於的最小一級，並附次一級；精確 kW 超過 10.0 時不給建議機型，改顯示超界說明。顯示的 kW 是四捨五入到兩位小數的值，可能與級距比較用的精確值不同。</p>
+    <p>噸數只以台灣家電通路慣例 1 噸 ≈ 2,500 kcal/h 附註估算，不採冷凍噸（1 RT = 3,024 kcal/h），也不採「噸 ≈ kW × 0.355」一類混合約定。下載的報告檔名固定為 ac-capacity-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。本工具是購買前估算，不是安裝評估。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>一定要買到建議級距嗎？</dt>
+      <dd>建議級距是大於等於所需 kW 的最小常見機型；小一級在高溫日可能不夠冷。</dd>
+      <dt>為什麼不用冷凍噸換算？</dt>
+      <dd>冷凍噸（1 RT = 3,024 kcal/h）是冷凍工程單位；台灣冷氣通路的「噸」是慣例估算，本頁噸數以 1 噸 ≈ 2,500 kcal/h 標示，選型請看 kW。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

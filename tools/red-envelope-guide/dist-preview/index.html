@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>紅包金額指南｜Gloss Tools</title>
+<meta name="description" content="依場合、關係與婚禮場地等級，查台灣紅包行情並自動避開 4 與不合規百位，給出可直接照包的建議金額區間與推薦金額。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>紅包金額指南</h1>
+  <p class="lede">依場合、關係與婚禮場地等級，查台灣紅包行情並自動避開 4 與不合規百位，給出可直接照包的建議金額區間與推薦金額。金額是行情參考，不是任何人的義務或保證。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">場合、關係</h2>
+      <form id="envelope-form" novalidate>
+        <div class="field" id="wrap-occasion">
+          <label for="field-occasion">場合</label>
+          <p class="help" id="help-occasion">五種場合：婚禮、彌月、春節包給長輩、春節包給晚輩、喬遷。喪禮白包不在本工具範圍。</p>
+          <select id="field-occasion" name="occasion" aria-describedby="help-occasion">
+            <option value="wedding" selected>婚禮</option>
+            <option value="full-month">彌月</option>
+            <option value="new-year-elder">春節・包給長輩</option>
+            <option value="new-year-junior">春節・包給晚輩</option>
+            <option value="housewarming">喬遷</option>
+          </select>
+          <p class="field-error" id="error-occasion" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-relationship">
+          <label for="field-relationship">關係</label>
+          <p class="help" id="help-relationship">你和收禮者的關係。婚禮、彌月、喬遷需要此欄。</p>
+          <select id="field-relationship" name="relationship" aria-describedby="help-relationship">
+            <option value="">不適用</option>
+            <option value="colleague" selected>同事／普通朋友</option>
+            <option value="friend">好友</option>
+            <option value="relative">親戚</option>
+            <option value="senior">長輩／上司</option>
+          </select>
+          <p class="field-error" id="error-relationship" role="alert"></p>
+        </div>
+        <h2>婚禮場地、同行與出席</h2>
+        <div class="field" id="wrap-tier">
+          <label for="field-tier">婚禮場地</label>
+          <p class="help" id="help-tier">僅婚禮適用。場地等級愈高，行情區間與同行每人增額愈高。</p>
+          <select id="field-tier" name="tier" aria-describedby="help-tier">
+            <option value="">不適用</option>
+            <option value="restaurant" selected>一般餐廳</option>
+            <option value="hotel">飯店</option>
+            <option value="five-star">五星／高級</option>
+          </select>
+          <p class="field-error" id="error-tier" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-attending">
+          <label for="field-attending">出席</label>
+          <p class="help" id="help-attending">僅婚禮適用。未出席以行情約六成計算，且不計同行人數。</p>
+          <input id="field-attending" name="attending" type="checkbox" checked aria-describedby="help-attending">
+          <p class="field-error" id="error-attending" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-attendeeCount">
+          <label for="field-attendeeCount">同行人數（含自己）</label>
+          <p class="help" id="help-attendeeCount">僅婚禮且出席時適用，1–6 人。紅包以每份（出席單位）計，同行者的份以每人增額併入同一份。</p>
+          <input id="field-attendeeCount" name="attendeeCount" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-attendeeCount">
+          <p class="field-error" id="error-attendeeCount" role="alert"></p>
+        </div>
+        <h2>身分階段、小孩年齡</h2>
+        <div class="field" id="wrap-giverStage">
+          <label for="field-giverStage">身分階段</label>
+          <p class="help" id="help-giverStage">僅春節包給長輩適用：包紅包的人目前的身分階段。</p>
+          <select id="field-giverStage" name="giverStage" aria-describedby="help-giverStage">
+            <option value="" selected>不適用</option>
+            <option value="student">學生</option>
+            <option value="early-career">社會新鮮人</option>
+            <option value="established">工作穩定</option>
+          </select>
+          <p class="field-error" id="error-giverStage" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-ageBand">
+          <label for="field-ageBand">小孩年齡</label>
+          <p class="help" id="help-ageBand">僅春節包給晚輩適用：收紅包小孩的年齡帶。</p>
+          <select id="field-ageBand" name="ageBand" aria-describedby="help-ageBand">
+            <option value="" selected>不適用</option>
+            <option value="preschool">幼兒</option>
+            <option value="elementary">國小</option>
+            <option value="junior-high">國中</option>
+            <option value="senior-high">高中</option>
+            <option value="university">大學</option>
+          </select>
+          <p class="field-error" id="error-ageBand" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未查詢。請選擇場合與條件，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">查詢建議金額</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">建議區間與推薦金額</h2>
+      <p class="recommended-line"><span class="recommended-amount" id="recommended-amount"></span></p>
+      <p id="range-amounts"></p>
+      <p id="summary"></p>
+      <ul id="result-notes"></ul>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>金額規則與行情表說明</summary>
+    <p>有效金額的固定規則：至少 NT$200、100 的倍數、十進位字串不含數字 4；未滿 10,000 時百位數須為 0、2、6、8 之一，10,000 以上時千元數不含 4 且其尾數須為 0、2、6、8 之一。區間兩端與推薦金額（區間中點）一律對齊到最近的有效金額，等距時向上取。</p>
+    <p>婚禮行情依關係 × 場地等級查表（同事 1,200–3,200、好友 2,600–4,800、親戚 2,600–7,800、長輩／上司 2,000–4,800，隨場地等級遞增）；出席且多人同行時，每多 1 人兩端各加每人增額（一般餐廳 1,000、飯店 1,200、五星／高級 1,600）。未出席婚禮以行情六成計算後再對齊。彌月與喬遷依關係查表，喬遷也可改送等值禮品；春節包給長輩依包的人的身分階段、包給晚輩依小孩年齡帶查表。</p>
+    <p>行情表為台灣市場常見行情整理（2026-11 作者整理版 v1），習俗本有地區與家庭差異。下載的報告檔名固定為 red-envelope-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼金額避開 4？</dt>
+      <dd>4 諧音不吉利，台灣紅包習俗上避開；百位也偏好雙數與 2、6、8。</dd>
+      <dt>未出席為什麼打六折？</dt>
+      <dd>未出席不佔席位與餐費，行情約為出席的六成，本工具以六成計算後再對齊有效金額。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

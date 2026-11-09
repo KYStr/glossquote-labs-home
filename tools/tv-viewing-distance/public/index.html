@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>電視尺寸與觀賞距離｜Gloss Tools</title>
+<meta name="description" content="輸入電視對角線吋數，依 THX／SMPTE 經驗法則算出 16:9 螢幕寬高與最近、理想、最遠觀賞距離；也能反過來用沙發距離推回建議的電視尺寸。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>電視尺寸與觀賞距離</h1>
+  <p class="lede">買電視前先對一下：輸入看中的對角線吋數，立刻看到 16:9 螢幕實際寬高與最近、理想、最遠觀賞距離；或輸入沙發到電視牆的距離，反推建議的吋數範圍。這些倍率是經驗法則，不是精確視角換算。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">吋數或距離，擇一輸入</h2>
+      <form id="tv-form" novalidate>
+        <div class="field">
+          <label for="field-diagonalIn">電視對角線（吋）</label>
+          <p class="help" id="help-diagonalIn">10 至 120 吋，最多一位小數。與距離同填時，另外判斷你的距離是否合適。</p>
+          <input id="field-diagonalIn" name="diagonalIn" type="text" inputmode="decimal" autocomplete="off" value="55" aria-describedby="help-diagonalIn">
+          <p class="field-error" id="error-diagonalIn" role="alert"></p>
+          <div class="chips" role="group" aria-label="常用尺寸快選">
+            <button type="button" class="chip" data-quick-size="32">32 吋</button>
+            <button type="button" class="chip" data-quick-size="43">43 吋</button>
+            <button type="button" class="chip" data-quick-size="50">50 吋</button>
+            <button type="button" class="chip" data-quick-size="55">55 吋</button>
+            <button type="button" class="chip" data-quick-size="65">65 吋</button>
+            <button type="button" class="chip" data-quick-size="75">75 吋</button>
+            <button type="button" class="chip" data-quick-size="85">85 吋</button>
+            <button type="button" class="chip" data-quick-size="98">98 吋</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="field-roomDistanceCm">沙發到電視的距離（公分，選填）</label>
+          <p class="help" id="help-roomDistanceCm">30 至 1500 公分，最多一位小數。只填此欄時，反推建議的吋數範圍。</p>
+          <input id="field-roomDistanceCm" name="roomDistanceCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-roomDistanceCm">
+          <p class="field-error" id="error-roomDistanceCm" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>解析度</legend>
+          <p class="help" id="help-resolution">4K 只改變最近距離倍率（1.0）；理想與最遠距離不因解析度改變。</p>
+          <div class="radios" aria-describedby="help-resolution">
+            <label class="radio"><input type="radio" name="resolution" value="FHD" checked> FHD</label>
+            <label class="radio"><input type="radio" name="resolution" value="UHD4K"> UHD 4K</label>
+          </div>
+          <p class="field-error" id="error-resolution" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入吋數或距離，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算觀賞距離</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">結果</h2>
+      <p id="summary"></p>
+      <div id="forward-block" hidden>
+        <div class="table-scroll" role="region" aria-label="觀賞距離" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">距離</th><th scope="col">公分（公尺）</th></tr>
+            </thead>
+            <tbody id="distance-rows"></tbody>
+          </table>
+        </div>
+        <p class="fit-line" id="fit-line" hidden></p>
+      </div>
+      <div id="inverse-block" hidden>
+        <ul id="inverse-lines"></ul>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>倍率表與計算方式</summary>
+    <div class="table-scroll" role="region" aria-label="倍率表" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">距離</th><th scope="col">倍率（× 對角線吋數）</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">最近</th><td>FHD 1.2；UHD 4K 1.0</td></tr>
+          <tr><th scope="row">理想下限</th><td>1.5</td></tr>
+          <tr><th scope="row">理想上限</th><td>2.0</td></tr>
+          <tr><th scope="row">最遠</th><td>2.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>螢幕固定 16:9：寬 = 吋數 × 2.54 × 16/√337、高 = 吋數 × 2.54 × 9/√337（1 吋 = 2.54 公分）。四個距離都是吋數 × 倍率 × 2.54，以精確十進位運算後才捨入。反推模式把距離先換成吋，再除以理想 1.5–2.0、最近與最遠倍率，得到建議範圍與上下限。下載的報告檔名固定為 tv-viewing-distance-report.json，內容是結果的精簡 JSON，鍵按 UTF-16 碼元升序排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這四個距離是精確的視角換算嗎？</dt>
+      <dd>不是。它們是以 THX 約 36–40° 與 SMPTE 約 30° 視角建議為依據的固定經驗倍率（最近 1.2、理想 1.5–2.0、最遠 2.5，皆乘對角線），方便選購時快速對照。</dd>
+      <dt>4K 為什麼可以坐得比較近？</dt>
+      <dd>解析度較高時，同距離下較不容易看到像素，所以本工具把 4K 的最近距離倍率定為 1.0；理想與最遠距離不因解析度改變。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

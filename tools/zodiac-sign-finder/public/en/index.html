@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Zodiac Sign Finder | Gloss Tools</title>
+<meta name="description" content="Enter a birth month and day to look up the Western zodiac sign, symbol, element and modality in a fixed tropical date table. Cusp days are flagged, and the optional year only validates that the date exists — it never changes the sign.">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="status"><span class="status-badge" id="status-badge" data-tone="info">Not started</span></span>
+  <nav class="lang-nav" aria-label="Language">
+    <a id="lang-link" href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span aria-hidden="true">·</span>
+    <a id="home-link" href="../../en/">Back to home</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Zodiac Sign Finder</h1>
+  <p class="lede">Enter a birth month and day to look up the Western zodiac sign, symbol, date range, element and modality in a fixed tropical date table. All computation happens locally; nothing you type is uploaded or stored.</p>
+
+  <div class="notice" role="note">
+    <p>Switching languages or leaving the page discards your draft. A result is only valid for the current input snapshot; editing the input immediately invalidates the old result and its download.</p>
+  </div>
+
+  <form id="zodiac-form" novalidate>
+    <div class="fields">
+      <div class="field">
+        <label for="month-input">Birth month
+          <span class="hint">1–12, digits only.</span>
+        </label>
+        <input id="month-input" name="month" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="month-error">
+        <p class="field-error" id="month-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="day-input">Birth day
+          <span class="hint">1–31, digits only.</span>
+        </label>
+        <input id="day-input" name="day" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="day-error">
+        <p class="field-error" id="day-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="year-input">Birth year (optional)
+          <span class="hint">The year is optional. It only checks that the date exists and never changes the sign.</span>
+        </label>
+        <input id="year-input" name="year" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="year-error">
+        <p class="field-error" id="year-error" hidden></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="find-button" class="primary">Find your sign</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+      <button type="button" id="reset-button">Reset</button>
+    </div>
+
+    <p class="status-line" id="status-line" role="status" aria-live="polite">Enter a birth month and day, or load the example.</p>
+  </form>
+
+  <section class="result" id="result" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">Your sign</h2>
+    <p class="sign-line"><span class="sign-symbol" id="result-symbol"></span> <span class="sign-name" id="result-name"></span></p>
+    <p class="result-range" id="result-range"></p>
+    <p class="result-attrs" id="result-attrs"></p>
+    <p class="result-cusp" id="result-cusp" hidden></p>
+    <p class="result-neighbour" id="result-neighbour" hidden></p>
+    <div class="download-row">
+      <button type="button" id="download-button">Download report</button>
+    </div>
+  </section>
+
+  <details>
+    <summary>Input rules</summary>
+    <ul>
+      <li>Month and day are required; the year is optional. Each field accepts a decimal integer only (0, or starting with a non-zero digit; no spaces or fractions), at most 8 characters.</li>
+      <li>Ranges: month 1–12, day 1–31, year 1–9999; the date must also exist in its month.</li>
+      <li>February 29: accepted with no year given, accepted in a leap year, and reported as a nonexistent date in a non-leap year.</li>
+      <li>The date table is fixed and never varies by year or birth time; a birth date on a sign's first or last day adds a cusp note and the neighbouring sign.</li>
+      <li>The sign depends on month and day only; the year never changes the result.</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Frequently asked questions</summary>
+    <p><strong>Born on Feb 29?</strong><br>Pisces. The year only checks that the date exists; with no year given, Feb 29 is accepted.</p>
+    <p><strong>Why the cusp note?</strong><br>The exact ingress moment varies slightly by year; this tool uses a fixed date table and flags each sign's first and last day.</p>
+  </details>
+</main>
+
+<footer>
+  <p>Fully local tool: no account, no upload, no records kept. The report file is always named <code>zodiac-sign-report.json</code>.</p>
+</footer>
+
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

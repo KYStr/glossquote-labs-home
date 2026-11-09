@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Filament Usage Calculator | Gloss Tools</title>
+<meta name="description" content="Convert 3D-printing filament length to weight and back by diameter and material density, estimate what is left on a spool, and price a print's filament.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Filament Usage Calculator</h1>
+  <p class="lede">Check before you print: convert filament length to weight and back by diameter and material density, estimate what is left on a spool from its gross and empty weights, and price one print from the spool's price.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Mode, diameter, material and values</h2>
+      <form id="filament-form" novalidate>
+        <fieldset class="field">
+          <legend>Mode</legend>
+          <label class="radio-row" for="field-mode-length">
+            <input id="field-mode-length" name="mode" type="radio" value="length" checked>
+            Length to weight
+          </label>
+          <label class="radio-row" for="field-mode-weight">
+            <input id="field-mode-weight" name="mode" type="radio" value="weight">
+            Weight to length
+          </label>
+          <label class="radio-row" for="field-mode-spool">
+            <input id="field-mode-spool" name="mode" type="radio" value="spool">
+            Spool remaining
+          </label>
+          <label class="radio-row" for="field-mode-cost">
+            <input id="field-mode-cost" name="mode" type="radio" value="cost">
+            Print cost
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Diameter</legend>
+          <label class="radio-row" for="field-diameter-175">
+            <input id="field-diameter-175" name="diameter" type="radio" value="1.75" checked>
+            1.75 mm
+          </label>
+          <label class="radio-row" for="field-diameter-285">
+            <input id="field-diameter-285" name="diameter" type="radio" value="2.85">
+            2.85 mm
+          </label>
+          <p class="field-error" id="error-diameter" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-material">Material</label>
+          <p class="help" id="help-material">Fixed nominal densities (g/cm³); applies in every mode.</p>
+          <select id="field-material" name="material" aria-describedby="help-material">
+            <option value="pla" selected>PLA — 1.24</option>
+            <option value="petg">PETG — 1.27</option>
+            <option value="abs">ABS — 1.05</option>
+            <option value="tpu">TPU (flexible) — 1.21</option>
+            <option value="asa">ASA — 1.07</option>
+            <option value="pc">PC — 1.20</option>
+          </select>
+          <p class="field-error" id="error-material" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lengthM">Length (m)</label>
+          <p class="help" id="help-lengthM">Above 0, at most 100000 m, up to 3 decimal places. Active only in Length to weight mode.</p>
+          <input id="field-lengthM" name="lengthM" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-lengthM">
+          <p class="field-error" id="error-lengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightG">Weight (g)</label>
+          <p class="help" id="help-weightG">Above 0, at most 1000000 g, up to 2 decimal places. Active only in Weight to length mode.</p>
+          <input id="field-weightG" name="weightG" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-weightG" disabled>
+          <p class="field-error" id="error-weightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-grossWeightG">Gross spool weight (g)</label>
+          <p class="help" id="help-grossWeightG">Filament plus spool on the scale; above 0, at most 100000 g, up to 1 decimal place. Active only in Spool remaining mode.</p>
+          <input id="field-grossWeightG" name="grossWeightG" type="text" inputmode="decimal" autocomplete="off" value="850" aria-describedby="help-grossWeightG" disabled>
+          <p class="field-error" id="error-grossWeightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-emptySpoolPreset">Empty spool preset</label>
+          <p class="help" id="help-emptySpoolPreset">Common empty-spool weights, or choose Custom for your own measurement. Active only in Spool remaining mode.</p>
+          <select id="field-emptySpoolPreset" name="emptySpoolPreset" aria-describedby="help-emptySpoolPreset" disabled>
+            <option value="140">140 g</option>
+            <option value="200" selected>200 g</option>
+            <option value="250">250 g</option>
+            <option value="custom">Custom</option>
+          </select>
+          <p class="field-error" id="error-emptySpoolPreset" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-emptySpoolCustomG">Custom empty spool (g)</label>
+          <p class="help" id="help-emptySpoolCustomG">0–10000 g, up to 1 decimal place. Active only when the preset is Custom.</p>
+          <input id="field-emptySpoolCustomG" name="emptySpoolCustomG" type="text" inputmode="decimal" autocomplete="off" value="200" aria-describedby="help-emptySpoolCustomG" disabled>
+          <p class="field-error" id="error-emptySpoolCustomG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-spoolPrice">Spool price</label>
+          <p class="help" id="help-spoolPrice">Above 0, at most 1000000, up to 2 decimal places. Active only in Print cost mode.</p>
+          <input id="field-spoolPrice" name="spoolPrice" type="text" inputmode="decimal" autocomplete="off" value="599" aria-describedby="help-spoolPrice" disabled>
+          <p class="field-error" id="error-spoolPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-spoolNetWeightG">Spool net weight (g)</label>
+          <p class="help" id="help-spoolNetWeightG">Filament weight without the spool, commonly 1000 g; 1–100000 g, up to 1 decimal place. Active only in Print cost mode.</p>
+          <input id="field-spoolNetWeightG" name="spoolNetWeightG" type="text" inputmode="decimal" autocomplete="off" value="1000" aria-describedby="help-spoolNetWeightG" disabled>
+          <p class="field-error" id="error-spoolNetWeightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-usageG">Filament used (g)</label>
+          <p class="help" id="help-usageG">Your slicer's estimate for this print; above 0, at most 1000000 g, up to 1 decimal place. Active only in Print cost mode.</p>
+          <input id="field-usageG" name="usageG" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-usageG" disabled>
+          <p class="field-error" id="error-usageG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-currency">Currency</label>
+          <p class="help" id="help-currency">A display label only; no exchange-rate conversion. Active only in Print cost mode.</p>
+          <select id="field-currency" name="currency" aria-describedby="help-currency" disabled>
+            <option value="TWD" selected>TWD (NT$)</option>
+            <option value="USD">USD (US$)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="JPY">JPY (¥)</option>
+          </select>
+          <p class="field-error" id="error-currency" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter values or load the example, then press “Calculate”.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Result</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Result details" tabindex="0">
+        <table>
+          <tbody id="detail-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">Densities are common nominal values; actual filament varies by brand and blend. Treat results as planning estimates.</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and limits</summary>
+    <p>Weight per metre = cross-section (π × radius²) × material density: 1.75 mm filament has a cross-section of about 2.405 mm², one metre of it has a volume equal to that many cm³, and multiplying by the density (g/cm³) gives grams per metre. Length-to-weight, weight-to-length, spool remaining and cost all derive from that figure, with no rounding until the single display rounding.</p>
+    <p>Spool remaining = gross weight − empty spool weight, divided by the weight per metre for the remaining length; print cost = spool price × filament used ÷ spool net weight (a linear estimate), with the currency shown as a label only. This tool does not read G-code or slicer files, does not estimate supports, skirts or flow differences, and does not guarantee a slicer's usage figure.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Why does my slicer's weight differ?</dt>
+      <dd>Slicers compute from actual extrusion paths and flow; this tool converts from nominal diameter and density, so small differences are expected.</dd>
+      <dt>How do I get the empty spool weight?</dt>
+      <dd>Weigh a finished spool of the same kind or check the maker's published value; it can vary between batches.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is not uploaded, stored or logged.</p>
+</main>
+</body>
+</html>

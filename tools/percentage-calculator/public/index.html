@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>百分比計算機｜Gloss Tools</title>
+<meta name="description" content="三種百分比一次算清：某數的百分之幾、佔了百分之幾、從 A 到 B 增減了多少百分比；精確十進位計算，不上傳。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>百分比計算機</h1>
+    <p class="lede">三種百分比一次算清：某數的百分之幾、佔了百分之幾、從 A 到 B 增減了多少百分比。全部以精確十進位運算，只在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <fieldset class="mode-group">
+        <legend>計算模式</legend>
+        <div class="segmented" role="radiogroup" aria-label="計算模式">
+          <label class="segment">
+            <input type="radio" name="mode" value="of" checked>
+            <span>百分之幾是多少</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="share">
+            <span>佔多少百分比</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="change">
+            <span>百分比變化</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-mode" hidden></p>
+      </fieldset>
+
+      <div class="fields">
+        <div class="field">
+          <label for="input-first" id="label-first">百分比（%）</label>
+          <input id="input-first" name="first" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="20">
+          <p class="field-error" id="error-first" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-second" id="label-second">基數</label>
+          <input id="input-second" name="second" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="150">
+          <p class="field-error" id="error-second" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算百分比</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入數字，或載入範例。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">計算結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>精確值</dt>
+          <dd><span id="result-value"></span><span id="result-suffix"></span></dd>
+        </div>
+        <div id="result-direction-row" hidden>
+          <dt>方向</dt>
+          <dd id="result-direction"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>數字格式：十進位數字，例如 12.5；不接受千分位逗號、指數、正號、前置或尾隨小數點。</li>
+        <li>每欄最多 24 個字元，絕對值最多 999,999,999,999。</li>
+        <li>畫面顯示精確結果四捨五入到小數第 2 位並去掉尾隨零；下載報告保留小數第 10 位的精確值。</li>
+        <li>佔比的「全部」或變化率的「原始值」為 0 時無法計算，會顯示固定錯誤。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>百分比變化怎麼算？</h3>
+    <p>（新值 − 原始值）÷ 原始值 × 100；原始值為 0 時無法計算。</p>
+    <h3>畫面為什麼只顯示兩位小數？</h3>
+    <p>畫面把精確結果四捨五入到兩位並去掉尾隨零；下載報告保留十位小數的值。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 百分比計算機在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

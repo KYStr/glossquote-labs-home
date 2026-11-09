@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <title>EV Charging Calculator | Gloss Tools</title>
+    <meta name="description" content="Estimate the energy, charging time and cost to charge an EV battery from one charge level to another, using a constant-power model.">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../en/">Gloss Tools</a>
+      <span class="location">EV Charging Calculator</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="Language">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="../index.html">繁體中文</a>
+          <a lang="en" hreflang="en" href="./index.html" aria-current="page">English</a>
+        </nav>
+        <p class="language-note">Switching language or leaving this page discards the current draft.</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">EV Charging Calculator</h1>
+        <p class="intro">Enter the battery capacity, current and target charge, charger power and efficiency to estimate how much energy this charge adds, how long it takes, and the optional electricity cost. Data stays on this page; nothing connects to a vehicle or charger.</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          This browser cannot start the calculator. Please open it in a browser with JavaScript module support. The notes and FAQ below remain readable.
+        </p>
+
+        <div class="workspace">
+          <form id="tool-form" novalidate>
+            <fieldset id="tool-controls" disabled>
+              <legend class="visually-hidden">Charging estimate workspace</legend>
+
+              <div class="field">
+                <label for="input-capacityKwh">Battery capacity (kWh)</label>
+                <input id="input-capacityKwh" name="capacityKwh" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="60" aria-describedby="help-capacityKwh error-capacityKwh" aria-invalid="false">
+                <p id="help-capacityKwh" class="field-help">Total battery capacity. Up to 2 decimal places, above 0 and at most 500.</p>
+                <p id="error-capacityKwh" class="field-error" hidden></p>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="input-currentSoc">Current charge (%)</label>
+                  <input id="input-currentSoc" name="currentSoc" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="20" aria-describedby="help-currentSoc error-currentSoc" aria-invalid="false">
+                  <p id="help-currentSoc" class="field-help">Whole number, 0 to 100.</p>
+                  <p id="error-currentSoc" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="input-targetSoc">Target charge (%)</label>
+                  <input id="input-targetSoc" name="targetSoc" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="80" aria-describedby="help-targetSoc error-targetSoc" aria-invalid="false">
+                  <p id="help-targetSoc" class="field-help">Whole number, 0 to 100, not below the current charge.</p>
+                  <p id="error-targetSoc" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="input-chargerPowerKw">Charger power (kW)</label>
+                <input id="input-chargerPowerKw" name="chargerPowerKw" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="7" aria-describedby="help-chargerPowerKw error-chargerPowerKw" aria-invalid="false">
+                <p id="help-chargerPowerKw" class="field-help">Up to 2 decimal places, above 0 and at most 1000; or use a preset below.</p>
+                <p id="error-chargerPowerKw" class="field-error" hidden></p>
+                <div class="preset-row" role="group" aria-label="Common charger power presets">
+                  <button type="button" class="preset-button" data-power="7">7 kW</button>
+                  <button type="button" class="preset-button" data-power="11">11 kW</button>
+                  <button type="button" class="preset-button" data-power="50">50 kW</button>
+                  <button type="button" class="preset-button" data-power="120">120 kW</button>
+                  <button type="button" class="preset-button" data-power="180">180 kW</button>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="input-efficiencyPct">Charging efficiency (%)</label>
+                  <input id="input-efficiencyPct" name="efficiencyPct" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="90" aria-describedby="help-efficiencyPct error-efficiencyPct" aria-invalid="false">
+                  <p id="help-efficiencyPct" class="field-help">Whole number, 50 to 100. Wall energy = battery energy / efficiency.</p>
+                  <p id="error-efficiencyPct" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="input-pricePerKwh">Price per kWh (optional)</label>
+                  <input id="input-pricePerKwh" name="pricePerKwh" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="" aria-describedby="help-pricePerKwh error-pricePerKwh" aria-invalid="false">
+                  <p id="help-pricePerKwh" class="field-help">Leave empty to skip the cost estimate; 0 means free charging. Up to 2 decimal places, at most 100.</p>
+                  <p id="error-pricePerKwh" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <div class="action-bar">
+                <button type="submit" id="run-button" class="primary-button">Calculate charging estimate</button>
+                <button type="button" id="example-button" class="secondary-button">Load example</button>
+                <button type="button" id="reset-button" class="secondary-button">Reset</button>
+                <button type="button" id="cancel-button" class="secondary-button" hidden>Cancel</button>
+              </div>
+            </fieldset>
+            <p id="tool-status" class="tool-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <section id="results" class="results" aria-labelledby="results-title" hidden>
+            <h2 id="results-title">Estimate</h2>
+            <p id="zero-note" class="zero-note" hidden>Target already reached; no charging needed.</p>
+            <dl class="result-list">
+              <div class="result-row">
+                <dt>Energy to add (battery)</dt>
+                <dd><span id="result-battery">—</span> kWh</dd>
+              </div>
+              <div class="result-row">
+                <dt>Wall energy</dt>
+                <dd><span id="result-wall">—</span> kWh</dd>
+              </div>
+              <div class="result-row">
+                <dt>Estimated time</dt>
+                <dd id="result-time">—</dd>
+              </div>
+              <div class="result-row" id="cost-row" hidden>
+                <dt>Estimated cost</dt>
+                <dd><span id="result-cost">—</span></dd>
+              </div>
+            </dl>
+            <p class="estimate-note">Time is an estimate: this tool assumes constant charging power for the whole session. Real charging usually slows at higher charge levels, so actual time may be longer.</p>
+            <button type="button" id="download-button" class="secondary-button" hidden>Download report</button>
+          </section>
+        </div>
+
+        <section class="faq" aria-labelledby="faq-title">
+          <h2 id="faq-title">FAQ</h2>
+          <h3>Why does real charging take longer?</h3>
+          <p>This tool assumes constant power for the whole session; real charging usually tapers at higher charge levels, so actual time is often longer.</p>
+          <h3>What is wall energy?</h3>
+          <p>The energy drawn from the grid. Charging is not lossless, so wall energy = battery energy / efficiency.</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

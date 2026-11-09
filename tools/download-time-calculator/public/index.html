@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>下載時間計算機｜Gloss Tools</title>
+<meta name="description" content="輸入檔案大小與連線速度，算出下載需要多久與預計完成時間；位元與位元組換算、效率折減都寫清楚。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>下載時間計算機</h1>
+  <p class="lede">手上有檔案大小和方案標稱速度，但一個以位元組計、一個以位元計，心算很容易差八倍。輸入檔案大小、連線速度與效率，這裡一次算清需要多久、今晚幾點開始下、什麼時候完成。速度以固定值估算，不量測真實網路。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="download-form" novalidate>
+        <div class="field">
+          <label for="field-sizeValue">檔案大小</label>
+          <p class="help" id="help-sizeValue">大於 0、最多 9999.999，最多三位小數。</p>
+          <input id="field-sizeValue" name="sizeValue" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-sizeValue">
+          <p class="field-error" id="error-sizeValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sizeUnit">大小單位</label>
+          <p class="help" id="help-sizeUnit">十進位 SI（KB、MB、GB、TB）與二進位 IEC（KiB、MiB、GiB、TiB）分開列舉，兩套換算都精確，不設切換開關。</p>
+          <select id="field-sizeUnit" name="sizeUnit" aria-describedby="help-sizeUnit">
+            <option value="B">B</option>
+            <option value="KB">KB</option>
+            <option value="MB">MB</option>
+            <option value="GB" selected>GB</option>
+            <option value="TB">TB</option>
+            <option value="KiB">KiB</option>
+            <option value="MiB">MiB</option>
+            <option value="GiB">GiB</option>
+            <option value="TiB">TiB</option>
+          </select>
+          <p class="field-error" id="error-sizeUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-speedValue">連線速度</label>
+          <p class="help" id="help-speedValue">0.01 到 999999.999，最多三位小數。下方常用速度只是填值捷徑。</p>
+          <div class="preset-row" role="group" aria-label="常用速度">
+            <button type="button" class="button-secondary" data-chip-speed="10">10 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="50">50 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="100">100 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="300">300 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="500">500 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="1000">1000 Mbps</button>
+          </div>
+          <input id="field-speedValue" name="speedValue" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-speedValue">
+          <p class="field-error" id="error-speedValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-speedUnit">速度單位</label>
+          <p class="help" id="help-speedUnit">Mbps 以位元計；MB/s 以位元組計，兩者差八倍。</p>
+          <select id="field-speedUnit" name="speedUnit" aria-describedby="help-speedUnit">
+            <option value="Mbps" selected>Mbps</option>
+            <option value="MB/s">MB/s</option>
+          </select>
+          <p class="field-error" id="error-speedUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-efficiency">效率 %</label>
+          <p class="help" id="help-efficiency">整體折減係數，1 到 100 的整數。預設 100，不折減；90 表示以標稱速度的九成計算。</p>
+          <input id="field-efficiency" name="efficiency" type="text" inputmode="numeric" autocomplete="off" value="100" aria-describedby="help-efficiency">
+          <p class="field-error" id="error-efficiency" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-startTime">開始時間（留空＝現在）</label>
+          <p class="help" id="help-startTime">本機時間，HH:MM 格式（00:00 到 23:59）。留空時以按下計算當下的時間為準。</p>
+          <input id="field-startTime" name="startTime" type="text" inputmode="numeric" autocomplete="off" value="" placeholder="HH:MM" aria-describedby="help-startTime">
+          <p class="field-error" id="error-startTime" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入檔案大小與速度，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算下載時間</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">所需時間與完成時刻</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>細節</h3>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">這是固定速度的估算，不是下載保證；實際時間會受伺服器、尖峰壅塞與家中網路環境影響。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式</summary>
+    <p>檔案大小先換算為位元組（1 byte = 8 bits）：SI 單位每級乘 1000，IEC 單位每級乘 1024，兩套分開選、各自精確。所需秒數 = 檔案位元組數 × 8 ÷（標稱速度 × 效率 ÷ 100），全程以精確有理數計算。顯示的總秒數是四捨五入後的整數；完成時刻則以未捨入的精確時長推算（只取整秒部分），所以兩者偶爾會差一秒以內。</p>
+    <p>時長格式：滿一小時顯示 H:MM:SS（小時可超過 24，不換算成天），滿一分鐘顯示 M:SS，未滿一分鐘顯示 0:SS。完成時刻跨日會標記 +Nd。報告檔 download-time-report.json 內容為這次結果的固定格式 JSON。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼 100 Mbps 下載 100 MB 不是 1 秒？</dt>
+      <dd>速度以位元（bit）計、檔案以位元組（byte）計，1 byte = 8 bits，所以約需 8 秒多。</dd>
+      <dt>效率是什麼？</dt>
+      <dd>協定額外負擔與實際環境會讓有效速度低於標稱值；效率 90 表示以標稱速度的九成計算。預設 100，不折減。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

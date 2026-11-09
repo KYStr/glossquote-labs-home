@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>影片檔案大小估算｜Gloss Tools</title>
+<meta name="description" content="依片長、解析度預設位元率或自訂位元率、編碼係數與音訊位元率估算影片檔案大小，GB 與 GiB 並列顯示，也可反推指定容量最長可錄多久。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>影片檔案大小估算</h1>
+  <p class="lede">錄影前先算：用解析度預設位元率或自訂位元率，加上編碼係數與音訊位元率，估一段片的檔案大小（GB 與 GiB 並列），或反過來算一張卡、一個目標容量最長可錄多久。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">片長、位元率與容量</h2>
+      <form id="video-form" novalidate>
+        <fieldset class="field">
+          <legend>模式</legend>
+          <label class="radio-row" for="field-mode-size">
+            <input id="field-mode-size" name="mode" type="radio" value="size" checked>
+            檔案大小
+          </label>
+          <label class="radio-row" for="field-mode-duration">
+            <input id="field-mode-duration" name="mode" type="radio" value="duration">
+            可錄時長
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-duration">片長（時：分：秒）</label>
+          <p class="help" id="help-duration">格式 時：分：秒，分、秒為 00–59，最長 999:59:59。僅檔案大小模式生效。</p>
+          <input id="field-duration" name="duration" type="text" inputmode="numeric" autocomplete="off" value="0:10:00" aria-describedby="help-duration">
+          <p class="field-error" id="error-duration" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>位元率來源</legend>
+          <label class="radio-row" for="field-source-preset">
+            <input id="field-source-preset" name="bitrateSource" type="radio" value="preset" checked>
+            預設
+          </label>
+          <label class="radio-row" for="field-source-custom">
+            <input id="field-source-custom" name="bitrateSource" type="radio" value="custom">
+            自訂
+          </label>
+          <p class="field-error" id="error-bitrateSource" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-preset">解析度預設</label>
+          <p class="help" id="help-preset">預設位元率為 H.264 常見經驗值（typical H.264 values），不是任何裝置的規格值。僅預設來源生效。</p>
+          <select id="field-preset" name="preset" aria-describedby="help-preset">
+            <option value="2160p60">4K 60fps（45 Mbps）</option>
+            <option value="2160p30">4K 30fps（35 Mbps）</option>
+            <option value="1080p60">1080p 60fps（12 Mbps）</option>
+            <option value="1080p30" selected>1080p 30fps（8 Mbps）</option>
+            <option value="720p30">720p 30fps（5 Mbps）</option>
+            <option value="480p30">480p 30fps（2.5 Mbps）</option>
+          </select>
+          <p class="field-error" id="error-preset" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-customBitrateMbps">自訂視訊位元率（Mbps）</label>
+          <p class="help" id="help-customBitrateMbps">0.1–1000 Mbps，最多兩位小數，同樣視為 H.264 基準值。僅自訂來源生效。</p>
+          <input id="field-customBitrateMbps" name="customBitrateMbps" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-customBitrateMbps" disabled>
+          <p class="field-error" id="error-customBitrateMbps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-codec">編碼</label>
+          <p class="help" id="help-codec">係數只套在視訊位元率上，不套音訊。</p>
+          <select id="field-codec" name="codec" aria-describedby="help-codec">
+            <option value="h264" selected>H.264（×1）</option>
+            <option value="h265">H.265 / HEVC（約 ×0.55）</option>
+            <option value="av1">AV1（約 ×0.45）</option>
+            <option value="prores422">ProRes 422（約 ×15）</option>
+          </select>
+          <p class="field-error" id="error-codec" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-audioKbps">音訊位元率</label>
+          <select id="field-audioKbps" name="audioKbps">
+            <option value="0">無音訊</option>
+            <option value="128">128 kbps</option>
+            <option value="192" selected>192 kbps</option>
+            <option value="256">256 kbps</option>
+            <option value="320">320 kbps</option>
+          </select>
+          <p class="field-error" id="error-audioKbps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetSize">目標大小</label>
+          <p class="help" id="help-targetSize">最多兩位小數，換算後須在 1 位元組至 2^53−1 位元組之間。僅可錄時長模式生效。</p>
+          <input id="field-targetSize" name="targetSize" type="text" inputmode="decimal" autocomplete="off" value="64" aria-describedby="help-targetSize" disabled>
+          <p class="field-error" id="error-targetSize" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetUnit">單位</label>
+          <select id="field-targetUnit" name="targetUnit" disabled>
+            <option value="MB">MB（10^6 位元組）</option>
+            <option value="GB">GB（10^9 位元組）</option>
+            <option value="MiB">MiB（2^20 位元組）</option>
+            <option value="GiB" selected>GiB（2^30 位元組）</option>
+          </select>
+          <p class="field-error" id="error-targetUnit" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入片長與位元率設定，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估算結果</h2>
+      <p id="summary"></p>
+      <p class="example-note" id="zero-note" hidden>不到 1 秒</p>
+      <div class="table-scroll" role="region" aria-label="估算明細" tabindex="0">
+        <table>
+          <tbody id="detail-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">預設位元率與編碼係數是常見經驗值；實際檔案大小會依畫面內容、編碼器設定與容器而不同。</p>
+      <p class="disclaimer">ProRes 422 的實際位元率由解析度與幀率決定、與內容無關；此處 ×15 是對 H.264 經驗基準的粗略換算，落差最大。</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與單位說明</summary>
+    <p>檔案大小 =（視訊位元率 × 編碼係數 + 音訊位元率）× 片長秒數 ÷ 8；位元率的單位是每秒位元數（bps）。</p>
+    <p>大小同時以十進位（MB/GB，1 GB = 10^9 位元組）與二進位（MiB/GiB，1 GiB = 2^30 位元組）表示，四個數字各自從未捨入的精確值換算、四捨五入至兩位小數。可錄時長模式把目標容量除以合計位元率，向下取整到整秒，保證該秒數的檔案不超過目標。</p>
+    <p>預設位元率表是 H.264 常見經驗值；自訂位元率同樣視為 H.264 基準，編碼係數兩種來源都套。本工具不讀取真實影片檔，不估算容器封裝的額外開銷。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>估出來為什麼和實際檔案不一樣？</dt>
+      <dd>預設位元率與係數是經驗值，實際大小會依畫面內容、編碼器與容器而不同，本工具不讀取你的檔案。</dd>
+      <dt>GB 和 GiB 差在哪？</dt>
+      <dd>GB 是 10^9 位元組（儲存裝置廠商標示），GiB 是 2^30 位元組（作業系統常見顯示），同一個檔案用 GiB 看數字會比較小。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

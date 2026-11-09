@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="description" content="食譜寫 °C、°F 還是 Gas Mark？一次換算三種標示，還能對照一般烤箱與旋風烤箱的設定，附完整 Gas Mark 對照表。">
+<title>烤箱溫度換算｜Gloss Tools</title>
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <nav>
+    <a href="../../">回首頁</a>
+    <a href="en/index.html" hreflang="en">English</a>
+  </nav>
+  <p class="draft-note">切換語言或離開頁面將失去目前草稿。</p>
+</header>
+<main>
+  <h1>烤箱溫度換算</h1>
+  <p class="lede">食譜寫 °C、°F 還是 Gas Mark？一次換算三種標示，還能對照一般烤箱與旋風烤箱的設定，附完整 Gas Mark 對照表。</p>
+
+  <div class="layout">
+    <form class="panel" id="converter-form" novalidate>
+      <div class="field">
+        <label for="value-input">溫度與單位</label>
+        <input type="text" id="value-input" value="180" inputmode="decimal" autocomplete="off" aria-describedby="value-help">
+        <p class="help" id="value-help">輸入一個溫度，例如 180、350 或 4。</p>
+      </div>
+      <div class="field">
+        <label for="unit-select">單位</label>
+        <select id="unit-select">
+          <option value="celsius" selected>攝氏 °C</option>
+          <option value="fahrenheit">華氏 °F</option>
+          <option value="gas">Gas Mark</option>
+        </select>
+      </div>
+      <fieldset class="field">
+        <legend>這個溫度是哪種烤箱的設定</legend>
+        <div class="radio-row">
+          <label><input type="radio" name="basis" id="basis-conventional" value="conventional" checked> 一般烤箱</label>
+          <label><input type="radio" name="basis" id="basis-fan" value="fan"> 旋風烤箱</label>
+        </div>
+        <p class="note" id="basis-note" hidden>Gas 刻度沒有旋風設定，選 Gas Mark 時基準固定為一般烤箱。</p>
+      </fieldset>
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">換算溫度</button>
+        <button type="button" id="example-button">載入範例</button>
+        <button type="button" id="reset-button">重設</button>
+        <button type="button" id="cancel-button" hidden>取消</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <span id="status-text">輸入溫度並選擇單位，再按「換算溫度」。</span>
+      </div>
+      <div class="error-box" id="error-box" role="alert" hidden>
+        <span id="error-text"></span>
+      </div>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <div>
+      <section class="panel" id="result-section" hidden>
+        <h2>一般烤箱與旋風烤箱的設定</h2>
+        <p class="result-summary" id="result-summary"></p>
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>一般烤箱</h3>
+            <dl>
+              <dt>攝氏</dt><dd id="conv-celsius"></dd>
+              <dt>華氏</dt><dd id="conv-fahrenheit"></dd>
+              <dt>Gas Mark</dt><dd id="conv-gas"></dd>
+            </dl>
+          </div>
+          <div class="result-card">
+            <h3>旋風烤箱</h3>
+            <dl>
+              <dt>攝氏</dt><dd id="fan-celsius"></dd>
+              <dt>華氏</dt><dd id="fan-fahrenheit"></dd>
+              <dt>Gas Mark</dt><dd id="fan-gas"></dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Gas Mark 對照表</h2>
+        <table class="chart" id="chart-table">
+          <thead>
+            <tr><th scope="col">Gas Mark</th><th scope="col">攝氏 °C</th><th scope="col">華氏 °F</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>¼</td><td>110</td><td>225</td></tr>
+            <tr><td>½</td><td>120</td><td>250</td></tr>
+            <tr><td>1</td><td>140</td><td>275</td></tr>
+            <tr><td>2</td><td>150</td><td>300</td></tr>
+            <tr><td>3</td><td>170</td><td>325</td></tr>
+            <tr><td>4</td><td>180</td><td>350</td></tr>
+            <tr><td>5</td><td>190</td><td>375</td></tr>
+            <tr><td>6</td><td>200</td><td>400</td></tr>
+            <tr><td>7</td><td>220</td><td>425</td></tr>
+            <tr><td>8</td><td>230</td><td>450</td></tr>
+            <tr><td>9</td><td>240</td><td>475</td></tr>
+            <tr><td>10</td><td>260</td><td>500</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>常見問題</h2>
+        <details>
+          <summary>旋風烤箱為什麼要調低？</summary>
+          <p>旋風（熱風）循環使熱效率較高，慣例是把一般烤箱溫度調低 20°C（以 °F 表示的食譜慣例調低 25°F）；本工具依輸入單位套用對應調整，先調整再換算。</p>
+        </details>
+        <details>
+          <summary>溫度超出對照表怎麼辦？</summary>
+          <p>低於 Gas ¼（110°C）或高於 Gas 10（260°C）時，°C 與 °F 照公式換算，Gas Mark 顯示超出範圍。</p>
+        </details>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>
+  <p>換算在本機完成，不傳送、不儲存輸入。Gas Mark 對照表為廣泛刊載的標準表；旋風調整為烘焙慣例，實際設定請依食譜與烤箱說明為準。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

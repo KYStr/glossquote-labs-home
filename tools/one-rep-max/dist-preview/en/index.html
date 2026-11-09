@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>One-Rep Max Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate your one-rep max from a weight and rep count with the Epley and Brzycki formulas, and see training loads for each percentage of your 1RM.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>One-Rep Max Calculator</h1>
+  <p class="lede">Estimate your one-rep max from a weight and rep count with the Epley and Brzycki formulas, and see training loads for each percentage of your 1RM.</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Input</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <label for="weight">Weight and unit</label>
+          <div class="weight-row">
+            <input id="weight" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="help-weight">
+            <div class="unit-group" id="unit-group" role="radiogroup" aria-label="Unit">
+              <label class="unit-option"><input type="radio" name="unit" id="unit-kg" value="kg" checked> Kilograms (kg)</label>
+              <label class="unit-option"><input type="radio" name="unit" id="unit-lb" value="lb"> Pounds (lb)</label>
+            </div>
+          </div>
+          <p class="help" id="help-weight">Up to two decimal places, above 0 and at most 1500 in the chosen unit. Output loads are always in kilograms.</p>
+          <p class="field-error" id="error-weight" role="alert"></p>
+          <p class="field-error" id="error-unit" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="reps">Reps</label>
+          <input id="reps" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-reps">
+          <p class="help" id="help-reps">Reps completed in that one set, from 1 to 30.</p>
+          <p class="field-error" id="error-reps" role="alert"></p>
+        </div>
+
+        <p class="field-error" id="error-general" role="alert"></p>
+
+        <div class="actions">
+          <button id="calculate-btn" type="submit">Calculate 1RM</button>
+          <button id="cancel-btn" type="button" hidden>Cancel</button>
+          <button id="example-btn" type="button">Load example</button>
+          <button id="reset-btn" type="button">Reset</button>
+        </div>
+        <p class="help" id="example-note" hidden>Example loaded (100 kg, 5 reps). Press “Calculate 1RM” to run it.</p>
+      </form>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Estimated 1RM</h2>
+      <p id="status" class="status" role="status" aria-live="polite">Enter a weight and reps, or load the example.</p>
+      <p id="result-empty" class="help">After calculating, this shows the estimated 1RM, each formula’s estimate, and the percentage table.</p>
+      <div id="result" hidden>
+        <p class="result-main">
+          <span class="result-main-label">Estimated 1RM</span>
+          <strong id="result-1rm">—</strong>
+          <span>kg</span>
+        </p>
+        <dl class="result-formulas">
+          <div class="formula">
+            <dt>Epley formula</dt>
+            <dd><span id="result-epley">—</span> kg</dd>
+          </div>
+          <div class="formula">
+            <dt>Brzycki formula</dt>
+            <dd><span id="result-brzycki">—</span> kg</dd>
+          </div>
+        </dl>
+        <p id="result-note" class="notice" hidden>Note: beyond 10 reps, formula estimates lose accuracy — treat this result as a rough guide only.</p>
+        <h3>Percentage table</h3>
+        <table class="pct-table">
+          <thead>
+            <tr><th scope="col">% of 1RM</th><th scope="col">Load (kg)</th><th scope="col">Typical reps</th></tr>
+          </thead>
+          <tbody id="pct-rows"></tbody>
+        </table>
+        <p class="disclaimer">A 1RM here is a formula estimate, not a tested result; use safeties and a spotter for maximal attempts.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">How it works and limits</h2>
+    <ul>
+      <li>Two formulas side by side: Epley and Brzycki model the reps-to-weight relationship differently; the headline result is their average.</li>
+      <li>At 1 rep, the weight you lifted is the 1RM itself, so both formulas return the input weight.</li>
+      <li>Output loads are always in kilograms, in 0.5 kg steps so they match plates you can actually load; the percentage table is based on the rounded estimated 1RM.</li>
+      <li>An estimate is not a measurement: accuracy drops as reps rise, and maximal attempts need safeties and a spotter.</li>
+      <li>Input stays in this page only — nothing is uploaded or stored, and leaving the page discards it.</li>
+    </ul>
+    <h3>Why do the two formulas differ?</h3>
+    <p>They model the reps-to-weight relationship differently; this tool shows both and uses their average as the headline result.</p>
+    <h3>Are more reps more accurate?</h3>
+    <p>No. Past about 10 reps the estimates lose accuracy noticeably.</p>
+    <h3>Why are loads in 0.5 kg steps?</h3>
+    <p>Gym plates adjust in 0.5 kg steps, so results match loads you can actually set.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>手沖咖啡沖煮比例｜Gloss Tools</title>
+<meta name="description" content="輸入咖啡粉量或總水量與沖煮比例，算出另一邊的量、悶蒸水量，以及悶蒸加三段注水的累計目標。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>手沖咖啡沖煮比例</h1>
+  <p class="lede">先選以粉量或以水量計算，輸入沖煮比例，就能得到另一邊的量、悶蒸水量，以及悶蒸加三段注水的每段注水量與累計目標，照著電子秤注水即可。水量以 1 ml ≈ 1 g 計。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">沖煮設定</h2>
+      <form id="brew-form" novalidate>
+        <fieldset class="field mode-group">
+          <legend>計算模式</legend>
+          <label class="radio-row" for="field-mode-dose">
+            <input id="field-mode-dose" name="mode" type="radio" value="dose" checked>
+            以粉量計算
+          </label>
+          <label class="radio-row" for="field-mode-water">
+            <input id="field-mode-water" name="mode" type="radio" value="water">
+            以水量計算
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-amount" id="amount-label">咖啡粉量（克）</label>
+          <p class="help" id="help-amount">1.0–200.0 克，最多一位小數。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="20" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ratio">沖煮比例</label>
+          <p class="help" id="help-ratio">1:10.0–1:20.0。點預設會把該比例寫入欄位，也可以直接輸入自訂比例。</p>
+          <div class="preset-row" role="group" aria-label="比例預設">
+            <button type="button" class="button-secondary preset" data-ratio-preset="12">1:12</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="13">1:13</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="14">1:14</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="15">1:15</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="16">1:16</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="17">1:17</button>
+            <button type="button" class="button-secondary preset" data-ratio-preset="18">1:18</button>
+          </div>
+          <input id="field-ratio" name="ratio" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-ratio">
+          <p class="field-error" id="error-ratio" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bloomMultiplier">悶蒸倍數</label>
+          <p class="help" id="help-bloomMultiplier">悶蒸水量＝粉量×倍數，0.0–5.0。</p>
+          <input id="field-bloomMultiplier" name="bloomMultiplier" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-bloomMultiplier">
+          <p class="field-error" id="error-bloomMultiplier" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算沖煮表</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">粉量、水量與分段注水</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="分段注水表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">段次</th><th scope="col">本段注水</th><th scope="col">累計目標</th></tr>
+          </thead>
+          <tbody id="step-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>比例 1:R 表示每 1 克咖啡粉對 R 克水。以粉量計算時，總水量＝粉量×R；以水量計算時，粉量＝總水量÷R，兩者都以 0.1 為單位四捨五入（.5 進位）。悶蒸水量以算出的粉量乘以悶蒸倍數。</p>
+    <p>悶蒸後剩餘水量三等分，尾數以 0.1 ml 為單位補給較早的段；每段給本段注水量與累計目標，最後一段的累計目標恆等於總水量。所有克與毫升都固定顯示一位小數。本工具沒有下載檔案，結果可直接在畫面上選取文字。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>1:15 是什麼意思？</dt>
+      <dd>每 1 克咖啡粉對 15 克水；本工具以 1 ml 水 ≈ 1 克計。</dd>
+      <dt>悶蒸水量怎麼算？</dt>
+      <dd>粉量 × 悶蒸倍數，預設 2 倍，可改 0–5 倍。</dd>
+      <dt>分段注水怎麼分？</dt>
+      <dd>悶蒸後剩餘水量三等分，尾數以 0.1 ml 為單位補給較早的段，最後一段累計必等於總水量。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

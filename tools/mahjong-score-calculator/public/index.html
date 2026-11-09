@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>麻將台數計算機｜Gloss Tools</title>
+<meta name="description" content="依台灣十六張麻將一般家庭場慣例，勾選胡牌的牌型與情境，自動處理門清自摸合併與不重複計台，算出總台數與自摸、放槍的每人付款金額。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>麻將台數計算機</h1>
+  <p class="lede">把這一局胡牌的牌型與情境逐項勾出來，工具依一份固定規則——台灣十六張麻將．一般家庭場慣例——列出每一台的明細：門清自摸合併計 3 台、大三元不再重複計三元刻、莊家台併入總台，封頂在最後套用；再依底與每台金額算出自摸三家各付多少、放槍誰付多少。規則只有這一份，表外牌型不計；平胡、五門齊、天聽、地聽、花槓、正花每朵、三槓子、四槓子的台數可在項目旁改值。資料只留在目前頁面，不涉及真實金錢交易。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="score-form" novalidate>
+        <fieldset>
+          <legend>胡牌方式與莊家</legend>
+          <div class="field">
+            <span class="field-label" id="win-method-label">胡牌方式</span>
+            <div class="radio-row" role="radiogroup" aria-labelledby="win-method-label">
+              <label><input type="radio" name="winMethod" id="win-self-draw" value="self-draw"> 自摸</label>
+              <label><input type="radio" name="winMethod" id="win-discard" value="discard" checked> 放槍</label>
+            </div>
+            <p class="field-error" id="error-for-win-self-draw" role="alert"></p>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="winner-dealer"> 胡牌者是莊家</label>
+            <p class="field-error" id="error-for-winner-dealer" role="alert"></p>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="discarder-dealer"> 放槍者是莊家</label>
+            <p class="help">只在放槍時啟用；自摸時此欄忽略。</p>
+            <p class="field-error" id="error-for-discarder-dealer" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="dealer-streak">連莊次數</label>
+            <p class="help" id="help-dealer-streak">0–8 的整數。莊家台為 1＋連莊次數。</p>
+            <input id="dealer-streak" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-dealer-streak">
+            <p class="field-error" id="error-for-dealer-streak" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>牌型</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-ALL_HONORS"> 字一色（16 台）</label><p class="field-error" id="error-for-sel-ALL_HONORS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-BIG_DRAGONS"> 大三元（8 台）</label><p class="field-error" id="error-for-sel-BIG_DRAGONS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-SMALL_DRAGONS"> 小三元（4 台）</label><p class="field-error" id="error-for-sel-SMALL_DRAGONS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-FULL_FLUSH"> 清一色（8 台）</label><p class="field-error" id="error-for-sel-FULL_FLUSH" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-HALF_FLUSH"> 混一色（4 台）</label><p class="field-error" id="error-for-sel-HALF_FLUSH" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_PUNGS"> 碰碰胡（4 台）</label><p class="field-error" id="error-for-sel-ALL_PUNGS" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-PING_HU"> 平胡</label><span class="override"><label for="ovr-PING_HU">台數</label><input id="ovr-PING_HU" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="2"></span><p class="field-error" id="error-for-sel-PING_HU" role="alert"></p><p class="field-error" id="error-for-ovr-PING_HU" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-FIVE_SUITED"> 五門齊</label><span class="override"><label for="ovr-FIVE_SUITED">台數</label><input id="ovr-FIVE_SUITED" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span><p class="field-error" id="error-for-sel-FIVE_SUITED" role="alert"></p><p class="field-error" id="error-for-ovr-FIVE_SUITED" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_FROM_ONE"> 全求人（2 台）</label><p class="field-error" id="error-for-sel-ALL_FROM_ONE" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>情境</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-MENQING"> 門清</label><p class="help">自摸時與自摸合併計 3 台。</p><p class="field-error" id="error-for-sel-MENQING" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-HEAVENLY_LISTEN"> 天聽</label><span class="override"><label for="ovr-HEAVENLY_LISTEN">台數</label><input id="ovr-HEAVENLY_LISTEN" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="8"></span><p class="field-error" id="error-for-sel-HEAVENLY_LISTEN" role="alert"></p><p class="field-error" id="error-for-ovr-HEAVENLY_LISTEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-EARTHLY_LISTEN"> 地聽</label><span class="override"><label for="ovr-EARTHLY_LISTEN">台數</label><input id="ovr-EARTHLY_LISTEN" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="4"></span><p class="field-error" id="error-for-sel-EARTHLY_LISTEN" role="alert"></p><p class="field-error" id="error-for-ovr-EARTHLY_LISTEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-KONG_WIN"> 槓上開花（1 台）</label><p class="field-error" id="error-for-sel-KONG_WIN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-LAST_TILE_SELF"> 海底撈月（1 台）</label><p class="field-error" id="error-for-sel-LAST_TILE_SELF" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-LAST_TILE_DISCARD"> 河底撈魚（1 台）</label><p class="field-error" id="error-for-sel-LAST_TILE_DISCARD" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ROB_KONG"> 搶槓（1 台）</label><p class="field-error" id="error-for-sel-ROB_KONG" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>風台與三元刻</legend>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-SEAT_WIND_PONG"> 門風刻（1 台）</label><p class="field-error" id="error-for-sel-SEAT_WIND_PONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ROUND_WIND_PONG"> 圈風刻（1 台）</label><p class="help">與門風同刻時兩者可同時勾選（雙風刻共 2 台）。</p><p class="field-error" id="error-for-sel-ROUND_WIND_PONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_RED"> 紅中刻（1 台）</label><p class="field-error" id="error-for-sel-DRAGON_RED" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_GREEN"> 發財刻（1 台）</label><p class="field-error" id="error-for-sel-DRAGON_GREEN" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-DRAGON_WHITE"> 白板刻（1 台）</label><p class="field-error" id="error-for-sel-DRAGON_WHITE" role="alert"></p></li>
+          </ul>
+        </fieldset>
+
+        <fieldset>
+          <legend>花台與槓台</legend>
+          <div class="field">
+            <label for="honor-flowers">正花朵數</label>
+            <p class="help" id="help-honor-flowers">0–8 的整數，與偏花合計不得超過 8。每朵台數可在右欄改值（預設 1）。</p>
+            <input id="honor-flowers" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-honor-flowers">
+            <span class="override"><label for="ovr-HONOR_FLOWER_EACH">正花每朵台數</label><input id="ovr-HONOR_FLOWER_EACH" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span>
+            <p class="field-error" id="error-for-honor-flowers" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-HONOR_FLOWER_EACH" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="off-flowers">偏花朵數</label>
+            <p class="help" id="help-off-flowers">0–8 的整數，每朵 0 台，只在結果中回顯。</p>
+            <input id="off-flowers" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-off-flowers">
+            <p class="field-error" id="error-for-off-flowers" role="alert"></p>
+          </div>
+          <ul class="items">
+            <li class="item"><label><input type="checkbox" id="sel-FLOWER_KONG"> 花槓</label><span class="override"><label for="ovr-FLOWER_KONG">台數</label><input id="ovr-FLOWER_KONG" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="1"></span><p class="field-error" id="error-for-sel-FLOWER_KONG" role="alert"></p><p class="field-error" id="error-for-ovr-FLOWER_KONG" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-SEVEN_ROB_ONE"> 七搶一（8 台）</label><p class="field-error" id="error-for-sel-SEVEN_ROB_ONE" role="alert"></p></li>
+            <li class="item"><label><input type="checkbox" id="sel-ALL_FLOWERS"> 八仙過海（8 台）</label><p class="field-error" id="error-for-sel-ALL_FLOWERS" role="alert"></p></li>
+          </ul>
+          <div class="field">
+            <label for="kong-count">槓數</label>
+            <p class="help" id="help-kong-count">0–4 的整數。3 槓計三槓子、4 槓計四槓子，台數可在右欄改值（預設 2／5）。</p>
+            <input id="kong-count" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-kong-count">
+            <span class="override"><label for="ovr-THREE_KONGS">三槓子台數</label><input id="ovr-THREE_KONGS" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="2"></span>
+            <span class="override"><label for="ovr-FOUR_KONGS">四槓子台數</label><input id="ovr-FOUR_KONGS" type="text" inputmode="numeric" autocomplete="off" size="3" placeholder="5"></span>
+            <p class="field-error" id="error-for-kong-count" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-THREE_KONGS" role="alert"></p>
+            <p class="field-error" id="error-for-ovr-FOUR_KONGS" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>金額與上限</legend>
+          <div class="field">
+            <label for="base">底（元）</label>
+            <p class="help" id="help-base">0–100000 的整數。</p>
+            <input id="base" type="text" inputmode="numeric" autocomplete="off" value="100" aria-describedby="help-base">
+            <p class="field-error" id="error-for-base" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="per-tai">每台金額（元）</label>
+            <p class="help" id="help-per-tai">0–10000 的整數。</p>
+            <input id="per-tai" type="text" inputmode="numeric" autocomplete="off" value="50" aria-describedby="help-per-tai">
+            <p class="field-error" id="error-for-per-tai" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="cap">台數上限</label>
+            <p class="help" id="help-cap">封頂作用於含莊家台的總台之後。</p>
+            <select id="cap" aria-describedby="help-cap">
+              <option value="none" selected>無上限</option>
+              <option value="8">8 台</option>
+              <option value="12">12 台</option>
+              <option value="16">16 台</option>
+            </select>
+            <p class="field-error" id="error-for-cap" role="alert"></p>
+          </div>
+        </fieldset>
+
+        <div id="error-box" class="error-box" hidden>
+          <span id="error-text"></span>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。勾選牌型與情境，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算台數與金額</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">台數明細與付款</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p class="flowers-echo" id="flowers-echo"></p>
+      <div class="table-scroll" role="region" aria-label="計台項目明細" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">計台項目</th><th scope="col">台數</th></tr></thead>
+          <tbody id="result-lines"></tbody>
+        </table>
+      </div>
+      <p id="no-items" hidden></p>
+      <div id="excluded-block" hidden>
+        <h3>未計台項目</h3>
+        <ul id="excluded-list"></ul>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-primary" disabled>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <details>
+      <summary>門清自摸為什麼是 3 台，不是 2 台？</summary>
+      <p>本工具採一般家庭場慣例，門清與自摸合併計 3 台，不拆成 1＋1。</p>
+    </details>
+    <details>
+      <summary>我家的台數算法不一樣怎麼辦？</summary>
+      <p>平胡、五門齊、天聽、地聽、花槓、正花每朵、三槓子與四槓子的台數可在項目旁改值；其餘項目依本文固定表。</p>
+    </details>
+  </section>
+</main>
+</body>
+</html>

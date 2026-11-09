@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>綜合所得稅試算｜Gloss Tools</title>
+<meta name="description" content="以民國113年度（2024年所得、2025年申報）的免稅額、標準扣除額、薪資所得特別扣除額與稅率級距，試算只有薪資所得時的綜合所得稅應納稅額與完整推導過程。">
+<!--META-->
+<link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../index.html">Gloss Tools 首頁</a>
+  <span class="lang-switch">
+    <a href="en/index.html" hreflang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+  </span>
+</header>
+<main class="layout">
+  <h1>綜合所得稅試算</h1>
+  <p class="lede">只計本人薪資所得一種來源。輸入全年薪資總額、申報身分與扶養人數，依民國113年度（2024 年所得、2025 年 5 月申報）的官方金額，試算應納稅額並列出完整推導。資料只留在目前頁面，不會送出或儲存。</p>
+
+  <form id="tax-form" novalidate>
+    <fieldset>
+      <legend>申報身分與年齡</legend>
+      <div class="field">
+        <span class="field-label" id="filing-label">申報身分</span>
+        <div class="choice-row" role="radiogroup" aria-labelledby="filing-label">
+          <label class="choice"><input type="radio" name="filingStatus" id="filing-single" value="single" checked> 單身</label>
+          <label class="choice"><input type="radio" name="filingStatus" id="filing-married" value="married"> 有配偶（合併申報）</label>
+        </div>
+        <p class="field-error" id="error-filingStatus" hidden></p>
+      </div>
+      <div class="field">
+        <label class="choice"><input type="checkbox" id="selfAge70Plus"> 本人於 2024 年 12 月 31 日已年滿 70 歲</label>
+        <p class="field-error" id="error-selfAge70Plus" hidden></p>
+      </div>
+      <div class="field" id="spouse-field" hidden>
+        <label class="choice"><input type="checkbox" id="spouseAge70Plus"> 配偶於 2024 年 12 月 31 日已年滿 70 歲</label>
+        <p class="field-error" id="error-spouseAge70Plus" hidden></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>全年薪資所得總額與扶養人數</legend>
+      <div class="field">
+        <label for="grossSalary">全年薪資所得總額（新臺幣元）</label>
+        <input id="grossSalary" name="grossSalary" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-grossSalary error-grossSalary" aria-errormessage="error-grossSalary">
+        <p class="field-help" id="help-grossSalary">依扣繳憑單填寫全年薪資總額，整數元，不要加逗號或小數。</p>
+        <p class="field-error" id="error-grossSalary" hidden></p>
+      </div>
+      <div class="field">
+        <label for="dependentsUnder70">扶養親屬人數（未滿 70 歲）</label>
+        <input id="dependentsUnder70" name="dependentsUnder70" type="text" inputmode="numeric" autocomplete="off" aria-describedby="error-dependentsUnder70" aria-errormessage="error-dependentsUnder70">
+        <p class="field-error" id="error-dependentsUnder70" hidden></p>
+      </div>
+      <div class="field">
+        <label for="dependents70Plus">扶養直系尊親屬人數（年滿 70 歲）</label>
+        <input id="dependents70Plus" name="dependents70Plus" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-dependents70Plus error-dependents70Plus" aria-errormessage="error-dependents70Plus">
+        <p class="field-help" id="help-dependents70Plus">年滿 70 歲的免稅額 145,500 元只適用本人、配偶與直系尊親屬；其他扶養親屬請計入未滿 70 歲人數。扶養資格請自行確認。</p>
+        <p class="field-error" id="error-dependents70Plus" hidden></p>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">試算應納稅額</button>
+      <button type="button" id="example-button">載入範例</button>
+      <button type="button" id="reset-button">重設</button>
+      <button type="button" id="cancel-button" hidden>取消</button>
+    </div>
+    <p class="example-note" id="example-note" hidden>目前是範例資料（單身、無扶養、薪資 720,000 元），尚未執行試算。</p>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <section id="result" class="result" hidden aria-labelledby="result-heading">
+    <h2 id="result-heading">推導過程與應納稅額</h2>
+    <dl class="summary">
+      <div><dt>應納稅額（試算）</dt><dd id="sum-taxPayable">—</dd></div>
+      <div><dt>綜合所得淨額</dt><dd id="sum-taxableNet">—</dd></div>
+      <div><dt>適用稅率</dt><dd id="sum-rate">—</dd></div>
+    </dl>
+    <p class="zero-tax-note" id="zero-tax-note" hidden>試算應納稅額為 0 元。</p>
+    <table class="steps">
+      <caption>推導過程（新臺幣元）</caption>
+      <tbody>
+        <tr><th scope="row">全年薪資所得總額</th><td id="step-grossSalary">—</td></tr>
+        <tr><th scope="row">薪資所得特別扣除額</th><td id="step-salarySpecialDeduction">—</td></tr>
+        <tr><th scope="row">薪資淨額</th><td id="step-salaryNet">—</td></tr>
+        <tr><th scope="row">免稅額合計</th><td id="step-exemptionTotal">—</td></tr>
+        <tr><th scope="row">標準扣除額</th><td id="step-standardDeduction">—</td></tr>
+        <tr><th scope="row">綜合所得淨額</th><td id="step-taxableNet">—</td></tr>
+        <tr><th scope="row">適用稅率／累進差額</th><td id="step-bracket">—</td></tr>
+        <tr><th scope="row">應納稅額（試算）</th><td id="step-taxPayable">—</td></tr>
+      </tbody>
+    </table>
+    <div class="actions" id="download-row" hidden>
+      <button type="button" id="download-button">下載報告</button>
+    </div>
+  </section>
+
+  <details class="reference">
+    <summary>稅率級距表、聲明與常見問題</summary>
+    <h2>民國113年度綜合所得稅速算表</h2>
+    <table class="brackets">
+      <thead>
+        <tr><th scope="col">綜合所得淨額</th><th scope="col">稅率</th><th scope="col">累進差額</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0 – 590,000</td><td>5%</td><td>0</td></tr>
+        <tr><td>590,001 – 1,330,000</td><td>12%</td><td>41,300</td></tr>
+        <tr><td>1,330,001 – 2,660,000</td><td>20%</td><td>147,700</td></tr>
+        <tr><td>2,660,001 – 4,980,000</td><td>30%</td><td>413,700</td></tr>
+        <tr><td>4,980,001 以上</td><td>40%</td><td>911,700</td></tr>
+      </tbody>
+    </table>
+    <p class="disclaimer">本工具僅就薪資所得一種來源試算，非完整申報計算。金額依財政部公告之民國113年度（2024年所得、2025年5月申報）免稅額、扣除額與課稅級距；試算結果僅供參考，不構成稅務建議，實際應納稅額以稅捐稽徵機關核定及最新公告為準。</p>
+    <h2>常見問題</h2>
+    <h3>單身薪資多少以下不用繳稅？</h3>
+    <p>218,000 + 97,000 + 131,000 = 446,000 元以下試算稅額為 0。</p>
+    <h3>配偶的薪資有一起算嗎？</h3>
+    <p>沒有，本版只計納稅義務人本人薪資，配偶只影響標準扣除額與免稅額。</p>
+  </details>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

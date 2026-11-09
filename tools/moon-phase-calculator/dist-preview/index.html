@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>月相計算機｜Gloss Tools</title>
+<meta name="description" content="輸入西元日期，查當天月齡、照亮比與月相名稱，以及下一個朔與滿月落在哪一天。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>月相計算機</h1>
+  <p class="lede">輸入西元日期，查看當天（UTC 正午）的月齡、照亮比與八階段月相名稱，並推算下一個朔與下一個滿月各落在哪一天，同時給 UTC 日期與你所在偏移的當地日期，方便安排觀月、拍攝與露營行程。全部以固定平均朔望月在本機計算，不連線、不查曆表。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">日期與時區</h2>
+      <form id="moon-form" novalidate>
+        <div class="field">
+          <label for="field-date">日期</label>
+          <p class="help" id="help-date">西元日期，格式 YYYY-MM-DD，範圍 1900-01-01 至 2100-12-31。</p>
+          <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-date">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-utcOffset">UTC 偏移</label>
+          <p class="help" id="help-utcOffset">格式 +HH:MM 或 −HH:MM，分鐘須為 00、15、30 或 45，範圍 −12:00 至 +14:00。只影響下一個朔／滿月的「當地日期」顯示，不影響評估時刻與其他輸出。</p>
+          <input id="field-utcOffset" name="utcOffset" type="text" inputmode="numeric" autocomplete="off" value="+08:00" aria-describedby="help-utcOffset">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入日期，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算月相</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">月相結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具以平均朔望月推算，實際朔望時刻可相差數小時；月相以所選日期 UTC 正午為準。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式</summary>
+    <p>評估時刻固定為所選日期的 12:00 UTC。月齡以固定朔望月 S = 29.530588853 天與參考朔 JD 2451550.1 推算：age = (JD − 2451550.1) mod S（正餘數，落在 [0, S)）。八個月相每段寬 S/8、以正規時刻為中心分段；照亮比 = (1 − cos(2π × age / S)) / 2。下一個朔／滿月由未捨入的月齡推得，事件日期再依你輸入的 UTC 偏移換算當地日期。月齡、照亮比與天數以四捨五入（half-up）至小數一位顯示；月相判定與事件日期一律用未捨入值。日期與儒略日換算只用整數演算法，不使用 Date 物件，不受本機時區影響。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>月相以哪個時刻為準？</dt>
+      <dd>所選日期的 UTC 正午；同一晚前半夜與後半夜可能跨段，日期級結果是代表值。</dd>
+      <dt>為什麼和農民曆的滿月差了一天？</dt>
+      <dd>本工具以平均朔望月推算，實際朔望時刻可相差數小時，跨過午夜就差一天。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <title>電動車充電試算｜Gloss Tools</title>
+    <meta name="description" content="輸入電池容量、目前與目標電量、充電功率與效率，估算需補電量、充電時間與電費。時間採固定功率模型，僅為估算。">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../">Gloss Tools</a>
+      <span class="location">電動車充電試算</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="語言">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="./index.html" aria-current="page">繁體中文</a>
+          <a lang="en" hreflang="en" href="./en/index.html">English</a>
+        </nav>
+        <p class="language-note">切換語言或離開頁面會失去目前草稿。</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">電動車充電試算</h1>
+        <p class="intro">輸入電池容量、目前與目標電量、充電功率與效率，估算這次充電要補多少電、要充多久，以及選填的電費。資料只保留在目前頁面，不連接車輛或充電樁。</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          此瀏覽器無法啟動計算工具。請在支援 JavaScript 模組的瀏覽器開啟。下方的使用說明與常見問題仍可閱讀。
+        </p>
+
+        <div class="workspace">
+          <form id="tool-form" novalidate>
+            <fieldset id="tool-controls" disabled>
+              <legend class="visually-hidden">充電試算工作區</legend>
+
+              <div class="field">
+                <label for="input-capacityKwh">電池容量（kWh）</label>
+                <input id="input-capacityKwh" name="capacityKwh" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="60" aria-describedby="help-capacityKwh error-capacityKwh" aria-invalid="false">
+                <p id="help-capacityKwh" class="field-help">車輛電池總容量。數字至多 2 位小數，大於 0 且不超過 500。</p>
+                <p id="error-capacityKwh" class="field-error" hidden></p>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="input-currentSoc">目前電量（%）</label>
+                  <input id="input-currentSoc" name="currentSoc" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="20" aria-describedby="help-currentSoc error-currentSoc" aria-invalid="false">
+                  <p id="help-currentSoc" class="field-help">整數，0 到 100。</p>
+                  <p id="error-currentSoc" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="input-targetSoc">目標電量（%）</label>
+                  <input id="input-targetSoc" name="targetSoc" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="80" aria-describedby="help-targetSoc error-targetSoc" aria-invalid="false">
+                  <p id="help-targetSoc" class="field-help">整數，0 到 100，不可低於目前電量。</p>
+                  <p id="error-targetSoc" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="input-chargerPowerKw">充電功率（kW）</label>
+                <input id="input-chargerPowerKw" name="chargerPowerKw" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="7" aria-describedby="help-chargerPowerKw error-chargerPowerKw" aria-invalid="false">
+                <p id="help-chargerPowerKw" class="field-help">數字至多 2 位小數，大於 0 且不超過 1000；也可以用下方預設鈕。</p>
+                <p id="error-chargerPowerKw" class="field-error" hidden></p>
+                <div class="preset-row" role="group" aria-label="常用充電功率">
+                  <button type="button" class="preset-button" data-power="7">7 kW</button>
+                  <button type="button" class="preset-button" data-power="11">11 kW</button>
+                  <button type="button" class="preset-button" data-power="50">50 kW</button>
+                  <button type="button" class="preset-button" data-power="120">120 kW</button>
+                  <button type="button" class="preset-button" data-power="180">180 kW</button>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="input-efficiencyPct">充電效率（%）</label>
+                  <input id="input-efficiencyPct" name="efficiencyPct" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="90" aria-describedby="help-efficiencyPct error-efficiencyPct" aria-invalid="false">
+                  <p id="help-efficiencyPct" class="field-help">整數，50 到 100。牆端電量 ＝ 電池端電量 ÷ 效率。</p>
+                  <p id="error-efficiencyPct" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="input-pricePerKwh">每度電價（選填）</label>
+                  <input id="input-pricePerKwh" name="pricePerKwh" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="" aria-describedby="help-pricePerKwh error-pricePerKwh" aria-invalid="false">
+                  <p id="help-pricePerKwh" class="field-help">留空表示不估電費；0 表示免費充電。至多 2 位小數，不超過 100。</p>
+                  <p id="error-pricePerKwh" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <div class="action-bar">
+                <button type="submit" id="run-button" class="primary-button">計算充電時間</button>
+                <button type="button" id="example-button" class="secondary-button">載入範例</button>
+                <button type="button" id="reset-button" class="secondary-button">重設</button>
+                <button type="button" id="cancel-button" class="secondary-button" hidden>取消</button>
+              </div>
+            </fieldset>
+            <p id="tool-status" class="tool-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <section id="results" class="results" aria-labelledby="results-title" hidden>
+            <h2 id="results-title">試算結果</h2>
+            <p id="zero-note" class="zero-note" hidden>目標已達，不需充電。</p>
+            <dl class="result-list">
+              <div class="result-row">
+                <dt>需補充電量（電池端）</dt>
+                <dd><span id="result-battery">—</span> kWh</dd>
+              </div>
+              <div class="result-row">
+                <dt>牆端用電量</dt>
+                <dd><span id="result-wall">—</span> kWh</dd>
+              </div>
+              <div class="result-row">
+                <dt>預估時間</dt>
+                <dd id="result-time">—</dd>
+              </div>
+              <div class="result-row" id="cost-row" hidden>
+                <dt>預估電費</dt>
+                <dd><span id="result-cost">—</span> 元</dd>
+              </div>
+            </dl>
+            <p class="estimate-note">時間為估算：本工具假設充電功率全程維持不變；實際充電在電量較高時通常會變慢，實際時間可能較長。</p>
+            <button type="button" id="download-button" class="secondary-button" hidden>下載報告</button>
+          </section>
+        </div>
+
+        <section class="faq" aria-labelledby="faq-title">
+          <h2 id="faq-title">常見問題</h2>
+          <h3>為什麼實際充電比估算久？</h3>
+          <p>本工具假設全程固定功率；實際充電在高電量時通常會降低功率，所以實際時間多半較長。</p>
+          <h3>牆端電量是什麼？</h3>
+          <p>從電網取用的電量。充電有效率損失，所以牆端電量＝電池端電量 ÷ 效率。</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
