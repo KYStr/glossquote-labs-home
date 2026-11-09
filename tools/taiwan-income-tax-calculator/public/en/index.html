@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taiwan Income Tax Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate Taiwan individual income tax on salary income only, using the income-year 2024 (ROC 113) exemptions, standard deduction, salary special deduction and tax brackets, with a full step-by-step derivation.">
+<!--META-->
+<link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../en/index.html">Gloss Tools home</a>
+  <span class="lang-switch">
+    <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+  </span>
+</header>
+<main class="layout">
+  <h1>Taiwan Income Tax Calculator</h1>
+  <p class="lede">Salary income only, for the filer alone. Enter gross salary for the year, filing status, and dependents to estimate tax payable with a full derivation, using the official income-year 2024 (ROC 113, filed May 2025) amounts. Your data stays on this page; nothing is sent or stored.</p>
+
+  <form id="tax-form" novalidate>
+    <fieldset>
+      <legend>Filing status and ages</legend>
+      <div class="field">
+        <span class="field-label" id="filing-label">Filing status</span>
+        <div class="choice-row" role="radiogroup" aria-labelledby="filing-label">
+          <label class="choice"><input type="radio" name="filingStatus" id="filing-single" value="single" checked> Single</label>
+          <label class="choice"><input type="radio" name="filingStatus" id="filing-married" value="married"> Married (joint filing)</label>
+        </div>
+        <p class="field-error" id="error-filingStatus" hidden></p>
+      </div>
+      <div class="field">
+        <label class="choice"><input type="checkbox" id="selfAge70Plus"> I was 70 or older on 31 December 2024</label>
+        <p class="field-error" id="error-selfAge70Plus" hidden></p>
+      </div>
+      <div class="field" id="spouse-field" hidden>
+        <label class="choice"><input type="checkbox" id="spouseAge70Plus"> My spouse was 70 or older on 31 December 2024</label>
+        <p class="field-error" id="error-spouseAge70Plus" hidden></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Gross salary and dependents</legend>
+      <div class="field">
+        <label for="grossSalary">Gross salary for the year (NT$)</label>
+        <input id="grossSalary" name="grossSalary" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-grossSalary error-grossSalary" aria-errormessage="error-grossSalary">
+        <p class="field-help" id="help-grossSalary">Use the full-year total from your withholding statement, as a whole number with no commas or decimals.</p>
+        <p class="field-error" id="error-grossSalary" hidden></p>
+      </div>
+      <div class="field">
+        <label for="dependentsUnder70">Dependents under 70</label>
+        <input id="dependentsUnder70" name="dependentsUnder70" type="text" inputmode="numeric" autocomplete="off" aria-describedby="error-dependentsUnder70" aria-errormessage="error-dependentsUnder70">
+        <p class="field-error" id="error-dependentsUnder70" hidden></p>
+      </div>
+      <div class="field">
+        <label for="dependents70Plus">Lineal ascendant dependents aged 70 or older</label>
+        <input id="dependents70Plus" name="dependents70Plus" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-dependents70Plus error-dependents70Plus" aria-errormessage="error-dependents70Plus">
+        <p class="field-help" id="help-dependents70Plus">The NT$145,500 exemption applies only to the filer, a spouse, and lineal ascendants. Count other dependents in the under-70 field. Confirm dependent eligibility yourself.</p>
+        <p class="field-error" id="error-dependents70Plus" hidden></p>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">Estimate my tax</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="reset-button">Reset</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+    </div>
+    <p class="example-note" id="example-note" hidden>This is example data (single, no dependents, NT$720,000 salary). The estimate has not been run yet.</p>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <section id="result" class="result" hidden aria-labelledby="result-heading">
+    <h2 id="result-heading">Derivation and estimated tax</h2>
+    <dl class="summary">
+      <div><dt>Estimated tax payable</dt><dd id="sum-taxPayable">—</dd></div>
+      <div><dt>Taxable net income</dt><dd id="sum-taxableNet">—</dd></div>
+      <div><dt>Applicable rate</dt><dd id="sum-rate">—</dd></div>
+    </dl>
+    <p class="zero-tax-note" id="zero-tax-note" hidden>Estimated tax payable is NT$0.</p>
+    <table class="steps">
+      <caption>Derivation (NT$)</caption>
+      <tbody>
+        <tr><th scope="row">Gross salary</th><td id="step-grossSalary">—</td></tr>
+        <tr><th scope="row">Salary special deduction</th><td id="step-salarySpecialDeduction">—</td></tr>
+        <tr><th scope="row">Salary net</th><td id="step-salaryNet">—</td></tr>
+        <tr><th scope="row">Total exemptions</th><td id="step-exemptionTotal">—</td></tr>
+        <tr><th scope="row">Standard deduction</th><td id="step-standardDeduction">—</td></tr>
+        <tr><th scope="row">Taxable net income</th><td id="step-taxableNet">—</td></tr>
+        <tr><th scope="row">Rate / progressive difference</th><td id="step-bracket">—</td></tr>
+        <tr><th scope="row">Estimated tax payable</th><td id="step-taxPayable">—</td></tr>
+      </tbody>
+    </table>
+    <div class="actions" id="download-row" hidden>
+      <button type="button" id="download-button">Download report</button>
+    </div>
+  </section>
+
+  <details class="reference">
+    <summary>Tax brackets, disclaimer, and FAQ</summary>
+    <h2>Income-year 2024 (ROC 113) tax table</h2>
+    <table class="brackets">
+      <thead>
+        <tr><th scope="col">Taxable net income</th><th scope="col">Rate</th><th scope="col">Progressive difference</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0 – 590,000</td><td>5%</td><td>0</td></tr>
+        <tr><td>590,001 – 1,330,000</td><td>12%</td><td>41,300</td></tr>
+        <tr><td>1,330,001 – 2,660,000</td><td>20%</td><td>147,700</td></tr>
+        <tr><td>2,660,001 – 4,980,000</td><td>30%</td><td>413,700</td></tr>
+        <tr><td>4,980,001 and above</td><td>40%</td><td>911,700</td></tr>
+      </tbody>
+    </table>
+    <p class="disclaimer">This tool estimates tax on salary income only and is not a full tax return. Amounts follow the Ministry of Finance table for income year 2024 (ROC 113, filed in May 2025). Results are estimates for reference only and are not tax advice; your actual tax is determined by the tax authority and the latest official announcements.</p>
+    <h2>FAQ</h2>
+    <h3>Below what salary does a single filer owe nothing?</h3>
+    <p>Below NT$446,000 — the salary special deduction (218,000), one exemption (97,000) and the single standard deduction (131,000) total 446,000.</p>
+    <h3>Is a spouse's salary included?</h3>
+    <p>No. This version counts only the filer's salary; a spouse affects the standard deduction and exemptions only.</p>
+  </details>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
