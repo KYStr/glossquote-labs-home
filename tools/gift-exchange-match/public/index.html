@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>交換禮物配對｜Gloss Tools</title>
+<meta name="description" content="輸入交換禮物短名與禁配方向，找出每人一送一收的配對。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。離開本頁會清除工作記憶體。</span></p>
+</header>
+<main>
+  <h1>交換禮物配對</h1>
+  <p class="intro">輸入參加者的短名與禁配方向，找出每人送出一份、收到一份的配對。結果先遮住受贈者，逐張揭示給本人看。</p>
+
+  <form id="match-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>參加者</legend>
+          <p class="help">3–16 人。每人填一個短名（1–24 字元，開頭為字母或數字）；短名不可重複。</p>
+          <div id="names-body" class="rows"></div>
+          <button type="button" id="add-name" class="secondary">新增一人</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>禁配方向</legend>
+          <p class="help">最多 240 列。每一列填「送禮者 → 不送給誰」；要雙向禁配時填兩列。自送本來就禁止，不用填。</p>
+          <div id="blocked-body" class="rows"></div>
+          <button type="button" id="add-blocked" class="secondary">新增一列禁配</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="match" class="primary">建立交換配對</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（A、B、C，無禁配），載入後仍需按「建立交換配對」才會計算。</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="配對結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
