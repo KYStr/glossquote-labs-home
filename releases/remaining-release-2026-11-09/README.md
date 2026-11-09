@@ -1,0 +1,11 @@
+# Remaining 39 inspection releases
+
+Source fixed at 0756d08151129931f5f152dd7c6440158a07f830; PR232. All40 original cloud PR subtrees preserved in 7bff5ea27e1181b5bb3b6682439bb302c6cca15d before38 scoped source-file repairs. R12 transport subsequently connected in853792dffb99d2fdecfac1a5fd69e22c46573254; it remains disabled and NOT deployed. Blood-type compatibility excluded because pinned SPEC contains a literal truncated-content marker.
+
+Node24: run each tools/slug package check, test, build:preview, check:generated:preview using each pinned docs/specs context in source-provenance.json. The source commit does not replace original authors/spec commits; the handoff ZIP contains all40 exact contexts and patched sources. Primary1566tests/156gatesPASS. Additional stock path-with-# repair reverified47tests and4gates. R12 independent58tests/check/build and actual loopback decoder transport passed; actual Windows Chrome+Edge inference, OS memory and full network gates pending.
+
+prepare-release requires actual measured per-tool source CSP, never a broad shared CSP. Source CSP headers read over78 actual loopback requests. expand-release preserves prior101 asset trees and sites entries byte-identically; adds39 new tools and rebuilds bilingual review.glossquote.com directory. Manifest fixes all1634 release files. Asset count1631, routes141, existing free Worker glossquote-inspection-tools. No wildcard, paid plan, analytics, unrelated domain or build hooks under token. Existing47 formal sites untouched; formal bilingual homepage links remain pointed at the matching-language inspection directory.
+
+Use exact source outputs and hashes from manifest; local workspace paths in helpers must be adapted when reproducing elsewhere without altering fixed commits/bytes. Prior release path is ../blocked-four-repair-2026-11-09. No credentials, CLI cache or dependencies included. Deployment uses reviewed pinned Wrangler4.147.0 and isolated token loader in local task only. Remote source publication is separate from actual HTTP verification.
+
+This maintenance offers noindex inspection access, not complete product acceptance. Health/financial/legal formulas, complete browser Network/Storage, physical devices, native downloads and accessibility retain explicit pending status. Live receipts and non-author review follow separately.
