@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sunrise &amp; Sunset Calculator | Gloss Tools</title>
+<meta name="description" content="Compute sunrise, solar noon, sunset and day length for a date, latitude, longitude and UTC offset with the NOAA approximation, including polar day and polar night detection.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Sunrise &amp; Sunset Calculator</h1>
+  <p class="lede">Enter a date with a latitude, longitude, and fixed UTC offset to compute local sunrise, solar noon, sunset, and day length with the NOAA approximation. At high latitudes, a polar day or polar night is reported as a status instead of fake times. Eight city presets are built in; for daylight-saving time, add an hour to the offset yourself.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Input</h2>
+      <form id="sun-form" novalidate>
+        <div class="field">
+          <label for="field-date">Date</label>
+          <p class="help" id="help-date">Format YYYY-MM-DD, from 1900-01-01 to 2100-12-31.</p>
+          <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-date">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-preset">City preset</label>
+          <p class="help" id="help-preset">Choosing a city fills in its latitude, longitude, and standard-time offset; you can edit the three fields afterwards, which switches the preset back to custom.</p>
+          <select id="field-preset" name="preset" aria-describedby="help-preset">
+            <option value="">Custom</option>
+            <option value="taipei" selected>Taipei</option>
+            <option value="taichung">Taichung</option>
+            <option value="kaohsiung">Kaohsiung</option>
+            <option value="tokyo">Tokyo</option>
+            <option value="sydney">Sydney</option>
+            <option value="london">London</option>
+            <option value="newyork">New York</option>
+            <option value="reykjavik">Reykjavík</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-latitude">Latitude</label>
+          <p class="help" id="help-latitude">−89.9 to 89.9, north is positive, up to 4 decimal places.</p>
+          <input id="field-latitude" name="latitude" type="text" inputmode="decimal" autocomplete="off" value="25.0330" aria-describedby="help-latitude">
+          <p class="field-error" id="error-latitude" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-longitude">Longitude (east is positive)</label>
+          <p class="help" id="help-longitude">−180 to 180, east is positive, up to 4 decimal places.</p>
+          <input id="field-longitude" name="longitude" type="text" inputmode="decimal" autocomplete="off" value="121.5654" aria-describedby="help-longitude">
+          <p class="field-error" id="error-longitude" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-utcOffset">UTC offset</label>
+          <p class="help" id="help-utcOffset">Format ±HH:MM with minutes 00, 15, 30 or 45, from −12:00 to +14:00. For daylight-saving time, add an hour yourself.</p>
+          <input id="field-utcOffset" name="utcOffset" type="text" autocomplete="off" value="+08:00" aria-describedby="help-utcOffset">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a date and coordinates, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate sunrise &amp; sunset</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Sunrise, solar noon, sunset and day length</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p id="polar-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">This tool uses the NOAA approximation; results may differ from observed or official times by a few minutes. There is no time-zone database and no daylight-saving handling; confirm the offset in force for your place and date.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>The algorithm is the NOAA Global Monitoring Laboratory Solar Calculator approximation: the day of year and fractional year γ (evaluated at local noon) give the equation of time and the solar declination, and the hour angle is solved at the fixed zenith 90.833° (which already includes atmospheric refraction and the solar disc radius) to produce sunrise, solar noon, and sunset. Day length is computed from the unrounded sunrise and sunset and rounded once.</p>
+    <p>Latitude is limited to ±89.9 rather than ±90 because the formulas degenerate at the poles (cos φ is 0 and tan φ diverges); polar day and polar night are decided by the domain of the hour-angle cosine instead. Results use only the fixed offset; there is no time-zone database and no daylight-saving detection.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why is this a minute or two off the official time?</dt>
+      <dd>This tool uses the NOAA approximation with γ evaluated at local noon and a single fixed offset; official almanacs use more precise ephemerides and local time-zone rules, so a difference of a few minutes is expected.</dd>
+      <dt>Why is there no daylight-saving option?</dt>
+      <dd>The offset is a fixed input; for daylight-saving time add an hour yourself, e.g. use +11:00 for Sydney in summer.</dd>
+      <dt>What is solar noon?</dt>
+      <dd>The moment the sun crosses the local meridian; under a fixed offset it is usually not 12:00.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation runs locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
