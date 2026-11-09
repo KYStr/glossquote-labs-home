@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>單車齒比與展開表｜Gloss Tools</title>
+<meta name="description" content="用實測輪周、踏頻與齒數找重複齒比、每圈前進量和理論時速。">
+<link rel="canonical" href="https://glossquote.com/tools/bicycle-gear-table/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://glossquote.com/tools/bicycle-gear-table/index.html">
+<link rel="alternate" hreflang="en" href="https://glossquote.com/tools/bicycle-gear-table/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://glossquote.com/tools/bicycle-gear-table/index.html">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="https://glossquote.com/index.html">Gloss Tools</a>
+  <span>
+    <span class="reset-note">離開本頁會清除草稿</span>
+    <a class="lang-link" href="en/index.html" lang="en">English</a>
+  </span>
+</header>
+<main class="canvas">
+  <h1>單車齒比與展開表</h1>
+  <p class="intro">輸入實測輪周、踏頻與前後齒數，列出每種齒比的齒組、每踩一圈的前進量和理論時速；相同齒比併成一列。</p>
+  <p class="note">資料只留在這個頁面，不會上傳或儲存。離開本頁會清除草稿。</p>
+  <p id="boot-note" class="boot-note">載入中……若此訊息一直顯示，請重新載入頁面。</p>
+
+  <div class="workspace">
+  <form id="gear-form" novalidate>
+    <div id="error-summary" class="error-summary" hidden>
+      <h2 id="error-summary-heading"></h2>
+      <ul id="error-list"></ul>
+    </div>
+
+    <section class="panel" aria-labelledby="measure-heading">
+      <h2 id="measure-heading">實測輪周與踏頻</h2>
+      <div class="field">
+        <label for="f-wheel">輪周（mm）</label>
+        <input id="f-wheel" type="text" inputmode="numeric" autocomplete="off" maxlength="12" required>
+        <p class="hint">整數，100–5000 mm。輪子轉一圈的實測距離。</p>
+        <p class="field-error" id="f-wheel-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="f-cadence">踏頻（rpm）</label>
+        <input id="f-cadence" type="text" inputmode="numeric" autocomplete="off" maxlength="12" required>
+        <p class="hint">整數，0–300 rpm。0 表示不踩踏，時速為 0。</p>
+        <p class="field-error" id="f-cadence-error" hidden></p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="front-heading">
+      <h2 id="front-heading">前齒盤</h2>
+      <ul class="teeth-list" id="front-list"></ul>
+      <div class="list-actions">
+        <button type="button" class="btn btn-secondary btn-small" id="add-front">新增前齒</button>
+      </div>
+      <p class="hint">1–3 個齒數，每個 1–120 齒，互不相同。</p>
+    </section>
+
+    <section class="panel" aria-labelledby="rear-heading">
+      <h2 id="rear-heading">後飛輪</h2>
+      <ul class="teeth-list" id="rear-list"></ul>
+      <div class="list-actions">
+        <button type="button" class="btn btn-secondary btn-small" id="add-rear">新增後齒</button>
+      </div>
+      <p class="hint">1–16 個齒數，每個 1–120 齒，互不相同。</p>
+    </section>
+
+    <div class="action-bar">
+      <button type="submit" class="btn btn-primary" id="submit-btn">列出齒比與前進量</button>
+      <button type="button" class="btn btn-secondary" id="cancel-btn" hidden>取消</button>
+      <button type="button" class="btn btn-secondary" id="load-example-btn">載入範例</button>
+      <button type="button" class="btn btn-quiet" id="clear-btn">清除草稿</button>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </form>
+
+  <section class="panel" aria-labelledby="results-heading">
+    <h2 id="results-heading">齒比與前進量</h2>
+    <p class="theory-note">理論換算，實際騎乘受其他條件影響。</p>
+    <p class="summary-line" id="summary-line" hidden></p>
+    <p class="empty-result" id="empty-result">還沒有結果。填寫左側欄位後按「列出齒比與前進量」。</p>
+    <div class="table-wrap" id="results-wrap" hidden>
+      <table>
+        <caption>齒比升序排列；相同齒比併成一列</caption>
+        <thead>
+          <tr>
+            <th scope="col">齒比</th>
+            <th scope="col">齒組（前 / 後）</th>
+            <th scope="col">每圈前進（mm）</th>
+            <th scope="col">理論時速（km/h）</th>
+          </tr>
+        </thead>
+        <tbody id="groups-body"></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
