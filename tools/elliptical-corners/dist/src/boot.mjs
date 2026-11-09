@@ -1,0 +1,2 @@
+// Capability failures keep the static, honest unavailable message and disabled actions.
+if(typeof BigInt==='function'&&typeof Object.hasOwn==='function'&&typeof document.createElement==='function')import('./app.mjs').then(m=>m.start()).catch(()=>{document.getElementById('boot-status').hidden=false;for(const b of document.querySelectorAll('button'))b.disabled=true;document.getElementById('result').hidden=true;});
