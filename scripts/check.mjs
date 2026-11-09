@@ -62,12 +62,16 @@ try {
   const permittedExternalUrls = new Set([
     "https://glossquote.com/index.html",
     "https://glossquote.com/en/index.html",
+    "https://review.glossquote.com/index.html",
+    "https://review.glossquote.com/en/index.html",
     ...catalog.tools.filter((tool) => tool.status === "published").flatMap((tool) => Object.values(tool.urls))
   ]);
   for (const mode of ["preview", "production"]) {
     const files = generateSiteFiles({ catalogInput: catalog, mode, cssText: css });
     for (const name of ["index.html", "en/index.html"]) {
       const html = files.get(name).toString("utf8");
+      const inspectionUrl = `https://review.glossquote.com/${name}`;
+      assert.equal(html.includes(`href="${inspectionUrl}"`), true, "inspection link must match the page language");
       const hrefs = [...html.matchAll(/\shref="([^"]+)"/gu)].map((match) => match[1]);
       for (const href of hrefs) {
         if (/^https?:/u.test(href)) assert.equal(permittedExternalUrls.has(href), true, `unexpected external URL in ${name}`);
