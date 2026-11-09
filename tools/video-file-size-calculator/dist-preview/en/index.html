@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Video File Size Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a video file size from duration, a resolution preset or custom bitrate, a codec factor and audio bitrate — GB and GiB side by side — or invert it: the longest recording that fits a target size.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Video File Size Calculator</h1>
+  <p class="lede">Work it out before you record: estimate a clip's file size from a resolution preset or a custom bitrate, a codec factor and the audio bitrate — GB and GiB side by side — or invert it and find the longest recording that fits a card or a target size.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Duration, bitrate and capacity</h2>
+      <form id="video-form" novalidate>
+        <fieldset class="field">
+          <legend>Mode</legend>
+          <label class="radio-row" for="field-mode-size">
+            <input id="field-mode-size" name="mode" type="radio" value="size" checked>
+            File size
+          </label>
+          <label class="radio-row" for="field-mode-duration">
+            <input id="field-mode-duration" name="mode" type="radio" value="duration">
+            Recordable duration
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-duration">Duration (H:MM:SS)</label>
+          <p class="help" id="help-duration">Format H:MM:SS with minutes and seconds 00–59, up to 999:59:59. Applies in file size mode only.</p>
+          <input id="field-duration" name="duration" type="text" inputmode="numeric" autocomplete="off" value="0:10:00" aria-describedby="help-duration">
+          <p class="field-error" id="error-duration" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>Bitrate source</legend>
+          <label class="radio-row" for="field-source-preset">
+            <input id="field-source-preset" name="bitrateSource" type="radio" value="preset" checked>
+            Preset
+          </label>
+          <label class="radio-row" for="field-source-custom">
+            <input id="field-source-custom" name="bitrateSource" type="radio" value="custom">
+            Custom
+          </label>
+          <p class="field-error" id="error-bitrateSource" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-preset">Resolution preset</label>
+          <p class="help" id="help-preset">Preset bitrates are typical H.264 values, not any device's specification. Applies for the preset source only.</p>
+          <select id="field-preset" name="preset" aria-describedby="help-preset">
+            <option value="2160p60">4K 60fps (45 Mbps)</option>
+            <option value="2160p30">4K 30fps (35 Mbps)</option>
+            <option value="1080p60">1080p 60fps (12 Mbps)</option>
+            <option value="1080p30" selected>1080p 30fps (8 Mbps)</option>
+            <option value="720p30">720p 30fps (5 Mbps)</option>
+            <option value="480p30">480p 30fps (2.5 Mbps)</option>
+          </select>
+          <p class="field-error" id="error-preset" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-customBitrateMbps">Custom video bitrate (Mbps)</label>
+          <p class="help" id="help-customBitrateMbps">0.1–1000 Mbps, at most two decimal places, also treated as an H.264 baseline. Applies for the custom source only.</p>
+          <input id="field-customBitrateMbps" name="customBitrateMbps" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-customBitrateMbps" disabled>
+          <p class="field-error" id="error-customBitrateMbps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-codec">Codec</label>
+          <p class="help" id="help-codec">The factor applies to the video bitrate only, never to audio.</p>
+          <select id="field-codec" name="codec" aria-describedby="help-codec">
+            <option value="h264" selected>H.264 (×1)</option>
+            <option value="h265">H.265 / HEVC (about ×0.55)</option>
+            <option value="av1">AV1 (about ×0.45)</option>
+            <option value="prores422">ProRes 422 (about ×15)</option>
+          </select>
+          <p class="field-error" id="error-codec" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-audioKbps">Audio bitrate</label>
+          <select id="field-audioKbps" name="audioKbps">
+            <option value="0">No audio</option>
+            <option value="128">128 kbps</option>
+            <option value="192" selected>192 kbps</option>
+            <option value="256">256 kbps</option>
+            <option value="320">320 kbps</option>
+          </select>
+          <p class="field-error" id="error-audioKbps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetSize">Target size</label>
+          <p class="help" id="help-targetSize">At most two decimal places; must convert to between 1 byte and 2^53−1 bytes. Applies in recordable duration mode only.</p>
+          <input id="field-targetSize" name="targetSize" type="text" inputmode="decimal" autocomplete="off" value="64" aria-describedby="help-targetSize" disabled>
+          <p class="field-error" id="error-targetSize" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetUnit">Unit</label>
+          <select id="field-targetUnit" name="targetUnit" disabled>
+            <option value="MB">MB (10^6 bytes)</option>
+            <option value="GB">GB (10^9 bytes)</option>
+            <option value="MiB">MiB (2^20 bytes)</option>
+            <option value="GiB" selected>GiB (2^30 bytes)</option>
+          </select>
+          <p class="field-error" id="error-targetUnit" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a duration and bitrate settings, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimate</h2>
+      <p id="summary"></p>
+      <p class="example-note" id="zero-note" hidden>Less than 1 second</p>
+      <div class="table-scroll" role="region" aria-label="Estimate details" tabindex="0">
+        <table>
+          <tbody id="detail-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">Preset bitrates and codec factors are common rules of thumb; actual file size varies with picture content, encoder settings and container.</p>
+      <p class="disclaimer">A real ProRes 422 bitrate is set by resolution and frame rate, not by content; the ×15 here is a rough conversion from the H.264 rule-of-thumb baseline and can differ the most.</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the units</summary>
+    <p>File size = (video bitrate × codec factor + audio bitrate) × duration in seconds ÷ 8; bitrates are in bits per second (bps).</p>
+    <p>Sizes are shown in both decimal (MB/GB, 1 GB = 10^9 bytes) and binary (MiB/GiB, 1 GiB = 2^30 bytes) units; each of the four numbers is converted from the unrounded exact value and rounded half-up to two decimals. Recordable duration mode divides the target capacity by the total bitrate and floors to whole seconds, so that many seconds never exceeds the target.</p>
+    <p>The preset table holds typical H.264 values; a custom bitrate is treated as an H.264 baseline too, and the codec factor applies to both sources. This tool never reads a real video file and does not model container overhead.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Why does the estimate differ from my real file?</dt>
+      <dd>Presets and factors are rules of thumb; real sizes vary with picture content, encoder and container, and this tool never reads your files.</dd>
+      <dt>What is the difference between GB and GiB?</dt>
+      <dd>A GB is 10^9 bytes (how storage is marketed); a GiB is 2^30 bytes (how operating systems often display it), so the same file shows a smaller number in GiB.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
