@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Placeholder Text Generator | GlossQuote Tools</title>
+<meta name="description" content="Generate reproducible placeholder text from a fixed seed: Latin lorem-style or Traditional Chinese sample sentences, by paragraphs, sentences, words or an exact character count, entirely offline on your device.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../../en/">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Placeholder Text Generator</h1>
+  <p class="intro">Filler text for reserving layout space: pick a language, a unit, a count and a seed, and the same settings re-run anywhere produce byte-identical text. Everything is generated locally — nothing is uploaded or stored.</p>
+
+  <p class="placeholder-label">Placeholder text — it has no meaning and is only for filling layout space.</p>
+  <p class="zh-note" id="zh-note" hidden>The Chinese sentences are neutral samples written for this tool and assembled at random — grammatical on their own, meaningless together.</p>
+
+  <form class="card" id="controls" aria-label="Generation settings">
+    <fieldset>
+      <legend>Text language</legend>
+      <label><input type="radio" name="content-lang" value="latin" checked> Latin (lorem-style)</label>
+      <label><input type="radio" name="content-lang" value="zh"> Traditional Chinese</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="unit">Unit</label>
+      <select id="unit" name="unit">
+        <option value="paragraphs" selected>Paragraphs</option>
+        <option value="sentences">Sentences</option>
+        <option value="words" id="unit-words">Words (Latin only)</option>
+        <option value="characters">Characters (exact)</option>
+      </select>
+      <p class="hint" id="words-note" hidden>Chinese has no word spaces, so a word count would be fabricated; the words unit is not offered.</p>
+    </div>
+
+    <div class="field">
+      <label for="count">Count</label>
+      <input type="number" id="count" name="count" value="3" step="1" inputmode="numeric">
+      <p class="hint" id="count-range"></p>
+      <p class="error" id="count-error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="seed">Seed (same seed, same text)</label>
+      <span class="seed-row">
+        <input type="number" id="seed" name="seed" value="42" step="1" inputmode="numeric">
+        <button type="button" id="new-seed">New seed (+1)</button>
+      </span>
+      <p class="hint">An integer from 0 to 4294967295. Note the seed down and the same settings will reproduce the same text later.</p>
+      <p class="error" id="seed-error" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="opening-field">
+      <label><input type="checkbox" id="opening" name="opening" checked> Start with the classic opening sentence (Lorem ipsum dolor sit amet…)</label>
+    </div>
+  </form>
+
+  <section class="card" aria-label="Generated output">
+    <p class="stale" id="stale" hidden>Out of date: the current settings are invalid, so the last valid generation is shown below.</p>
+    <p class="facts" id="facts" aria-live="polite"></p>
+    <div class="view-toggle" role="group" aria-label="Output view">
+      <button type="button" id="view-rendered" aria-pressed="true">Rendered view</button>
+      <button type="button" id="view-raw" aria-pressed="false">Raw text view</button>
+    </div>
+    <div id="output-rendered" class="output"></div>
+    <pre id="output-raw" class="output raw" hidden></pre>
+    <div class="copy-row">
+      <button type="button" id="copy-plain">Copy plain text</button>
+      <button type="button" id="copy-html">Copy HTML</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card" aria-label="How it works and data pools">
+    <h2>How it works</h2>
+    <p>The generator uses one pinned algorithm (the mulberry32 random number generator) and the two public data pools below: the same seed and settings always produce the same text. The output is not a secret and means nothing — never use it as real content.</p>
+    <h3>Latin word pool (63 words)</h3>
+    <p>Every distinct word of the traditional Lorem ipsum passage (the public-domain text derived from Cicero), each exactly once, lowercase:</p>
+    <p class="pool" id="latin-pool"></p>
+    <h3>Chinese sentence pool (30 sentences)</h3>
+    <p>Neutral sample sentences written for this tool, drawn at random and allowed to repeat:</p>
+    <ol class="pool" id="zh-pool"></ol>
+  </section>
+</main>
+</body>
+</html>
