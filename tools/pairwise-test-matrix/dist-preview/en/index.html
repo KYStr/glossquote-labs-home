@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<title>Pairwise Test Matrix | Gloss Tools</title>
+<meta name="description" content="Build a reproducible set of test cases that covers all pairs of values across the supplied dimensions.">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <nav class="lang" aria-label="Language">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a> · <span aria-current="page">English</span>
+  </nav>
+  <p class="draft-note">Switching language or leaving the page discards your draft.</p>
+</header>
+<main>
+  <h1>Pairwise Test Matrix</h1>
+  <p class="lede">Build a reproducible set of test cases that covers all pairs of values across the supplied dimensions.</p>
+  <section class="work" id="work" aria-label="Build pairwise cases">
+    <div class="input-col">
+      <label for="dimensions">Test dimensions and values</label>
+      <p class="hint" id="dimensions-hint">One dimension per line, name:a|b format; 2–5 dimensions, 2–6 values each.</p>
+      <textarea id="dimensions" rows="8" aria-describedby="dimensions-hint dimensions-error" spellcheck="false"></textarea>
+      <p class="error" id="dimensions-error" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" id="run" class="primary">Build pairwise cases</button>
+        <button type="button" id="load-example">Load example</button>
+        <button type="button" id="cancel" hidden>Cancel</button>
+        <button type="button" id="reset">Reset</button>
+      </div>
+      <details>
+        <summary>Format and limits</summary>
+        <ul>
+          <li>Each line is <code>name:a|b</code>: a dimension name starts with a letter and may contain letters, digits, <code>-</code> and <code>_</code>, up to 24 characters; values start with a letter or digit, also up to 24 characters.</li>
+          <li>Input is at most 1,024 characters; no spaces inside a line; dimension names and values within one dimension must not repeat.</li>
+          <li>The product of all value counts is at most 2,048; larger inputs are refused without enumeration.</li>
+          <li>Results are a deterministic greedy set picked by newly covered pairs. It does not guarantee the fewest cases; the download is a JSON report.</li>
+          <li>All computation happens locally. Nothing is uploaded or stored.</li>
+        </ul>
+      </details>
+    </div>
+    <div class="result-col">
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <section id="results" hidden aria-label="Cases and newly covered pairs">
+        <h2>Cases and newly covered pairs</h2>
+        <p id="summary"></p>
+        <p class="note">This is a reproducible set selected by newly covered pairs. It does not guarantee the fewest cases, and no tests were executed.</p>
+        <div class="table-wrap" id="table-wrap" tabindex="0" role="region" aria-label="Cases table">
+          <table>
+            <thead id="cases-head"></thead>
+            <tbody id="cases-body"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager" hidden>
+          <button type="button" id="prev-page">Previous page</button>
+          <span id="page-label" aria-live="polite"></span>
+          <button type="button" id="next-page">Next page</button>
+        </div>
+        <button type="button" id="download" class="primary">Download report</button>
+      </section>
+    </div>
+  </section>
+  <section class="faq" aria-label="Frequently asked questions">
+    <h2>Frequently asked questions</h2>
+    <details>
+      <summary>Is this a minimum-case proof?</summary>
+      <p>It selects a reproducible set based on newly covered pairs.</p>
+    </details>
+    <details>
+      <summary>Does it include every combination?</summary>
+      <p>All two-dimension pairs appear. Some full combinations may be absent.</p>
+    </details>
+  </section>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
