@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="依成交順序輸入買賣股數與價格，用 FIFO 攤提成本，算出持股平均成本與每筆賣出的已實現損益，可含手續費率。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>股票平均成本計算機｜Gloss Tools</title>
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="spacer"></span>
+  <p class="draft-note">切換語言或離開頁面會遺失草稿。</p>
+  <a href="en/index.html" lang="en">English</a>
+</header>
+<main>
+  <h1>股票平均成本計算機</h1>
+  <p class="lede">分批買進同一檔股票、又賣掉一部分時，照券商成交順序輸入股數與價格（最多 20 筆），可加一個統一手續費率；工具以 FIFO 攤提成本，算出目前持股、剩餘成本、平均成本與每筆賣出的已實現損益。只在本機試算，不連任何券商帳號，幣別以你輸入的計價單位為準。</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">輸入</h2>
+      <label for="fee-input">手續費率（基點）</label>
+      <p class="help" id="fee-help">全清單共用一個費率，0 表示不計手續費。100 基點 = 1%。買進手續費計入成本、賣出手續費自所得扣除；不含證交稅。</p>
+      <input id="fee-input" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="fee-help">
+
+      <h3 id="trades-heading">交易清單</h3>
+      <div class="table-region editor-region" role="region" aria-labelledby="trades-heading" tabindex="0">
+        <table id="trades-table">
+          <caption>依發生順序排列；列順序就是處理順序，不會自動排序。</caption>
+          <thead>
+            <tr><th scope="col">買／賣</th><th scope="col">股數</th><th scope="col">每股價格</th><th scope="col">操作</th></tr>
+          </thead>
+          <tbody id="trades-body">
+            <tr>
+              <td>
+                <select class="side-select" aria-label="第 1 列買／賣">
+                  <option value="buy" selected>買進</option>
+                  <option value="sell">賣出</option>
+                </select>
+              </td>
+              <td><input class="shares-input" type="text" inputmode="numeric" autocomplete="off" value="" aria-label="第 1 列股數"></td>
+              <td><input class="price-input" type="text" inputmode="decimal" autocomplete="off" value="" aria-label="第 1 列每股價格"></td>
+              <td class="row-actions">
+                <button type="button" class="move-up small" aria-label="上移第 1 列" disabled>↑</button>
+                <button type="button" class="move-down small" aria-label="下移第 1 列" disabled>↓</button>
+                <button type="button" class="delete-row small" aria-label="刪除第 1 列" disabled>×</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="add-row-button">新增一列</button>
+      </div>
+      <p class="example-note" id="row-limit-note" hidden>已達 20 筆上限，無法再新增。</p>
+
+      <details class="rules" id="rules">
+        <summary>計算規則與限制</summary>
+        <ul>
+          <li>最多 20 筆交易；股數為 1–999,999,999 的整數；每股價格整數最多 7 位、小數最多 4 位，最小 0.0001。</li>
+          <li>手續費率 0–1000 基點（0%–10%）。每筆手續費 = 成交金額 × 費率，四捨五入到 0.0001。</li>
+          <li>賣出依 FIFO 攤提最早買進的批次；整批攤完時以該批剩餘成本全數結清，不留捨入殘差。</li>
+          <li>金額全程以 0.0001 為單位精確計算，不使用浮點數；平均成本四捨五入到 0.0001。</li>
+          <li>賣出股數超過當下持股會整份失敗，並指出該賣出列。</li>
+          <li>不含證交稅、健保補充保費與股利所得；結果是試算，不能當券商對帳單或報稅文件。</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">計算平均成本</button>
+        <button type="button" id="example-button">載入範例</button>
+        <button type="button" id="reset-button">重設</button>
+        <button type="button" id="cancel-button" hidden>取消</button>
+        <button type="button" id="download-button" hidden>下載報告</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <p id="status-text">請輸入交易，或載入範例。</p>
+      </div>
+      <p class="example-note" id="example-note" hidden>已載入範例，這是示範資料，不是你的成交紀錄。</p>
+      <div class="error-box" id="error-box" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="result-section" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">持股摘要與賣出損益</h2>
+      <dl class="summary" id="result-summary"></dl>
+      <p class="empty-note" id="average-note" hidden>持股為零，無平均成本。</p>
+
+      <h3 id="sells-heading">賣出損益明細</h3>
+      <p class="empty-note" id="sells-empty" hidden>沒有賣出紀錄。</p>
+      <div class="table-region" id="sells-region" role="region" aria-labelledby="sells-heading" tabindex="0">
+        <table id="sells-table">
+          <caption>每一筆賣出一列，依發生順序。</caption>
+          <thead>
+            <tr><th scope="col">列</th><th scope="col">股數</th><th scope="col">所得</th><th scope="col">攤提成本</th><th scope="col">已實現損益</th></tr>
+          </thead>
+          <tbody id="sells-table-body"></tbody>
+        </table>
+      </div>
+
+      <h3 id="lots-heading">剩餘批次</h3>
+      <p class="empty-note" id="lots-empty" hidden>沒有剩餘持股。</p>
+      <div class="table-region" id="lots-region" role="region" aria-labelledby="lots-heading" tabindex="0">
+        <table id="lots-table">
+          <caption>尚未攤提的買進批次，由舊到新。</caption>
+          <thead>
+            <tr><th scope="col">批次</th><th scope="col">股數</th><th scope="col">成本</th></tr>
+          </thead>
+          <tbody id="lots-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>賣出時成本怎麼攤？</dt>
+      <dd>採 FIFO，先攤最早買進的批次；整批攤完時以該批剩餘成本全數結清。</dd>
+      <dt>手續費怎麼算？</dt>
+      <dd>每筆手續費 = 成交金額 × 費率，四捨五入到 0.0001；買進加進成本，賣出從所得扣除。費率以基點輸入，100 基點 = 1%。不含證交稅。</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p>本工具完全在瀏覽器本機運作，不上傳、不儲存輸入，離開頁面即丟棄草稿。</p>
+  </footer>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
