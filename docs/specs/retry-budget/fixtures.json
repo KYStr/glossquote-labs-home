@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-retry-budget-20261109",
+  "slug": "retry-budget",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "bounded-exponential",
+      "kind": "core",
+      "purpose": "延遲上限與第一次超界",
+      "input": {
+        "budget": "5500",
+        "timeout": "1000",
+        "attemptLimit": "5",
+        "initialDelay": "500",
+        "factor": "2",
+        "maxDelay": "1200"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 1000
+            },
+            {
+              "number": 2,
+              "delayMs": 500,
+              "startMs": 1500,
+              "endMs": 2500
+            },
+            {
+              "number": 3,
+              "delayMs": 1000,
+              "startMs": 3500,
+              "endMs": 4500
+            }
+          ],
+          "unspentMs": 1000,
+          "nextRejected": {
+            "number": 4,
+            "startMs": 5700,
+            "endMs": 6700
+          }
+        }
+      }
+    },
+    {
+      "id": "exact-budget",
+      "kind": "core",
+      "purpose": "最後一次恰好等於預算",
+      "input": {
+        "budget": "12",
+        "timeout": "5",
+        "attemptLimit": "2",
+        "initialDelay": "2",
+        "factor": "2",
+        "maxDelay": "9"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 5
+            },
+            {
+              "number": 2,
+              "delayMs": 2,
+              "startMs": 7,
+              "endMs": 12
+            }
+          ],
+          "unspentMs": 0,
+          "nextRejected": null
+        }
+      }
+    },
+    {
+      "id": "no-first",
+      "kind": "core",
+      "purpose": "零預算不保留第一次",
+      "input": {
+        "budget": "0",
+        "timeout": "1",
+        "attemptLimit": "2",
+        "initialDelay": "0",
+        "factor": "8",
+        "maxDelay": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "attempts": [],
+          "unspentMs": 0,
+          "nextRejected": {
+            "number": 1,
+            "startMs": 0,
+            "endMs": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "zero-cap",
+      "kind": "core",
+      "purpose": "延遲上限零，倍率不影響",
+      "input": {
+        "budget": "3",
+        "timeout": "1",
+        "attemptLimit": "4",
+        "initialDelay": "99",
+        "factor": "8",
+        "maxDelay": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 1
+            },
+            {
+              "number": 2,
+              "delayMs": 0,
+              "startMs": 1,
+              "endMs": 2
+            },
+            {
+              "number": 3,
+              "delayMs": 0,
+              "startMs": 2,
+              "endMs": 3
+            }
+          ],
+          "unspentMs": 0,
+          "nextRejected": {
+            "number": 4,
+            "startMs": 3,
+            "endMs": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed-delay",
+      "kind": "core",
+      "purpose": "倍率 1，固定且受 cap 限制",
+      "input": {
+        "budget": "11",
+        "timeout": "2",
+        "attemptLimit": "3",
+        "initialDelay": "4",
+        "factor": "1",
+        "maxDelay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 2
+            },
+            {
+              "number": 2,
+              "delayMs": 2,
+              "startMs": 4,
+              "endMs": 6
+            },
+            {
+              "number": 3,
+              "delayMs": 2,
+              "startMs": 8,
+              "endMs": 10
+            }
+          ],
+          "unspentMs": 1,
+          "nextRejected": null
+        }
+      }
+    },
+    {
+      "id": "too-many",
+      "kind": "core",
+      "purpose": "嘗試次數上限",
+      "input": {
+        "budget": "100",
+        "timeout": "5",
+        "attemptLimit": "17",
+        "initialDelay": "0",
+        "factor": "1",
+        "maxDelay": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "attemptLimit",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "decimal-factor",
+      "kind": "core",
+      "purpose": "不接受小數倍率",
+      "input": {
+        "budget": "100",
+        "timeout": "5",
+        "attemptLimit": "2",
+        "initialDelay": "0",
+        "factor": "1.5",
+        "maxDelay": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "factor",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "budget": "5500",
+          "timeout": "1000",
+          "attemptLimit": "5",
+          "initialDelay": "500",
+          "factor": "2",
+          "maxDelay": "1200"
+        },
+        "edit": {
+          "budget": "100",
+          "timeout": "5",
+          "attemptLimit": "17",
+          "initialDelay": "0",
+          "factor": "1",
+          "maxDelay": "0"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "attemptLimit",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "budget": "5500",
+          "timeout": "1000",
+          "attemptLimit": "5",
+          "initialDelay": "500",
+          "factor": "2",
+          "maxDelay": "1200"
+        },
+        "lateResult": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 1000
+            },
+            {
+              "number": 2,
+              "delayMs": 500,
+              "startMs": 1500,
+              "endMs": 2500
+            },
+            {
+              "number": 3,
+              "delayMs": 1000,
+              "startMs": 3500,
+              "endMs": 4500
+            }
+          ],
+          "unspentMs": 1000,
+          "nextRejected": {
+            "number": 4,
+            "startMs": 5700,
+            "endMs": 6700
+          }
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "budget": "5500",
+            "timeout": "1000",
+            "attemptLimit": "5",
+            "initialDelay": "500",
+            "factor": "2",
+            "maxDelay": "1200"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "budget": "10000",
+            "timeout": "1500",
+            "attemptLimit": "5",
+            "initialDelay": "500",
+            "factor": "2",
+            "maxDelay": "2000"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "budget": "5500",
+          "timeout": "1000",
+          "attemptLimit": "5",
+          "initialDelay": "500",
+          "factor": "2",
+          "maxDelay": "1200"
+        },
+        "newerDraft": {
+          "budget": "100",
+          "timeout": "5",
+          "attemptLimit": "17",
+          "initialDelay": "0",
+          "factor": "1",
+          "maxDelay": "0"
+        },
+        "olderLateResult": {
+          "attempts": [
+            {
+              "number": 1,
+              "delayMs": 0,
+              "startMs": 0,
+              "endMs": 1000
+            },
+            {
+              "number": 2,
+              "delayMs": 500,
+              "startMs": 1500,
+              "endMs": 2500
+            },
+            {
+              "number": 3,
+              "delayMs": 1000,
+              "startMs": 3500,
+              "endMs": 4500
+            }
+          ],
+          "unspentMs": 1000,
+          "nextRejected": {
+            "number": 4,
+            "startMs": 5700,
+            "endMs": 6700
+          }
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "attemptLimit",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "attemptLimit",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

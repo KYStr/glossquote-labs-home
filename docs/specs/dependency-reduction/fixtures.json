@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-dependency-reduction-20261109",
+  "slug": "dependency-reduction",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "alternate-witness",
+      "kind": "core",
+      "purpose": "兩條同長替代路，依 ASCII 排序取 B",
+      "input": {
+        "modules": "D\nC\nB\nA",
+        "edges": "A>D\nA>C\nC>D\nB>D\nA>B"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "status": "acyclic",
+          "stages": [
+            [
+              "A"
+            ],
+            [
+              "B",
+              "C"
+            ],
+            [
+              "D"
+            ]
+          ],
+          "redundant": [
+            {
+              "from": "A",
+              "to": "D",
+              "via": [
+                "A",
+                "B",
+                "D"
+              ]
+            }
+          ],
+          "cycle": null
+        }
+      }
+    },
+    {
+      "id": "chain-plus-isolate",
+      "kind": "core",
+      "purpose": "孤立點與第一層，無冗餘",
+      "input": {
+        "modules": "C\nB\nA\nZ",
+        "edges": "B>C\nA>B"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "status": "acyclic",
+          "stages": [
+            [
+              "A",
+              "Z"
+            ],
+            [
+              "B"
+            ],
+            [
+              "C"
+            ]
+          ],
+          "redundant": [],
+          "cycle": null
+        }
+      }
+    },
+    {
+      "id": "cycle-witness",
+      "kind": "core",
+      "purpose": "閉合循環，不產生部分層",
+      "input": {
+        "modules": "A\nB\nC\nZ",
+        "edges": "A>B\nB>C\nC>A"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "status": "cycle",
+          "stages": [],
+          "redundant": [],
+          "cycle": [
+            "A",
+            "B",
+            "C",
+            "A"
+          ]
+        }
+      }
+    },
+    {
+      "id": "self-loop",
+      "kind": "core",
+      "purpose": "自環的最短 witness",
+      "input": {
+        "modules": "a",
+        "edges": "a>a"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "status": "cycle",
+          "stages": [],
+          "redundant": [],
+          "cycle": [
+            "a",
+            "a"
+          ]
+        }
+      }
+    },
+    {
+      "id": "no-edges",
+      "kind": "core",
+      "purpose": "模組區分大小寫，ASCII 升序",
+      "input": {
+        "modules": "z\nA\na",
+        "edges": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "status": "acyclic",
+          "stages": [
+            [
+              "A",
+              "a",
+              "z"
+            ]
+          ],
+          "redundant": [],
+          "cycle": null
+        }
+      }
+    },
+    {
+      "id": "unknown-id",
+      "kind": "core",
+      "purpose": "不自動新增節點",
+      "input": {
+        "modules": "A",
+        "edges": "A>B"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNKNOWN_ID",
+          "field": "edges",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "duplicate-edge",
+      "kind": "core",
+      "purpose": "重複邊拒絕",
+      "input": {
+        "modules": "A\nB",
+        "edges": "A>B\nA>B"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_EDGE",
+          "field": "edges",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "modules": "D\nC\nB\nA",
+          "edges": "A>D\nA>C\nC>D\nB>D\nA>B"
+        },
+        "edit": {
+          "modules": "A",
+          "edges": "A>B"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UNKNOWN_ID",
+            "field": "edges",
+            "row": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "modules": "D\nC\nB\nA",
+          "edges": "A>D\nA>C\nC>D\nB>D\nA>B"
+        },
+        "lateResult": {
+          "status": "acyclic",
+          "stages": [
+            [
+              "A"
+            ],
+            [
+              "B",
+              "C"
+            ],
+            [
+              "D"
+            ]
+          ],
+          "redundant": [
+            {
+              "from": "A",
+              "to": "D",
+              "via": [
+                "A",
+                "B",
+                "D"
+              ]
+            }
+          ],
+          "cycle": null
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "modules": "D\nC\nB\nA",
+            "edges": "A>D\nA>C\nC>D\nB>D\nA>B"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "modules": "",
+            "edges": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "modules": "D\nC\nB\nA",
+          "edges": "A>D\nA>C\nC>D\nB>D\nA>B"
+        },
+        "newerDraft": {
+          "modules": "A",
+          "edges": "A>B"
+        },
+        "olderLateResult": {
+          "status": "acyclic",
+          "stages": [
+            [
+              "A"
+            ],
+            [
+              "B",
+              "C"
+            ],
+            [
+              "D"
+            ]
+          ],
+          "redundant": [
+            {
+              "from": "A",
+              "to": "D",
+              "via": [
+                "A",
+                "B",
+                "D"
+              ]
+            }
+          ],
+          "cycle": null
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UNKNOWN_ID",
+            "field": "edges",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UNKNOWN_ID",
+            "field": "edges",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}

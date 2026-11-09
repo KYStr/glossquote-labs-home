@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-text-offset-map-20261109",
+  "slug": "text-offset-map",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "after-emoji",
+      "kind": "core",
+      "purpose": "A 一 byte、笑臉四 bytes 之後",
+      "input": {
+        "text": "A😀é\n中",
+        "unit": "utf8",
+        "offset": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "utf8": 5,
+          "utf16": 3,
+          "scalar": 2,
+          "line": 1,
+          "column": 3
+        }
+      }
+    },
+    {
+      "id": "after-lf",
+      "kind": "core",
+      "purpose": "LF 之後到第二行",
+      "input": {
+        "text": "A😀é\n中",
+        "unit": "utf16",
+        "offset": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "utf8": 8,
+          "utf16": 5,
+          "scalar": 4,
+          "line": 2,
+          "column": 1
+        }
+      }
+    },
+    {
+      "id": "eof",
+      "kind": "core",
+      "purpose": "EOF 是可定位邊界",
+      "input": {
+        "text": "A😀é\n中",
+        "unit": "scalar",
+        "offset": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "utf8": 11,
+          "utf16": 6,
+          "scalar": 5,
+          "line": 2,
+          "column": 2
+        }
+      }
+    },
+    {
+      "id": "mid-byte",
+      "kind": "core",
+      "purpose": "拒絕 emoji 中間的 byte",
+      "input": {
+        "text": "A😀",
+        "unit": "utf8",
+        "offset": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SPLIT_SCALAR",
+          "field": "offset",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "mid-surrogate",
+      "kind": "core",
+      "purpose": "拒絕 surrogate pair 中間",
+      "input": {
+        "text": "A😀",
+        "unit": "utf16",
+        "offset": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SPLIT_SCALAR",
+          "field": "offset",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "empty-boundary",
+      "kind": "core",
+      "purpose": "空文件有唯一邊界",
+      "input": {
+        "text": "",
+        "unit": "scalar",
+        "offset": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "utf8": 0,
+          "utf16": 0,
+          "scalar": 0,
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    {
+      "id": "beyond-eof",
+      "kind": "core",
+      "purpose": "不將超出偏移夾到結尾",
+      "input": {
+        "text": "é",
+        "unit": "utf8",
+        "offset": "3"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OFFSET_RANGE",
+          "field": "offset",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "text": "A😀é\n中",
+          "unit": "utf8",
+          "offset": "5"
+        },
+        "edit": {
+          "text": "A😀",
+          "unit": "utf8",
+          "offset": "2"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SPLIT_SCALAR",
+            "field": "offset",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "text": "A😀é\n中",
+          "unit": "utf8",
+          "offset": "5"
+        },
+        "lateResult": {
+          "utf8": 5,
+          "utf16": 3,
+          "scalar": 2,
+          "line": 1,
+          "column": 3
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "text": "A😀é\n中",
+            "unit": "utf8",
+            "offset": "5"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "text": "",
+            "unit": "utf8",
+            "offset": "0"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "text": "A😀é\n中",
+          "unit": "utf8",
+          "offset": "5"
+        },
+        "newerDraft": {
+          "text": "A😀",
+          "unit": "utf8",
+          "offset": "2"
+        },
+        "olderLateResult": {
+          "utf8": 5,
+          "utf16": 3,
+          "scalar": 2,
+          "line": 1,
+          "column": 3
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SPLIT_SCALAR",
+            "field": "offset",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SPLIT_SCALAR",
+            "field": "offset",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-semver-precedence-20261109",
+  "slug": "semver-precedence",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "numeric-prerelease",
+      "kind": "core",
+      "purpose": "數字 token 比數值",
+      "input": {
+        "left": "1.0.0-rc.10",
+        "right": "1.0.0-rc.2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "gt",
+          "reason": {
+            "kind": "prerelease-number",
+            "index": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "normal-after-pre",
+      "kind": "core",
+      "purpose": "正式版高於 prerelease",
+      "input": {
+        "left": "1.0.0",
+        "right": "1.0.0-rc.99"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "gt",
+          "reason": {
+            "kind": "release",
+            "index": null
+          }
+        }
+      }
+    },
+    {
+      "id": "build-tie",
+      "kind": "core",
+      "purpose": "build metadata 可有前導零且不影響順位",
+      "input": {
+        "left": "1.2.3+001",
+        "right": "1.2.3+002"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "eq",
+          "reason": {
+            "kind": "equal",
+            "index": null
+          }
+        }
+      }
+    },
+    {
+      "id": "numeric-before-text",
+      "kind": "core",
+      "purpose": "數字識別符小於文字",
+      "input": {
+        "left": "1.0.0-2",
+        "right": "1.0.0-a"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "lt",
+          "reason": {
+            "kind": "prerelease-type",
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "ascii-case",
+      "kind": "core",
+      "purpose": "ASCII 大小寫順序",
+      "input": {
+        "left": "1.0.0-A",
+        "right": "1.0.0-a"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "lt",
+          "reason": {
+            "kind": "prerelease-text",
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "shorter-list",
+      "kind": "core",
+      "purpose": "同 prefix 時較短者小",
+      "input": {
+        "left": "1.0.0-alpha",
+        "right": "1.0.0-alpha.1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "lt",
+          "reason": {
+            "kind": "prerelease-length",
+            "index": null
+          }
+        }
+      }
+    },
+    {
+      "id": "large-exact",
+      "kind": "core",
+      "purpose": "主欄超安全整數仍比較準確",
+      "input": {
+        "left": "9007199254740992.0.0",
+        "right": "9007199254740993.0.0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "relation": "lt",
+          "reason": {
+            "kind": "major",
+            "index": null
+          }
+        }
+      }
+    },
+    {
+      "id": "prerelease-zero",
+      "kind": "core",
+      "purpose": "純數字 prerelease 禁前導零",
+      "input": {
+        "left": "1.0.0-01",
+        "right": "1.0.0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SEMVER_SYNTAX",
+          "field": "left",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "no-trailing-lf",
+      "kind": "core",
+      "purpose": "不得默默 trim",
+      "input": {
+        "left": "1.0.0",
+        "right": "1.0.0\n"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SEMVER_SYNTAX",
+          "field": "right",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "left": "1.0.0-rc.10",
+          "right": "1.0.0-rc.2"
+        },
+        "edit": {
+          "left": "1.0.0-01",
+          "right": "1.0.0"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SEMVER_SYNTAX",
+            "field": "left",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "left": "1.0.0-rc.10",
+          "right": "1.0.0-rc.2"
+        },
+        "lateResult": {
+          "relation": "gt",
+          "reason": {
+            "kind": "prerelease-number",
+            "index": 2
+          }
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "left": "1.0.0-rc.10",
+            "right": "1.0.0-rc.2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "left": "",
+            "right": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "left": "1.0.0-rc.10",
+          "right": "1.0.0-rc.2"
+        },
+        "newerDraft": {
+          "left": "1.0.0-01",
+          "right": "1.0.0"
+        },
+        "olderLateResult": {
+          "relation": "gt",
+          "reason": {
+            "kind": "prerelease-number",
+            "index": 2
+          }
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SEMVER_SYNTAX",
+            "field": "left",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "SEMVER_SYNTAX",
+            "field": "left",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

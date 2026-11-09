@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-spacing-token-audit-20261109",
+  "slug": "spacing-token-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "tie-and-threshold",
+      "kind": "core",
+      "purpose": "等距取小，剛好等門檻仍 within",
+      "input": {
+        "tokens": "large\t12\nsmall\t8\nzero\t0",
+        "measurements": "gap\t10\ncard\t12\npad\t14.001",
+        "tolerance": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rows": [
+            {
+              "label": "gap",
+              "px": "10",
+              "token": "small",
+              "tokenPx": "8",
+              "delta": "2",
+              "status": "within"
+            },
+            {
+              "label": "card",
+              "px": "12",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "0",
+              "status": "exact"
+            },
+            {
+              "label": "pad",
+              "px": "14.001",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "2.001",
+              "status": "outside"
+            }
+          ],
+          "outsideCount": 1
+        }
+      }
+    },
+    {
+      "id": "same-value-alias",
+      "kind": "core",
+      "purpose": "同值 token 按輸入先後",
+      "input": {
+        "tokens": "first\t8.000\nsecond\t8",
+        "measurements": "near\t7.999",
+        "tolerance": "0.001"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rows": [
+            {
+              "label": "near",
+              "px": "7.999",
+              "token": "first",
+              "tokenPx": "8",
+              "delta": "-0.001",
+              "status": "within"
+            }
+          ],
+          "outsideCount": 0
+        }
+      }
+    },
+    {
+      "id": "zero-tolerance",
+      "kind": "core",
+      "purpose": "零容許差僅 exact 符合",
+      "input": {
+        "tokens": "none\t0",
+        "measurements": "empty\t0.000\nsmall\t0.001",
+        "tolerance": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rows": [
+            {
+              "label": "empty",
+              "px": "0",
+              "token": "none",
+              "tokenPx": "0",
+              "delta": "0",
+              "status": "exact"
+            },
+            {
+              "label": "small",
+              "px": "0.001",
+              "token": "none",
+              "tokenPx": "0",
+              "delta": "0.001",
+              "status": "outside"
+            }
+          ],
+          "outsideCount": 1
+        }
+      }
+    },
+    {
+      "id": "upper-bound",
+      "kind": "core",
+      "purpose": "最大 px 可輸入",
+      "input": {
+        "tokens": "wide\t2048",
+        "measurements": "layout\t2048",
+        "tolerance": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rows": [
+            {
+              "label": "layout",
+              "px": "2048",
+              "token": "wide",
+              "tokenPx": "2048",
+              "delta": "0",
+              "status": "exact"
+            }
+          ],
+          "outsideCount": 0
+        }
+      }
+    },
+    {
+      "id": "out-of-range",
+      "kind": "core",
+      "purpose": "拒絕超過最大值一個刻度",
+      "input": {
+        "tokens": "wide\t2048",
+        "measurements": "layout\t2048.001",
+        "tolerance": "1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PIXELS",
+          "field": "measurements",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "duplicate-name",
+      "kind": "core",
+      "purpose": "同表標籤唯一",
+      "input": {
+        "tokens": "small\t2\nsmall\t3",
+        "measurements": "gap\t2",
+        "tolerance": "1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_NAME",
+          "field": "tokens",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "bad-unit",
+      "kind": "core",
+      "purpose": "拒絕未支援的長度單位",
+      "input": {
+        "tokens": "small\t2",
+        "measurements": "gap\t2rem",
+        "tolerance": "1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PIXELS",
+          "field": "measurements",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "tokens": "large\t12\nsmall\t8\nzero\t0",
+          "measurements": "gap\t10\ncard\t12\npad\t14.001",
+          "tolerance": "2"
+        },
+        "edit": {
+          "tokens": "wide\t2048",
+          "measurements": "layout\t2048.001",
+          "tolerance": "1"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PIXELS",
+            "field": "measurements",
+            "row": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "tokens": "large\t12\nsmall\t8\nzero\t0",
+          "measurements": "gap\t10\ncard\t12\npad\t14.001",
+          "tolerance": "2"
+        },
+        "lateResult": {
+          "rows": [
+            {
+              "label": "gap",
+              "px": "10",
+              "token": "small",
+              "tokenPx": "8",
+              "delta": "2",
+              "status": "within"
+            },
+            {
+              "label": "card",
+              "px": "12",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "0",
+              "status": "exact"
+            },
+            {
+              "label": "pad",
+              "px": "14.001",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "2.001",
+              "status": "outside"
+            }
+          ],
+          "outsideCount": 1
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "tokens": "large\t12\nsmall\t8\nzero\t0",
+            "measurements": "gap\t10\ncard\t12\npad\t14.001",
+            "tolerance": "2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "tokens": "",
+            "measurements": "",
+            "tolerance": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "tokens": "large\t12\nsmall\t8\nzero\t0",
+          "measurements": "gap\t10\ncard\t12\npad\t14.001",
+          "tolerance": "2"
+        },
+        "newerDraft": {
+          "tokens": "wide\t2048",
+          "measurements": "layout\t2048.001",
+          "tolerance": "1"
+        },
+        "olderLateResult": {
+          "rows": [
+            {
+              "label": "gap",
+              "px": "10",
+              "token": "small",
+              "tokenPx": "8",
+              "delta": "2",
+              "status": "within"
+            },
+            {
+              "label": "card",
+              "px": "12",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "0",
+              "status": "exact"
+            },
+            {
+              "label": "pad",
+              "px": "14.001",
+              "token": "large",
+              "tokenPx": "12",
+              "delta": "2.001",
+              "status": "outside"
+            }
+          ],
+          "outsideCount": 1
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PIXELS",
+            "field": "measurements",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PIXELS",
+            "field": "measurements",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}

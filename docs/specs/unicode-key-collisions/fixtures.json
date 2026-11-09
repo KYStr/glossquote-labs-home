@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-unicode-key-collisions-20261109",
+  "slug": "unicode-key-collisions",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "nfc-alias",
+      "kind": "core",
+      "purpose": "組合與預組碼點合併，重複列保留",
+      "input": {
+        "keys": "é\né\nB\né",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "form": "NFC",
+          "rowCount": 4,
+          "groups": [
+            {
+              "canonical": "é",
+              "members": [
+                {
+                  "line": 1,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                },
+                {
+                  "line": 2,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+0065",
+                    "U+0301"
+                  ]
+                },
+                {
+                  "line": 4,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                }
+              ],
+              "kind": "alias"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "nfkc-width",
+      "kind": "core",
+      "purpose": "全形字只在相容正規化與 ASCII 進同群",
+      "input": {
+        "keys": "Ａ\nA\na",
+        "form": "NFKC"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "form": "NFKC",
+          "rowCount": 3,
+          "groups": [
+            {
+              "canonical": "A",
+              "members": [
+                {
+                  "line": 1,
+                  "raw": "Ａ",
+                  "codePoints": [
+                    "U+FF21"
+                  ]
+                },
+                {
+                  "line": 2,
+                  "raw": "A",
+                  "codePoints": [
+                    "U+0041"
+                  ]
+                }
+              ],
+              "kind": "alias"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "nfc-width",
+      "kind": "core",
+      "purpose": "NFC 不折疊全形與大小寫",
+      "input": {
+        "keys": "Ａ\nA\na",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "form": "NFC",
+          "rowCount": 3,
+          "groups": []
+        }
+      }
+    },
+    {
+      "id": "exact-and-final",
+      "kind": "core",
+      "purpose": "末尾換行非第三列",
+      "input": {
+        "keys": "圖\n圖\n",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "form": "NFC",
+          "rowCount": 2,
+          "groups": [
+            {
+              "canonical": "圖",
+              "members": [
+                {
+                  "line": 1,
+                  "raw": "圖",
+                  "codePoints": [
+                    "U+5716"
+                  ]
+                },
+                {
+                  "line": 2,
+                  "raw": "圖",
+                  "codePoints": [
+                    "U+5716"
+                  ]
+                }
+              ],
+              "kind": "exact"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "internal-empty",
+      "kind": "core",
+      "purpose": "空行保留列號並停止",
+      "input": {
+        "keys": "A\n\nB",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY_KEY",
+          "field": "keys",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "hidden-control",
+      "kind": "core",
+      "purpose": "控制字元拒絕",
+      "input": {
+        "keys": "A‮",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "KEY_CONTROL",
+          "field": "keys",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "surrogate",
+      "kind": "core",
+      "purpose": "拒不成對 surrogate",
+      "input": {
+        "keys": "\ud800",
+        "form": "NFC"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "keys",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "keys": "é\né\nB\né",
+          "form": "NFC"
+        },
+        "edit": {
+          "keys": "A\n\nB",
+          "form": "NFC"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY_KEY",
+            "field": "keys",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "keys": "é\né\nB\né",
+          "form": "NFC"
+        },
+        "lateResult": {
+          "form": "NFC",
+          "rowCount": 4,
+          "groups": [
+            {
+              "canonical": "é",
+              "members": [
+                {
+                  "line": 1,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                },
+                {
+                  "line": 2,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+0065",
+                    "U+0301"
+                  ]
+                },
+                {
+                  "line": 4,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                }
+              ],
+              "kind": "alias"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "keys": "é\né\nB\né",
+            "form": "NFC"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "keys": "",
+            "form": "NFC"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "keys": "é\né\nB\né",
+          "form": "NFC"
+        },
+        "newerDraft": {
+          "keys": "A\n\nB",
+          "form": "NFC"
+        },
+        "olderLateResult": {
+          "form": "NFC",
+          "rowCount": 4,
+          "groups": [
+            {
+              "canonical": "é",
+              "members": [
+                {
+                  "line": 1,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                },
+                {
+                  "line": 2,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+0065",
+                    "U+0301"
+                  ]
+                },
+                {
+                  "line": 4,
+                  "raw": "é",
+                  "codePoints": [
+                    "U+00E9"
+                  ]
+                }
+              ],
+              "kind": "alias"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY_KEY",
+            "field": "keys",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY_KEY",
+            "field": "keys",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

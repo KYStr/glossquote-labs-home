@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-binary-record-inspector-20261109",
+  "slug": "binary-record-inspector",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "endian-and-sign",
+      "kind": "core",
+      "purpose": "共用前兩 bytes，比較不同 endian",
+      "input": {
+        "hex": "FF 80 00 01",
+        "layout": "a\t0\tu16be\nb\t0\tu16le\nc\t1\ti8"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "byteCount": 4,
+          "fields": [
+            {
+              "label": "a",
+              "offset": 0,
+              "type": "u16be",
+              "hex": "ff80",
+              "value": "65408"
+            },
+            {
+              "label": "b",
+              "offset": 0,
+              "type": "u16le",
+              "hex": "ff80",
+              "value": "33023"
+            },
+            {
+              "label": "c",
+              "offset": 1,
+              "type": "i8",
+              "hex": "80",
+              "value": "-128"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "u64-precision",
+      "kind": "core",
+      "purpose": "精確超過 Number safe integer",
+      "input": {
+        "hex": "FFFFFFFFFFFFFFFF",
+        "layout": "full\t0\tu64be\nneg\t0\ti64le"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "byteCount": 8,
+          "fields": [
+            {
+              "label": "full",
+              "offset": 0,
+              "type": "u64be",
+              "hex": "ffffffffffffffff",
+              "value": "18446744073709551615"
+            },
+            {
+              "label": "neg",
+              "offset": 0,
+              "type": "i64le",
+              "hex": "ffffffffffffffff",
+              "value": "-1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "last-byte",
+      "kind": "core",
+      "purpose": "剛好取至末端且保留欄順",
+      "input": {
+        "hex": "12\t34\n56",
+        "layout": "last\t2\tu8\nfirst\t0\tu8"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "byteCount": 3,
+          "fields": [
+            {
+              "label": "last",
+              "offset": 2,
+              "type": "u8",
+              "hex": "56",
+              "value": "86"
+            },
+            {
+              "label": "first",
+              "offset": 0,
+              "type": "u8",
+              "hex": "12",
+              "value": "18"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "i32-minimum",
+      "kind": "core",
+      "purpose": "i32le 最小負值",
+      "input": {
+        "hex": "00000080",
+        "layout": "min\t0\ti32le"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "byteCount": 4,
+          "fields": [
+            {
+              "label": "min",
+              "offset": 0,
+              "type": "i32le",
+              "hex": "00000080",
+              "value": "-2147483648"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "split-nibble",
+      "kind": "core",
+      "purpose": "不跨 token 拼成一 byte",
+      "input": {
+        "hex": "A B",
+        "layout": "a\t0\tu8"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEX_FORMAT",
+          "field": "hex",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "offset-oob",
+      "kind": "core",
+      "purpose": "欄橫跨末端則拒絕",
+      "input": {
+        "hex": "ff00",
+        "layout": "a\t1\tu16be"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "BOUNDS",
+          "field": "layout",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "bad-type",
+      "kind": "core",
+      "purpose": "拒省略 16-bit endian",
+      "input": {
+        "hex": "ff00",
+        "layout": "a\t0\tu16"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TYPE",
+          "field": "layout",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "hex": "FF 80 00 01",
+          "layout": "a\t0\tu16be\nb\t0\tu16le\nc\t1\ti8"
+        },
+        "edit": {
+          "hex": "A B",
+          "layout": "a\t0\tu8"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "HEX_FORMAT",
+            "field": "hex",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "hex": "FF 80 00 01",
+          "layout": "a\t0\tu16be\nb\t0\tu16le\nc\t1\ti8"
+        },
+        "lateResult": {
+          "byteCount": 4,
+          "fields": [
+            {
+              "label": "a",
+              "offset": 0,
+              "type": "u16be",
+              "hex": "ff80",
+              "value": "65408"
+            },
+            {
+              "label": "b",
+              "offset": 0,
+              "type": "u16le",
+              "hex": "ff80",
+              "value": "33023"
+            },
+            {
+              "label": "c",
+              "offset": 1,
+              "type": "i8",
+              "hex": "80",
+              "value": "-128"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "hex": "FF 80 00 01",
+            "layout": "a\t0\tu16be\nb\t0\tu16le\nc\t1\ti8"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "hex": "",
+            "layout": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "hex": "FF 80 00 01",
+          "layout": "a\t0\tu16be\nb\t0\tu16le\nc\t1\ti8"
+        },
+        "newerDraft": {
+          "hex": "A B",
+          "layout": "a\t0\tu8"
+        },
+        "olderLateResult": {
+          "byteCount": 4,
+          "fields": [
+            {
+              "label": "a",
+              "offset": 0,
+              "type": "u16be",
+              "hex": "ff80",
+              "value": "65408"
+            },
+            {
+              "label": "b",
+              "offset": 0,
+              "type": "u16le",
+              "hex": "ff80",
+              "value": "33023"
+            },
+            {
+              "label": "c",
+              "offset": 1,
+              "type": "i8",
+              "hex": "80",
+              "value": "-128"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "HEX_FORMAT",
+            "field": "hex",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "HEX_FORMAT",
+            "field": "hex",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

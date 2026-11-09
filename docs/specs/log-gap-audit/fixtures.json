@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-log-gap-audit-20261109",
+  "slug": "log-gap-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "both-gaps",
+      "kind": "core",
+      "purpose": "同一對同時有序號與時間缺口",
+      "input": {
+        "records": "10\t0\n13\t1500\n14\t2500",
+        "threshold": "1000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "findings": [
+            {
+              "line": 2,
+              "prevLine": 1,
+              "sequenceDelta": "3",
+              "timeDelta": "1500",
+              "issues": [
+                {
+                  "code": "SEQ_GAP",
+                  "from": "11",
+                  "to": "12",
+                  "count": "2"
+                },
+                {
+                  "code": "TIME_GAP"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reverse-and-repeat",
+      "kind": "core",
+      "purpose": "倒退及重複報不同碼",
+      "input": {
+        "records": "5\t200\n3\t199\n3\t200",
+        "threshold": "100"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 3,
+          "findings": [
+            {
+              "line": 2,
+              "prevLine": 1,
+              "sequenceDelta": "-2",
+              "timeDelta": "-1",
+              "issues": [
+                {
+                  "code": "SEQ_REVERSE"
+                },
+                {
+                  "code": "TIME_REVERSE"
+                }
+              ]
+            },
+            {
+              "line": 3,
+              "prevLine": 2,
+              "sequenceDelta": "0",
+              "timeDelta": "1",
+              "issues": [
+                {
+                  "code": "SEQ_REPEAT"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "exact-large",
+      "kind": "core",
+      "purpose": "18 位值差 1，零門檻",
+      "input": {
+        "records": "999999999999999998\t900719925474099200\n999999999999999999\t900719925474099201",
+        "threshold": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 2,
+          "findings": [
+            {
+              "line": 2,
+              "prevLine": 1,
+              "sequenceDelta": "1",
+              "timeDelta": "1",
+              "issues": [
+                {
+                  "code": "TIME_GAP"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "one-row",
+      "kind": "core",
+      "purpose": "單列無比較",
+      "input": {
+        "records": "0\t0",
+        "threshold": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 1,
+          "findings": []
+        }
+      }
+    },
+    {
+      "id": "threshold-equality",
+      "kind": "core",
+      "purpose": "相等不標記",
+      "input": {
+        "records": "1\t0\n2\t5",
+        "threshold": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "rowCount": 2,
+          "findings": []
+        }
+      }
+    },
+    {
+      "id": "invalid-ms",
+      "kind": "core",
+      "purpose": "毫秒不能是小數",
+      "input": {
+        "records": "1\t0\n2\t1.5",
+        "threshold": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TIME",
+          "field": "records",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "leading-zero",
+      "kind": "core",
+      "purpose": "拒絕非 canonical 的序號",
+      "input": {
+        "records": "01\t0",
+        "threshold": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SEQUENCE",
+          "field": "records",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "records": "10\t0\n13\t1500\n14\t2500",
+          "threshold": "1000"
+        },
+        "edit": {
+          "records": "1\t0\n2\t1.5",
+          "threshold": "5"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TIME",
+            "field": "records",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "records": "10\t0\n13\t1500\n14\t2500",
+          "threshold": "1000"
+        },
+        "lateResult": {
+          "rowCount": 3,
+          "findings": [
+            {
+              "line": 2,
+              "prevLine": 1,
+              "sequenceDelta": "3",
+              "timeDelta": "1500",
+              "issues": [
+                {
+                  "code": "SEQ_GAP",
+                  "from": "11",
+                  "to": "12",
+                  "count": "2"
+                },
+                {
+                  "code": "TIME_GAP"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "records": "10\t0\n13\t1500\n14\t2500",
+            "threshold": "1000"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "records": "",
+            "threshold": "1000"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "records": "10\t0\n13\t1500\n14\t2500",
+          "threshold": "1000"
+        },
+        "newerDraft": {
+          "records": "1\t0\n2\t1.5",
+          "threshold": "5"
+        },
+        "olderLateResult": {
+          "rowCount": 3,
+          "findings": [
+            {
+              "line": 2,
+              "prevLine": 1,
+              "sequenceDelta": "3",
+              "timeDelta": "1500",
+              "issues": [
+                {
+                  "code": "SEQ_GAP",
+                  "from": "11",
+                  "to": "12",
+                  "count": "2"
+                },
+                {
+                  "code": "TIME_GAP"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TIME",
+            "field": "records",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "TIME",
+            "field": "records",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

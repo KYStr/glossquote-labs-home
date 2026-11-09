@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-text-file-line-endings-20261109",
+  "slug": "text-file-line-endings",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "mixed-bom",
+      "kind": "core",
+      "purpose": "檔頭保留，混合 CRLF/CR/LF 轉 LF",
+      "input": {
+        "bytes": [
+          239,
+          187,
+          191,
+          65,
+          13,
+          10,
+          66,
+          13,
+          67,
+          10,
+          68
+        ],
+        "target": "lf",
+        "bomMode": "keep"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "bom": true,
+          "lf": {
+            "count": 1,
+            "offsets": [
+              9
+            ]
+          },
+          "crlf": {
+            "count": 1,
+            "offsets": [
+              4
+            ]
+          },
+          "cr": {
+            "count": 1,
+            "offsets": [
+              7
+            ]
+          },
+          "last": "none",
+          "outputHex": "efbbbf410a420a430a44"
+        }
+      }
+    },
+    {
+      "id": "crlf-final",
+      "kind": "core",
+      "purpose": "轉 CRLF，結尾保持有終止符",
+      "input": {
+        "bytes": [
+          228,
+          184,
+          173,
+          10
+        ],
+        "target": "crlf",
+        "bomMode": "strip"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "bom": false,
+          "lf": {
+            "count": 1,
+            "offsets": [
+              3
+            ]
+          },
+          "crlf": {
+            "count": 0,
+            "offsets": []
+          },
+          "cr": {
+            "count": 0,
+            "offsets": []
+          },
+          "last": "lf",
+          "outputHex": "e4b8ad0d0a"
+        }
+      }
+    },
+    {
+      "id": "bom-only",
+      "kind": "core",
+      "purpose": "首 BOM 單獨存在可去除",
+      "input": {
+        "bytes": [
+          239,
+          187,
+          191
+        ],
+        "target": "lf",
+        "bomMode": "strip"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "bom": true,
+          "lf": {
+            "count": 0,
+            "offsets": []
+          },
+          "crlf": {
+            "count": 0,
+            "offsets": []
+          },
+          "cr": {
+            "count": 0,
+            "offsets": []
+          },
+          "last": "none",
+          "outputHex": ""
+        }
+      }
+    },
+    {
+      "id": "empty-file",
+      "kind": "core",
+      "purpose": "空檔可建立零 bytes 副本",
+      "input": {
+        "bytes": [],
+        "target": "crlf",
+        "bomMode": "keep"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "bom": false,
+          "lf": {
+            "count": 0,
+            "offsets": []
+          },
+          "crlf": {
+            "count": 0,
+            "offsets": []
+          },
+          "cr": {
+            "count": 0,
+            "offsets": []
+          },
+          "last": "none",
+          "outputHex": ""
+        }
+      }
+    },
+    {
+      "id": "double-bom",
+      "kind": "core",
+      "purpose": "保留第二個 BOM 作為內容",
+      "input": {
+        "bytes": [
+          239,
+          187,
+          191,
+          239,
+          187,
+          191,
+          13
+        ],
+        "target": "lf",
+        "bomMode": "strip"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "bom": true,
+          "lf": {
+            "count": 0,
+            "offsets": []
+          },
+          "crlf": {
+            "count": 0,
+            "offsets": []
+          },
+          "cr": {
+            "count": 1,
+            "offsets": [
+              6
+            ]
+          },
+          "last": "cr",
+          "outputHex": "efbbbf0a"
+        }
+      }
+    },
+    {
+      "id": "bad-utf8",
+      "kind": "core",
+      "purpose": "不替換無效 bytes",
+      "input": {
+        "bytes": [
+          192,
+          128
+        ],
+        "target": "lf",
+        "bomMode": "keep"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UTF8",
+          "field": "bytes",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "null-byte",
+      "kind": "core",
+      "purpose": "拒絕帶 NUL 的 UTF-8",
+      "input": {
+        "bytes": [
+          65,
+          0,
+          10
+        ],
+        "target": "lf",
+        "bomMode": "keep"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "BINARY_NUL",
+          "field": "bytes",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "bytes": [
+            239,
+            187,
+            191,
+            65,
+            13,
+            10,
+            66,
+            13,
+            67,
+            10,
+            68
+          ],
+          "target": "lf",
+          "bomMode": "keep"
+        },
+        "edit": {
+          "bytes": [
+            192,
+            128
+          ],
+          "target": "lf",
+          "bomMode": "keep"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UTF8",
+            "field": "bytes",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "bytes": [
+            239,
+            187,
+            191,
+            65,
+            13,
+            10,
+            66,
+            13,
+            67,
+            10,
+            68
+          ],
+          "target": "lf",
+          "bomMode": "keep"
+        },
+        "lateResult": {
+          "bom": true,
+          "lf": {
+            "count": 1,
+            "offsets": [
+              9
+            ]
+          },
+          "crlf": {
+            "count": 1,
+            "offsets": [
+              4
+            ]
+          },
+          "cr": {
+            "count": 1,
+            "offsets": [
+              7
+            ]
+          },
+          "last": "none",
+          "outputHex": "efbbbf410a420a430a44"
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "bytes": [
+              239,
+              187,
+              191,
+              65,
+              13,
+              10,
+              66,
+              13,
+              67,
+              10,
+              68
+            ],
+            "target": "lf",
+            "bomMode": "keep"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "bytes": [],
+            "target": "lf",
+            "bomMode": "keep"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "bytes": [
+            239,
+            187,
+            191,
+            65,
+            13,
+            10,
+            66,
+            13,
+            67,
+            10,
+            68
+          ],
+          "target": "lf",
+          "bomMode": "keep"
+        },
+        "newerDraft": {
+          "bytes": [
+            192,
+            128
+          ],
+          "target": "lf",
+          "bomMode": "keep"
+        },
+        "olderLateResult": {
+          "bom": true,
+          "lf": {
+            "count": 1,
+            "offsets": [
+              9
+            ]
+          },
+          "crlf": {
+            "count": 1,
+            "offsets": [
+              4
+            ]
+          },
+          "cr": {
+            "count": 1,
+            "offsets": [
+              7
+            ]
+          },
+          "last": "none",
+          "outputHex": "efbbbf410a420a430a44"
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UTF8",
+            "field": "bytes",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "UTF8",
+            "field": "bytes",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

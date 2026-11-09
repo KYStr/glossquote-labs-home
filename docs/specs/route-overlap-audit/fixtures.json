@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-route-overlap-audit-20261109",
+  "slug": "route-overlap-audit",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "params-and-tail",
+      "kind": "core",
+      "purpose": "三個 GET 交疊，POST 不計",
+      "input": {
+        "routes": "GET\t/users/:id\nGET\t/users/new\nPOST\t/users/new\nGET\t/users/*rest"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "routeCount": 4,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 2,
+              "witness": "/users/new"
+            },
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 4,
+              "witness": "/users/x"
+            },
+            {
+              "method": "GET",
+              "first": 2,
+              "second": 4,
+              "witness": "/users/new"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tail-needs-segment",
+      "kind": "core",
+      "purpose": "tail 不符合沒有後綴的 path",
+      "input": {
+        "routes": "GET\t/team/*parts\nGET\t/team\nGET\t/team/a/b"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "routeCount": 3,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 3,
+              "witness": "/team/a/b"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tail-shortest",
+      "kind": "core",
+      "purpose": "選最短長度，另一側 literal 固定",
+      "input": {
+        "routes": "GET\t/:id/*tail\nGET\t/users/new/*extra"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "routeCount": 2,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 2,
+              "witness": "/users/new/x"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "root-duplicates",
+      "kind": "core",
+      "purpose": "根路徑與方法精確匹配",
+      "input": {
+        "routes": "GET\t/\nHEAD\t/\nGET\t/"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "routeCount": 3,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 3,
+              "witness": "/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "disjoint-prefix",
+      "kind": "core",
+      "purpose": "不同 literal 不能增加長度修復",
+      "input": {
+        "routes": "PATCH\t/a/*tail\nPATCH\t/b/:id"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "routeCount": 2,
+          "overlaps": []
+        }
+      }
+    },
+    {
+      "id": "tail-not-final",
+      "kind": "core",
+      "purpose": "尾段只能最後一段",
+      "input": {
+        "routes": "GET\t/*rest/a"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PATTERN",
+          "field": "routes",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "duplicate-param",
+      "kind": "core",
+      "purpose": "參數名重複拒絕",
+      "input": {
+        "routes": "GET\t/:a/:a"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_PARAMETER",
+          "field": "routes",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "unknown-method",
+      "kind": "core",
+      "purpose": "拒絕小寫 method",
+      "input": {
+        "routes": "get\t/a"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "METHOD",
+          "field": "routes",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "routes": "GET\t/users/:id\nGET\t/users/new\nPOST\t/users/new\nGET\t/users/*rest"
+        },
+        "edit": {
+          "routes": "GET\t/*rest/a"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PATTERN",
+            "field": "routes",
+            "row": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "routes": "GET\t/users/:id\nGET\t/users/new\nPOST\t/users/new\nGET\t/users/*rest"
+        },
+        "lateResult": {
+          "routeCount": 4,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 2,
+              "witness": "/users/new"
+            },
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 4,
+              "witness": "/users/x"
+            },
+            {
+              "method": "GET",
+              "first": 2,
+              "second": 4,
+              "witness": "/users/new"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "routes": "GET\t/users/:id\nGET\t/users/new\nPOST\t/users/new\nGET\t/users/*rest"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "routes": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "routes": "GET\t/users/:id\nGET\t/users/new\nPOST\t/users/new\nGET\t/users/*rest"
+        },
+        "newerDraft": {
+          "routes": "GET\t/*rest/a"
+        },
+        "olderLateResult": {
+          "routeCount": 4,
+          "overlaps": [
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 2,
+              "witness": "/users/new"
+            },
+            {
+              "method": "GET",
+              "first": 1,
+              "second": 4,
+              "witness": "/users/x"
+            },
+            {
+              "method": "GET",
+              "first": 2,
+              "second": 4,
+              "witness": "/users/new"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PATTERN",
+            "field": "routes",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PATTERN",
+            "field": "routes",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}

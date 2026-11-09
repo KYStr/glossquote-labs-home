@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-pairwise-test-matrix-20261109",
+  "slug": "pairwise-test-matrix",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "binary-triple",
+      "kind": "core",
+      "purpose": "三個二值維度有 12 個配對，四例全覆蓋",
+      "input": {
+        "dimensions": "A:0|1\nB:0|1\nC:0|1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "dimensions": [
+            "A",
+            "B",
+            "C"
+          ],
+          "spaceSize": 8,
+          "pairCount": 12,
+          "cases": [
+            {
+              "values": [
+                "0",
+                "0",
+                "0"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "0",
+                "1",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "0",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "1",
+                "0"
+              ],
+              "gain": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "two-by-two",
+      "kind": "core",
+      "purpose": "兩維需保留完整乘積，以輸入順序處理平手",
+      "input": {
+        "dimensions": "Z:b|a\nX:d|c"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "dimensions": [
+            "Z",
+            "X"
+          ],
+          "spaceSize": 4,
+          "pairCount": 4,
+          "cases": [
+            {
+              "values": [
+                "b",
+                "d"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "b",
+                "c"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "a",
+                "d"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "a",
+                "c"
+              ],
+              "gain": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "shared-literal",
+      "kind": "core",
+      "purpose": "不同維度可使用相同文字",
+      "input": {
+        "dimensions": "locale:off|on\nmode:off|on"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "dimensions": [
+            "locale",
+            "mode"
+          ],
+          "spaceSize": 4,
+          "pairCount": 4,
+          "cases": [
+            {
+              "values": [
+                "off",
+                "off"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "off",
+                "on"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "on",
+                "off"
+              ],
+              "gain": 1
+            },
+            {
+              "values": [
+                "on",
+                "on"
+              ],
+              "gain": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "large-product",
+      "kind": "core",
+      "purpose": "5^5 先拒，不列舉",
+      "input": {
+        "dimensions": "A:a|b|c|d|e\nB:a|b|c|d|e\nC:a|b|c|d|e\nD:a|b|c|d|e\nE:a|b|c|d|e"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "PRODUCT_LIMIT",
+          "field": "dimensions",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "duplicate-value",
+      "kind": "core",
+      "purpose": "同維重複值無效",
+      "input": {
+        "dimensions": "A:a|a\nB:b|c"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_VALUE",
+          "field": "dimensions",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "duplicate-key",
+      "kind": "core",
+      "purpose": "重複維度名稱無效",
+      "input": {
+        "dimensions": "A:a|b\nA:c|d"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUP_KEY",
+          "field": "dimensions",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "single-value",
+      "kind": "core",
+      "purpose": "每維至少二選項",
+      "input": {
+        "dimensions": "A:a\nB:b|c"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "VALUE_COUNT",
+          "field": "dimensions",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "dimensions": "A:0|1\nB:0|1\nC:0|1"
+        },
+        "edit": {
+          "dimensions": "A:a|b|c|d|e\nB:a|b|c|d|e\nC:a|b|c|d|e\nD:a|b|c|d|e\nE:a|b|c|d|e"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PRODUCT_LIMIT",
+            "field": "dimensions",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "dimensions": "A:0|1\nB:0|1\nC:0|1"
+        },
+        "lateResult": {
+          "dimensions": [
+            "A",
+            "B",
+            "C"
+          ],
+          "spaceSize": 8,
+          "pairCount": 12,
+          "cases": [
+            {
+              "values": [
+                "0",
+                "0",
+                "0"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "0",
+                "1",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "0",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "1",
+                "0"
+              ],
+              "gain": 3
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "dimensions": "A:0|1\nB:0|1\nC:0|1"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "dimensions": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "dimensions": "A:0|1\nB:0|1\nC:0|1"
+        },
+        "newerDraft": {
+          "dimensions": "A:a|b|c|d|e\nB:a|b|c|d|e\nC:a|b|c|d|e\nD:a|b|c|d|e\nE:a|b|c|d|e"
+        },
+        "olderLateResult": {
+          "dimensions": [
+            "A",
+            "B",
+            "C"
+          ],
+          "spaceSize": 8,
+          "pairCount": 12,
+          "cases": [
+            {
+              "values": [
+                "0",
+                "0",
+                "0"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "0",
+                "1",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "0",
+                "1"
+              ],
+              "gain": 3
+            },
+            {
+              "values": [
+                "1",
+                "1",
+                "0"
+              ],
+              "gain": 3
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PRODUCT_LIMIT",
+            "field": "dimensions",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "PRODUCT_LIMIT",
+            "field": "dimensions",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
