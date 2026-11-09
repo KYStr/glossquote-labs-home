@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running Pace Calculator | GlossQuote Tools</title>
+<meta name="description" content="Running pace calculator: enter any two of total time, distance and pace to solve for the third, with an even-pace split table and Riegel race-time predictions. Everything runs locally and offline; nothing is uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="../">
+<link rel="alternate" hreflang="en" href="./">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../../en/">GlossQuote Labs home</a>
+    <a href="../" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Running Pace Calculator</h1>
+  <p class="intro">Enter any two of total time, distance and pace, and the third is solved instantly. Below you get an even-pace split table and race predictions from the Riegel formula. Everything is computed on this device — nothing is uploaded or stored, and your performance never appears in the URL or the title.</p>
+  <noscript><p class="noscript">This tool needs JavaScript to calculate. Please enable it and try again.</p></noscript>
+
+  <section class="card" aria-label="Calculator">
+    <fieldset class="choice-group">
+      <legend>Solve for</legend>
+      <label class="choice"><input type="radio" name="solve-for" value="pace" checked> Pace</label>
+      <label class="choice"><input type="radio" name="solve-for" value="time"> Time</label>
+      <label class="choice"><input type="radio" name="solve-for" value="distance"> Distance</label>
+    </fieldset>
+
+    <fieldset class="choice-group">
+      <legend>Distance unit</legend>
+      <label class="choice"><input type="radio" name="unit" value="km" checked> Kilometres (km)</label>
+      <label class="choice"><input type="radio" name="unit" value="mi"> Miles (mi)</label>
+    </fieldset>
+
+    <div class="field" id="row-time">
+      <label for="field-time">Total time</label>
+      <div class="field-control">
+        <input id="field-time" type="text" value="55:00" autocomplete="off" spellcheck="false" aria-describedby="error-time">
+        <output id="output-time" class="solved" hidden></output>
+      </div>
+      <p class="field-error" id="error-time" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="row-distance">
+      <label for="field-distance">Distance</label>
+      <div class="field-control">
+        <input id="field-distance" type="text" value="10" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="error-distance">
+        <output id="output-distance" class="solved" hidden></output>
+        <span class="suffix" id="suffix-distance">km</span>
+      </div>
+      <p class="field-error" id="error-distance" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="row-pace">
+      <label for="field-pace">Pace</label>
+      <div class="field-control">
+        <input id="field-pace" type="text" value="" autocomplete="off" spellcheck="false" aria-describedby="error-pace">
+        <output id="output-pace" class="solved" hidden></output>
+        <span class="suffix" id="suffix-pace">per km</span>
+      </div>
+      <p class="field-error" id="error-pace" role="alert" hidden></p>
+    </div>
+
+    <p class="stale" id="stale-note" role="status" hidden>Some inputs are invalid — showing the last valid result (out of date).</p>
+  </section>
+
+  <section class="card" aria-labelledby="splits-heading">
+    <h2 id="splits-heading">Splits (even pace)</h2>
+    <p>Even pace is assumed. Segment times are the differences of the rounded cumulative times, so the printed segments always sum exactly to the printed total.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Distance</th><th scope="col">Segment</th><th scope="col">Cumulative</th></tr>
+        </thead>
+        <tbody id="splits-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="predictions-heading">
+    <h2 id="predictions-heading">Race predictions (Riegel formula)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Target distance</th><th scope="col">Predicted time</th><th scope="col">Predicted pace</th></tr>
+        </thead>
+        <tbody id="predictions-body"></tbody>
+      </table>
+    </div>
+    <p class="assumptions">Predictions use T₂ = T₁ × (D₂/D₁)^1.06 and assume endurance training appropriate to the target distance, similar terrain and weather, and comparable effort. They are most reliable when the target is within roughly half to double the known distance. Predictions are estimates, not promises.</p>
+  </section>
+
+  <footer class="site-footer">
+    <p>This page works fully offline: no network, no storage, no tracking.</p>
+    <p><a href="../../../en/">Back to GlossQuote Labs home</a> · <a href="../" lang="zh-Hant">繁體中文版</a></p>
+  </footer>
+</main>
+</body>
+</html>

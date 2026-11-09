@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>跑步配速計算機 | GlossQuote 工具</title>
+<meta name="description" content="跑步配速計算機：輸入總時間、距離、配速中的任兩項，即時求出第三項，附等速分段表與 Riegel 賽事時間預測。全部在本機離線運算，不上傳、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="./en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">GlossQuote Labs 首頁</a>
+    <a href="en/" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>跑步配速計算機</h1>
+  <p class="intro">填入總時間、距離、配速中的任兩項，第三項即時算出；下方有等速分段表，以及依 Riegel 公式推算的賽事預測。全部在本機運算，不上傳、不儲存，你的成績不會出現在網址或標題中。</p>
+  <noscript><p class="noscript">這個工具需要 JavaScript 才能計算，請啟用後再試。</p></noscript>
+
+  <section class="card" aria-label="計算機">
+    <fieldset class="choice-group">
+      <legend>要求解的欄位</legend>
+      <label class="choice"><input type="radio" name="solve-for" value="pace" checked> 配速</label>
+      <label class="choice"><input type="radio" name="solve-for" value="time"> 時間</label>
+      <label class="choice"><input type="radio" name="solve-for" value="distance"> 距離</label>
+    </fieldset>
+
+    <fieldset class="choice-group">
+      <legend>距離單位</legend>
+      <label class="choice"><input type="radio" name="unit" value="km" checked> 公里（km）</label>
+      <label class="choice"><input type="radio" name="unit" value="mi"> 英里（mi）</label>
+    </fieldset>
+
+    <div class="field" id="row-time">
+      <label for="field-time">總時間</label>
+      <div class="field-control">
+        <input id="field-time" type="text" value="55:00" autocomplete="off" spellcheck="false" aria-describedby="error-time">
+        <output id="output-time" class="solved" hidden></output>
+      </div>
+      <p class="field-error" id="error-time" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="row-distance">
+      <label for="field-distance">距離</label>
+      <div class="field-control">
+        <input id="field-distance" type="text" value="10" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="error-distance">
+        <output id="output-distance" class="solved" hidden></output>
+        <span class="suffix" id="suffix-distance">公里</span>
+      </div>
+      <p class="field-error" id="error-distance" role="alert" hidden></p>
+    </div>
+
+    <div class="field" id="row-pace">
+      <label for="field-pace">配速</label>
+      <div class="field-control">
+        <input id="field-pace" type="text" value="" autocomplete="off" spellcheck="false" aria-describedby="error-pace">
+        <output id="output-pace" class="solved" hidden></output>
+        <span class="suffix" id="suffix-pace">每公里</span>
+      </div>
+      <p class="field-error" id="error-pace" role="alert" hidden></p>
+    </div>
+
+    <p class="stale" id="stale-note" role="status" hidden>輸入有誤 — 以下顯示上一次有效的結果（已過期）。</p>
+  </section>
+
+  <section class="card" aria-labelledby="splits-heading">
+    <h2 id="splits-heading">分段時間（等速）</h2>
+    <p>假設全程等速。分段時間由已四捨五入的累計時間相減而得，因此印出的分段加總必定等於印出的總時間。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">距離</th><th scope="col">分段時間</th><th scope="col">累計時間</th></tr>
+        </thead>
+        <tbody id="splits-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="predictions-heading">
+    <h2 id="predictions-heading">賽事時間預測（Riegel 公式）</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">目標距離</th><th scope="col">預測時間</th><th scope="col">預測配速</th></tr>
+        </thead>
+        <tbody id="predictions-body"></tbody>
+      </table>
+    </div>
+    <p class="assumptions">預測使用公式 T₂ = T₁ ×（D₂／D₁）^1.06，前提是你有與目標距離相符的耐力訓練、地形與天氣相近、且付出相當的努力。目標距離在已知距離的約一半到兩倍之間時最可靠。預測只是估算，不是保證。</p>
+  </section>
+
+  <footer class="site-footer">
+    <p>本頁完全離線運作：不連網、不儲存、不追蹤。</p>
+    <p><a href="../../">回 GlossQuote Labs 首頁</a> · <a href="en/" lang="en">English version</a></p>
+  </footer>
+</main>
+</body>
+</html>
