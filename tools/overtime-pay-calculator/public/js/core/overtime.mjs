@@ -1,222 +1,207 @@
-// Pure core for the Overtime Pay Calculator.
-// No DOM, network, or storage access. Implements SPEC.md
-// (spec-overtime-pay-calculator-20261109): Taiwan Labor Standards Act
-// Articles 24 and 39 rates over one month of aggregated hours.
-//
-// All money math is exact rational arithmetic on BigInt. Hours are handled
-// in half-hour units; the hourly rate is salary / 240; a band with h half
-// hours and multiplier m/3 pays salary * h * m / 1440. Each category
-// subtotal is rounded half-up to whole NT$ exactly once, and the total is
-// the sum of the three rounded subtotals. Display rates (hourly/daily) are
-// rounded half-up to 2 decimals for display only and never feed the pay
-// computation.
-
-export const FIELDS = ["monthlySalary", "weekdayOtHours", "restDayHours", "holidayHours"];
-
-// Raw input capacity per field, in UTF-16 code units.
-export const RAW_LIMITS = {
-  monthlySalary: 8,
-  weekdayOtHours: 4,
-  restDayHours: 4,
-  holidayHours: 4,
-};
-
-// Value ranges: monthlySalary in whole NT$; the hour fields in half-hour
-// units (weekday 0-4 h, rest-day 0-12 h, holiday 0-12 h).
-export const RANGES = {
-  monthlySalary: [1, 99999999],
-  weekdayOtHours: [0, 8],
-  restDayHours: [0, 24],
-  holidayHours: [0, 24],
-};
-
-export const DEFAULTS = {
+// Daily tiers are calculated before summing the month. Half-hour units and
+// BigInt numerators over 1440 keep all pay calculations exact.
+export const FIELDS = Object.freeze(["monthlySalary", "month", "entries"]);
+export const ENTRY_FIELDS = Object.freeze(["date", "kind", "hours"]);
+export const KINDS = Object.freeze(["weekday", "restDay", "holiday"]);
+export const MAX_ENTRIES = 31;
+export const EMPTY_ENTRY = Object.freeze({ date: "", kind: "weekday", hours: "0" });
+export const DEFAULTS = Object.freeze({
   monthlySalary: "",
-  weekdayOtHours: "0",
-  restDayHours: "0",
-  holidayHours: "0",
-};
-
-// The first fixture in fixtures.json; "Load example" fills this in.
-export const EXAMPLE = {
+  month: "",
+  entries: Object.freeze([EMPTY_ENTRY]),
+});
+export const EXAMPLE = Object.freeze({
   monthlySalary: "36000",
-  weekdayOtHours: "3",
-  restDayHours: "0",
-  holidayHours: "0",
-};
+  month: "2024-02",
+  entries: Object.freeze([Object.freeze({ date: "2024-02-01", kind: "weekday", hours: "3" })]),
+});
 
 export const REPORT_BYTE_LIMIT = 2097152;
 export const REPORT_FILENAME = "overtime-pay-report.json";
 
-const SALARY_PATTERN = /^(0|[1-9][0-9]*)$/;
-const HOURS_PATTERN = /^(0|[1-9][0-9]*)(?:\.([0-9]))?$/;
+const SALARY_PATTERN = /^(0|[1-9][0-9]*)(?![\s\S])/;
+const HOURS_PATTERN = /^(0|[1-9][0-9]*)(?:\.([0-9]))?(?![\s\S])/;
+const MONTH_PATTERN = /^([0-9]{4})-(0[1-9]|1[0-2])$/;
+const DATE_PATTERN = /^[0-9]{4}-[0-9]{2}-([0-9]{2})$/;
 
-function schemaError() {
-  return { ok: false, error: { code: "SCHEMA", field: null, row: null } };
+function failure(code, field = null, row = null) {
+  return { ok: false, error: { code, field, row } };
 }
 
-// Validate one field in the SPEC's order: raw capacity (INPUT_LIMIT), then
-// empty (EMPTY), then grammar (INTEGER_FORMAT for the salary,
-// DECIMAL_FORMAT for hours), then the 0.5-hour step (HOURS_STEP), then the
-// value range (RANGE). Returns { error } or { value }, where value is a
-// BigInt for monthlySalary and an integer count of half hours otherwise.
-function validateField(field, raw) {
-  if (raw.length > RAW_LIMITS[field]) {
-    return { error: { code: "INPUT_LIMIT", field, row: null } };
-  }
-  if (raw === "") {
-    return { error: { code: "EMPTY", field, row: null } };
-  }
-  if (field === "monthlySalary") {
-    if (!SALARY_PATTERN.test(raw)) {
-      return { error: { code: "INTEGER_FORMAT", field, row: null } };
-    }
-    const value = BigInt(raw);
-    const [min, max] = RANGES[field];
-    if (value < BigInt(min) || value > BigInt(max)) {
-      return { error: { code: "RANGE", field, row: null } };
-    }
-    return { value };
-  }
-  const match = HOURS_PATTERN.exec(raw);
-  if (match === null) {
-    return { error: { code: "DECIMAL_FORMAT", field, row: null } };
-  }
-  const fractionDigit = match[2];
-  if (fractionDigit !== undefined && fractionDigit !== "0" && fractionDigit !== "5") {
-    return { error: { code: "HOURS_STEP", field, row: null } };
-  }
-  const halves = Number(match[1]) * 2 + (fractionDigit === "5" ? 1 : 0);
-  const [min, max] = RANGES[field];
-  if (halves < min || halves > max) {
-    return { error: { code: "RANGE", field, row: null } };
-  }
-  return { value: halves };
+function ownData(object, key) {
+  const descriptor = Object.getOwnPropertyDescriptor(object, key);
+  return descriptor && Object.hasOwn(descriptor, "value") ? descriptor : null;
 }
 
-// Validate the whole input object. Unknown, missing, wrongly typed, or
-// accessor-backed inputs are SCHEMA with field/row null. Fields are then
-// checked in the SPEC's fixed order: monthlySalary, weekdayOtHours,
-// restDayHours, holidayHours; the first error wins.
+function recordDescriptors(record, fields, row = null) {
+  if (record === null || typeof record !== "object" || Object.getPrototypeOf(record) !== Object.prototype) {
+    return failure("SCHEMA", row === null ? null : "entries", row);
+  }
+  const keys = Reflect.ownKeys(record);
+  if (keys.length !== fields.length || keys.some((key) => !fields.includes(key))) {
+    return failure("SCHEMA", row === null ? null : "entries", row);
+  }
+  const descriptors = {};
+  for (const field of fields) {
+    const descriptor = ownData(record, field);
+    if (!descriptor) return failure("SCHEMA", field, row);
+    descriptors[field] = descriptor;
+  }
+  return { descriptors };
+}
+
+function validateSalary(raw) {
+  if (typeof raw !== "string") return failure("SCHEMA", "monthlySalary");
+  if (raw.length > 8) return failure("INPUT_LIMIT", "monthlySalary");
+  if (raw === "") return failure("EMPTY", "monthlySalary");
+  if (!SALARY_PATTERN.test(raw)) return failure("INTEGER_FORMAT", "monthlySalary");
+  const salary = BigInt(raw);
+  if (salary < 1n || salary > 99999999n) return failure("RANGE", "monthlySalary");
+  return { salary };
+}
+
+function validateMonth(month) {
+  if (typeof month !== "string") return failure("SCHEMA", "month");
+  if (month === "") return failure("EMPTY", "month");
+  const match = month.length === 7 && MONTH_PATTERN.exec(month);
+  if (!match) return failure("MONTH_FORMAT", "month");
+  const year = Number(match[1]);
+  if (year < 1900 || year > 2100) return failure("RANGE", "month");
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const monthLengths = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return { maxDay: monthLengths[Number(match[2]) - 1] };
+}
+
+function validateEntry(descriptors, row, month, maxDay, dates) {
+  const { date, kind, hours } = descriptors;
+  for (const field of ENTRY_FIELDS) {
+    if (typeof descriptors[field].value !== "string") return failure("SCHEMA", field, row);
+    if (descriptors[field].value === "") return failure("EMPTY", field, row);
+  }
+  const match = date.value.length === 10 && DATE_PATTERN.exec(date.value);
+  if (!match) return failure("DATE_FORMAT", "date", row);
+  if (date.value.slice(0, 7) !== month) return failure("DATE_MONTH", "date", row);
+  const day = Number(match[1]);
+  if (day < 1 || day > maxDay) return failure("DATE_FORMAT", "date", row);
+  if (dates.has(date.value)) return failure("DUPLICATE_DATE", "date", row);
+  if (!KINDS.includes(kind.value)) return failure("KIND", "kind", row);
+  if (hours.value.length > 4) return failure("INPUT_LIMIT", "hours", row);
+  const parts = HOURS_PATTERN.exec(hours.value);
+  if (!parts) return failure("DECIMAL_FORMAT", "hours", row);
+  const fraction = parts[2];
+  if (fraction !== undefined && fraction !== "0" && fraction !== "5") {
+    return failure("HOURS_STEP", "hours", row);
+  }
+  const halves = Number(parts[1]) * 2 + (fraction === "5" ? 1 : 0);
+  if (halves > (kind.value === "weekday" ? 8 : 24)) return failure("RANGE", "hours", row);
+  dates.add(date.value);
+  return { entry: { date: date.value, kind: kind.value, halves } };
+}
+
 export function validateInput(input) {
-  if (input === null || typeof input !== "object" || Array.isArray(input)) {
-    return schemaError();
-  }
-  let keys;
   try {
-    keys = Object.keys(input);
-  } catch {
-    return schemaError();
-  }
-  if (keys.length !== FIELDS.length) return schemaError();
-  const values = {};
-  for (const field of FIELDS) {
-    if (!Object.prototype.hasOwnProperty.call(input, field)) return schemaError();
-    let raw;
-    try {
-      raw = input[field];
-    } catch {
-      return schemaError();
+    const shape = recordDescriptors(input, FIELDS);
+    if (shape.error) return shape;
+    const entries = shape.descriptors.entries.value;
+    if (!Array.isArray(entries) || Object.getPrototypeOf(entries) !== Array.prototype) {
+      return failure("SCHEMA", "entries");
     }
-    if (typeof raw !== "string") return schemaError();
-    const checked = validateField(field, raw);
-    if (checked.error) return { ok: false, error: checked.error };
-    values[field] = checked.value;
+    const length = ownData(entries, "length")?.value;
+    if (!Number.isInteger(length)) return failure("SCHEMA", "entries");
+    if (length < 1 || length > MAX_ENTRIES) return failure("ENTRY_COUNT", "entries");
+    const rows = [];
+    for (let row = 0; row < length; row += 1) {
+      const item = ownData(entries, String(row));
+      if (!item) return failure("SCHEMA", "entries", row);
+      const checked = recordDescriptors(item.value, ENTRY_FIELDS, row);
+      if (checked.error) return checked;
+      rows.push(checked.descriptors);
+    }
+    if (Reflect.ownKeys(entries).length !== length + 1) return failure("SCHEMA", "entries");
+
+    const { monthlySalary, month } = shape.descriptors;
+    const checkedSalary = validateSalary(monthlySalary.value);
+    if (checkedSalary.error) return checkedSalary;
+    const checkedMonth = validateMonth(month.value);
+    if (checkedMonth.error) return checkedMonth;
+    const dates = new Set();
+    const values = [];
+    for (let row = 0; row < length; row += 1) {
+      const checked = validateEntry(rows[row], row, month.value, checkedMonth.maxDay, dates);
+      if (checked.error) return checked;
+      values.push(checked.entry);
+    }
+    return { ok: true, values: { monthlySalary: checkedSalary.salary, month: month.value, entries: values } };
+  } catch {
+    // Reflection can throw for a revoked Proxy or a hostile reflection trap.
+    return failure("SCHEMA");
   }
-  return { ok: true, values };
 }
 
-// Round the non-negative rational numerator/denominator half-up to an
-// integer: floor((2n + d) / 2d). BigInt division of non-negative values
-// truncates toward zero, which is floor here.
 function roundHalfUpDiv(numerator, denominator) {
   return (2n * numerator + denominator) / (2n * denominator);
 }
 
-// Format the non-negative rational numerator/denominator rounded half-up
-// to exactly two decimals, as a fixed two-decimal string. Display only.
 function formatTwoDecimals(numerator, denominator) {
   const hundredths = roundHalfUpDiv(numerator * 100n, denominator);
-  const whole = hundredths / 100n;
-  const fraction = hundredths % 100n;
-  return `${whole}.${String(fraction).padStart(2, "0")}`;
+  return `${hundredths / 100n}.${String(hundredths % 100n).padStart(2, "0")}`;
 }
 
-// Split a half-hour count into rate bands. tiers is a list of
-// [tierCapHalves, multiplierNumerator, multiplierLabel] consumed in order;
-// each band pays salary * bandHalves * multiplierNumerator / 1440.
-// Returns the non-zero bands and the summed numerator over 1440.
-function splitBands(salary, halves, tiers) {
+const WEEKDAY_TIERS = [[4, 4], [4, 5]];
+const REST_DAY_TIERS = [[4, 4], [12, 5], [8, 8]];
+
+function calculateDay(salary, { date, kind, halves }) {
+  const holiday = kind === "holiday";
+  const dayPayApplied = holiday && halves > 0;
+  const overtimeHalves = holiday ? Math.max(0, halves - 16) : halves;
+  const tiers = kind === "restDay" ? REST_DAY_TIERS : WEEKDAY_TIERS;
   const bands = [];
-  let numerator = 0n;
-  let remaining = halves;
-  for (const [cap, multiplierNumerator, label] of tiers) {
-    if (remaining <= 0) break;
+  // salary / 30 is salary * 48 / 1440.
+  let numerator = dayPayApplied ? salary * 48n : 0n;
+  let remaining = overtimeHalves;
+  for (const [cap, multiplier] of tiers) {
+    if (remaining === 0) break;
     const bandHalves = Math.min(remaining, cap);
-    bands.push({ hours: bandHalves / 2, multiplier: label });
-    numerator += salary * BigInt(bandHalves) * BigInt(multiplierNumerator);
+    bands.push({ hours: bandHalves / 2, multiplier: `${multiplier}/3` });
+    numerator += salary * BigInt(bandHalves * multiplier);
     remaining -= bandHalves;
   }
-  return { bands, numerator };
+  return {
+    date,
+    kind,
+    hours: halves / 2,
+    bands,
+    dayPayApplied,
+    countedOtHours: overtimeHalves / 2,
+    payTwd: Number(roundHalfUpDiv(numerator, 1440n)),
+  };
 }
-
-const WEEKDAY_TIERS = [
-  [4, 4, "4/3"],
-  [Number.POSITIVE_INFINITY, 5, "5/3"],
-];
-const REST_DAY_TIERS = [
-  [4, 4, "4/3"],
-  [12, 5, "5/3"],
-  [Number.POSITIVE_INFINITY, 8, "8/3"],
-];
-const HOLIDAY_EXTRA_TIERS = [
-  [4, 4, "4/3"],
-  [Number.POSITIVE_INFINITY, 5, "5/3"],
-];
 
 export function run(input) {
   const validated = validateInput(input);
   if (!validated.ok) return validated;
-  const salary = validated.values.monthlySalary;
-  const weekdayHalves = validated.values.weekdayOtHours;
-  const restDayHalves = validated.values.restDayHours;
-  const holidayHalves = validated.values.holidayHours;
-
-  const weekdaySplit = splitBands(salary, weekdayHalves, WEEKDAY_TIERS);
-  const weekdayPay = Number(roundHalfUpDiv(weekdaySplit.numerator, 1440n));
-
-  const restDaySplit = splitBands(salary, restDayHalves, REST_DAY_TIERS);
-  const restDayPay = Number(roundHalfUpDiv(restDaySplit.numerator, 1440n));
-
-  // Holiday work: any attendance up to 8 hours earns one extra day's wage
-  // (salary / 30 = salary * 48 / 1440); hours beyond 8 use the weekday
-  // overtime tiers. The day wage and the extra bands are summed unrounded
-  // and rounded half-up once.
-  const dayPayApplied = holidayHalves > 0;
-  const extraHalves = Math.max(0, holidayHalves - 16);
-  const holidayExtraSplit = splitBands(salary, extraHalves, HOLIDAY_EXTRA_TIERS);
-  const holidayNumerator = (dayPayApplied ? salary * 48n : 0n) + holidayExtraSplit.numerator;
-  const holidayPay = Number(roundHalfUpDiv(holidayNumerator, 1440n));
-
-  const countedHalves = weekdayHalves + restDayHalves + extraHalves;
-
+  const { monthlySalary: salary, month, entries } = validated.values;
+  const days = entries.map((entry) => calculateDay(salary, entry));
+  const categories = Object.fromEntries(KINDS.map((kind) => [kind, { hours: 0, payTwd: 0 }]));
+  let totalPayTwd = 0;
+  let countedOtHours = 0;
+  for (const day of days) {
+    categories[day.kind].hours += day.hours;
+    categories[day.kind].payTwd += day.payTwd;
+    totalPayTwd += day.payTwd;
+    countedOtHours += day.countedOtHours;
+  }
   return {
     ok: true,
     result: {
+      month,
       hourlyRateTwd: formatTwoDecimals(salary, 240n),
       dailyWageTwd: formatTwoDecimals(salary, 30n),
-      weekday: { hours: weekdayHalves / 2, bands: weekdaySplit.bands, payTwd: weekdayPay },
-      restDay: { hours: restDayHalves / 2, bands: restDaySplit.bands, payTwd: restDayPay },
-      holiday: {
-        hours: holidayHalves / 2,
-        dayPayApplied,
-        extraHours: extraHalves / 2,
-        bands: holidayExtraSplit.bands,
-        payTwd: holidayPay,
-      },
-      totalPayTwd: weekdayPay + restDayPay + holidayPay,
-      countedOtHours: countedHalves / 2,
-      capNote: countedHalves > 92,
+      days,
+      categories,
+      totalPayTwd,
+      countedOtHours,
+      capNote: countedOtHours > 46,
     },
   };
 }

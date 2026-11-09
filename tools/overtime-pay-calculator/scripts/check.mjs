@@ -1,6 +1,6 @@
 // Static project checks for the Overtime Pay Calculator: required files,
 // package contract, the SPEC-pinned rules that can be checked statically
-// (field order, raw limits, ranges, defaults, example equals the vendored
+// (monthly and daily field names, kinds, row limit, defaults, example equals the vendored
 // fixtures.json case 1, report constants), bilingual metadata and the
 // candidate noindex/no-canonical rules, the SPEC-pinned FAQ answers and
 // disclaimer, core purity (no DOM/network/storage), syntax of every
@@ -112,30 +112,23 @@ for (const key of ["dependencies", "devDependencies", "peerDependencies"]) {
   }
 }
 
-// Core contract: field order, raw limits, ranges, defaults, and report
+// Core contract: field order, row limit, kinds, defaults, and report
 // constants must match the SPEC; the example must equal fixtures.json
 // case 1 (the vendored copy in test/).
 const core = await import(pathToFileURL(resolve(PROJECT_ROOT, "public/js/core/overtime.mjs")).href);
-const expectedFields = ["monthlySalary", "weekdayOtHours", "restDayHours", "holidayHours"];
-if (JSON.stringify(core.FIELDS) !== JSON.stringify(expectedFields)) {
-  fail("core: FIELDS order mismatch");
-}
-const expectedRawLimits = { monthlySalary: 8, weekdayOtHours: 4, restDayHours: 4, holidayHours: 4 };
-if (JSON.stringify(core.RAW_LIMITS) !== JSON.stringify(expectedRawLimits)) {
-  fail("core: RAW_LIMITS mismatch");
-}
-const expectedRanges = {
-  monthlySalary: [1, 99999999],
-  weekdayOtHours: [0, 8],
-  restDayHours: [0, 24],
-  holidayHours: [0, 24],
-};
-if (JSON.stringify(core.RANGES) !== JSON.stringify(expectedRanges)) {
-  fail("core: RANGES mismatch (salary NT$; hours in half-hour units)");
-}
-const expectedDefaults = { monthlySalary: "", weekdayOtHours: "0", restDayHours: "0", holidayHours: "0" };
-if (JSON.stringify(core.DEFAULTS) !== JSON.stringify(expectedDefaults)) {
-  fail("core: DEFAULTS mismatch");
+const expectedFields = ["monthlySalary", "month", "entries"];
+assertContract(core.FIELDS, expectedFields, "FIELDS");
+assertContract(core.ENTRY_FIELDS, ["date", "kind", "hours"], "ENTRY_FIELDS");
+assertContract(core.KINDS, ["weekday", "restDay", "holiday"], "KINDS");
+assertContract(core.DEFAULTS, {
+  monthlySalary: "",
+  month: "",
+  entries: [{ date: "", kind: "weekday", hours: "0" }],
+}, "DEFAULTS");
+if (core.MAX_ENTRIES !== 31) fail("core: MAX_ENTRIES must be 31");
+
+function assertContract(actual, expected, label) {
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) fail("core: " + label + " mismatch");
 }
 if (core.REPORT_BYTE_LIMIT !== 2097152) fail("core: REPORT_BYTE_LIMIT must be 2097152");
 if (core.REPORT_FILENAME !== "overtime-pay-report.json") {
@@ -148,7 +141,7 @@ function canonical(value) {
   return `{${keys.map((key) => `${JSON.stringify(key)}:${canonical(value[key])}`).join(",")}}`;
 }
 const fixtures = JSON.parse(await readFile(resolve(PROJECT_ROOT, "test/fixtures.json"), "utf8"));
-if (fixtures.specId !== "spec-overtime-pay-calculator-20261109") {
+if (fixtures.specId !== "spec-overtime-pay-calculator-20261109-r3") {
   fail("test/fixtures.json: specId mismatch (vendored copy drifted?)");
 }
 if (canonical(core.EXAMPLE) !== canonical(fixtures.cases[0].input)) {
@@ -166,7 +159,7 @@ const PAGES = [
     path: "public/index.html",
     lang: "zh-Hant",
     title: "加班費計算機｜Gloss Tools",
-    description: "輸入月薪與平日延時、休息日、國定假日出勤時數，依勞動基準法第24、39條現行費率逐段試算加班費。",
+    description: "按日輸入平日延時、休息日與未調移國定假日工時，依台灣月薪制每日級距試算整月加班費。",
     h1: "加班費計算機",
     langLink: 'href="./en/index.html"',
     home: 'href="../../"',
@@ -174,9 +167,9 @@ const PAGES = [
       "休息日出勤 1 小時算幾小時？",
       "自民國 107 年 3 月 1 日起已刪除擬制工時，休息日工資與工時都依實際出勤時數計算。",
       "平日每小時工資額怎麼算？",
-      "月薪制為月薪 ÷ 30 日 ÷ 8 小時。",
+      "此試算以每日正常工時 8 小時、月薪對應 240 小時為基礎，將月薪除以 240。",
       "國定假日出勤未滿 8 小時怎麼算？",
-      "只要出勤，8 小時以內一律再加發一日工資。",
+      "符合條件的未調移國定假日，每個出勤日都另加一日工資，即使當天出勤未滿 8 小時。",
     ],
     disclaimer: "試算結果僅供參考，實際金額以勞雇約定及主管機關認定為準。",
     draftNote: "切換語言或離開頁面會失去目前草稿。",
@@ -188,7 +181,7 @@ const PAGES = [
     lang: "en",
     title: "Overtime Pay Calculator | Gloss Tools",
     description:
-      "Estimate Taiwan overtime pay from a monthly salary: weekday overtime, rest-day and national-holiday work at the Labor Standards Act rates, broken down by band.",
+      "Enter daily weekday overtime, rest-day or eligible holiday hours to estimate a month of Taiwan overtime pay using daily rate bands.",
     h1: "Overtime Pay Calculator",
     langLink: 'href="../index.html"',
     home: 'href="../../en/"',
@@ -196,9 +189,9 @@ const PAGES = [
       "How are rest-day hours counted?",
       "Since 1 March 2018 the deemed-hours rule was abolished; rest-day pay and hours use actual hours worked.",
       "How is the hourly rate derived?",
-      "For monthly-paid workers, monthly salary ÷ 30 days ÷ 8 hours.",
+      "This estimate divides monthly salary by 240, using an 8-hour normal workday.",
       "What if holiday work is under 8 hours?",
-      "Any holiday work up to 8 hours earns one extra day's pay.",
+      "Each eligible unshifted national holiday worked earns one extra day's wage, even when you work fewer than 8 hours that day.",
     ],
     disclaimer:
       "This estimate is for reference only; actual pay follows the employment agreement and the competent authority's determination.",
@@ -226,10 +219,20 @@ for (const page of PAGES) {
   for (const text of page.faq) {
     if (!html.includes(text)) fail(`${page.path}: missing FAQ text: ${text}`);
   }
+  for (const marker of ['id="daily-entries"', 'id="error-entries"', 'id="entry-template"', 'id="add-entry"', "data-entry-row", "data-remove-entry"]) {
+    if (!html.includes(marker)) fail(page.path + ": missing daily editor marker " + marker);
+  }
+  for (const field of core.ENTRY_FIELDS) {
+    if (!html.includes('data-entry-field="' + field + '"')) fail(page.path + ": missing daily field " + field);
+  }
+  if (!/<input id="field-month"[^>]+type="text"/.test(html) ||
+      !/<input data-entry-field="date"[^>]+type="text"/.test(html)) {
+    fail(page.path + ": month and dates must use text input");
+  }
   for (const asset of page.assets) {
     if (!html.includes(asset)) fail(`${page.path}: missing asset reference ${asset}`);
   }
-  for (const field of expectedFields) {
+  for (const field of ["monthlySalary", "month"]) {
     if (!html.includes(`id="field-${field}"`)) fail(`${page.path}: missing input field-${field}`);
     if (!html.includes(`id="error-${field}"`)) fail(`${page.path}: missing error slot error-${field}`);
   }
@@ -307,5 +310,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  "Check passed: files, package contract, core limits/ranges/defaults/example, pages, syntax, worker concatenation, capability scan, core purity",
+  "Check passed: files, package contract, monthly/daily schema and example, pages, syntax, worker concatenation, capability scan, core purity",
 );

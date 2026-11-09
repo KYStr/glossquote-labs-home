@@ -1,58 +1,24 @@
-# Verification — Overtime Pay Calculator
+# 加班費計算機 R3 驗證
 
-Environment: Node v24.22.1, Linux VM, 2026-11-09. All commands run inside
-`tools/overtime-pay-calculator/`. Product acceptance checks (the SPEC's
-nine aspects) remain NOT_RUN for an independent reviewer; the items below
-are the builder's own runs.
+2026-11-10，Windows Node v24.14.0。命令在工具根目錄執行，使用離線合成資料。此紀錄為實作者的本機結果。
 
-## Commands and results
+| 檢查 | 結果 |
+| --- | --- |
+| 來源與規格 SHA-256 | 來源基線及原規格清單所列的 32 個檔案全數相符。 |
+| 修正前重現 | 月總平日 3 小時回 NT$650，月總休假日 2 小時回 NT$1,200。舊核心接受月薪 getter 並呼叫 1 次。 |
+| `npm test` | exit 0，46 pass。涵蓋 19 個字面核心、3 個控制器案例及月份／日別、日界、46 小時、格式、descriptor、過期工作和報告驗證。 |
+| `npm run check` | exit 0，雙語結構、預覽 noindex、程式語法、固定 Worker、能力掃描與核心純度。 |
+| `npm run build:preview` 兩次 | exit 0，9 個產物，兩次清單 SHA-256 相同。 |
+| `npm run check:generated:preview` | exit 0，檔案集合、bytes、SHA-256、雙語中繼資料、Worker 來源與 robots 皆相符。 |
+| Windows 環境前後指紋 | PASS，HKCU/HKLM PATH 與完整 Environment 指紋相同，兩者暫存路徑計數均 0。 |
 
-- `npm test` (`node --test`): **37 tests, 37 pass, 0 fail.** Suites:
-  `test/core.test.mjs` (all 13 literal core fixtures from the vendored
-  fixtures.json, deep-compared, plus boundary/validation-order/schema/
-  hostile-input cases), `test/controller.test.mjs` (the 3 controller
-  fixtures driven by a controllable fake Worker, plus
-  generation/worker-failure cases), `test/report.test.mjs` (canonical
-  serialization checked against a hand-written literal with matching
-  SHA-256, and the OUTPUT_LIMIT branch).
-- `npm run check`: **passed** (files, package contract, core
-  limits/ranges/defaults/example, pages, syntax, worker concatenation,
-  capability scan, core purity).
-- `npm run build:preview` twice: **byte-identical** — BUILD-MANIFEST.json
-  SHA-256 `be95bbe1ac4abf91d847778a7b7947143eef522fbc08592d0dc4aaa4eeda6600`
-  in both runs; 9 files in dist-preview/.
-- `npm run check:generated:preview`: **passed** (manifest set, byte
-  counts, and SHA-256 exact; bilingual metadata present; worker source
-  matches the fixed core + handler bytes; robots.txt denies all).
-- Loopback HTTP probe of the built preview (port 49317): **passed** —
-  `GET /` 200 with title「加班費計算機｜Gloss Tools」, `GET /en/` 200 with
-  title "Overtime Pay Calculator | Gloss Tools", unknown path 404,
-  path traversal refused (404), and the SPEC's CSP /
-  X-Robots-Tag: noindex, nofollow / nosniff headers present.
+最終 BUILD-MANIFEST.json SHA-256 `d228bfb5b94b8658d7a6d6aaf5096dbd67a8974b10a81348fe0c4cb396caf04e`。R3 規格與測試副本 fixtures SHA-256 `500769055a1326f09793ba6bd99e2cb63f88ec90db47f02c2fefe81770632172`。
 
-## Explicit NOT_RUN list
+- NT$36,000 平日案例，三天各 1 小時 NT$600，同一天 3 小時 NT$650。
+- NT$36,000 未調移國定假日案例，兩天各 1 小時 NT$2,400，同一天 2 小時 NT$1,200。
+- 休息日級距對照，兩天各 1 小時與同一天 2 小時皆 NT$400。
+- 46 小時不顯示提醒，46.5 與 48 小時顯示提醒。getter／setter 呼叫計數 0，重複日期、無效閏日及第 32 列拒絕。環境前後快照檔 SHA-256 `ea0bbfd445a4f59d1e16fe8649003024a46c63c8d04802063a0c0777a9ce68ba`。
 
-- Real-browser evidence (Chrome/Edge): example load, typed input,
-  error flow, edit-after-success, cancel, reset, Blob download byte
-  comparison — NOT_RUN (no isolated browser in the builder environment;
-  the loopback HTTP probe only fetches static bytes).
-- Real-device / mobile checks, 200% zoom, reduced-motion, screen-reader
-  passes — NOT_RUN.
-- Network/Storage isolation audit in a clean browser profile (zero
-  work requests, storage, console) — NOT_RUN. Static guarantees instead:
-  the check script scans shipped sources for forbidden capabilities and
-  verifies core purity; the serve script emits the SPEC's CSP.
-- Production build, canonical/hreflang/sitemap, production origin
-  (`overtime-pay-calculator.glossquote.com` is unconfigured) — NOT_RUN /
-  refused by the build script.
-- Independent nine-aspect acceptance review — NOT_RUN (reviewer's job,
-  on this same fixed head).
+## 待驗項
 
-## Spec-errata candidates
-
-Recorded in full in HANDOFF.md: (1) the 46/46.5 countedOtHours capNote
-boundary the SPEC §tests asks to verify is unreachable under the SPEC's
-own pinned field caps (maximum reachable countedOtHours is 20); the
-pinned ranges, formula, and threshold are implemented exactly as
-written. (2) §implementation's `src/` paths vs the handbook's
-`public/js/core/` layout (handbook followed, no behavior difference).
+實作者的桌面與本機瀏覽器操作記為 NOT_RUN_USER_FOCUS_INCIDENT。遠端隔離瀏覽器的兩語互動、非作者同版驗收、檢視發布與發布後核對由主代理留證。原生下載／裝置、實機 200% 縮放、輔助技術、完整網路儲存檢查、正式域名與外部重驗分項留證。

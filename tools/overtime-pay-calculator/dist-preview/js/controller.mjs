@@ -19,10 +19,14 @@ import { DEFAULTS, EXAMPLE } from "./core/overtime.mjs";
 
 export const WORKER_ERROR = { code: "WORKER_ERROR", field: null, row: null };
 
+function copyDraft(draft) {
+  return { ...draft, entries: draft.entries.map((entry) => ({ ...entry })) };
+}
+
 export function createController({ createWorker, onChange = () => {} }) {
   let generation = 0;
   let state = "empty";
-  let draft = { ...DEFAULTS };
+  let draft = copyDraft(DEFAULTS);
   let isExample = false;
   let result = null;
   let error = null;
@@ -46,7 +50,7 @@ export function createController({ createWorker, onChange = () => {} }) {
   function getPublicState() {
     return {
       state,
-      draft: { ...draft },
+      draft: copyDraft(draft),
       isExample,
       result,
       error,
@@ -60,7 +64,10 @@ export function createController({ createWorker, onChange = () => {} }) {
     result = null;
     error = null;
     state = "busy";
-    const snapshot = { ...draft };
+    const snapshot = copyDraft(draft);
+    snapshot.entries.forEach(Object.freeze);
+    Object.freeze(snapshot.entries);
+    Object.freeze(snapshot);
     const postedGeneration = generation;
     let nextWorker;
     try {
@@ -75,7 +82,7 @@ export function createController({ createWorker, onChange = () => {} }) {
     worker.onmessage = (event) => {
       const data = event.data;
       if (data === null || typeof data !== "object") return;
-      if (data.generation !== postedGeneration || state !== "busy") return;
+      if (generation !== postedGeneration || data.generation !== postedGeneration || worker !== nextWorker || state !== "busy") return;
       terminateWorker();
       if (data.ok === true) {
         result = data.result;
@@ -89,7 +96,7 @@ export function createController({ createWorker, onChange = () => {} }) {
       emit();
     };
     worker.onerror = () => {
-      if (generation !== postedGeneration || state !== "busy") return;
+      if (generation !== postedGeneration || worker !== nextWorker || state !== "busy") return;
       terminateWorker();
       result = null;
       error = { ...WORKER_ERROR };
@@ -111,7 +118,7 @@ export function createController({ createWorker, onChange = () => {} }) {
   function edit(patch) {
     const nextDraft = { ...draft, ...patch };
     const changed = Object.keys(patch).some((key) => nextDraft[key] !== draft[key]);
-    draft = nextDraft;
+    draft = copyDraft(nextDraft);
     isExample = false;
     if (!changed) {
       emit();
@@ -134,7 +141,7 @@ export function createController({ createWorker, onChange = () => {} }) {
 
   function loadExample() {
     const wasBusy = state === "busy";
-    draft = { ...EXAMPLE };
+    draft = copyDraft(EXAMPLE);
     isExample = true;
     if (wasBusy) {
       terminateWorker();
@@ -168,7 +175,7 @@ export function createController({ createWorker, onChange = () => {} }) {
   function reset() {
     terminateWorker();
     generation += 1;
-    draft = { ...DEFAULTS };
+    draft = copyDraft(DEFAULTS);
     isExample = false;
     result = null;
     error = null;

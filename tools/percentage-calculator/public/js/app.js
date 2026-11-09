@@ -122,32 +122,36 @@ function terminateWorker() {
   }
 }
 
+function completeJob(generation, outcome) {
+  if (controller.deliver(generation, outcome)) render();
+}
+
+function failJob(generation) {
+  completeJob(generation, {
+    ok: false,
+    error: { code: "WORKER_ERROR", field: null, row: null },
+  });
+}
+
 const transport = {
   send(snapshot, generation) {
     try {
-      if (!worker) {
-        const blob = new Blob([WORKER_SOURCE], { type: "text/javascript" });
-        workerUrl = URL.createObjectURL(blob);
-        worker = new Worker(workerUrl, { type: "module" });
-        worker.onmessage = (event) => {
-          const data = event.data || {};
-          controller.deliver(data.generation, data.outcome);
-        };
-        worker.onerror = () => {
-          controller.deliver(controller.generation, {
-            ok: false,
-            error: { code: "WORKER_ERROR", field: null, row: null },
-          });
-        };
-      }
-      worker.postMessage({ generation, input: snapshot });
+      const blob = new Blob([WORKER_SOURCE], { type: "text/javascript" });
+      workerUrl = URL.createObjectURL(blob);
+      const jobWorker = new Worker(workerUrl, { type: "module" });
+      worker = jobWorker;
+      jobWorker.onmessage = ({ data }) => {
+        if (worker === jobWorker && data?.generation === generation) {
+          completeJob(generation, data.outcome);
+        }
+      };
+      jobWorker.onerror = () => {
+        if (worker === jobWorker) failJob(generation);
+      };
+      jobWorker.postMessage({ generation, input: snapshot });
     } catch {
-      queueMicrotask(() =>
-        controller.deliver(generation, {
-          ok: false,
-          error: { code: "WORKER_ERROR", field: null, row: null },
-        })
-      );
+      // Let the submit handler render busy before reporting a startup failure.
+      queueMicrotask(() => failJob(generation));
     }
   },
   terminate() {
