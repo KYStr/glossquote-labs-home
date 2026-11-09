@@ -32,6 +32,8 @@
 
 ## 共通 UI / SEO / 隱私底線
 
+共用 paper/ink、字級、間距與斷點的實際值見 [工具設計基線](TOOL-DESIGN-BASELINE.md)。按 SPEC 選用，不憑空假設另一個未取得的設計文件。
+
 兩語 `lang`、title、description、h1、canonical及互返 hreflang、x-default；預覽noindex、robots禁止索引，無捏造正式網域。正式域名由主統籌確定後production build才輸出正式canonical/sitemap與index。連回同語系首頁。
 
 純本地工具不傳輸/儲存使用者內容，不加analytics/beacon/remote fonts/CDN。觀察實際Network/Storage，包含同源`/cdn-cgi/rum`及頁面hidden事件；原始碼沒有fetch並非充分證據。CSP/安全標頭依各工具實際需要最小化，不能為消除console錯誤放寬。

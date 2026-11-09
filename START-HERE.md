@@ -1,6 +1,6 @@
 # GlossQuote Labs 接續入口
 
-這個 repo 同時保存首頁、工具原始碼快照、完整預案、唯一承接登記與驗收紀錄。先讀此頁，不必逐一尋找各工具 repo。
+這個 repo 同時保存首頁、工具原始碼快照、完整預案、唯一承接登記與驗收紀錄。先讀此頁，不必逐一尋找各工具 repo。最新整理成果見 [本輪交付總表](docs/consolidation/2026-11-09/DELIVERY.md)。
 
 1. 讀最新 [AGENTS.md](AGENTS.md) 與 [接續說明書](docs/AGENT-HANDBOOK.md)。
 2. 查看 [工作總表](docs/WORK-STATUS.md)，但承接前必須重讀遠端 [work-registry.json](coordination/work-registry.json)。總表是某個時間的快照，不是鎖。
@@ -19,5 +19,6 @@
 | 當 reviewer 或發布整合者 | [審查與發布說明](docs/REVIEW-AND-RELEASE.md) |
 | 補預案／判斷庫存 | [預案品質與補庫](docs/SPECIFICATION-STOCK.md) |
 | 本輪做了哪些整理 | [來源整合報告](docs/consolidation/2026-11-09/REPORT.md) |
+| 雲端另送的新候選與承接缺口 | [收尾候選盤點](docs/consolidation/2026-11-09/CLOUD-CANDIDATES.md) |
 
 `sources/`、`archives/` 是保留證據，不代表已驗收。複製了程式碼也不等於正式站已更新。不要遞迴執行所有快照的測試或安裝相依套件。
