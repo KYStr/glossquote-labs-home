@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morse Code Translator | GlossQuote Tools</title>
+<meta name="description" content="Translate text to and from International Morse code locally: letters, digits, punctuation and tagged prosigns, with total signal duration and WebAudio playback. No network, no storage.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1e3a5f">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="../../en/">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Morse Code Translator</h1>
+  <p class="intro">Turn text into International Morse code (ITU), or decode pasted Morse back into text. This is a translator, not a radio: playback is local audio only and nothing is transmitted. Everything runs on your device — no network, no storage, and your text never appears in the URL.</p>
+
+  <section aria-labelledby="converter-h">
+    <h2 id="converter-h">Translate</h2>
+    <div class="field">
+      <label for="text-input">Text</label>
+      <p class="hint">Supports A–Z (either case), 0–9, the punctuation in the table below, and the tagged prosigns &lt;SOS&gt;, &lt;AR&gt;, &lt;AS&gt;, &lt;KN&gt; and &lt;SK&gt;. An unsupported character is named by position and the whole input is refused — never silently skipped.</p>
+      <textarea id="text-input" rows="4" maxlength="2100">SOS</textarea>
+      <p id="text-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="direction" class="direction" aria-live="polite"></p>
+    <div class="field">
+      <label for="morse-input">Morse code</label>
+      <p class="hint">Separate letters with one space and words with " / " or a run of two or more spaces. Write prosigns in tagged form, e.g. &lt;...---...&gt;. Unrecognised tokens are listed and shown as � — never dropped.</p>
+      <textarea id="morse-input" rows="4" maxlength="21000">... --- ...</textarea>
+      <ul id="morse-messages" class="messages"></ul>
+    </div>
+    <div class="row">
+      <button type="button" id="copy-morse">Copy Morse</button>
+      <button type="button" id="copy-text">Copy decoded text</button>
+      <span id="copy-status" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section aria-labelledby="playback-h">
+    <h2 id="playback-h">Playback and timing</h2>
+    <div class="controls">
+      <div class="control">
+        <label for="wpm-range">Speed (WPM)</label>
+        <input type="range" id="wpm-range" min="5" max="60" step="1" value="20">
+        <input type="number" id="wpm-num" min="5" max="60" step="1" value="20" aria-label="Speed in WPM (number)">
+      </div>
+      <div class="control">
+        <label for="tone-range">Tone (Hz)</label>
+        <input type="range" id="tone-range" min="400" max="1000" step="10" value="600">
+        <input type="number" id="tone-num" min="400" max="1000" step="10" value="600" aria-label="Tone in Hz (number)">
+      </div>
+    </div>
+    <p id="duration" class="duration"></p>
+    <div class="row">
+      <button type="button" id="play-btn">▶ Play</button>
+      <button type="button" id="stop-btn" disabled>■ Stop</button>
+    </div>
+    <p id="play-reason" class="play-reason" aria-live="polite"></p>
+    <p id="audio-fallback" class="error" hidden>This browser does not support WebAudio, so sound cannot be played; translation and the duration display are unaffected.</p>
+    <div class="strip" aria-hidden="true">
+      <div class="strip-row"><span class="strip-label">Text</span><span id="strip-text"></span></div>
+      <div class="strip-row"><span class="strip-label">Morse</span><span id="strip-morse"></span></div>
+    </div>
+    <p id="now-playing" class="now-playing" hidden></p>
+    <p class="hint">Changing speed or tone during playback takes effect on the next Play, never mid-signal. Even muted, the total duration and the highlight strip above let you follow the playback.</p>
+  </section>
+
+  <section aria-labelledby="how-h">
+    <h2 id="how-h">Timing model and rules</h2>
+    <p>A dot is 1 unit, a dash 3 units, the gap between elements inside a character 1 unit, the gap between letters 3 units, and the gap between words 7 units; no trailing gap is counted after the final element. Speed follows the PARIS calibration: the word PARIS, including its trailing word gap, occupies exactly 50 units, so one unit = 1200 ÷ WPM milliseconds (PARIS on its own, without the trailing gap, measures 43 units). The duration shown above and the actual playback are computed from this same timing table.</p>
+    <p>Morse has no letter case: lowercase input is encoded as uppercase, and decoded output is uppercase. Accented letters (such as É or ß) are not supported in this version — they are named by position and the whole input is refused, never approximated or expanded (ß never becomes SS). Prosigns count only in tagged form: an untagged run-together token that matches a character code decodes as that character with a note; one that matches no character is listed as unrecognised with a hint naming the prosign.</p>
+  </section>
+
+  <section aria-labelledby="ref-h">
+    <h2 id="ref-h">Character reference</h2>
+    <p class="hint">This table is generated from the same data the code uses — what you read is what runs.</p>
+    <div class="tables">
+      <table>
+        <thead><tr><th scope="col">Character</th><th scope="col">Code</th></tr></thead>
+        <tbody id="ref-table-body"></tbody>
+      </table>
+      <table>
+        <thead><tr><th scope="col">Prosign</th><th scope="col">Tagged form</th></tr></thead>
+        <tbody id="prosign-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <p>GlossQuote Tools · Runs entirely on your device; no network, no storage of your content.</p>
+</footer>
+</body>
+</html>
