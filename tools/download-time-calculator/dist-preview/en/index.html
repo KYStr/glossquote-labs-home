@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Download Time Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate how long a download takes and when it will finish, with explicit bit/byte conversion and an efficiency factor.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Download Time Calculator</h1>
+  <p class="lede">You know the file size and your plan's rated speed, but one is measured in bytes and the other in bits, so mental math is off by a factor of eight. Enter the file size, connection speed, and efficiency to see how long the download takes, when to start tonight, and when it will finish. The speed is a fixed estimate; nothing measures your real network.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Input</h2>
+      <form id="download-form" novalidate>
+        <div class="field">
+          <label for="field-sizeValue">File size</label>
+          <p class="help" id="help-sizeValue">Above 0, at most 9999.999, with up to three decimal places.</p>
+          <input id="field-sizeValue" name="sizeValue" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-sizeValue">
+          <p class="field-error" id="error-sizeValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sizeUnit">Size unit</label>
+          <p class="help" id="help-sizeUnit">Decimal SI (KB, MB, GB, TB) and binary IEC (KiB, MiB, GiB, TiB) units are separate choices; both conversions are exact and there is no unit-system toggle.</p>
+          <select id="field-sizeUnit" name="sizeUnit" aria-describedby="help-sizeUnit">
+            <option value="B">B</option>
+            <option value="KB">KB</option>
+            <option value="MB">MB</option>
+            <option value="GB" selected>GB</option>
+            <option value="TB">TB</option>
+            <option value="KiB">KiB</option>
+            <option value="MiB">MiB</option>
+            <option value="GiB">GiB</option>
+            <option value="TiB">TiB</option>
+          </select>
+          <p class="field-error" id="error-sizeUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-speedValue">Connection speed</label>
+          <p class="help" id="help-speedValue">From 0.01 to 999999.999, with up to three decimal places. The common speeds below are fill-in shortcuts only.</p>
+          <div class="preset-row" role="group" aria-label="Common speeds">
+            <button type="button" class="button-secondary" data-chip-speed="10">10 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="50">50 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="100">100 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="300">300 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="500">500 Mbps</button>
+            <button type="button" class="button-secondary" data-chip-speed="1000">1000 Mbps</button>
+          </div>
+          <input id="field-speedValue" name="speedValue" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-speedValue">
+          <p class="field-error" id="error-speedValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-speedUnit">Speed unit</label>
+          <p class="help" id="help-speedUnit">Mbps is measured in bits; MB/s in bytes — a factor of eight apart.</p>
+          <select id="field-speedUnit" name="speedUnit" aria-describedby="help-speedUnit">
+            <option value="Mbps" selected>Mbps</option>
+            <option value="MB/s">MB/s</option>
+          </select>
+          <p class="field-error" id="error-speedUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-efficiency">Efficiency %</label>
+          <p class="help" id="help-efficiency">A whole-number reduction factor from 1 to 100. The default is 100, no reduction; 90 calculates with 90% of the rated speed.</p>
+          <input id="field-efficiency" name="efficiency" type="text" inputmode="numeric" autocomplete="off" value="100" aria-describedby="help-efficiency">
+          <p class="field-error" id="error-efficiency" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-startTime">Start time (blank = now)</label>
+          <p class="help" id="help-startTime">Local time in HH:MM format (00:00 to 23:59). Left blank, the moment you press Calculate is used.</p>
+          <input id="field-startTime" name="startTime" type="text" inputmode="numeric" autocomplete="off" value="" placeholder="HH:MM" aria-describedby="help-startTime">
+          <p class="field-error" id="error-startTime" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a file size and speed, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate download time</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Time needed and finish time</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>Details</h3>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">This is a fixed-speed estimate, not a download guarantee; the actual time depends on the server, peak congestion, and your home network.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>The file size is first converted to bytes (1 byte = 8 bits): SI units multiply by 1000 per step, IEC units by 1024 per step, and the two families are separate choices, each exact. Seconds needed = file bytes × 8 ÷ (rated speed × efficiency ÷ 100), computed as an exact rational number throughout. The displayed total seconds are rounded half-up; the finish time is derived from the unrounded exact duration (whole seconds only), so the two can differ by under a second.</p>
+    <p>Duration format: H:MM:SS at or above one hour (hours may exceed 24 and never roll into days), M:SS below one hour, 0:SS below one minute. A finish on a later day is marked +Nd. The report file download-time-report.json contains this run's result as fixed-format JSON.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why isn't a 100 MB file done in 1 second at 100 Mbps?</dt>
+      <dd>Speed is measured in bits and file size in bytes; 1 byte = 8 bits, so it takes about 8 seconds.</dd>
+      <dt>What is efficiency?</dt>
+      <dd>Protocol overhead and real-world conditions make the effective speed lower than the rated one; 90 uses 90% of the rated speed. The default is 100, no reduction.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page; your input is not uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
