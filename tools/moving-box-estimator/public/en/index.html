@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Moving Box Estimator | Gloss Tools</title>
+<meta name="description" content="Estimate how many small, medium and large moving boxes to buy for your home type and habits, plus the tape and packing-paper rolls to go with them.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Moving Box Estimator</h1>
+  <p class="lede">Estimate before you order: pick your home type, tick the options that match your household, and get small, medium and large box counts plus the tape and packing-paper rolls to go with them — a list you can order from directly. The numbers are rough estimates for a typical household, not a guarantee from any store or moving company.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Your details</h2>
+      <form id="boxes-form" novalidate>
+        <fieldset class="field" id="field-homeType" aria-describedby="help-homeType">
+          <legend>Home type</legend>
+          <p class="help" id="help-homeType">Choose one. The number in brackets is that home type's base box count (medium-box equivalents).</p>
+          <label class="radio-row"><input type="radio" name="homeType" value="studio" checked> Studio <span class="hint">base 15 boxes</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="one-bedroom"> One-bedroom <span class="hint">base 25 boxes</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="two-bedroom"> Two-bedroom <span class="hint">base 40 boxes</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="three-bedroom"> Three-bedroom <span class="hint">base 60 boxes</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="four-bedroom"> Four-bedroom <span class="hint">base 80 boxes</span></label>
+          <p class="field-error" id="error-homeType" role="alert"></p>
+        </fieldset>
+        <fieldset class="field" id="field-extras">
+          <legend>Extra items</legend>
+          <p class="help" id="help-extras">Tick what matches your home; each option's fixed addition is shown beside it.</p>
+          <label class="radio-row"><input type="checkbox" id="field-manyBooks"> Lots of books <span class="hint">+8 small boxes</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-largeKitchen"> Large kitchen <span class="hint">+6 medium boxes</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-manyClothes"> Lots of clothes <span class="hint">+5 medium boxes</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-fragileItems"> Many fragile items <span class="hint">+4 small boxes, +1 packing-paper roll</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-livedOver5Years"> Lived here 5+ years <span class="hint">subtotal +20%, rounded up; extra boxes count as medium</span></label>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing estimated yet. Choose a home type and options, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate boxes</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Boxes and supplies you need</h2>
+      <dl class="summary-list">
+        <div class="summary-row"><dt>Total boxes</dt><dd id="summary-total"></dd></div>
+      </dl>
+      <div class="table-scroll" role="region" aria-label="Box and supply counts table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Count</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">This is a rough estimate for a typical household. Actual needs vary from home to home, so keep a few spare boxes rather than too few.</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>Base box counts are fixed per home type: studio 15, one-bedroom 25, two-bedroom 40, three-bedroom 60, four-bedroom 80 (total boxes in medium-box equivalents). The base is split small 30% / medium 50%, with small and medium rounded up and large taking the remainder, so the three sizes always add up to the base.</p>
+    <p>Additions are counted after the split and before the uplift: lots of books +8 small, many fragile items +4 small, large kitchen +6 medium, lots of clothes +5 medium. With “lived here 5+ years” on, the subtotal including additions is raised by 20%, rounded up, and the extra boxes all count as medium. Supplies follow one roll per 10 boxes, rounded up: tape and packing paper alike, with one extra packing-paper roll when there are many fragile items. These numbers are product design constants, not regulations or official statistics.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What goes in each size?</dt>
+      <dd>Small boxes are for books and heavy items, medium for general household goods, and large for light, bulky items like clothes and bedding.</dd>
+      <dt>Why does living 5+ years add 20%?</dt>
+      <dd>Homes accumulate belongings over time, so this option raises the subtotal by 20%, rounded up, with the extra boxes counted as medium. Turn it off if you own less than typical.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
