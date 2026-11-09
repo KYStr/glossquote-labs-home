@@ -15,7 +15,7 @@ tests.
 - Count-S: 31
 - Table-SHA-256: 0478c5bf88872a05df2917e321fe1c0e2442fc7b4e3e94aed4d9f408de4c392b
 
-## Which entries ship, and a noted SPEC wording conflict
+## Unicode 16 simple case folding
 
 SPEC section 4 defines the token key fold as **Unicode simple case
 folding** and states behaviourally that İ (U+0130) "has no simple
@@ -26,13 +26,9 @@ and **S** entries (S overriding C where both exist): İ carries
 only an F (full folding) entry, so it is unchanged under C+S, and
 every behavioural statement in the SPEC holds.
 
-The SPEC's parenthetical "(status C and F entries)" conflicts with
-its own İ statement and with the defined operation (under C+F, İ
-would fold to `i` + U+0307). The behavioural statements and the
-named operation win: this table ships the 1,484 C+S entries. The
-conflict is recorded here and in `VERIFICATION.md` for the
-bulk-review errata; if the SPEC is corrected to C+F, regenerating
-with the F entries is a one-line change in the generator.
+The [maintenance errata](ERRATA.md) resolves the conflicting parenthetical
+in the frozen specification. The shipped table uses the 1,484 C+S entries.
+The F entry for İ would expand it to `i` + U+0307 under full case folding.
 
 The Table-SHA-256 is the SHA-256 of the sorted `HEXKEY<TAB>folded`
 lines joined with LF (UTF-8), recomputed by the project check from

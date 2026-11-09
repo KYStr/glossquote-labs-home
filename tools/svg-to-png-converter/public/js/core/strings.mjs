@@ -71,8 +71,9 @@ export function removalSummary(lang, counts) {
       parts.push(`${elementTotal} elements (${detail})`);
     }
     if (counts.eventAttributes) parts.push(`${counts.eventAttributes} event-handler attribute${counts.eventAttributes === 1 ? '' : 's'}`);
-    if (counts.references) parts.push(`${counts.references} external reference${counts.references === 1 ? '' : 's'}`);
-    if (counts.styleItems) parts.push(`${counts.styleItems} style item${counts.styleItems === 1 ? '' : 's'}`);
+    if (counts.references) parts.push(`${counts.references} unsafe or unsupported reference${counts.references === 1 ? '' : 's'}`);
+    if (counts.styleItems) parts.push(`${counts.styleItems} unsupported style item${counts.styleItems === 1 ? '' : 's'}`);
+    if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} unsupported attribute or markup item${counts.unsupportedItems === 1 ? '' : 's'}`);
     return `removed ${counts.total} item${counts.total === 1 ? '' : 's'}: ${parts.join(', ')}`;
   }
   if (elementTotal === 1 && counts.elements.length === 1) {
@@ -82,7 +83,8 @@ export function removalSummary(lang, counts) {
     parts.push(`${elementTotal} 個元素（${detail}）`);
   }
   if (counts.eventAttributes) parts.push(`${counts.eventAttributes} 個事件處理屬性`);
-  if (counts.references) parts.push(`${counts.references} 個外部參照`);
-  if (counts.styleItems) parts.push(`${counts.styleItems} 個樣式項目`);
+  if (counts.references) parts.push(`${counts.references} 個不安全或不支援的參照`);
+  if (counts.styleItems) parts.push(`${counts.styleItems} 個不支援的樣式項目`);
+  if (counts.unsupportedItems) parts.push(`${counts.unsupportedItems} 個不支援的屬性或標記項目`);
   return `已移除 ${counts.total} 個項目：${parts.join('、')}`;
 }

@@ -11,11 +11,10 @@ export const DICTIONARIES = Object.freeze({
     }),
     ui: Object.freeze({
       LOCAL: "本機",
-      NETWORK: "網路",
-      VOICES_LOADING: "正在載入聲音清單…",
-      VOICES_NONE: "這個瀏覽器目前沒有提供任何聲音。",
-      NETWORK_NOTICE:
-        "你選的是網路聲音：以這個聲音朗讀時，文字會傳送給該聲音的提供者。本工具本身不會把文字傳到任何地方。",
+      CHOOSE_LOCAL_VOICE: "請選擇可用的本機聲音",
+      NO_LOCAL_VOICES: "瀏覽器目前未提供本機聲音，暫時無法朗讀。",
+      LOCAL_VOICE_UNAVAILABLE:
+        "本機聲音已無法使用。請在聲音可用時再試，或選擇另一個本機聲音。",
       PROGRESS: "第 {current} 句，共 {total} 句 · 已朗讀 {percent}%",
       PROGRESS_IDLE: "尚未開始朗讀",
       ANNOUNCE_PLAYING: "正在朗讀：第 {current} 句，共 {total} 句。",
@@ -38,17 +37,18 @@ export const DICTIONARIES = Object.freeze({
     }),
     ui: Object.freeze({
       LOCAL: "local",
-      NETWORK: "network",
-      VOICES_LOADING: "Loading the voice list…",
-      VOICES_NONE: "This browser currently offers no voices.",
-      NETWORK_NOTICE:
-        "You picked a network voice: when this voice reads, the text is sent to that voice's provider. The tool itself sends your text nowhere.",
+      CHOOSE_LOCAL_VOICE: "Choose an available local voice",
+      NO_LOCAL_VOICES: "The browser currently lists no local voices. Reading is unavailable.",
+      LOCAL_VOICE_UNAVAILABLE:
+        "A local voice became unavailable. Try again when it returns or choose another local voice.",
       PROGRESS: "Sentence {current} of {total} · {percent}% read",
       PROGRESS_IDLE: "Not started",
       ANNOUNCE_PLAYING: "Playing: sentence {current} of {total}.",
       ANNOUNCE_PAUSED: "Paused: sentence {current} of {total}.",
       ANNOUNCE_FINISHED: "Finished reading: {total} sentence(s).",
       ANNOUNCE_STOPPED: "Reading stopped.",
+      UTTERANCE_ERROR:
+        "Reading stopped after a speech error ({name}). Choose another local voice and try again.",
       CLEARED: "Text cleared.",
       CHAR_COUNT: "{count} / 20000 characters",
     }),

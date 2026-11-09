@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>文字朗讀 | GlossQuote 工具</title>
-<meta name="description" content="把貼上的文字用瀏覽器提供的聲音朗讀出來：逐句標示、播放與暫停、語速與音高調整。文字不離開你的裝置；選用網路聲音時會先明示。">
+<meta name="description" content="使用瀏覽器標示為本機的聲音朗讀文字，支援逐句標示、播放與暫停、語速與音高調整。">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#14532d">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
@@ -24,7 +24,7 @@
 </header>
 <main class="page">
   <h1>文字朗讀</h1>
-  <p class="intro">貼上文字、挑一個瀏覽器提供的聲音，就能把文字讀給你聽：逐句標示目前讀到哪一句，可以播放、暫停、繼續與停止，也能點任何一句從那句開始。文字只留在這個分頁的記憶體裡——不儲存、不上傳；唯一的例外是「網路聲音」：選到這種聲音時，文字會傳給該聲音的提供者，頁面會在你選到時先提醒。</p>
+  <p class="intro">貼上文字，再選擇瀏覽器標示為本機的聲音。朗讀時會標示目前的句子，你也能暫停、繼續、停止，或選一句開始朗讀。這個頁面不儲存或上傳文字。</p>
   <p class="warning">本工具不能把朗讀錄成音檔：瀏覽器平台本身無法擷取語音合成的輸出，所以這裡不提供下載按鈕。需要音檔時，請改用能匯出的錄音或 TTS 軟體。</p>
 
   <section id="unsupported-panel" class="card" hidden>
@@ -46,9 +46,8 @@
 
     <div class="field">
       <label for="voice-select">聲音</label>
-      <select id="voice-select"></select>
-      <p id="voices-status" class="note"></p>
-      <p id="network-notice" class="warning" hidden>你選的是網路聲音：以這個聲音朗讀時，文字會傳送給該聲音的提供者。本工具本身不會把文字傳到任何地方。</p>
+      <select id="voice-select" aria-describedby="voices-status" disabled></select>
+      <p id="voices-status" class="note" role="status"></p>
     </div>
 
     <div class="field">
@@ -64,7 +63,7 @@
     <div class="field">
       <span class="field-label">播放控制</span>
       <div class="preset-row">
-        <button type="button" id="play-button">播放</button>
+        <button type="button" id="play-button" disabled>播放</button>
         <button type="button" id="pause-button" hidden>暫停</button>
         <button type="button" id="resume-button" hidden>繼續</button>
         <button type="button" id="stop-button">停止</button>
@@ -85,6 +84,7 @@
     <h2>使用須知</h2>
     <ul>
       <li>播放中修改聲音、語速或音高，會從下一段文字開始生效；停止則立即生效。</li>
+      <li>本機標籤依瀏覽器回報。播放與繼續前會重新確認聲音，裝置語音引擎的網路行為尚未實測。</li>
       <li>暫停行為因平台而異：某些本機聲音可能忽略暫停。進度以「段」為單位計算，因此標示與進度仍正確。</li>
       <li>把分頁切到背景時是否繼續朗讀，由瀏覽器與系統決定，本工具無法保證。</li>
       <li>分句是為了標示與分段的規則化切分：偶爾多切或少切，只影響標示的粒度，不會改變朗讀的文字內容與順序。</li>

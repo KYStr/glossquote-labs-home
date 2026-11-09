@@ -15,6 +15,17 @@
 
 import { codePointLength, totalCharacters } from "./core/tts.mjs";
 
+export function localVoices(synth) {
+  try {
+    return (synth.getVoices() ?? []).filter((voice) =>
+      voice?.localService === true &&
+      typeof voice.voiceURI === "string" && voice.voiceURI !== ""
+    );
+  } catch {
+    return [];
+  }
+}
+
 export function createSpeechController({
   synth,
   createUtterance,
@@ -22,6 +33,7 @@ export function createSpeechController({
   onStateChange,
   onProgress,
   onError,
+  onLocalVoiceUnavailable,
 }) {
   let state = "idle";
   let generation = 0;
@@ -29,6 +41,7 @@ export function createSpeechController({
   let totalSentences = 0;
   let current = -1; // chunk index in flight; -1 when nothing is queued
   let spokenChars = 0; // characters in chunks fully spoken in this run
+  let activeVoice = null;
 
   function emitProgress() {
     if (!onProgress) return;
@@ -50,16 +63,40 @@ export function createSpeechController({
     emitProgress();
   }
 
+  function stop() {
+    generation += 1;
+    activeVoice = null;
+    synth.cancel();
+    current = -1;
+    spokenChars = 0;
+    setState("idle");
+  }
+
+  function voiceUnavailable() {
+    stop();
+    onLocalVoiceUnavailable?.();
+    return false;
+  }
+
+  function validateVoices() {
+    if (state === "idle") return true;
+    const selected = getSettings().voice;
+    const available = localVoices(synth);
+    if (
+      selected?.localService !== true ||
+      !available.some((voice) => voice.voiceURI === selected.voiceURI) ||
+      activeVoice?.localService !== true ||
+      !available.some((voice) => voice.voiceURI === activeVoice.voiceURI)
+    ) return voiceUnavailable();
+    return true;
+  }
+
   function enqueue(index) {
     current = index;
     const gen = generation;
     const chunk = chunks[index];
     const settings = getSettings(); // snapshot at enqueue time (SPEC 4)
     const utterance = createUtterance(chunk.text);
-    utterance.voice = settings.voice ?? null;
-    if (settings.voice && settings.voice.lang) {
-      utterance.lang = settings.voice.lang;
-    }
     utterance.rate = settings.rate;
     utterance.pitch = settings.pitch;
     utterance.volume = 1.0; // fixed in this version (SPEC section 4)
@@ -68,9 +105,9 @@ export function createSpeechController({
       spokenChars += codePointLength(chunk.text);
       if (index + 1 < chunks.length) {
         enqueue(index + 1);
-        emitProgress();
       } else {
         // Natural completion: idle, progress shows N of N at 100%.
+        activeVoice = null;
         setState("idle");
       }
     };
@@ -79,13 +116,23 @@ export function createSpeechController({
       // SPEC section 3: an utterance error stops playback, returns to
       // idle and surfaces the error name; it never loops retries.
       generation += 1;
+      activeVoice = null;
       current = -1;
       spokenChars = 0;
       setState("idle");
       if (onError) onError((event && event.error) || "unknown");
     };
+    // Use the current engine object for this URI. A stale or missing
+    // selection must never become an utterance with a default voice.
+    const selected = settings.voice;
+    const voice = localVoices(synth).find((entry) => entry.voiceURI === selected?.voiceURI);
+    if (selected?.localService !== true || !voice) return voiceUnavailable();
+    utterance.voice = voice;
+    if (voice.lang) utterance.lang = voice.lang;
+    activeVoice = voice;
     synth.speak(utterance);
     emitProgress();
+    return true;
   }
 
   return {
@@ -111,8 +158,7 @@ export function createSpeechController({
       synth.cancel();
       spokenChars = 0;
       setState("speaking");
-      enqueue(fromChunkIndex);
-      return true;
+      return enqueue(fromChunkIndex);
     },
     playFromSentence(sentenceIndex) {
       const index = chunks.findIndex(
@@ -128,18 +174,14 @@ export function createSpeechController({
     },
     resume() {
       if (state !== "paused") return;
+      if (!validateVoices()) return;
       synth.resume();
       setState("speaking");
     },
     // Stop cancels the queue and returns to idle with progress reset
     // to the start sentence (SPEC section 3). Also the response to a
     // text edit during playback: a stale queue must never keep reading.
-    stop() {
-      generation += 1;
-      synth.cancel();
-      current = -1;
-      spokenChars = 0;
-      setState("idle");
-    },
+    stop,
+    validateVoices,
   };
 }

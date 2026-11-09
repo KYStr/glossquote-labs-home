@@ -41,16 +41,6 @@ for (const [name, text] of texts) {
   assert.doesNotMatch(text, /\bdocument\s*[.)]|\bwindow\s*[.)]|\bDOMParser\b|\bXMLSerializer\b/, `${name}: core must stay DOM-free`);
 }
 
-// 淨化清單只出現一次且與 SPEC 第 4 節逐字相符。
-const sanitizeText = texts.get('js/core/sanitize.mjs');
-for (const banned of ['script', 'foreignObject', 'iframe', 'frame', 'frameset', 'embed', 'object', 'applet', 'link', 'meta', 'base', 'form', 'input', 'button', 'audio', 'video', 'source', 'track']) {
-  assert.equal(sanitizeText.split(`'${banned}'`).length - 1, 1, `banned element ${banned} must appear exactly once`);
-}
-for (const prefix of ['data:image/png', 'data:image/jpeg', 'data:image/gif', 'data:image/webp']) {
-  assert.ok(sanitizeText.includes(`'${prefix}'`), `allowed data prefix ${prefix} missing`);
-}
-assert.ok(!sanitizeText.includes('data:image/svg'), 'data:image/svg must never be allowlisted');
-
 // 雙語頁面：lang/title/description/唯一 h1/noindex/canonical/hreflang/首頁連結/字型提醒/無 inline 行為。
 const pages = [
   { name: 'index.html', lang: 'zh-Hant', home: '../../', fontNote: '無法載入網頁或網路字型' },
@@ -79,4 +69,4 @@ const appText = texts.get('js/app.js');
 assert.match(appText, /createObjectURL/, 'app must load the sanitised SVG via blob URL');
 assert.match(appText, /type: 'image\/svg\+xml'/, 'blob must be image/svg+xml');
 
-console.log('static checks passed: zero deps, JS syntax, safe sinks, core purity, sanitiser lists, bilingual structure');
+console.log('static checks passed: zero deps, JS syntax, safe sinks, core purity, bilingual structure');

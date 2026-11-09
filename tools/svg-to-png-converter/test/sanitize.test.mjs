@@ -1,137 +1,169 @@
-// SPEC 第 4 節淨化契約：F6 字面計數、逐項禁止元素/屬性/參照類別、style 規則、良性文件零移除。
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseXml, serializeXml } from '../public/js/core/xml.mjs';
-import { sanitizeDocument, cleanCssText, isAllowedReference, BANNED_ELEMENTS } from '../public/js/core/sanitize.mjs';
+import { processInput } from '../public/js/core/process.mjs';
+import { parseXml, SVG_NS } from '../public/js/core/xml.mjs';
 import { removalSummary } from '../public/js/core/strings.mjs';
 
-const NS = 'xmlns="http://www.w3.org/2000/svg"';
-function clean(svg) {
-  const parsed = parseXml(svg);
-  assert.equal(parsed.ok, true, parsed.ok ? '' : parsed.error.message);
-  const counts = sanitizeDocument(parsed.root);
-  return { counts, serialized: serializeXml(parsed.root) };
-}
+const XLINK = 'http://www.w3.org/1999/xlink';
+const CANARY = 'https://outside.invalid/asset';
+const wrap = (body, root = '') => `<svg xmlns="${SVG_NS}" width="20" height="20" ${root}>${body}</svg>`;
+const paste = text => processInput(text, { size: text.length, capUnit: 'chars' });
+const clean = text => {
+  const result = paste(text);
+  assert.equal(result.status, 'ok', JSON.stringify(result.error));
+  const parsed = parseXml(result.serialized);
+  assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
+  return { ...result, root: parsed.root };
+};
 
-test('F6: script 元素 + onclick 屬性 + https 參照 → 恰移除 3 項，逐項相符', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 24 24"><script>alert(1)</script>`
-    + '<rect width="24" height="24" onclick="evil()"/>'
-    + '<image href="https://example.com/x.png" width="24" height="24"/></svg>',
-  );
+test('F6 removes a script, handler and external image reference with a bilingual count', () => {
+  const { counts, serialized } = clean(wrap(
+    `<script>alert(1)</script><rect width="20" height="20" onclick="evil()"/><image href="${CANARY}"/>`,
+  ));
   assert.equal(counts.total, 3);
   assert.deepEqual(counts.elements, [{ name: 'script', count: 1 }]);
   assert.equal(counts.eventAttributes, 1);
   assert.equal(counts.references, 1);
   assert.equal(counts.styleItems, 0);
-  // SPEC 第 3 節英文摘要句型逐字相符。
-  assert.equal(removalSummary('en', counts),
-    'removed 3 items: 1 script element, 1 event-handler attribute, 1 external reference');
-  assert.equal(removalSummary('zh', counts), '已移除 3 個項目：1 個 script 元素、1 個事件處理屬性、1 個外部參照');
-  assert.ok(!serialized.includes('script'));
-  assert.ok(!serialized.includes('onclick'));
-  assert.ok(!serialized.includes('example.com'));
-  assert.ok(serialized.includes('<image')); // 元素保留，只移除 href
+  assert.equal(removalSummary('en', counts), 'removed 3 items: 1 script element, 1 event-handler attribute, 1 unsafe or unsupported reference');
+  assert.equal(removalSummary('zh', counts), '已移除 3 個項目：1 個 script 元素、1 個事件處理屬性、1 個不安全或不支援的參照');
+  assert.doesNotMatch(serialized, /script|onclick|outside\.invalid/);
+  assert.match(serialized, /<image\/>/);
 });
 
-test('每個禁止元素都被移除並計 1（含子樹只計 1）', () => {
-  for (const name of BANNED_ELEMENTS) {
-    const { counts, serialized } = clean(`<svg ${NS} viewBox="0 0 10 10"><${name}><rect width="1" height="1"/></${name}><circle r="2"/></svg>`);
-    assert.equal(counts.total, 1, name);
-    assert.deepEqual(counts.elements, [{ name, count: 1 }], name);
-    assert.ok(!serialized.includes(`<${name}`), name);
-    assert.ok(serialized.includes('<circle'), name);
-  }
-});
-
-test('XHTML 名稱空間元素一律移除', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 10 10"><x:div xmlns:x="http://www.w3.org/1999/xhtml"><x:p>hi</x:p></x:div><rect width="1" height="1"/></svg>`,
-  );
-  assert.equal(counts.total, 1);
-  assert.deepEqual(counts.elements, [{ name: 'div', count: 1 }]);
-  assert.ok(!serialized.includes('div'));
-});
-
-test('on* 屬性（含大小寫混合與根元素）移除；非 on 開頭保留', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 10 10" onload="boot()"><rect width="1" height="1" ONCLICK="x()" data-on="keep"/></svg>`,
-  );
-  assert.equal(counts.eventAttributes, 2);
-  assert.equal(counts.total, 2);
-  assert.ok(!serialized.toLowerCase().includes('onclick'));
-  assert.ok(!serialized.includes('onload'));
-  assert.ok(serialized.includes('data-on="keep"'));
-});
-
-test('href 允許清單：fragment 與四種 raster data 可留，其餘移除', () => {
+test('all stylesheet bodies are omitted, including escaped, commented and malformed imports', () => {
   const cases = [
-    ['#frag', true],
-    ['  #frag  ', true],
-    ['data:image/png;base64,AAAA', true],
-    ['data:image/jpeg;base64,AAAA', true],
-    ['data:image/gif;base64,AAAA', true],
-    ['data:image/webp;base64,AAAA', true],
-    ['data:image/svg+xml;base64,AAAA', false],
-    ['data:image/pngx;base64,AAAA', false],
-    ['https://example.com/x.png', false],
-    ['http://example.com/x.png', false],
-    ['javascript:alert(1)', false],
-    ['x.png', false],
-    ['//example.com/x.png', false],
+    `@import "${CANARY}.css"; rect { fill: red }`,
+    String.raw`@im\70 ort "${CANARY}.css"; rect { fill: red }`,
+    `@import/**/url("${CANARY}.css"); rect { fill: red }`,
+    `@import url("${CANARY}.css"; rect { fill: red`,
+    `@font-face{font-family:x;src:url("${CANARY}.woff2")}`,
+    'rect { fill: red }',
   ];
-  for (const [value, allowed] of cases) {
-    assert.equal(isAllowedReference(value), allowed, value);
-    const { counts } = clean(`<svg ${NS} viewBox="0 0 10 10"><image href="${value}" width="1" height="1"/></svg>`);
-    assert.equal(counts.references, allowed ? 0 : 1, value);
-    assert.equal(counts.total, allowed ? 0 : 1, value);
+  for (const css of cases) {
+    const { counts, root, serialized } = clean(wrap(`<style><![CDATA[${css}]]></style><rect width="2"/>`));
+    assert.equal(counts.styleItems, 1, css);
+    assert.deepEqual(root.children.map(child => child.localName), ['rect'], css);
+    assert.doesNotMatch(serialized, /outside\.invalid/, css);
+    assert.match(removalSummary('en', counts), /unsupported style item/);
+    assert.match(removalSummary('zh', counts), /不支援的樣式項目/);
   }
 });
 
-test('xlink:href 同受允許清單約束', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 10 10"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://example.com/a.svg#x"/></svg>`,
-  );
-  assert.equal(counts.references, 1);
-  assert.ok(!serialized.includes('example.com'));
-  const ok = clean(
-    `<svg ${NS} viewBox="0 0 10 10"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shape"/></svg>`,
-  );
-  assert.equal(ok.counts.total, 0);
+test('inline CSS rebuilds only known declarations and cannot keep resource indirection', () => {
+  const malformed = [
+    String.raw`fill:u\72l(${CANARY});`,
+    String.raw`f\69ll:url(${CANARY});`,
+    `fill:u/**/rl(${CANARY});`,
+    `fill:url(&quot;${CANARY};`,
+    `fill:url(/*foo*/${CANARY});`,
+    '/*;fill:red;*/',
+    'fill: url(#gradient));',
+  ];
+  for (const css of malformed) {
+    const { counts, root, serialized } = clean(wrap(`<rect style="${css}stroke: #000; opacity: 0.5"/>`));
+    assert.equal(counts.styleItems, 1, css);
+    assert.deepEqual(root.children[0].attrs, [], css);
+    assert.doesNotMatch(serialized, /outside\.invalid/, css);
+  }
+  const cases = [
+    `fill:&quot;${CANARY}&quot;;`,
+    'fill:&quot;odd;fill:red;word&quot;;',
+    `fill:image-set(url(${CANARY}) 1x);`,
+    `fill:image-set(&quot;${CANARY}&quot; 1x);`,
+    `--asset:url(${CANARY}); fill:var(--asset);`,
+    `fill:url(&#104;ttps://outside.invalid/asset);`,
+    `fill:url(#gradient) url(${CANARY});`,
+    `background:url(${CANARY});`,
+  ];
+  for (const css of cases) {
+    const { counts, root, serialized } = clean(wrap(`<rect style="${css}stroke: #000; opacity: 0.5"/>`));
+    assert.ok(counts.styleItems > 0, css);
+    assert.equal(root.children[0].attrs.find(attr => attr.qname === 'style').value, 'stroke: #000; opacity: 0.5', css);
+    assert.doesNotMatch(serialized, /outside\.invalid/, css);
+  }
 });
 
-test('style 元素：@import 移除計 1；外部 url() 宣告移除計 1；fragment url 保留', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 10 10"><style>@import url("https://example.com/x.css"); .a { fill: url(https://example.com/y.png); stroke: #000; background: url(#grad); }</style><rect class="a" width="1" height="1"/></svg>`,
-  );
-  assert.equal(counts.styleItems, 2);
-  assert.equal(counts.total, 2);
-  assert.ok(!serialized.includes('example.com'));
-  assert.ok(serialized.includes('stroke: #000'));
-  assert.ok(serialized.includes('url(#grad)'));
+test('presentation attributes retain only plain colors or vetted local fragments', () => {
+  for (const name of ['fill', 'stroke', 'filter', 'clip-path', 'mask', 'marker-start', 'marker-mid', 'marker-end', 'cursor']) {
+    for (const value of [`url(${CANARY}#id)`, String.raw`u\72l(${CANARY})`, `url(${CANARY}) red`, 'var(--paint)']) {
+      const { counts, root, serialized } = clean(wrap(`<path d="M0 0L10 10" ${name}="${value}"/>`));
+      assert.equal(counts.references, 1, name);
+      assert.deepEqual(root.children[0].attrs.map(attr => attr.qname), ['d'], name);
+      assert.doesNotMatch(serialized, /outside\.invalid/, name);
+    }
+  }
 });
 
-test('style 屬性：外部 url() 宣告移除；data url 宣告保留且不誤傷前後宣告', () => {
-  const { counts, serialized } = clean(
-    `<svg ${NS} viewBox="0 0 10 10"><rect width="1" height="1" style="fill: url(data:image/png;base64,AAAA); stroke: url(https://example.com/z.png); opacity: 0.5"/></svg>`,
-  );
-  assert.equal(counts.styleItems, 1);
-  assert.equal(counts.total, 1);
-  assert.ok(serialized.includes('url(data:image/png;base64,AAAA)'));
-  assert.ok(serialized.includes('opacity: 0.5'));
-  assert.ok(!serialized.includes('example.com'));
+test('href, namespace aliases, xml:base and changing href after sanitation are constrained', () => {
+  const input = wrap(`
+    <use href="${CANARY}"/>
+    <use href="/relative.svg#id"/>
+    <use xlink:href="//outside.invalid/asset#id"/>
+    <use e:href="#id"/>
+    <foreign:rect width="2" xmlns:foreign="urn:foreign"/>
+    <svg xmlns=""><rect width="2"/></svg>
+    <g xml:base="${CANARY}/" resource="${CANARY}" src="${CANARY}" ONLOAD="x()">
+      <use href="#id"><animate attributeName="href" values="#id;${CANARY}"/><set attributeName="xlink:href" to="${CANARY}"/></use>
+      <?xml-stylesheet href="${CANARY}.css"?>
+    </g>`, `xmlns:xlink="${XLINK}" xmlns:e="urn:outside"`);
+  const { counts, serialized } = clean(input);
+  assert.doesNotMatch(serialized, /outside\.invalid|urn:|xml:base|animate|<set|xml-stylesheet|ONLOAD|src=|resource=/);
+  assert.match(serialized, /<use href="#id"\/>/);
+  assert.equal(counts.references, 4);
+  assert.equal(counts.eventAttributes, 1);
+  assert.equal(counts.unsupportedItems, 5);
+  assert.deepEqual(counts.elements.map(entry => entry.name), ['rect', 'svg', 'animate', 'set']);
 });
 
-test('cleanCssText: @import 字串形式與 url 形式各計 1', () => {
-  assert.deepEqual(cleanCssText('@import "a.css"; .x { fill: red; }').removed, 1);
-  assert.equal(cleanCssText('.x { fill: red; }').removed, 0);
-});
-
-test('良性文件（漸層 fragment、use、text）零移除，序列化穩定', () => {
-  const benign = `<svg ${NS} width="10" height="10" viewBox="0 0 10 10"><defs><linearGradient id="g"><stop offset="0" stop-color="#ffffff"/></linearGradient></defs><rect width="10" height="10" fill="url(#g)"/><use href="#g"/><text x="1" y="5">Hi</text></svg>`;
-  const first = clean(benign);
+test('accepted SVG namespace aliases canonicalize without letting unsupported attrs or contents survive', () => {
+  const original = `<s:svg xmlns:s="${SVG_NS}" xmlns:l="${XLINK}" width="20" height="20">
+    <s:defs><s:linearGradient id="g"><s:stop offset="0" stop-color="#fff"/></s:linearGradient>
+      <s:clipPath id="clip"><s:circle r="8"/></s:clipPath>
+      <s:mask id="mask"><s:rect width="20" height="20" fill="white"/></s:mask>
+      <s:path id="shape" d="M0,0 L20,0 L20,20 z"/></s:defs>
+    <s:rect width="20" height="20" fill="url(#g)" clip-path="url(&quot;#clip&quot;)" mask="url('#mask')" style="stroke: rgb(0, 0, 0); fill: url(#g)"/>
+    <s:use l:href="#shape" x="2" y="3"/>
+    <s:text x="2" y="10" xml:space="preserve">Hi &lt;script&gt;</s:text>
+  </s:svg>`;
+  const first = clean(original);
   assert.equal(first.counts.total, 0);
-  const second = clean(first.serialized);
-  assert.equal(second.counts.total, 0);
-  assert.equal(second.serialized, first.serialized);
+  assert.match(first.serialized, /<svg xmlns="/);
+  assert.match(first.serialized, /xlink:href="#shape"/);
+  assert.match(first.serialized, /fill="url\(#g\)"/);
+  assert.match(first.serialized, /clip-path="url\(&quot;#clip&quot;\)"/);
+  assert.match(first.serialized, /mask="url\('#mask'\)"/);
+  assert.match(first.serialized, /style="stroke: rgb\(0, 0, 0\); fill: url\(#g\)"/);
+  assert.match(first.serialized, /Hi &lt;script&gt;/);
+  assert.equal(clean(first.serialized).serialized, first.serialized);
+});
+
+test('image data allows matching raster signatures and rejects active, spoofed, external and misplaced URLs', () => {
+  const raster = [
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/n2sAAAAASUVORK5CYII=',
+    'data:image/jpeg;base64,/9j/2Q==',
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+    'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEAAUAmJaQAA3AA/v89WAAAAA==',
+  ];
+  for (const url of raster) {
+    const { counts, serialized } = clean(wrap(`<image width="1" height="1" href="${url}"/>`));
+    assert.equal(counts.total, 0, url);
+    assert.ok(serialized.includes(url), url);
+  }
+  for (const url of [CANARY, '#shape', 'data:image/svg+xml;base64,PHN2Zz4=', 'data:image/png;base64,PHN2Zz4=',
+    'data:image/png;base64,iVBORw0KGgo===', 'data:image/png,AAAA', 'data:image/pngx;base64,iVBORw0KGgo=',
+    'data:image/jpeg;base64,iVBORw0KGgo=']) {
+    const { counts, serialized } = clean(wrap(`<image href="${url}"/>`));
+    assert.equal(counts.references, 1, url);
+    assert.ok(!serialized.includes(url), url);
+  }
+  assert.equal(clean(wrap(`<use href="${raster[0]}"/>`)).counts.references, 1);
+});
+
+test('external DTDs and processing instructions cannot be serialized and very deep input stays bounded', () => {
+  const external = `<?xml-stylesheet href="${CANARY}.css"?><!DOCTYPE svg SYSTEM "${CANARY}.dtd">`;
+  assert.doesNotMatch(clean(external + wrap('<rect/>')).serialized, /outside\.invalid|DOCTYPE|xml-stylesheet/);
+  const result = clean(wrap('<g>'.repeat(5000) + '<rect/>' + '</g>'.repeat(5000)));
+  assert.deepEqual(result.counts.elements, [{ name: 'g', count: 1 }]);
+  assert.doesNotMatch(result.serialized, /<rect/);
 });

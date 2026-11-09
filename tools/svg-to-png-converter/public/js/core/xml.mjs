@@ -2,7 +2,7 @@
 export const SVG_NS = 'http://www.w3.org/2000/svg';
 export const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 export const XLINK_NS = 'http://www.w3.org/1999/xlink';
-const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+export const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 
 const PREDEFINED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
@@ -261,7 +261,7 @@ function escapeAttr(value) {
     .replace(/\t/g, '&#x9;').replace(/\n/g, '&#xA;').replace(/\r/g, '&#xD;');
 }
 
-// 序列化：屬性順序與內容原樣保留，僅做 XML 序列化正規化（SPEC 第 4 節允許）。
+// 序列化目前的樹，將文字與屬性值按 XML 規則跳脫。
 export function serializeXml(node) {
   switch (node.type) {
     case 'text': return escapeText(node.value);

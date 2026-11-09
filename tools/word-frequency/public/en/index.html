@@ -39,8 +39,9 @@
       <label><input id="opt-showall" type="checkbox"> Show all rows (default top 100)</label>
     </div>
     <div class="field">
-      <label for="opt-mincount">Minimum count</label>
-      <input id="opt-mincount" type="number" min="1" step="1" value="1">
+      <label for="opt-mincount">Minimum occurrence count (row filter)</label>
+      <input id="opt-mincount" type="number" min="1" step="1" value="1" aria-describedby="mincount-note">
+      <p id="mincount-note" class="note">Only rows that meet this count appear. The total, unique item count, and percentage denominator still use all counted items.</p>
       <label for="opt-minlength">Minimum word length (Words table, folded length)</label>
       <input id="opt-minlength" type="number" min="1" step="1" value="1">
     </div>
@@ -70,10 +71,11 @@
       <li>Classes: Han (U+4E00–U+9FFF, U+3400–U+4DBF), kana (U+3040–U+30FF) and Hangul (U+AC00–U+D7AF) count per character; every other Unicode letter or digit forms words — so Greek, Cyrillic, Arabic and other scripts land in the Words table. It is not a Latin-only table.</li>
       <li>Words: an apostrophe joins only with a word character on both sides (don't is one token; 'tis counts as tis); hyphens and all other punctuation separate. Matching folds with Unicode simple case folding (the simple case folding entries — C and S — of CaseFolding.txt, Unicode 16.0.0): Σ and ς both fold to σ — unlike lowercasing, under which ς stays ς. The display form is the most frequent original casing, ties going to the first occurrence.</li>
       <li>Bigrams: adjacent pairs inside a Han run only; punctuation ends a run; kana and Hangul form no bigrams. The Characters table does not normalise: visually identical text in different Unicode normalisation forms can count differently.</li>
-      <li>Stopwords apply after tokenisation and before totals, so totals are after filters; a bigram is filtered when either character is a stopword character. Ordering is count descending, then first-occurrence position; percentages are shares of the table's filtered total, one decimal, rounded half away from zero.</li>
+      <li>Enabled stopwords are excluded before counting. A bigram is excluded if either character is a stopword. The Words table also applies the pure-number and minimum word length settings before counting.</li>
+      <li>Each row's percentage is its share of the counted total for that table, rounded to one decimal (half away from zero). Minimum occurrence count filters rows after counting. For alpha alpha beta with a minimum count of 2, the total is 3 and alpha appears twice (66.7%). Rows sort by count, then by first occurrence.</li>
       <li>Default stopwords (English): a, about, above, after, again, against, all, am, an, and, any, are, as, at, be, because, been, before, being, below, between, both, but, by, could, did, do, does, doing, down, during, each, few, for, from, further, had, has, have, having, he, her, here, hers, herself, him, himself, his, how, i, if, in, into, is, it, its, itself, just, me, more, most, my, no, nor, not, now, of, off, on, once, only, or, other, our, ours, out, over, own, same, she, should, so, some, such, than, that, the, their, theirs, them, themselves, then, there, these, they, this, those, through, to, too, under, until, up, very, was, we, were, what, when, where, which, while, who, whom, why, will, with, you, your, yours, yourself</li>
       <li>Default stopwords (Chinese characters): 的了是在和也不這我你他她它們就都而及與或個中有被把從到對為以於其之者嗎呢吧啊所將但若如因由向跟給讓只</li>
-      <li>CSV always exports the full filtered table (not just the displayed top 100); the filename is frequency.csv.</li>
+      <li>The display shows the top 100 rows by default. frequency.csv exports every row in the current table that meets the minimum occurrence count.</li>
     </ul>
   </details>
 </main>

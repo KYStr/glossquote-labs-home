@@ -82,7 +82,7 @@ test("fixtures 6 and 7: Greek and Cyrillic land in the Words table", () => {
   );
 });
 
-test("fold: simple case folding per the shipped C and F entries", () => {
+test("fold: simple case folding per the shipped C and S entries", () => {
   assert.equal(foldText("Σ"), "σ");
   assert.equal(foldText("ς"), "σ");
   assert.equal(foldText("İ"), "İ"); // no C/F entry: unchanged
@@ -146,6 +146,37 @@ test("filters: stopwords shrink totals; bigram either-character rule; minimums",
 test("tie-breaking: equal counts order by first occurrence", () => {
   const result = analyze("b a b a c", {});
   assert.deepEqual(rows(result.words).map((r) => r[0]), ["b", "a", "c"]);
+});
+
+test("minimum count keeps the counted denominator, unlike token filters", () => {
+  const text = "alpha alpha beta";
+  const threshold = analyze(text, { minCount: 2 }).words;
+  assert.equal(threshold.total, 3);
+  assert.equal(threshold.unique, 2);
+  assert.deepEqual(rows(threshold), [["alpha", 2, 66.7]]);
+  assert.equal(toCsv(threshold.rows), "item,count,percent\nalpha,2,66.7\n");
+
+  const stopwords = analyze(text, {
+    minCount: 2, stopwordsOn: true, stopwordWords: new Set(["beta"]),
+  }).words;
+  const length = analyze(text, { minCount: 2, minLength: 5 }).words;
+  const noNumbers = analyze("alpha alpha 12345", {
+    minCount: 2, includeNumbers: false,
+  }).words;
+  for (const table of [stopwords, length, noNumbers]) {
+    assert.equal(table.total, 2);
+    assert.equal(table.unique, 1);
+    assert.deepEqual(rows(table), [["alpha", 2, 100]]);
+  }
+});
+
+test("Unicode 16 C+S keeps F-only İ and uses the simple mapping for ẞ", () => {
+  assert.equal(foldText("İ"), "İ"); // C+F would expand to i + U+0307
+  assert.equal(foldText("ẞ"), "ß"); // C+F would expand to ss
+  const result = analyze("ẞ ß SS İ i", {});
+  assert.deepEqual(result.words.rows.map(({ key, count }) => [key, count]), [
+    ["ß", 2], ["ss", 1], ["İ", 1], ["i", 1],
+  ]);
 });
 
 test("CSV: header, one-decimal percent, apostrophe unquoted, final LF", () => {

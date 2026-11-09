@@ -13,25 +13,32 @@ reproducible by hand.
 
 ## 規則摘要 · Rules in brief
 
-- 詞彙比對用 Unicode 簡單摺疊（CaseFolding.txt 16.0.0 的 C 與 F
+- 詞彙比對用 Unicode 簡單摺疊（CaseFolding.txt 16.0.0 的 C 與 S
   條目，vendored 為資料檔，來源與雜湊在 `PROVENANCE.md`）：Σ 與 ς
   都摺成 σ，轉小寫做不到這一點。顯示形式取最常見的原始寫法。
-- Word matching uses Unicode simple case folding (the C and F
+- Word matching uses Unicode simple case folding (the C and S
   entries of CaseFolding.txt 16.0.0, vendored as data; source and
   hashes in `PROVENANCE.md`): Σ and ς both fold to σ, which
   lowercasing cannot reproduce. Display forms are the most frequent
   original casings.
 - 中文不做斷詞：逐字與雙字元組取代分詞，標點斷段；字元表不做
   Unicode 正規化。停用詞（英文＋中文字元，資料檔出貨、可在頁面
-  編輯）在計總數前排除，總數是篩選後總數。
+  編輯）在計總數前排除。詞彙表也會先套用純數字詞與最短詞長設定。
 - Chinese is not segmented: characters and bigrams stand in for
   word segmentation, punctuation ends runs, and the Characters
   table does not normalise. Stopwords (English + Chinese
-  characters, shipped as data, editable in the page) apply before
-  totals, so totals are after filters.
-- CSV 永遠匯出完整篩選表；輸入上限 200,000 字元，超過拒絕。
-- CSV always exports the full filtered table; input is capped at
-  200,000 characters and refused beyond it.
+  characters, shipped as data, editable in the page) apply before counting.
+  The Words table also applies the pure-number and minimum word length settings
+  before counting.
+- 最低出現次數只篩選結果列，百分比以該表計入的總數為分母。例如
+  `alpha alpha beta` 設最低 2 次，總數為 3，alpha 為 2 次（66.7%）。
+  前 100 列是預設顯示上限，CSV 匯出目前表格中達到次數門檻的所有列。
+  輸入上限為 200,000 字元。
+- Minimum occurrence count filters rows after counting. Percentages use the
+  counted total for the table. For `alpha alpha beta` with a minimum of 2, the
+  total is 3 and alpha appears twice (66.7%). The display shows the top 100 by
+  default. CSV exports every row in the current table that meets the minimum
+  count. Input is capped at 200,000 characters.
 
 ## 本地開發 · Local development
 
@@ -47,6 +54,11 @@ generated at authoring time by `scripts/fetch-casefolding.mjs` and
 never fetched at runtime or in tests.
 
 ## 規格 · Specification
+
+本次維護適用 [規格勘誤](ERRATA.md)。原候選的狀態與驗證紀錄屬歷史證據。
+
+See the [specification errata](ERRATA.md) for the maintenance decisions.
+The original candidate's status and verification files record its historical evidence.
 
 實作依 `KYStr/glossquote-labs-home` 的
 `docs/specs/word-frequency/SPEC.md`（修訂後候選）。本 repo 為

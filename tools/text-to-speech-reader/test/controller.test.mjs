@@ -7,12 +7,18 @@ import test from "node:test";
 
 import { createSpeechController } from "../public/js/controller.mjs";
 
-function makeRig(settings = { voice: { name: "Fake", lang: "en-US", localService: true }, rate: 1, pitch: 1 }) {
+const LOCAL = { voiceURI: "fake-local", name: "Fake", lang: "en-US", localService: true };
+const OTHER = { voiceURI: "fake-other", name: "Other", lang: "zh-TW", localService: true };
+const REMOTE = { ...LOCAL, localService: false, default: true };
+
+function makeRig(settings = { voice: LOCAL, rate: 1, pitch: 1 }) {
   const calls = { speak: [], cancel: 0, pause: 0, resume: 0 };
-  const events = { states: [], progress: [], errors: [] };
+  const events = { states: [], progress: [], errors: [], voiceUnavailable: 0 };
   let currentSettings = settings;
+  let voices = [LOCAL, OTHER];
   const controller = createSpeechController({
     synth: {
+      getVoices: () => voices,
       speak: (utterance) => calls.speak.push(utterance),
       cancel: () => { calls.cancel += 1; },
       pause: () => { calls.pause += 1; },
@@ -26,10 +32,12 @@ function makeRig(settings = { voice: { name: "Fake", lang: "en-US", localService
     onStateChange: (state) => events.states.push(state),
     onProgress: (progress) => events.progress.push(progress),
     onError: (name) => events.errors.push(name),
+    onLocalVoiceUnavailable: () => { events.voiceUnavailable += 1; },
   });
   return {
     calls, events, controller,
     setSettings: (next) => { currentSettings = next; },
+    setVoices: (next) => { voices = next; },
     lastProgress: () => events.progress[events.progress.length - 1],
   };
 }
@@ -67,7 +75,7 @@ test("rate changes mid-playback apply from the next chunk (snapshot)", () => {
   rig.controller.load(THREE, 3);
   rig.controller.play(0);
   assert.equal(rig.calls.speak[0].rate, 1);
-  rig.setSettings({ voice: { name: "Other", lang: "zh-TW", localService: false }, rate: 1.6, pitch: 0.5 });
+  rig.setSettings({ voice: OTHER, rate: 1.6, pitch: 0.5 });
   rig.calls.speak[0].onend();
   assert.equal(rig.calls.speak[1].rate, 1.6);
   assert.equal(rig.calls.speak[1].pitch, 0.5);
@@ -152,4 +160,85 @@ test("play with no playlist is refused without touching the engine", () => {
   assert.equal(rig.controller.play(0), false);
   assert.equal(rig.calls.speak.length, 0);
   assert.equal(rig.calls.cancel, 0);
+});
+
+test("play refuses remote, unconfirmed, missing, null, and unenumerated choices", () => {
+  const unconfirmed = { ...LOCAL, localService: "true" };
+  for (const [selection, listed] of [
+    [REMOTE, [REMOTE]],
+    [unconfirmed, [unconfirmed]],
+    [LOCAL, [REMOTE]],
+    [LOCAL, [OTHER]],
+    [LOCAL, []],
+    [LOCAL, null],
+    [null, [LOCAL]],
+  ]) {
+    const rig = makeRig({ voice: selection, rate: 1, pitch: 1 });
+    rig.setVoices(listed);
+    rig.controller.load(THREE, 3);
+    assert.equal(rig.controller.play(), false);
+    assert.equal(rig.controller.state, "idle");
+    assert.equal(rig.events.voiceUnavailable, 1);
+    assert.equal(rig.calls.speak.length, 0);
+  }
+});
+
+test("enqueue uses the fresh local object for the selected URI on every chunk", () => {
+  const rig = makeRig();
+  const fresh = { ...LOCAL };
+  rig.setVoices([fresh]);
+  rig.controller.load(THREE, 3);
+  assert.equal(rig.controller.play(), true);
+  assert.equal(rig.calls.speak[0].voice, fresh);
+
+  const newer = { ...LOCAL };
+  rig.setVoices([newer]);
+  rig.calls.speak[0].onend();
+  assert.equal(rig.calls.speak[1].voice, newer);
+  assert.equal(rig.lastProgress().sentence, 2);
+
+  rig.setVoices([REMOTE]);
+  rig.calls.speak[1].onend();
+  assert.equal(rig.calls.speak.length, 2);
+  assert.equal(rig.controller.state, "idle");
+  assert.equal(rig.lastProgress().percent, 0);
+  assert.equal(rig.events.voiceUnavailable, 1);
+});
+
+test("resume checks the latest selected and active voice before releasing the queue", () => {
+  for (const listed of [[], [REMOTE, OTHER], [LOCAL]]) {
+    const rig = makeRig();
+    rig.controller.load(THREE, 3);
+    rig.controller.play();
+    const stale = rig.calls.speak[0];
+    rig.controller.pause();
+    rig.setSettings({ voice: OTHER, rate: 1, pitch: 1 });
+    rig.setVoices(listed);
+    rig.controller.resume();
+    assert.equal(rig.calls.resume, 0);
+    assert.equal(rig.controller.state, "idle");
+    assert.equal(rig.events.voiceUnavailable, 1);
+    stale.onend();
+    stale.onerror({ error: "canceled" });
+    assert.equal(rig.calls.speak.length, 1);
+    assert.deepEqual(rig.events.errors, []);
+  }
+});
+
+test("checking a changed voice list stops playback and a restored local voice can play", () => {
+  const rig = makeRig();
+  const initial = { ...LOCAL };
+  rig.setVoices([initial]);
+  rig.controller.load(THREE, 3);
+  rig.controller.play();
+  initial.localService = false;
+  assert.equal(rig.controller.validateVoices(), false);
+  assert.equal(rig.controller.state, "idle");
+  assert.equal(rig.calls.cancel, 2);
+  assert.equal(rig.events.voiceUnavailable, 1);
+
+  const restored = { ...LOCAL };
+  rig.setVoices([restored]);
+  assert.equal(rig.controller.play(), true);
+  assert.equal(rig.calls.speak[1].voice, restored);
 });

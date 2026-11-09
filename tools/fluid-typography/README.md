@@ -13,7 +13,7 @@ npm test
 npm run check
 npm run build
 ```
-Build copies index.html, style.css and four src modules to dist and writes BUILD-MANIFEST.json outside dist. Serve dist via the environment's already-authorized ordinary static preview. It uses relative assets and no external service. Local .openai/hosting.json only names dist; it contains no Site ID and does not authorize site creation/deployment. No custom server or native/DevTools workaround is required or permitted by this delivery.
+Build copies the Traditional Chinese and English pages, shared stylesheet and four source modules to dist and writes BUILD-MANIFEST.json outside dist. Both pages have localized HTML labels, metadata and relative asset paths. Serve dist via the environment's already-authorized ordinary static preview. Local .openai/hosting.json names dist and carries no Site ID.
 No bundled framework, webfont, image, analytics, third-party script or runtime package.
 
 ## Use
@@ -30,6 +30,6 @@ Read AUTHOR-CHECK.md for A01–22 coverage and exact NOT_RUN facets. Fifteen aut
 Source arithmetic does not prove native CSS precision, accessibility, runtime privacy or product quality. Existing ordinary UI evidence is author evidence; a nonauthor must evaluate this candidate. Source availability, independent acceptance and deployment are separate states, recorded outside this source document.
 
 ## Recovery
-No storage or URL state is implemented. Reset/pagehide/pageshow clear ephemeral app state; actual BFCache behavior still requires recorded observation. Browser/OS cache and forensic erasure are not promised.
+The URL identifies the language. The app keeps calculation state in memory during an ordinary language switch and same-document back or forward navigation. Reloading, opening the other language in a new tab, Reset and page lifecycle resets start a fresh calculation. Actual browser history and BFCache behavior still require recorded observation.
 To discard this candidate, stop its authorized preview and use the frozen source snapshot manifest; no deployment change is implied. If a later revision is needed, copy the frozen candidate to a new revision, preserve its manifest/history, and recheck affected cases. Never overwrite another owner's work.
 

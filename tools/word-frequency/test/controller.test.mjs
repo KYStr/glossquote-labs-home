@@ -87,7 +87,7 @@ test("defaults: empty state, stopwords prefilled but off, numbers on", () => {
   assert.match(elements.get("stopwords-text").value, /the/);
   assert.match(elements.get("stopwords-text").value, /的/);
   assert.equal(elements.get("opt-stopwords").checked, false);
-  assert.match(elements.get("result-body").textContent, /沒有可計的項目/);
+  assert.match(elements.get("result-body").textContent, /沒有符合篩選條件的結果列/);
 });
 
 test("paste computes after debounce; tabs switch tables; totals update", () => {
@@ -138,6 +138,31 @@ test("CSV export downloads the full filtered table of the active tab", () => {
   assert.equal(captured.downloads.length, 1);
   assert.equal(captured.downloads[0].filename, "frequency.csv");
   assert.equal(captured.downloads[0].text, "item,count,percent\ndon't,3,100.0\n");
+});
+
+test("the top 100 only caps display and CSV still obeys the count threshold", () => {
+  const { elements, captured, flushTimers } = makeApp();
+  const eligible = Array.from({ length: 101 }, (_, index) => `word${index}`);
+  const input = elements.get("input-text");
+  input.value = [...eligible.flatMap((word) => [word, word]), "singleton"].join(" ");
+  input.dispatch("input");
+  flushTimers();
+  const minCount = elements.get("opt-mincount");
+  minCount.value = "2";
+  minCount.dispatch("change");
+  assert.equal(elements.get("result-body").children.length, 100);
+  assert.match(elements.get("totals-line").textContent, /總數 203 · 不重複 102 項/);
+  assert.match(elements.get("rows-note").textContent, /100 \/ 101/);
+  elements.get("export-csv").click();
+  const expected = ["item,count,percent", ...eligible.map((word) => `${word},2,1.0`), ""].join("\n");
+  assert.equal(captured.downloads[0].text, expected);
+
+  const showAll = elements.get("opt-showall");
+  showAll.checked = true;
+  showAll.dispatch("change");
+  assert.equal(elements.get("result-body").children.length, 101);
+  elements.get("export-csv").click();
+  assert.equal(captured.downloads[1].text, expected);
 });
 
 test("over-cap input is refused with the count shown", () => {

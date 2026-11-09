@@ -1,16 +1,18 @@
 # 文字朗讀 · Text-to-Speech Reader
 
-把貼上的文字用瀏覽器提供的聲音朗讀出來的工具：逐句分段、逐句標示，播放／
-暫停／繼續／停止齊全，可點任一句從該句開始，也可調語速與音高。文字只留在
-分頁記憶體——不儲存、不上傳；唯一的例外是使用者自己選的「網路聲音」，頁面
-在選到時會先明示。零 runtime 依賴。
+用瀏覽器標示為本機的聲音朗讀文字。頁面支援逐句標示、暫停、繼續、停止，
+也可選一句開始朗讀，並調整語速及音高。頁面不儲存或上傳文字。
+零執行階段依賴。
 
-A reader that speaks pasted text with the voices your browser offers:
-rule-based sentence segmentation and highlighting, play / pause / resume /
-stop, play-from-any-sentence, and rate and pitch controls. Text lives only
-in the tab's memory — never stored, never uploaded; the single exception is
-a network voice you pick yourself, which the page discloses the moment you
-pick it. Zero runtime dependencies.
+A reader that speaks pasted text with voices the browser identifies as local.
+It segments and highlights sentences, supports pausing, resuming and stopping,
+and can start from a chosen sentence. Rate and pitch are adjustable. The page
+does not store or upload text. Zero runtime dependencies.
+
+本次維護的聲音規則見 [規格勘誤](ERRATA.md)。原候選的狀態與驗證紀錄屬歷史證據。
+
+See the [specification errata](ERRATA.md) for the voice policy.
+The original candidate's status and verification files record its historical evidence.
 
 ## 功能 · Features
 
@@ -43,13 +45,15 @@ pick it. Zero runtime dependencies.
   Progress: sentence k of N and a character percentage both derive from
   the chunk list (percentage rounds down), never from boundary events, so
   progress is identical across browsers for the same text
-- 聲音清單：名稱、語言標籤與本機／網路標籤並列；預設先選與介面語言
-  相符的聲音，其次瀏覽器預設，其次第一個；清單晚到（voiceschanged）
-  與 1 秒備援重查都處理
-  Voices: name, language tag and a local/network label side by side; the
-  default is the first voice matching the UI language, else the browser
-  default, else the first; late lists (voiceschanged) and a 1-second
-  fallback re-poll are both handled
+- 聲音清單僅列出瀏覽器標示為本機的聲音，並顯示名稱和語言。初次選擇
+  優先取介面語言相符的本機聲音，其次取第一個本機聲音。朗讀時若所用或所選
+  聲音失去資格，會停止並提示。清單會回應 voiceschanged 事件，空清單會在
+  1 秒後再查一次。
+  The list shows each browser-reported local voice with its name and language.
+  The initial selection prefers a local voice matching the interface language,
+  then the first local voice. If the active or selected voice becomes unavailable
+  during playback, the reader stops and explains why. The list updates on
+  voiceschanged and an empty list is checked again after one second.
 - 誠實的界線：本工具不能匯出音檔（平台 API 無法擷取自己的語音輸出，
   頁面明說，不做假按鈕）；暫停在某些平台聲音上可能被忽略，頁面在
   使用須知中明說
@@ -70,14 +74,15 @@ npm run build  # copy public/ to dist/ byte-identically (preview only; productio
 
 文字只以文字節點呈現（句子清單逐一 createElement 與 textContent），貼上的
 標籤不存在任何 innerHTML 路徑；不寫入 URL、標題、任何儲存或日誌。開啟的
-.txt 檔案只在本機以 UTF-8 嚴格解碼（解碼失敗是具名錯誤）。工具本身不發出
-任何網路請求；只有使用者選定的網路聲音會把文字送給其提供者，且送出前已
-在頁面揭露。
+.txt 檔案只在本機以 UTF-8 嚴格解碼（解碼失敗是具名錯誤）。頁面只將文字
+交給瀏覽器當下列為本機的聲音。每段送出前及繼續播放前都會重新查詢。
+本機標籤來自瀏覽器，裝置語音引擎的網路行為尚未實測。
 
 Text renders only as text nodes (the sentence list is built element by
 element with textContent); pasted markup has no innerHTML path anywhere.
 Nothing is written to the URL, the title, any storage, or any log. A picked
 .txt file is decoded locally as strict UTF-8 (a decode failure is a named
-error). The tool itself makes no network requests; only a network voice the
-user selected sends text to its provider, disclosed on the page before it
-speaks.
+error). The page passes text to the browser speech engine only with a currently
+listed voice whose `localService` is exactly `true`. It rechecks before each
+chunk and before resume. The local label comes from the browser. The device
+speech engine's network behavior has yet to be verified.
