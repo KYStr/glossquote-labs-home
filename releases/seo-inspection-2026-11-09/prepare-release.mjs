@@ -14,7 +14,7 @@ function overlay(html,{origin,en}){
  html=html.replace(/<meta\b[^>]*(?:name=["']robots["']|property=["']og:url["'])[^>]*>/gi,'');
  html=html.replace(/<link\b[^>]*(?:rel=["']canonical["']|hreflang=["'][^"']+["'])[^>]*>/gi,'');
  html=html.replace(/<a\b([^>]*?)href=(["'])([^"']*)\2([^>]*)>([\s\S]*?)<\/a>/gi,(all,a,q,href,b,label)=>{
-   if(/首頁|home|GlossQuote[-\s]*Labs/i.test(label)&&(/^(\.\.\/)+(?:en\/)?(?:index\.html)?$/.test(href)||/^https:\/\/glossquote\.com\/?(?:en\/?)?(?:index\.html)?$/.test(href)))return `<a${a}href="https://glossquote.com${en?'/en/index.html':'/index.html'}"${b}>${label}</a>`;
+   if((/首頁|home|GlossQuote[-\s]*Labs/i.test(label)&&/^(\.\.\/)+(?:en\/)?(?:index\.html)?$/.test(href))||/^https:\/\/glossquote\.com\/?(?:en\/?)?(?:index\.html)?$/.test(href))return `<a${a}href="https://glossquote.com${en?'/en/index.html':'/index.html'}"${b}>${label}</a>`;
    return all;
  });
  const head=`\n<meta name="robots" content="noindex, follow">\n<link rel="canonical" href="${origin+page}">\n<link rel="alternate" hreflang="zh-Hant" href="${origin}/index.html">\n<link rel="alternate" hreflang="en" href="${origin}/en/index.html">\n<link rel="alternate" hreflang="x-default" href="${origin}/index.html">\n<meta property="og:url" content="${origin+page}">\n<link rel="stylesheet" href="/inspection-notice.css">\n`;
@@ -49,7 +49,15 @@ export function prepare(candidates){
    if(f.path.split('/').some(s=>s.startsWith('_'))||f.path==='robots.txt'||f.path==='sitemap.xml')continue;
    assert(/\.(html|js|mjs|css|json|svg|png|jpe?g|webp|gif|ico|txt|xml|wasm|woff2?|ttf|map|mp3|wav|ogg|mp4|webm)$/i.test(f.path),'Unexpected static output '+f.path);
    let bytes=fs.readFileSync(path.join(c.outputPath,f.path));
-   if(f.path==='index.html'||f.path==='en/index.html')bytes=Buffer.from(overlay(bytes.toString('utf8'),{origin,en:f.path.startsWith('en/')}));
+   if(f.path==='index.html'||f.path==='en/index.html'){
+    let html=bytes.toString('utf8');const en=f.path.startsWith('en/');
+    const descriptions={
+     'option-matrix':en?'Create combinations of options and conditions in your browser to organize scenarios for testing or comparison.':'列出選項與條件，在瀏覽器中產生所有組合，整理需要測試或比較的情境。',
+     'elliptical-corners':en?'Adjust horizontal and vertical corner radii, preview the shape, and copy CSS border-radius values.':'調整各角的水平與垂直圓角，預覽形狀並取得 CSS border-radius。'
+    };
+    if(!/<meta\b[^>]*name=["']description["']/i.test(html)&&descriptions[c.slug])html=html.replace(/<\/head>/i,'<meta name="description" content="'+esc(descriptions[c.slug])+'"></head>');
+    bytes=Buffer.from(overlay(html,{origin,en}));
+   }
    write(path.join(dest,f.path),bytes);
   }
   for(const p of ['index.html','en/index.html'])assert(fs.existsSync(path.join(dest,p)),c.slug+' missing '+p);
@@ -59,7 +67,8 @@ export function prepare(candidates){
   const source={repository:c.repository,commit:c.commit,path:c.sourceRoot,pullRequest:c.pullRequest||null};
   write(path.join(dest,'release.json'),JSON.stringify({slug:c.slug,source,kind:'public-inspection',functionalAcceptance:'PENDING',indexing:'noindex, follow',builtAt:new Date().toISOString()},null,2)+'\n');
   const hashes=new Set();for(const f of list(dest).filter(f=>f.path.endsWith('.html'))){const html=fs.readFileSync(path.join(dest,f.path),'utf8');for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(!/\bsrc\s*=/.test(m[1])&&m[2].trim())hashes.add("'sha256-"+createHash('sha256').update(m[2]).digest('base64')+"'");}}
-  const csp=`default-src 'self'; script-src 'self' ${[...hashes].join(' ')}; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;
+  let csp=`default-src 'self'; script-src 'self' ${[...hashes].join(' ')}; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;
+  if(c.slug==='markdown-preview')csp=csp.replace("img-src 'self' data: blob:","img-src 'self' data: https: http:");
   const headerRules=[];const headerFile=path.join(c.outputPath,'_headers');
   if(fs.existsSync(headerFile)){
    let rule=null;
