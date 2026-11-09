@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cash Float Tray | Gloss Tools</title>
+<meta name="description" content="Split counted denominations into a till float and cash to remove, with any shortfall shown.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p class="topbar"><a href="../../../en/">← Back to the GlossQuote Labs home page</a> · <a href="../index.html" hreflang="zh-Hant">繁體中文</a> <span class="reset-note">Leaving this page clears your input</span></p>
+  <h1>Cash Float Tray</h1>
+  <p>At close of trade, keep a target amount of cash in the tray from the denominations you actually counted, and remove the rest by piece count. Use one smallest unit for every amount (for example, all in dollars — do not mix in cents). The calculation happens only on this page; nothing is uploaded or stored.</p>
+</header>
+<main>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Target and counted denominations</h2>
+      <form id="tray-form" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="target">Target float (smallest unit)</label>
+          <input id="target" name="target" type="text" inputmode="numeric" maxlength="12" aria-describedby="target-hint target-error">
+          <p class="hint" id="target-hint">For example, enter 1000 to keep 1000. 0 means remove everything.</p>
+          <p class="error" id="target-error"></p>
+        </div>
+
+        <fieldset>
+          <legend>Counted denominations (1–8 rows)</legend>
+          <ol class="denoms" id="denoms"></ol>
+          <p><button type="button" id="add-row">＋ Add a denomination row</button></p>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submit">Split the cash tray</button>
+          <button type="button" id="cancel" hidden>Cancel</button>
+          <button type="button" id="load-example">Load example</button>
+          <button type="button" id="clear-draft">Clear draft</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Kept and removed</h2>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="result" hidden>
+        <div class="summary">
+          <dl>
+            <dt>Tray total</dt><dd id="sum-total"></dd>
+            <dt>Kept amount</dt><dd id="sum-kept"></dd>
+            <dt>Removed amount</dt><dd id="sum-removed"></dd>
+            <dt>Shortfall</dt><dd id="sum-shortfall"></dd>
+          </dl>
+        </div>
+        <p id="shortfall-note" class="shortfall" hidden></p>
+        <p id="exact-note" class="exact" hidden></p>
+        <table id="result-table">
+          <thead>
+            <tr><th scope="col">Denomination</th><th scope="col">Kept pieces</th><th scope="col">Removed pieces</th></tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="result-empty">No result yet. Enter the target and the denominations, then press “Split the cash tray”.</p>
+    </section>
+  </div>
+</main>
+<footer>
+  <p>Keeping rule: first find the reachable amount closest to, but not above, the target; fewest pieces wins ties; then the kept counts of higher denominations decide. All amounts stay integers — nothing is rounded.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

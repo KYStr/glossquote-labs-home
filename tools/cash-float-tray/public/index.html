@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>收銀盤留款清點｜Gloss Tools</title>
+<meta name="description" content="依實點面額與指定留存額，分出留盤與移出件數，查留存差額。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header>
+  <p class="topbar"><a href="../../">← 回 GlossQuote Labs 首頁</a> · <a href="./en/index.html" hreflang="en">English</a> <span class="reset-note">離開本頁會重設輸入</span></p>
+  <h1>收銀盤留款清點</h1>
+  <p>收攤時依各面額的實點件數，留出指定的現金額，其餘照件數移出。全部金額請用同一個最小單位（例如都用「元」，不要混入「角」）。計算只在這個頁面進行，不上傳、不儲存。</p>
+</header>
+<main>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">目標與實點面額</h2>
+      <form id="tray-form" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="target">目標留款（最小單位）</label>
+          <input id="target" name="target" type="text" inputmode="numeric" maxlength="12" aria-describedby="target-hint target-error">
+          <p class="hint" id="target-hint">例如目標留 1000 元就填 1000。0 表示全部移出。</p>
+          <p class="error" id="target-error"></p>
+        </div>
+
+        <fieldset>
+          <legend>實點面額（1–8 列）</legend>
+          <ol class="denoms" id="denoms"></ol>
+          <p><button type="button" id="add-row">＋ 新增一列面額</button></p>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submit">算出留盤與移出</button>
+          <button type="button" id="cancel" hidden>取消</button>
+          <button type="button" id="load-example">載入範例</button>
+          <button type="button" id="clear-draft">清除草稿</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">留盤與移出</h2>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="result" hidden>
+        <div class="summary">
+          <dl>
+            <dt>盤內總額</dt><dd id="sum-total"></dd>
+            <dt>留盤金額</dt><dd id="sum-kept"></dd>
+            <dt>移出金額</dt><dd id="sum-removed"></dd>
+            <dt>差額</dt><dd id="sum-shortfall"></dd>
+          </dl>
+        </div>
+        <p id="shortfall-note" class="shortfall" hidden></p>
+        <p id="exact-note" class="exact" hidden></p>
+        <table id="result-table">
+          <thead>
+            <tr><th scope="col">面額</th><th scope="col">留盤件數</th><th scope="col">移出件數</th></tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="result-empty">還沒有結果。填好目標與面額後，按「算出留盤與移出」。</p>
+    </section>
+  </div>
+</main>
+<footer>
+  <p>留盤規則：先找最接近且不高於目標的組合；同額時件數最少；再以高面額的留盤數量決勝。所有金額皆為整數，不四捨五入。</p>
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
