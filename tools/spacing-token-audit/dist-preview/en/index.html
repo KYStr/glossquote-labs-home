@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Spacing Token Audit | Gloss Tools</title>
+<meta name="description" content="Match measured pixel spacing to the nearest design token and check which differences exceed your tolerance.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="../">
+<link rel="alternate" hreflang="en" href="./">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a href="../../en/">Gloss Tools home</a>
+  <a href="../" lang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Design Spacing Token Audit</h1>
+  <p class="lede">Match measured pixel spacing to the nearest design token and check which differences exceed your tolerance. Everything stays on this page; nothing is uploaded or stored.</p>
+  <p class="draft-note">Switching language or leaving the page discards your draft.</p>
+
+  <form id="audit-form" novalidate>
+    <div class="inputs">
+      <div class="field">
+        <label for="tokens">Design tokens and pixels</label>
+        <textarea id="tokens" name="tokens" rows="8" aria-describedby="tokens-hint" spellcheck="false"></textarea>
+        <p class="hint" id="tokens-hint">One row per token: “name, tab, pixels”, 1–64 rows. Example: large⇥12</p>
+      </div>
+      <div class="field">
+        <label for="measurements">Measurement labels and pixels</label>
+        <textarea id="measurements" name="measurements" rows="8" aria-describedby="measurements-hint" spellcheck="false"></textarea>
+        <p class="hint" id="measurements-hint">One row per measurement: “name, tab, pixels”, 1–100 rows. Example: gap⇥10</p>
+      </div>
+      <div class="field tolerance">
+        <label for="tolerance">Tolerance (px)</label>
+        <input id="tolerance" name="tolerance" type="text" inputmode="decimal" value="1" aria-describedby="tolerance-hint" autocomplete="off">
+        <p class="hint" id="tolerance-hint">A number from 0 to 2048 with at most three decimal places. Default 1.</p>
+      </div>
+    </div>
+
+    <details>
+      <summary>Input format</summary>
+      <p>Each row is a name and a pixel value separated by a single tab. A name starts with an ASCII letter and may contain ASCII letters, digits, underscores, and hyphens, up to 32 characters; names must be unique within the same table. Pixels are unsigned decimals from 0 to 2048 with at most three fractional digits — no units, spaces, commas, or exponents. Each table holds at most 8,192 characters.</p>
+      <p>Each measurement is matched to the token with the smallest absolute difference. On a tie, the smaller pixel value wins; if the values are still equal, the earlier-listed token wins. The delta is the measurement minus the token: zero is “Exact”, an absolute value within tolerance is “Within”, otherwise “Outside”.</p>
+      <p>The report is always named <code>spacing-token-audit-report.json</code> and contains the result as compact JSON with keys sorted by UTF-16 code units and one trailing newline.</p>
+    </details>
+
+    <div class="actions">
+      <button type="submit" id="run" class="primary">Match spacing tokens</button>
+      <button type="button" id="example">Load example</button>
+      <button type="button" id="cancel" disabled>Cancel</button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+  </form>
+
+  <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <section id="results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">Matches and out-of-tolerance rows</h2>
+    <p id="summary"></p>
+    <div class="table-wrap" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Measurement</th>
+            <th scope="col">px</th>
+            <th scope="col">Token</th>
+            <th scope="col">Token px</th>
+            <th scope="col">Delta</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+    <nav id="pager" class="pager" aria-label="Result pages" hidden>
+      <button type="button" id="prev">Previous</button>
+      <span id="page-label"></span>
+      <button type="button" id="next">Next</button>
+    </nav>
+    <div class="actions">
+      <button type="button" id="download" class="primary" hidden>Download report</button>
+    </div>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Which token wins a tie?</dt>
+      <dd>It picks the smaller pixel value, then the earlier listed token.</dd>
+      <dt>Does this edit measurements?</dt>
+      <dd>The report shows matches and deviations alongside the original values.</dd>
+    </dl>
+  </section>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
