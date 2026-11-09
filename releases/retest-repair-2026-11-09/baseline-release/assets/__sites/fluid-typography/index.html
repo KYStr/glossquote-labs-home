@@ -1,0 +1,52 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="以兩個 rem 端點計算流動字級 CSS，並預覽字級在不同視窗寬度下的變化。"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>流動字級 · GlossQuote Labs</title>
+
+
+
+<link rel="stylesheet" href="./style.css"><script type="module" src="./src/app.mjs"></script>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://fluid-typography.glossquote.com/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://fluid-typography.glossquote.com/index.html">
+<link rel="alternate" hreflang="en" href="https://fluid-typography.glossquote.com/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://fluid-typography.glossquote.com/index.html">
+<meta property="og:url" content="https://fluid-typography.glossquote.com/index.html">
+<link rel="stylesheet" href="/inspection-notice.css">
+</head><body><aside class="gq-inspection-notice" lang="zh-Hant" aria-label="發布狀態"><p>公開檢查版本・功能驗收尚未完成・暫不開放搜尋索引。</p><nav><a href="https://glossquote.com/index.html">GlossQuote 首頁</a> · <a href="https://review.glossquote.com/index.html">全部待驗工具</a> · <a lang="en" href="/en/index.html">English</a></nav></aside><aside class="gq-inspection-notice" lang="en" aria-label="Release status"><p>Public inspection version · Functional review pending · Search indexing is temporarily disabled.</p><nav><a href="https://glossquote.com/en/index.html">GlossQuote home</a> · <a href="https://review.glossquote.com/en/index.html">All inspection tools</a> · <a lang="zh-Hant" href="/index.html">繁體中文</a></nav></aside>
+<header><a id="labs-home" class="wordmark" href="https://glossquote.com/index.html" aria-label="GlossQuote Labs 首頁">GQ<span>LABS</span><span class="sr-only" data-t="home">GlossQuote Labs 首頁</span></a><a id="language" href="en/" lang="en" hreflang="en">English</a></header>
+<main id="main"><div class="heading"><p class="eyebrow" data-t="eyebrow">GLOSSQUOTE LABS · CSS 小工具</p><h1 data-t="title">流動字級</h1><p class="intro" data-t="intro">一行 CSS，讓字級在兩個端點之間自然成長。</p></div>
+<noscript><p class="notice">此計算器需要 JavaScript。未啟用時不會產生結果。</p></noscript>
+<div class="workspace"><section class="panel settings" aria-labelledby="inputTitle"><div class="section-head"><span class="step">01</span><h2 id="inputTitle" data-t="inputTitle">設定兩端的尺寸</h2></div><p class="muted" data-t="inputHint">以 rem 定義設計端點，不是固定像素斷點。</p>
+<form id="form" novalidate><div class="field-grid" id="numeric-fields">
+<div class="field">
+  <label for="vmin" data-field-label="vmin">最小視窗 (rem)</label>
+  <input id="vmin" name="vmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmin-range vmin-error">
+  <span id="vmin-range" class="range">6–240 rem</span><p id="vmin-error" class="error" hidden></p>
+</div>
+<div class="field">
+  <label for="vmax" data-field-label="vmax">最大視窗 (rem)</label>
+  <input id="vmax" name="vmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="vmax-range vmax-error">
+  <span id="vmax-range" class="range">6–240 rem</span><p id="vmax-error" class="error" hidden></p>
+</div>
+<div class="field">
+  <label for="fmin" data-field-label="fmin">最小字級 (rem)</label>
+  <input id="fmin" name="fmin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmin-range fmin-error">
+  <span id="fmin-range" class="range">0.5–10 rem</span><p id="fmin-error" class="error" hidden></p>
+</div>
+<div class="field">
+  <label for="fmax" data-field-label="fmax">最大字級 (rem)</label>
+  <input id="fmax" name="fmax" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="fmax-range fmax-error">
+  <span id="fmax-range" class="range">0.5–10 rem</span><p id="fmax-error" class="error" hidden></p>
+</div>
+<div class="field">
+  <label for="root" data-field-label="root">參考根字級 (px/rem)</label>
+  <input id="root" name="root" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="root-range root-error root-hint">
+  <span id="root-range" class="range">8–32 px/rem</span><p id="root-error" class="error" hidden></p>
+</div>
+<div class="field">
+  <label for="width" data-field-label="width">模擬視窗寬度 (px)</label>
+  <input id="width" name="width" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="width-range width-error">
+  <span id="width-range" class="range">48–7680 px</span><p id="width-error" class="error" hidden></p>
+</div>
+</div><p id="root-hint" class="muted small" data-t="rootHint">只影響下方像素換算與模擬，不會修改頁面的根字級或 CSS。</p><div class="field"><label for="sample" data-t="sample">試讀文字</label><textarea id="sample" rows="3" aria-describedby="sample-hint sample-error" spellcheck="false"></textarea><p id="sample-hint" class="muted small" data-t="sampleHint">純文字，最多 240 個 Unicode 碼點；內容不會儲存或上傳。</p><p id="sample-error" class="error" hidden></p><span id="sample-count" class="count" aria-hidden="true"></span></div><div class="actions"><button class="primary" id="generate" type="submit" data-t="generate">產生 CSS</button></div></form></section>
+<section class="panel results" aria-labelledby="outputTitle"><div class="section-head"><span class="step">02</span><h2 id="outputTitle" data-t="outputTitle">你的字級規則</h2></div><p id="empty" class="empty" data-t="empty">填好尺寸後，產生第一行 CSS。</p><div id="result-content" hidden><label for="css" data-t="cssLabel">可自行複製的 CSS</label><textarea id="css" rows="4" tabindex="-1" readonly spellcheck="false" aria-describedby="select-hint"></textarea></div><div class="actions"><button id="select" type="button" disabled data-t="select">選取 CSS</button><button id="reset" type="button" data-t="reset">重設</button></div><p id="select-hint" class="muted small" data-t="selectHint">選取後，使用系統的複製快捷鍵。不會自動讀寫剪貼簿。</p><div id="details" hidden><div class="metrics"><div><span data-t="state">目前狀態</span><strong id="state"></strong></div><div><span data-t="font">字級</span><strong id="size"></strong></div></div><p id="root-note" class="muted small"></p><table><caption data-t="design">設計斷點</caption><thead><tr><th scope="col"></th><th scope="col" data-t="viewport">視窗</th><th scope="col" data-t="font">字級</th></tr></thead><tbody id="table-body"></tbody></table><p class="muted small" data-t="roundNote">係數取至 8 位小數。設計斷點不一定等於匯出公式的精確切換位置。</p></div></section></div>
+<section class="panel preview-section" aria-labelledby="previewTitle"><div class="section-head"><span class="step">03</span><h2 id="previewTitle" data-t="previewTitle">試讀與換算</h2></div><p class="muted" data-t="previewHint">數學模擬，不是此面板的原生 vw 排版。真實 CSS 取決於瀏覽器視窗、根字級與縮放。</p><div class="preview-frame"><p id="preview"></p></div></section>
+<details class="help"><summary data-t="helpTitle">怎麼使用？</summary><p data-t="help">在樣式表加入產生的 font-size 宣告。瀏覽器會依實際視窗與根字級計算，再限制在上下限之間。參考像素只是換算，不是所有裝置上的保證。</p></details><p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p></main><footer data-t="privacy">只在此頁計算 · 無帳號、追蹤、儲存或下載</footer></body></html>

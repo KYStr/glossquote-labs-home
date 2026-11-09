@@ -1,0 +1,7 @@
+# External retest functional fixes
+
+Source aa906abec8500d8160d0732c38d5cfc1885f6fd8. Update text-to-speech-reader Unicode White_Space sentence separators; retain CR/LF explicit boundaries, trim/chunk rules, lowercase negatives, abbreviation/decimal/length and local voices. Fluid Typography duplicate inspection-notice language anchors removed from both locales; original #language/app/state bytes and native modified-click behavior untouched, no storage or query state introduced.
+
+Rebuild uses current frozen140-site release at ../remaining-release-2026-11-09 and its exact batch-plan manifest; source/dist TTS core must match. build-release.mjs always calls removeFluidLanguageLinks before output, preventing reinsertion on this pipeline. Published overlay module is in this folder; local build script imports it from implementation/ (adapt location only when reproducing); overlay tests include exact baseline fixtures. Node24 test/check/build for TTS; four overlay and seven router tests, primary28 independent Unicode cases+4 controls.
+
+Only seven deployed files change;138 unrelated tool sites, all routing/CSP/headers, worker/config and noindex retained. External report referenced old101 inventory, which must not overwrite current140. Prior scoped SEC-01/02 and SEO-02 external evidence retained; sharing-image SEO-01 and extra media307 SEO-03 remain low-priority optimizations. Newly fixed findings await external retest, not blanket external tool acceptance.
