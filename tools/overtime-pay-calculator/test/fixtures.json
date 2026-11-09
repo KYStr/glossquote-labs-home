@@ -1,1 +1,1343 @@
-{"cases":[{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":3,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":650,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],"hours":3,"payTwd":650}}},"id":"weekday-basic","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"3"},"kind":"core","purpose":"平日延時基本分段（2 小時 ×4/3 ＋ 1 小時 ×5/3）"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":4,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":900,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":2,"multiplier":"5/3"}],"hours":4,"payTwd":900}}},"id":"weekday-max","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"4"},"kind":"core","purpose":"平日延時上限 4 小時"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":5,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":3,"multiplier":"5/3"}],"hours":5,"payTwd":1150},"totalPayTwd":1150,"weekday":{"bands":[],"hours":0,"payTwd":0}}},"id":"rest-day-mid","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"5","weekdayOtHours":"0"},"kind":"core","purpose":"休息日 5 小時核實計算（×4/3、×5/3）"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":10,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":6,"multiplier":"5/3"},{"hours":2,"multiplier":"8/3"}],"hours":10,"payTwd":2700},"totalPayTwd":2700,"weekday":{"bands":[],"hours":0,"payTwd":0}}},"id":"rest-day-long","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"10","weekdayOtHours":"0"},"kind":"core","purpose":"休息日 10 小時含第 9–10 小時 ×8/3"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":0,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":true,"extraHours":0,"hours":8,"payTwd":1200},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":1200,"weekday":{"bands":[],"hours":0,"payTwd":0}}},"id":"holiday-full-day","input":{"holidayHours":"8","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"0"},"kind":"core","purpose":"休假日 8 小時：再加發一日工資、不計入延時"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":3,"dailyWageTwd":"1200.00","holiday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],"dayPayApplied":true,"extraHours":3,"hours":11,"payTwd":1850},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":1850,"weekday":{"bands":[],"hours":0,"payTwd":0}}},"id":"holiday-overtime","input":{"holidayHours":"11","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"0"},"kind":"core","purpose":"休假日 11 小時：一日工資 ＋ 逾 8 小時 ×4/3、×5/3"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":1,"dailyWageTwd":"1450.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"181.25","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":242,"weekday":{"bands":[{"hours":1,"multiplier":"4/3"}],"hours":1,"payTwd":242}}},"id":"rounding-half-up","input":{"holidayHours":"0","monthlySalary":"43500","restDayHours":"0","weekdayOtHours":"1"},"kind":"core","purpose":"時薪 181.25 × 4/3 ＝ 241.66… 捨入為 242"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":8,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":true,"extraHours":0,"hours":8,"payTwd":1200},"hourlyRateTwd":"150.00","restDay":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":3,"multiplier":"5/3"}],"hours":5,"payTwd":1150},"totalPayTwd":3000,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],"hours":3,"payTwd":650}}},"id":"combined-month","input":{"holidayHours":"8","monthlySalary":"36000","restDayHours":"5","weekdayOtHours":"3"},"kind":"core","purpose":"三類併計，合計為三個已捨入小計之和"},{"expected":{"ok":true,"result":{"capNote":false,"countedOtHours":2.5,"dailyWageTwd":"1000.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"125.00","restDay":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":0.5,"multiplier":"5/3"}],"hours":2.5,"payTwd":438},"totalPayTwd":438,"weekday":{"bands":[],"hours":0,"payTwd":0}}},"id":"rest-half-hour-rounding","input":{"holidayHours":"0","monthlySalary":"30000","restDayHours":"2.5","weekdayOtHours":"0"},"kind":"core","purpose":"0.5 小時粒度與 437.5 捨入為 438"},{"expected":{"error":{"code":"RANGE","field":"weekdayOtHours","row":null},"ok":false},"id":"weekday-over-cap","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"4.5"},"kind":"core","purpose":"平日延時 4.5 小時 → RANGE"},{"expected":{"error":{"code":"RANGE","field":"monthlySalary","row":null},"ok":false},"id":"salary-zero","input":{"holidayHours":"0","monthlySalary":"0","restDayHours":"0","weekdayOtHours":"0"},"kind":"core","purpose":"月薪 0 → RANGE"},{"expected":{"error":{"code":"HOURS_STEP","field":"restDayHours","row":null},"ok":false},"id":"step-violation","input":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"2.3","weekdayOtHours":"0"},"kind":"core","purpose":"時數 2.3（非 0.5 粒度）→ HOURS_STEP"},{"expected":{"error":{"code":"INTEGER_FORMAT","field":"monthlySalary","row":null},"ok":false},"id":"salary-format","input":{"holidayHours":"0","monthlySalary":"36,000","restDayHours":"0","weekdayOtHours":"0"},"kind":"core","purpose":"月薪含千分位逗號 → INTEGER_FORMAT"},{"expected":{"afterEdit":{"reportAvailable":false,"state":"dirty"},"afterRerun":{"error":{"code":"RANGE","field":"weekdayOtHours","row":null},"reportAvailable":false,"state":"error"},"afterRun":{"reportAvailable":true,"state":"success"}},"id":"state-dirty-error","input":{"edit":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"4.5"},"initial":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"3"}},"kind":"controller","purpose":"先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"},{"expected":{"afterCancel":{"draft":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"3"},"reportAvailable":false,"state":"cancelled"},"afterLateResult":{"reportAvailable":false,"state":"cancelled"},"afterReset":{"draft":{"holidayHours":"0","monthlySalary":"","restDayHours":"0","weekdayOtHours":"0"},"reportAvailable":false,"state":"empty"},"whilePending":{"reportAvailable":false,"state":"busy"}},"id":"state-cancel-late","input":{"draft":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"3"},"lateResult":{"capNote":false,"countedOtHours":3,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":650,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],"hours":3,"payTwd":650}}},"kind":"controller","purpose":"延遲成功後取消，舊回傳不能復活，重設回預設值。"},{"expected":{"afterNewerResult":{"error":{"code":"RANGE","field":"weekdayOtHours","row":null},"reportAvailable":false,"state":"error"},"afterOlderLateResult":{"error":{"code":"RANGE","field":"weekdayOtHours","row":null},"reportAvailable":false,"state":"error"}},"id":"state-replace-late","input":{"newerDraft":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"4.5"},"olderDraft":{"holidayHours":"0","monthlySalary":"36000","restDayHours":"0","weekdayOtHours":"3"},"olderLateResult":{"capNote":false,"countedOtHours":3,"dailyWageTwd":"1200.00","holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},"totalPayTwd":650,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],"hours":3,"payTwd":650}}},"kind":"controller","purpose":"新工作失敗後收到上一份工作的成功，保留目前錯誤。"}],"productChecks":"NOT_RUN","schemaVersion":1,"slug":"overtime-pay-calculator","specId":"spec-overtime-pay-calculator-20261109"}
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 3,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 650,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 3,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 1,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 650,
+              "dayPayApplied": false,
+              "countedOtHours": 3
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 3,
+              "payTwd": 650
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "weekday-basic",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "3"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "平日延時基本分段（2 小時 ×4/3 ＋ 1 小時 ×5/3）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 4,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 900,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 4,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 2,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 900,
+              "dayPayApplied": false,
+              "countedOtHours": 4
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 4,
+              "payTwd": 900
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "weekday-max",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "4"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "平日延時上限 4 小時"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 5,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 1150,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "restDay",
+              "hours": 5,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 3,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 1150,
+              "dayPayApplied": false,
+              "countedOtHours": 5
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 5,
+              "payTwd": 1150
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "rest-day-mid",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "5"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "休息日 5 小時核實計算（×4/3、×5/3）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 10,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 2700,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "restDay",
+              "hours": 10,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 6,
+                  "multiplier": "5/3"
+                },
+                {
+                  "hours": 2,
+                  "multiplier": "8/3"
+                }
+              ],
+              "payTwd": 2700,
+              "dayPayApplied": false,
+              "countedOtHours": 10
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 10,
+              "payTwd": 2700
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "rest-day-long",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "10"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "休息日 10 小時含第 9–10 小時 ×8/3"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 0,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 1200,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "holiday",
+              "hours": 8,
+              "bands": [],
+              "payTwd": 1200,
+              "dayPayApplied": true,
+              "countedOtHours": 0
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 8,
+              "payTwd": 1200
+            }
+          }
+        }
+      },
+      "id": "holiday-full-day",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "holiday",
+            "hours": "8"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "休假日 8 小時：再加發一日工資、不計入延時"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 3,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 1850,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "holiday",
+              "hours": 11,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 1,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 1850,
+              "dayPayApplied": true,
+              "countedOtHours": 3
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 11,
+              "payTwd": 1850
+            }
+          }
+        }
+      },
+      "id": "holiday-overtime",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "holiday",
+            "hours": "11"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "休假日 11 小時：一日工資 ＋ 逾 8 小時 ×4/3、×5/3"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 1,
+          "dailyWageTwd": "1450.00",
+          "hourlyRateTwd": "181.25",
+          "totalPayTwd": 242,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 242,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 1,
+              "payTwd": 242
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "rounding-half-up",
+      "input": {
+        "monthlySalary": "43500",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "1"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "時薪 181.25 × 4/3 ＝ 241.66… 捨入為 242"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 8,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 3000,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 3,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 1,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 650,
+              "dayPayApplied": false,
+              "countedOtHours": 3
+            },
+            {
+              "date": "2024-02-02",
+              "kind": "restDay",
+              "hours": 5,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 3,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 1150,
+              "dayPayApplied": false,
+              "countedOtHours": 5
+            },
+            {
+              "date": "2024-02-03",
+              "kind": "holiday",
+              "hours": 8,
+              "bands": [],
+              "payTwd": 1200,
+              "dayPayApplied": true,
+              "countedOtHours": 0
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 3,
+              "payTwd": 650
+            },
+            "restDay": {
+              "hours": 5,
+              "payTwd": 1150
+            },
+            "holiday": {
+              "hours": 8,
+              "payTwd": 1200
+            }
+          }
+        }
+      },
+      "id": "combined-month",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "3"
+          },
+          {
+            "date": "2024-02-02",
+            "kind": "restDay",
+            "hours": "5"
+          },
+          {
+            "date": "2024-02-03",
+            "kind": "holiday",
+            "hours": "8"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "三類併計，合計為三個已捨入小計之和"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 2.5,
+          "dailyWageTwd": "1000.00",
+          "hourlyRateTwd": "125.00",
+          "totalPayTwd": 438,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "restDay",
+              "hours": 2.5,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 0.5,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 438,
+              "dayPayApplied": false,
+              "countedOtHours": 2.5
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 2.5,
+              "payTwd": 438
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "id": "rest-half-hour-rounding",
+      "input": {
+        "monthlySalary": "30000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "2.5"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "0.5 小時粒度與 437.5 捨入為 438"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "hours",
+          "row": 0
+        },
+        "ok": false
+      },
+      "id": "weekday-over-cap",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "4.5"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "平日延時 4.5 小時 → RANGE"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "monthlySalary",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "salary-zero",
+      "input": {
+        "monthlySalary": "0",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "0"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "月薪 0 → RANGE"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "HOURS_STEP",
+          "field": "hours",
+          "row": 0
+        },
+        "ok": false
+      },
+      "id": "step-violation",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "2.3"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "時數 2.3（非 0.5 粒度）→ HOURS_STEP"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "monthlySalary",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "salary-format",
+      "input": {
+        "monthlySalary": "36,000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "0"
+          }
+        ]
+      },
+      "kind": "core",
+      "purpose": "月薪含千分位逗號 → INTEGER_FORMAT"
+    },
+    {
+      "id": "weekday-three-dates",
+      "kind": "core",
+      "purpose": "每日期各套首段，200 元 × 3 天",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "1"
+          },
+          {
+            "date": "2024-02-02",
+            "kind": "weekday",
+            "hours": "1"
+          },
+          {
+            "date": "2024-02-03",
+            "kind": "weekday",
+            "hours": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "150.00",
+          "dailyWageTwd": "1200.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 200,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            },
+            {
+              "date": "2024-02-02",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 200,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            },
+            {
+              "date": "2024-02-03",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 200,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 3,
+              "payTwd": 600
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          },
+          "totalPayTwd": 600,
+          "countedOtHours": 3,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "id": "holiday-two-dates",
+      "kind": "core",
+      "purpose": "兩個符合條件的未調移國定假日，各加一日工資",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "holiday",
+            "hours": "1"
+          },
+          {
+            "date": "2024-02-02",
+            "kind": "holiday",
+            "hours": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "150.00",
+          "dailyWageTwd": "1200.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "holiday",
+              "hours": 1,
+              "bands": [],
+              "payTwd": 1200,
+              "dayPayApplied": true,
+              "countedOtHours": 0
+            },
+            {
+              "date": "2024-02-02",
+              "kind": "holiday",
+              "hours": 1,
+              "bands": [],
+              "payTwd": 1200,
+              "dayPayApplied": true,
+              "countedOtHours": 0
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 2,
+              "payTwd": 2400
+            }
+          },
+          "totalPayTwd": 2400,
+          "countedOtHours": 0,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "id": "holiday-one-date",
+      "kind": "core",
+      "purpose": "同一天出勤 2 小時只加發一日工資",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "holiday",
+            "hours": "2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "150.00",
+          "dailyWageTwd": "1200.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "holiday",
+              "hours": 2,
+              "bands": [],
+              "payTwd": 1200,
+              "dayPayApplied": true,
+              "countedOtHours": 0
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 2,
+              "payTwd": 1200
+            }
+          },
+          "totalPayTwd": 1200,
+          "countedOtHours": 0,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "id": "rest-two-dates",
+      "kind": "core",
+      "purpose": "兩天各 1 小時皆屬休息日首段",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "1"
+          },
+          {
+            "date": "2024-02-02",
+            "kind": "restDay",
+            "hours": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "150.00",
+          "dailyWageTwd": "1200.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "restDay",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 200,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            },
+            {
+              "date": "2024-02-02",
+              "kind": "restDay",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 200,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 2,
+              "payTwd": 400
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          },
+          "totalPayTwd": 400,
+          "countedOtHours": 2,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "id": "rest-one-date",
+      "kind": "core",
+      "purpose": "單日 2 小時仍屬休息日首段",
+      "input": {
+        "monthlySalary": "36000",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "restDay",
+            "hours": "2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "150.00",
+          "dailyWageTwd": "1200.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "restDay",
+              "hours": 2,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 400,
+              "dayPayApplied": false,
+              "countedOtHours": 2
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "restDay": {
+              "hours": 2,
+              "payTwd": 400
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          },
+          "totalPayTwd": 400,
+          "countedOtHours": 2,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "id": "rounding-by-day",
+      "kind": "core",
+      "purpose": "每日期 241.66… 元先各捨入為 242 元，再加總 484 元",
+      "input": {
+        "monthlySalary": "43500",
+        "month": "2024-02",
+        "entries": [
+          {
+            "date": "2024-02-01",
+            "kind": "weekday",
+            "hours": "1"
+          },
+          {
+            "date": "2024-02-02",
+            "kind": "weekday",
+            "hours": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "month": "2024-02",
+          "hourlyRateTwd": "181.25",
+          "dailyWageTwd": "1450.00",
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 242,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            },
+            {
+              "date": "2024-02-02",
+              "kind": "weekday",
+              "hours": 1,
+              "bands": [
+                {
+                  "hours": 1,
+                  "multiplier": "4/3"
+                }
+              ],
+              "payTwd": 242,
+              "dayPayApplied": false,
+              "countedOtHours": 1
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 2,
+              "payTwd": 484
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          },
+          "totalPayTwd": 484,
+          "countedOtHours": 2,
+          "capNote": false
+        }
+      }
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "hours",
+            "row": 0
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "monthlySalary": "36000",
+          "month": "2024-02",
+          "entries": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": "4.5"
+            }
+          ]
+        },
+        "initial": {
+          "monthlySalary": "36000",
+          "month": "2024-02",
+          "entries": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": "3"
+            }
+          ]
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "monthlySalary": "36000",
+            "month": "2024-02",
+            "entries": [
+              {
+                "date": "2024-02-01",
+                "kind": "weekday",
+                "hours": "3"
+              }
+            ]
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "monthlySalary": "",
+            "month": "",
+            "entries": [
+              {
+                "date": "",
+                "kind": "weekday",
+                "hours": "0"
+              }
+            ]
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "monthlySalary": "36000",
+          "month": "2024-02",
+          "entries": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": "3"
+            }
+          ]
+        },
+        "lateResult": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 3,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 650,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 3,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 1,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 650,
+              "dayPayApplied": false,
+              "countedOtHours": 3
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 3,
+              "payTwd": 650
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "hours",
+            "row": 0
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "hours",
+            "row": 0
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "monthlySalary": "36000",
+          "month": "2024-02",
+          "entries": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": "4.5"
+            }
+          ]
+        },
+        "olderDraft": {
+          "monthlySalary": "36000",
+          "month": "2024-02",
+          "entries": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": "3"
+            }
+          ]
+        },
+        "olderLateResult": {
+          "month": "2024-02",
+          "capNote": false,
+          "countedOtHours": 3,
+          "dailyWageTwd": "1200.00",
+          "hourlyRateTwd": "150.00",
+          "totalPayTwd": 650,
+          "days": [
+            {
+              "date": "2024-02-01",
+              "kind": "weekday",
+              "hours": 3,
+              "bands": [
+                {
+                  "hours": 2,
+                  "multiplier": "4/3"
+                },
+                {
+                  "hours": 1,
+                  "multiplier": "5/3"
+                }
+              ],
+              "payTwd": 650,
+              "dayPayApplied": false,
+              "countedOtHours": 3
+            }
+          ],
+          "categories": {
+            "weekday": {
+              "hours": 3,
+              "payTwd": 650
+            },
+            "restDay": {
+              "hours": 0,
+              "payTwd": 0
+            },
+            "holiday": {
+              "hours": 0,
+              "payTwd": 0
+            }
+          }
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 2,
+  "slug": "overtime-pay-calculator",
+  "specId": "spec-overtime-pay-calculator-20261109-r3",
+  "originalSpecCommit": "eb7950f87f826a1758d430e7ba7c822d44dc64f8"
+}

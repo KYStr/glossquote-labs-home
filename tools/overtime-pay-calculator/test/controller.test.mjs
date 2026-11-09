@@ -70,7 +70,7 @@ test("fixture state-dirty-error", () => {
   workers[1].deliver({
     generation: workers[1].posted[0].generation,
     ok: false,
-    error: { code: "RANGE", field: "weekdayOtHours", row: null },
+    error: { code: "RANGE", field: "hours", row: 0 },
   });
   const afterRerun = controller.getState();
   assert.equal(afterRerun.state, fixture.expected.afterRerun.state);
@@ -122,7 +122,7 @@ test("fixture state-replace-late", () => {
   workers[1].deliver({
     generation: newerGeneration,
     ok: false,
-    error: { code: "RANGE", field: "weekdayOtHours", row: null },
+    error: { code: "RANGE", field: "hours", row: 0 },
   });
   const afterNewerResult = controller.getState();
   assert.equal(afterNewerResult.state, fixture.expected.afterNewerResult.state);
@@ -144,7 +144,7 @@ test("edit during busy terminates the worker, goes dirty, and drops the late rep
   controller.edit({ monthlySalary: "36000" });
   controller.run();
   assert.equal(controller.getState().state, "busy");
-  controller.edit({ weekdayOtHours: "2" });
+  controller.edit({ entries: [{ date: "2024-02-01", kind: "weekday", hours: "2" }] });
   const dirty = controller.getState();
   assert.equal(dirty.state, "dirty");
   assert.equal(dirty.reportAvailable, false);
@@ -238,11 +238,66 @@ test("edit from empty stays empty; edit from error goes dirty", () => {
   workers[0].deliver({
     generation: workers[0].posted[0].generation,
     ok: false,
-    error: { code: "RANGE", field: "weekdayOtHours", row: null },
+    error: { code: "RANGE", field: "hours", row: 0 },
   });
   assert.equal(controller.getState().state, "error");
-  controller.edit({ weekdayOtHours: "2" });
+  controller.edit({ entries: [{ date: "2024-02-01", kind: "weekday", hours: "2" }] });
   const dirty = controller.getState();
   assert.equal(dirty.state, "dirty");
   assert.equal(dirty.error, null);
+});
+
+test("nested draft copies are isolated and worker snapshots are deeply immutable", () => {
+  const { controller, workers } = setup();
+  const entries = [{ date: "2024-02-01", kind: "weekday", hours: "1" }];
+  controller.edit({ monthlySalary: "36000", month: "2024-02", entries });
+  entries[0].hours = "4";
+  controller.getState().draft.entries[0].hours = "3";
+  controller.run();
+  const { snapshot } = workers[0].posted[0];
+  assert.deepEqual(snapshot.entries, [{ date: "2024-02-01", kind: "weekday", hours: "1" }]);
+  assert.ok(Object.isFrozen(snapshot) && Object.isFrozen(snapshot.entries) && Object.isFrozen(snapshot.entries[0]));
+});
+
+test("removing a row and resetting prevent old success and error from publishing", () => {
+  const { controller, workers } = setup();
+  const twoRows = [
+    { date: "2024-02-01", kind: "weekday", hours: "1" },
+    { date: "2024-02-02", kind: "weekday", hours: "1" },
+  ];
+  controller.edit({ monthlySalary: "36000", month: "2024-02", entries: twoRows });
+  controller.run();
+  controller.edit({ entries: twoRows.slice(0, 1) });
+  assert.equal(workers[0].terminated, true);
+  controller.run();
+  // The old worker cannot forge a matching newer generation either.
+  workers[0].deliver({
+    generation: workers[1].posted[0].generation,
+    ok: true,
+    result: weekdayBasic.expected.result,
+  });
+  workers[0].fail();
+  assert.equal(controller.getState().state, "busy");
+  controller.reset();
+  workers[1].deliver({
+    generation: workers[1].posted[0].generation,
+    ok: true,
+    result: weekdayBasic.expected.result,
+  });
+  workers[1].fail();
+  assert.equal(workers[1].terminated, true);
+  assert.deepEqual(controller.getState().draft, DEFAULTS);
+  assert.equal(controller.getState().state, "empty");
+});
+
+test("a worker post failure terminates it and preserves the draft", () => {
+  const worker = makeFakeWorker();
+  worker.postMessage = () => { throw new Error("post failed"); };
+  const controller = createController({ createWorker: () => worker });
+  controller.loadExample();
+  const state = controller.run();
+  assert.equal(worker.terminated, true);
+  assert.equal(state.state, "error");
+  assert.deepEqual(state.error, { code: "WORKER_ERROR", field: null, row: null });
+  assert.deepEqual(state.draft, EXAMPLE);
 });

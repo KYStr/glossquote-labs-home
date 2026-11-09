@@ -1,90 +1,12 @@
-# Handoff — Overtime Pay Calculator （加班費計算機）
+# 加班費計算機 R3 維護交接
 
-## Fixed spec source
+- 維護任務 `labs-remaining-audit-repair-20261110`，修正 FUNC-R3-02、FUNC-R3-03。
+- 修正前的來源固定於 [328dee40](https://github.com/KYStr/glossquote-labs-home/tree/328dee40ef0de631d7d50a443e5d5eb2e7668164/tools/overtime-pay-calculator)。
+- 原規格任務為 `labs-overtime-pay-calculator-spec-20261109`，原規格、字面案例及作者檢查固定於 [eb7950f](https://github.com/KYStr/glossquote-labs-home/tree/eb7950f87f826a1758d430e7ba7c822d44dc64f8/docs/specs/overtime-pay-calculator)，[原規格 PR](https://github.com/KYStr/glossquote-labs-home/pull/138)。
+- [R3 維護里程碑](https://github.com/KYStr/glossquote-labs-home/commit/87d22b52f54bb2c9e92deaf195e9e257d8bf41a2) 釘定此次修正。現行規格為 [R3 SPEC](../../docs/specs/overtime-pay-calculator/SPEC.md)，識別碼 `spec-overtime-pay-calculator-20261109-r3`。其 [字面案例](../../docs/specs/overtime-pay-calculator/fixtures.json) 與 [測試副本](test/fixtures.json) 位元一致。
 
-- Spec task: `labs-overtime-pay-calculator-spec-20261109`
-- Spec id: `spec-overtime-pay-calculator-20261109`
-- Spec candidate commit: `eb7950f87f826a1758d430e7ba7c822d44dc64f8`
-  (BRIEF.md / SPEC.md / fixtures.json / AUTHOR-CHECK.md under
-  `docs/specs/overtime-pay-calculator/`)
-- Draft spec PR: https://github.com/KYStr/glossquote-labs-home/pull/138
-- The spec PR is not merged into this production branch's base, so the
-  literal fixtures are vendored verbatim at `test/fixtures.json`
-  (byte-identical to the spec candidate's fixtures.json, SHA-256
-  `67064390d8849d7d8a4a4a214e6d0db9f7082055b6d257a524646f6c2bc19b75`).
-  Tests import the vendored copy; `scripts/check.mjs` pins its specId and
-  case 1 so drift is caught.
+新表單保留按月試算。使用者逐筆填日期、日別和工時，核心依日計算與捨入，再加總日別與全月。雙語畫面和固定名稱 JSON 報告提供逐日明細。試算採一般月薪制每日 8 小時及月薪對應 240 小時，假日限符合條件的未調移國定假日。計入工時大於 46 小時會顯示提醒與條件摘要。
 
-## Production candidate
+核心先驗外層、陣列、列的 own data descriptors，拒絕 accessor、舊 schema、額外鍵、稀疏陣列和異常原型。控制器深拷貝並凍結背景快照，以 Worker 與世代共同隔離過期回應。兩語入口、固定 worker 來源、報告序列化、noindex 和預覽安全標頭由既有建置提供。
 
-- Base: `codex/initial-publication` @ `9e6abd357f29f5f914cc5252023f3d7b2fbee4ef`
-- Branch: `muse/overtime-pay-calculator-production-20261109`
-- Scope: only `tools/overtime-pay-calculator/` was added. No registry or
-  coordination commands were run by the builder.
-- Build-first mode: this candidate is not accepted, published, or
-  deployed. Independent review of the same fixed head is the next step.
-
-## What was built
-
-- `public/js/core/overtime.mjs` — pure core: strict string-field
-  validation in the SPEC's fixed order (SCHEMA → per-field INPUT_LIMIT →
-  EMPTY → INTEGER_FORMAT / DECIMAL_FORMAT → HOURS_STEP → RANGE), exact
-  BigInt rational pay math (band numerator over 1440; per-category
-  round-half-up to whole NT$; total = sum of the three rounded
-  subtotals), display-only 2-decimal hourly/daily rates, canonical report
-  serializer with the 2,097,152-byte OUTPUT_LIMIT.
-- Legal rules as pinned by the SPEC (current law): weekday overtime
-  4/3 then 5/3; rest-day work by actual hours (4/3, 5/3, then 8/3 from
-  hour 9 — the pre-2018 deemed-hours table is NOT used); holiday work
-  earns one extra day's wage for any attendance up to 8 hours, hours
-  beyond 8 at the weekday tiers; countedOtHours = weekday + rest-day +
-  holiday hours beyond 8; capNote when counted > 46.
-- `public/js/controller.mjs` — draft/generation state machine
-  (empty/dirty/busy/success/error/cancelled) with a controllable Worker
-  boundary; late replies from stale generations are dropped.
-- `public/js/worker-handler.mjs` + build-embedded `worker-source.js` —
-  the page runs the same `run` the tests import, inside a module Worker
-  created from a Blob URL of the fixed source bytes.
-- `public/js/app.js` — safe DOM wiring (textContent/value only), field
-  errors with aria-errormessage, focus to the first error field after a
-  failed submit, fixed-name report download created only on explicit
-  click and revoked within 30 s or on invalidation.
-- Bilingual static pages (`public/index.html` zh-Hant,
-  `public/en/index.html` en) with the SPEC-pinned titles, descriptions,
-  FAQ answers, and disclaimer; preview noindex; no canonical/hreflang;
-  same-language home links; paper/ink design-baseline tokens; wide
-  two-column layout, single column under 48rem.
-- `scripts/` — reproducible preview build (byte-identical across runs,
-  BUILD-MANIFEST.json with per-file SHA-256), static check,
-  generated-output check, loopback-only serve with the SPEC's CSP and
-  security headers.
-
-## Deviations from the SPEC
-
-- None in product behavior. The fixtures file is vendored into `test/`
-  (see above) because the spec PR is unmerged; content is byte-identical.
-
-## Spec-errata candidates (for the spec author / reviewer)
-
-1. **capNote 46-hour boundary is unreachable under the pinned field
-   caps.** The SPEC pins weekdayOtHours ≤ 4, restDayHours ≤ 12,
-   holidayHours ≤ 12, so countedOtHours = weekday + rest-day + holiday
-   hours beyond 8 can be at most 4 + 12 + 4 = 20 — never 46 or 46.5.
-   Yet SPEC §tests asks to verify countedOtHours exactly 46 (capNote
-   false) versus 46.5 (capNote true), and §userFlow presents the cap
-   note as reachable. The implementation follows the pinned ranges,
-   formula, and threshold exactly (the note simply cannot trigger
-   through valid input, and the reachable maximum is covered by a
-   test). The spec author should either raise the field caps (the
-   fields are monthly aggregates) or correct §tests/§userFlow.
-2. **§implementation names `src/core.mjs`-style paths** while the
-   handbook file contract (docs/IMPLEMENTATION-CHECKLIST.md) places the
-   pure core at `public/js/core/*.mjs`. The handbook layout was
-   followed, as in the rest of this batch; no behavior differs.
-
-## Next owner
-
-- Independent reviewer: verify this fixed candidate head against the
-  SPEC's nine acceptance aspects (all currently NOT_RUN — see
-  VERIFICATION.md), recomputing the money fixtures from the pinned
-  fractions rather than trusting displayed digits.
+[實作者驗證](VERIFICATION.md) 記錄命令、雜湊及未驗項。後續同一候選送審、獨立審查、檢視發布和外部重驗由主代理留證。

@@ -12,15 +12,15 @@ import fixtures from "./fixtures.json" with { type: "json" };
 
 const weekdayBasic = fixtures.cases.find((entry) => entry.id === "weekday-basic");
 
-// Hand-written canonical form of the weekday-basic result: keys sorted
-// (capNote, countedOtHours, dailyWageTwd, holiday, hourlyRateTwd, restDay,
-// totalPayTwd, weekday), nested keys sorted the same way, one trailing LF.
+// Independently written canonical result including the single dated record.
 const EXPECTED_TEXT =
-  '{"capNote":false,"countedOtHours":3,"dailyWageTwd":"1200.00",' +
-  '"holiday":{"bands":[],"dayPayApplied":false,"extraHours":0,"hours":0,"payTwd":0},' +
-  '"hourlyRateTwd":"150.00","restDay":{"bands":[],"hours":0,"payTwd":0},' +
-  '"totalPayTwd":650,"weekday":{"bands":[{"hours":2,"multiplier":"4/3"},' +
-  '{"hours":1,"multiplier":"5/3"}],"hours":3,"payTwd":650}}\n';
+  '{"capNote":false,"categories":{"holiday":{"hours":0,"payTwd":0},' +
+  '"restDay":{"hours":0,"payTwd":0},"weekday":{"hours":3,"payTwd":650}},' +
+  '"countedOtHours":3,"dailyWageTwd":"1200.00","days":[{"bands":[' +
+  '{"hours":2,"multiplier":"4/3"},{"hours":1,"multiplier":"5/3"}],' +
+  '"countedOtHours":3,"date":"2024-02-01","dayPayApplied":false,"hours":3,' +
+  '"kind":"weekday","payTwd":650}],"hourlyRateTwd":"150.00",' +
+  '"month":"2024-02","totalPayTwd":650}\n';
 
 test("report filename is the SPEC-pinned fixed name", () => {
   assert.equal(REPORT_FILENAME, "overtime-pay-report.json");
@@ -57,4 +57,13 @@ test("an over-limit payload is OUTPUT_LIMIT and produces no artifact", () => {
     ok: false,
     error: { code: "OUTPUT_LIMIT", field: null, row: null },
   });
+});
+
+test("multi-day report preserves input row order and is deterministic", () => {
+  const fixture = fixtures.cases.find(({ id }) => id === "weekday-three-dates");
+  const input = { ...fixture.input, entries: fixture.input.entries.toReversed() };
+  const first = serializeReport(run(input).result);
+  const second = serializeReport(run(structuredClone(input)).result);
+  assert.deepEqual(first, second);
+  assert.deepEqual(JSON.parse(first.text).days.map(({ date }) => date), ["2024-02-03", "2024-02-02", "2024-02-01"]);
 });

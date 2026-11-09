@@ -74,8 +74,9 @@ export class Controller {
     this.transport.send({ ...this.draft }, this.generation);
   }
 
+  // Signal whether this completion changed the visible state.
   deliver(generation, outcome) {
-    if (generation !== this.generation || this.state !== "busy") return;
+    if (generation !== this.generation || this.state !== "busy") return false;
     this.transport.terminate();
     if (outcome && outcome.ok === true) {
       const report = buildReport(outcome.result);
@@ -83,7 +84,7 @@ export class Controller {
         this.#invalidate();
         this.error = report.error;
         this.state = "error";
-        return;
+        return true;
       }
       this.result = outcome.result;
       this.reportBytes = report.bytes;
@@ -97,6 +98,7 @@ export class Controller {
           : { code: "WORKER_ERROR", field: null, row: null };
       this.state = "error";
     }
+    return true;
   }
 
   cancel() {
