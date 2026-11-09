@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./">
+    <link rel="alternate" hreflang="zh-Hant" href="../">
+    <link rel="alternate" hreflang="en" href="./">
+    <link rel="alternate" hreflang="x-default" href="../">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Meeting Cost Calculator: headcount × rate × time, with a live timer｜GlossQuote-Labs</title>
+    <meta name="description" content="Combine up to five attendee groups (headcount × hourly rate) into a meeting burn rate, price a planned duration with a per-group breakdown, or run a live monotonic-clock timer during the meeting. The currency selector changes the symbol only, never the numbers; everything is computed locally, nothing is stored or uploaded.">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../en/">GlossQuote-Labs home</a>
+      <nav class="language-links" aria-label="Language">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="../">繁體中文</a>
+        <a lang="en" hreflang="en" href="./" aria-current="page">English</a>
+      </nav>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">Meeting Cost Calculator</h1>
+        <p class="intro">Meetings feel free because nobody multiplies a roomful of hourly rates by the time spent. Enter the attendees' headcounts and hourly rates (typed, or filled from an annual-salary preset) to see what a planned meeting burns; during the meeting, switch to the timer and watch the cost climb live.</p>
+
+        <noscript><p class="unsupported-note">This tool needs JavaScript to calculate. The formula notes below remain readable.</p></noscript>
+
+        <div class="mode-switch" role="group" aria-label="Mode">
+          <button type="button" id="mode-manual" aria-pressed="true">Planned duration</button>
+          <button type="button" id="mode-timer" aria-pressed="false">Live timer</button>
+        </div>
+
+        <form id="tool-form" novalidate>
+          <fieldset>
+            <legend>Currency (symbol only, no conversion)</legend>
+            <div class="field">
+              <label for="currency">Display currency</label>
+              <select id="currency" name="currency">
+                <option value="TWD">NT$ New Taiwan dollar</option>
+                <option value="USD" selected>US$ US dollar</option>
+                <option value="EUR">€ Euro</option>
+                <option value="GBP">£ Pound sterling</option>
+                <option value="JPY">¥ Japanese yen</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <h2>Attendees (up to five groups)</h2>
+          <div id="groups"></div>
+          <button type="button" id="add-group">Add a group</button>
+          <p class="hint" id="group-limit-note" hidden>Five groups is the maximum.</p>
+          <p class="hint">The annual-salary presets are illustrative figures: hourly rate = annual salary ÷ 2080 (52 weeks × 40 hours), rounded to cents when filled in; after filling, the rate is an ordinary number you can edit. These figures are not anyone's actual salary.</p>
+          <p class="honesty-note">Mid-meeting roster changes re-price as follows: cost = current rates × total elapsed time. Editing rates re-prices the whole elapsed time at the new rates; the tool does not track rate history.</p>
+
+          <fieldset id="manual-panel">
+            <legend>Planned duration</legend>
+            <div class="field">
+              <label for="hours">Hours (0–24)</label>
+              <input id="hours" name="hours" type="text" inputmode="numeric" value="1" autocomplete="off" aria-describedby="err-hours">
+              <p class="error" id="err-hours" hidden></p>
+            </div>
+            <div class="field">
+              <label for="minutes">Minutes (0–59)</label>
+              <input id="minutes" name="minutes" type="text" inputmode="numeric" value="0" autocomplete="off" aria-describedby="err-minutes">
+              <p class="error" id="err-minutes" hidden></p>
+            </div>
+            <p class="error" id="err-duration" hidden></p>
+          </fieldset>
+
+          <fieldset id="timer-panel" hidden>
+            <legend>Live timer</legend>
+            <p class="elapsed-display">Elapsed <span id="elapsed">00:00:00</span></p>
+            <div class="timer-buttons">
+              <button type="button" id="btn-start">Start</button>
+              <button type="button" id="btn-pause" hidden>Pause</button>
+              <button type="button" id="btn-resume" hidden>Resume</button>
+              <button type="button" id="btn-reset">Reset</button>
+            </div>
+            <p class="hint">The timer runs on a monotonic clock: system-clock changes and laptop sleep cannot silently alter the elapsed time, and a hidden tab keeps accumulating. While paused, the elapsed time and cost are frozen exactly and do not creep.</p>
+          </fieldset>
+        </form>
+
+        <section class="results" aria-labelledby="result-heading">
+          <h2 id="result-heading">Results</h2>
+          <p class="stale-note" id="stale-note" hidden>Invalid input; the figures below are the last valid result and are out of date. In timer mode the elapsed time keeps accumulating.</p>
+          <table class="result-table">
+            <tbody>
+              <tr><th scope="row">Combined burn (per hour)</th><td id="out-burn">–</td></tr>
+              <tr><th scope="row">Cost per minute</th><td id="out-per-minute">–</td></tr>
+              <tr><th scope="row">Total cost</th><td id="out-total">–</td></tr>
+            </tbody>
+          </table>
+          <h3>Per-group breakdown</h3>
+          <table class="breakdown-table">
+            <thead>
+              <tr><th scope="col">Group</th><th scope="col">Headcount</th><th scope="col">Rate</th><th scope="col">Cost per person</th><th scope="col">Subtotal</th></tr>
+            </thead>
+            <tbody id="breakdown-body"></tbody>
+          </table>
+          <p class="hint">Each subtotal is rounded to cents independently, so the displayed subtotals may sum one cent away from the displayed total; the total governs. That is display rounding, not an error.</p>
+        </section>
+
+        <section class="formula-note" aria-labelledby="formula-title">
+          <h2 id="formula-title">Formulas and trade-offs</h2>
+          <p>Burn = Σ (headcount × rate); total cost = burn × time ÷ 60 (manual mode: time in minutes; timer mode: elapsed milliseconds ÷ 3,600,000). Money is computed exactly and rounded half-up to cents once, at display time only — the live cost is always recomputed as current burn × total elapsed, never accumulated from per-tick rounded cents, so it cannot drift.</p>
+          <p>The currency selector changes the displayed symbol only; no exchange-rate conversion is performed. The figures are the price of the rates you entered, not anyone's true compensation cost; whether to fold taxes and benefits into the rates is your choice.</p>
+        </section>
+        <p class="visually-hidden" id="announcer" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+  </body>
+</html>

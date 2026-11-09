@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./">
+    <link rel="alternate" hreflang="zh-Hant" href="./">
+    <link rel="alternate" hreflang="en" href="./en/">
+    <link rel="alternate" hreflang="x-default" href="./">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>會議成本計算器：人數 × 時薪 × 時間，含即時計時｜GlossQuote-Labs</title>
+    <meta name="description" content="把最多五組與會者的人數與時薪組合成會議的每小時燃燒率，算出預計時長的總成本與分組明細，或在會議進行時用單調時鐘即時計時計價。幣別只換符號、不換算；計算全在本機完成，不保存、不上傳。">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../">GlossQuote-Labs 首頁</a>
+      <nav class="language-links" aria-label="語言">
+        <a lang="zh-Hant" hreflang="zh-Hant" href="./" aria-current="page">繁體中文</a>
+        <a lang="en" hreflang="en" href="./en/">English</a>
+      </nav>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">會議成本計算器</h1>
+        <p class="intro">會議看起來免費，是因為沒人把一屋子人的時薪乘上時間。輸入與會者的人數與時薪（可直接輸入，或用年薪預設填入），先看這場會預計燒多少錢；開會時切到計時模式，讓成本即時往上跳。</p>
+
+        <noscript><p class="unsupported-note">此工具需要 JavaScript 才能計算。下方公式說明仍可閱讀。</p></noscript>
+
+        <div class="mode-switch" role="group" aria-label="模式">
+          <button type="button" id="mode-manual" aria-pressed="true">手動時長</button>
+          <button type="button" id="mode-timer" aria-pressed="false">即時計時</button>
+        </div>
+
+        <form id="tool-form" novalidate>
+          <fieldset>
+            <legend>幣別（只換符號，不換算）</legend>
+            <div class="field">
+              <label for="currency">顯示幣別</label>
+              <select id="currency" name="currency">
+                <option value="TWD">NT$ 新台幣</option>
+                <option value="USD" selected>US$ 美元</option>
+                <option value="EUR">€ 歐元</option>
+                <option value="GBP">£ 英鎊</option>
+                <option value="JPY">¥ 日圓</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <h2>與會者（最多五組）</h2>
+          <div id="groups"></div>
+          <button type="button" id="add-group">新增群組</button>
+          <p class="hint" id="group-limit-note" hidden>已達五組上限。</p>
+          <p class="hint">年薪預設是示意數字：時薪 ＝ 年薪 ÷ 2080（52 週 × 40 小時），填入時四捨五入到分；填入後就是一般數字，可以再改。這些數字不代表任何人的實際薪資。</p>
+          <p class="honesty-note">會議中途改名單的計價規則：成本 ＝ 目前費率 × 全部已過時間。修改時薪會把已經過的時間一起用新費率重算，本工具不記錄費率歷史。</p>
+
+          <fieldset id="manual-panel">
+            <legend>預計時長</legend>
+            <div class="field">
+              <label for="hours">小時（0–24）</label>
+              <input id="hours" name="hours" type="text" inputmode="numeric" value="1" autocomplete="off" aria-describedby="err-hours">
+              <p class="error" id="err-hours" hidden></p>
+            </div>
+            <div class="field">
+              <label for="minutes">分鐘（0–59）</label>
+              <input id="minutes" name="minutes" type="text" inputmode="numeric" value="0" autocomplete="off" aria-describedby="err-minutes">
+              <p class="error" id="err-minutes" hidden></p>
+            </div>
+            <p class="error" id="err-duration" hidden></p>
+          </fieldset>
+
+          <fieldset id="timer-panel" hidden>
+            <legend>即時計時</legend>
+            <p class="elapsed-display">已過時間 <span id="elapsed">00:00:00</span></p>
+            <div class="timer-buttons">
+              <button type="button" id="btn-start">開始</button>
+              <button type="button" id="btn-pause" hidden>暫停</button>
+              <button type="button" id="btn-resume" hidden>繼續</button>
+              <button type="button" id="btn-reset">歸零</button>
+            </div>
+            <p class="hint">計時以單調時鐘為準：系統時間被調整、或筆電休眠，都不會偷改已過時間；分頁切到背景也照常累計。暫停時時間與成本完全凍結，不會偷偷往上爬。</p>
+          </fieldset>
+        </form>
+
+        <section class="results" aria-labelledby="result-heading">
+          <h2 id="result-heading">計算結果</h2>
+          <p class="stale-note" id="stale-note" hidden>輸入有誤，以下為上一次的有效結果（已過時）。計時模式下時間仍會繼續累計。</p>
+          <table class="result-table">
+            <tbody>
+              <tr><th scope="row">合計燃燒率（每小時）</th><td id="out-burn">–</td></tr>
+              <tr><th scope="row">每分鐘成本</th><td id="out-per-minute">–</td></tr>
+              <tr><th scope="row">總成本</th><td id="out-total">–</td></tr>
+            </tbody>
+          </table>
+          <h3>分組明細</h3>
+          <table class="breakdown-table">
+            <thead>
+              <tr><th scope="col">群組</th><th scope="col">人數</th><th scope="col">時薪</th><th scope="col">每人成本</th><th scope="col">小計</th></tr>
+            </thead>
+            <tbody id="breakdown-body"></tbody>
+          </table>
+          <p class="hint">每個小計各自獨立四捨五入到分，因此各組小計加總可能與總成本差一分；以總成本為準，這是顯示進位，不是算錯。</p>
+        </section>
+
+        <section class="formula-note" aria-labelledby="formula-title">
+          <h2 id="formula-title">計算公式與取捨</h2>
+          <p>燃燒率 ＝ Σ（人數 × 時薪）；總成本 ＝ 燃燒率 × 時間 ÷ 60（手動模式時間為分鐘，計時模式為已過毫秒 ÷ 3,600,000）。金額以未進位的精確值計算，只在顯示時四捨五入一次到分——計時成本永遠由「目前燃燒率 × 全部已過時間」重新算出，不會逐秒累加進位後的分數而漂移。</p>
+          <p>幣別只更換顯示符號，不做匯率換算。這裡的數字是你輸入的費率所算出的價格，不是任何人的真實薪酬成本；要不要把勞健保、稅金等負擔折進時薪，由你決定。</p>
+        </section>
+        <p class="visually-hidden" id="announcer" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+  </body>
+</html>
