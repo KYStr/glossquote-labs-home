@@ -1,0 +1,657 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 100.59,
+          "buyFee": 143,
+          "buyGross": 100000.0,
+          "buyShares": 1000,
+          "buyTotal": 100143.0,
+          "costBasisSold": 100143.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": 9370,
+          "remainingShares": 0,
+          "returnPct": 9.36,
+          "sellFee": 157,
+          "sellGross": 110000.0,
+          "sellNet": 109513.0,
+          "sellShares": 1000,
+          "sellTax": 330
+        }
+      },
+      "id": "round-lot-profit",
+      "input": {
+        "buyPrice": "100",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "110",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "整股買賣獲利，手續費 142.5 四捨五入為 143（half-up 判別）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 585.8,
+          "buyFee": 20,
+          "buyGross": 5800.0,
+          "buyShares": 10,
+          "buyTotal": 5820.0,
+          "costBasisSold": 5820.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": -357,
+          "remainingShares": 0,
+          "returnPct": -6.13,
+          "sellFee": 20,
+          "sellGross": 5500.0,
+          "sellNet": 5463.0,
+          "sellShares": 10,
+          "sellTax": 17
+        }
+      },
+      "id": "odd-lot-loss-min-fee",
+      "input": {
+        "buyPrice": "580",
+        "buyQty": "10",
+        "buyUnit": "share",
+        "feeDiscount": "0.6",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "550",
+        "sellQty": "10",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "零股小額交易：折讓後手續費低於最低費，兩側皆以最低費 20 計；證交稅 16.5 進位為 17"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 50.15,
+          "buyFee": 71,
+          "buyGross": 100000.0,
+          "buyShares": 2000,
+          "buyTotal": 100071.0,
+          "costBasisSold": 100071.0,
+          "effectiveTaxRatePct": 0.15,
+          "netProfitLoss": 705,
+          "remainingShares": 0,
+          "returnPct": 0.7,
+          "sellFee": 72,
+          "sellGross": 101000.0,
+          "sellNet": 100776.0,
+          "sellShares": 2000,
+          "sellTax": 152
+        }
+      },
+      "id": "day-trade",
+      "input": {
+        "buyPrice": "50",
+        "buyQty": "2000",
+        "buyUnit": "share",
+        "feeDiscount": "0.5",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "50.50",
+        "sellQty": "2000",
+        "sellUnit": "share",
+        "taxMode": "day",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "現股當沖模式：證交稅率以 0.15% 計（輸入的 0.3 不採用），手續費 5 折"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 201.18,
+          "buyFee": 855,
+          "buyGross": 600000.0,
+          "buyShares": 3000,
+          "buyTotal": 600855.0,
+          "costBasisSold": 200285.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": 58564,
+          "remainingShares": 2000,
+          "returnPct": 29.24,
+          "sellFee": 371,
+          "sellGross": 260000.0,
+          "sellNet": 258849.0,
+          "sellShares": 1000,
+          "sellTax": 780
+        }
+      },
+      "id": "partial-sell",
+      "input": {
+        "buyPrice": "200",
+        "buyQty": "3000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "260",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "部分賣出：成本按股數比例分攤，賣出手續費 370.5 進位為 371"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 86.01,
+          "buyFee": 244,
+          "buyGross": 171000.0,
+          "buyShares": 2000,
+          "buyTotal": 171244.0,
+          "costBasisSold": 171244.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": -1001,
+          "remainingShares": 0,
+          "returnPct": -0.58,
+          "sellFee": 244,
+          "sellGross": 171000.0,
+          "sellNet": 170243.0,
+          "sellShares": 2000,
+          "sellTax": 513
+        }
+      },
+      "id": "lot-units",
+      "input": {
+        "buyPrice": "85.5",
+        "buyQty": "2",
+        "buyUnit": "lot",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "85.5",
+        "sellQty": "2",
+        "sellUnit": "lot",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "張單位換算（1 張 = 1000 股），同價買賣虧損恰為全部交易成本"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 10.07,
+          "buyFee": 20,
+          "buyGross": 10000.0,
+          "buyShares": 1000,
+          "buyTotal": 10020.0,
+          "costBasisSold": 10020.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": -70,
+          "remainingShares": 0,
+          "returnPct": -0.7,
+          "sellFee": 20,
+          "sellGross": 10000.0,
+          "sellNet": 9950.0,
+          "sellShares": 1000,
+          "sellTax": 30
+        }
+      },
+      "id": "min-fee-applies",
+      "input": {
+        "buyPrice": "10",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "10",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "手續費原額 14.25 進位為 14 後仍低於最低費，以 20 計（最低費在折讓與進位之後適用）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 20.06,
+          "buyFee": 29,
+          "buyGross": 20000.0,
+          "buyShares": 1000,
+          "buyTotal": 20029.0,
+          "costBasisSold": 20029.0,
+          "effectiveTaxRatePct": 0,
+          "netProfitLoss": 1940,
+          "remainingShares": 0,
+          "returnPct": 9.69,
+          "sellFee": 31,
+          "sellGross": 22000.0,
+          "sellNet": 21969.0,
+          "sellShares": 1000,
+          "sellTax": 0
+        }
+      },
+      "id": "zero-tax-rate",
+      "input": {
+        "buyPrice": "20",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "22",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0"
+      },
+      "kind": "core",
+      "purpose": "稅率輸入 0 的模型情境；買入手續費 28.5 進位為 29（half-up 對比銀行家捨入）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 40.16,
+          "buyFee": 57,
+          "buyGross": 40000.0,
+          "buyShares": 1000,
+          "buyTotal": 40057.0,
+          "costBasisSold": 40057.0,
+          "effectiveTaxRatePct": 0.1,
+          "netProfitLoss": -2149,
+          "remainingShares": 0,
+          "returnPct": -5.36,
+          "sellFee": 54,
+          "sellGross": 38000.0,
+          "sellNet": 37908.0,
+          "sellShares": 1000,
+          "sellTax": 38
+        }
+      },
+      "id": "custom-tax-rate",
+      "input": {
+        "buyPrice": "40",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "38",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.1"
+      },
+      "kind": "core",
+      "purpose": "自訂稅率 0.1%（如股票型 ETF 稅率）輸入路徑，虧損賣出"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "breakevenPrice": 33.55,
+          "buyFee": 14,
+          "buyGross": 10005.0,
+          "buyShares": 300,
+          "buyTotal": 10019.0,
+          "costBasisSold": 3339.67,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": 642,
+          "remainingShares": 200,
+          "returnPct": 19.23,
+          "sellFee": 6,
+          "sellGross": 4000.0,
+          "sellNet": 3982.0,
+          "sellShares": 100,
+          "sellTax": 12
+        }
+      },
+      "id": "prorata-basis",
+      "input": {
+        "buyPrice": "33.35",
+        "buyQty": "300",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "1",
+        "sellPrice": "40",
+        "sellQty": "100",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "部分賣出且成本分攤為非整數（10019/3）：顯示 3339.67，損益以精確分數計算"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "SELL_EXCEEDS_BUY",
+          "field": "sellQty",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "sell-exceeds-buy",
+      "input": {
+        "buyPrice": "100",
+        "buyQty": "100",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "110",
+        "sellQty": "200",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "賣出股數超過買入股數，跨欄錯誤"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "buyPrice",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "price-too-precise",
+      "input": {
+        "buyPrice": "10.005",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "110",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "價格小數超過 2 位，不合文法"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "feeDiscount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "zero-discount",
+      "input": {
+        "buyPrice": "100",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "0",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "110",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "折讓為 0 不在 (0, 1] 範圍"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "sellPrice",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "empty-sell-price",
+      "input": {
+        "buyPrice": "100",
+        "buyQty": "1000",
+        "buyUnit": "share",
+        "feeDiscount": "1",
+        "feeRatePct": "0.1425",
+        "minFeeTwd": "20",
+        "sellPrice": "",
+        "sellQty": "1000",
+        "sellUnit": "share",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "kind": "core",
+      "purpose": "賣出價空白"
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "SELL_EXCEEDS_BUY",
+            "field": "sellQty",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "buyPrice": "100",
+          "buyQty": "1000",
+          "buyUnit": "share",
+          "feeDiscount": "1",
+          "feeRatePct": "0.1425",
+          "minFeeTwd": "20",
+          "sellPrice": "110",
+          "sellQty": "2000",
+          "sellUnit": "share",
+          "taxMode": "standard",
+          "taxRatePct": "0.3"
+        },
+        "initial": {
+          "buyPrice": "100",
+          "buyQty": "1000",
+          "buyUnit": "share",
+          "feeDiscount": "1",
+          "feeRatePct": "0.1425",
+          "minFeeTwd": "20",
+          "sellPrice": "110",
+          "sellQty": "1000",
+          "sellUnit": "share",
+          "taxMode": "standard",
+          "taxRatePct": "0.3"
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "buyPrice": "100",
+            "buyQty": "1000",
+            "buyUnit": "share",
+            "feeDiscount": "1",
+            "feeRatePct": "0.1425",
+            "minFeeTwd": "20",
+            "sellPrice": "110",
+            "sellQty": "1000",
+            "sellUnit": "share",
+            "taxMode": "standard",
+            "taxRatePct": "0.3"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "buyPrice": "100",
+            "buyQty": "1000",
+            "buyUnit": "share",
+            "feeDiscount": "1",
+            "feeRatePct": "0.1425",
+            "minFeeTwd": "20",
+            "sellPrice": "110",
+            "sellQty": "1000",
+            "sellUnit": "share",
+            "taxMode": "standard",
+            "taxRatePct": "0.3"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "buyPrice": "100",
+          "buyQty": "1000",
+          "buyUnit": "share",
+          "feeDiscount": "1",
+          "feeRatePct": "0.1425",
+          "minFeeTwd": "20",
+          "sellPrice": "110",
+          "sellQty": "1000",
+          "sellUnit": "share",
+          "taxMode": "standard",
+          "taxRatePct": "0.3"
+        },
+        "lateResult": {
+          "breakevenPrice": 100.59,
+          "buyFee": 143,
+          "buyGross": 100000.0,
+          "buyShares": 1000,
+          "buyTotal": 100143.0,
+          "costBasisSold": 100143.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": 9370,
+          "remainingShares": 0,
+          "returnPct": 9.36,
+          "sellFee": 157,
+          "sellGross": 110000.0,
+          "sellNet": 109513.0,
+          "sellShares": 1000,
+          "sellTax": 330
+        }
+      },
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "SELL_EXCEEDS_BUY",
+            "field": "sellQty",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "SELL_EXCEEDS_BUY",
+            "field": "sellQty",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "buyPrice": "100",
+          "buyQty": "1000",
+          "buyUnit": "share",
+          "feeDiscount": "1",
+          "feeRatePct": "0.1425",
+          "minFeeTwd": "20",
+          "sellPrice": "110",
+          "sellQty": "2000",
+          "sellUnit": "share",
+          "taxMode": "standard",
+          "taxRatePct": "0.3"
+        },
+        "olderDraft": {
+          "buyPrice": "100",
+          "buyQty": "1000",
+          "buyUnit": "share",
+          "feeDiscount": "1",
+          "feeRatePct": "0.1425",
+          "minFeeTwd": "20",
+          "sellPrice": "110",
+          "sellQty": "1000",
+          "sellUnit": "share",
+          "taxMode": "standard",
+          "taxRatePct": "0.3"
+        },
+        "olderLateResult": {
+          "breakevenPrice": 100.59,
+          "buyFee": 143,
+          "buyGross": 100000.0,
+          "buyShares": 1000,
+          "buyTotal": 100143.0,
+          "costBasisSold": 100143.0,
+          "effectiveTaxRatePct": 0.3,
+          "netProfitLoss": 9370,
+          "remainingShares": 0,
+          "returnPct": 9.36,
+          "sellFee": 157,
+          "sellGross": 110000.0,
+          "sellNet": 109513.0,
+          "sellShares": 1000,
+          "sellTax": 330
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 1,
+  "slug": "stock-profit-calculator",
+  "specId": "spec-stock-profit-calculator-20261109"
+}
