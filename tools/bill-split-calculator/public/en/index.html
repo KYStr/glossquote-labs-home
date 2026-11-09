@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bill Split Calculator | Gloss Tools</title>
+<meta name="description" content="Add tax and tip to a bill and split the total exactly: choose a pre-tax or post-tax tip base, and the earliest payers absorb the remainder cents so the shares always sum to the total.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Bill Split Calculator</h1>
+  <p class="lede">Add tax and tip to a bill and split the total exactly: choose a pre-tax or post-tax tip base, and the earliest payers absorb the remainder cents so the shares always sum to the total.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Bill amount, tax rate and tip percent</h2>
+      <form id="bill-form" novalidate>
+        <div class="field">
+          <label for="field-bill">Bill amount</label>
+          <p class="help" id="help-bill">The pre-tax amount: digits with at most two decimal places, range 0–999,999.99. Currency-neutral; inputs and results use the same unit.</p>
+          <input id="field-bill" name="bill" type="text" inputmode="decimal" autocomplete="off" value="100.00" aria-describedby="help-bill">
+          <p class="field-error" id="error-bill" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxPercent">Tax rate %</label>
+          <p class="help" id="help-taxPercent">Charged on the bill amount. At most three decimal places, range 0–100. The rate comes from you; this tool provides no statutory rate table.</p>
+          <input id="field-taxPercent" name="taxPercent" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-taxPercent">
+          <p class="field-error" id="error-taxPercent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-tipPercent">Tip percent %</label>
+          <p class="help" id="help-tipPercent">Applied to the base selected below. At most three decimal places, range 0–100.</p>
+          <input id="field-tipPercent" name="tipPercent" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-tipPercent">
+          <p class="field-error" id="error-tipPercent" role="alert"></p>
+        </div>
+        <h2>Tip base and people</h2>
+        <fieldset class="field radio-group">
+          <legend>Tip base</legend>
+          <p class="help" id="help-tipBase">Whether the tip is figured on the pre-tax or post-tax amount; customs differ. The tax itself is always calculated on the bill amount.</p>
+          <label class="radio-option">
+            <input id="field-tipBase-pre-tax" name="tipBase" type="radio" value="pre-tax" checked aria-describedby="help-tipBase">
+            Pre-tax amount
+          </label>
+          <label class="radio-option">
+            <input id="field-tipBase-post-tax" name="tipBase" type="radio" value="post-tax" aria-describedby="help-tipBase">
+            Post-tax amount
+          </label>
+          <p class="field-error" id="error-tipBase" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-people">People</label>
+          <p class="help" id="help-people">A whole number, range 1–100. The total is split evenly; leftover cents go one each to the earliest payers.</p>
+          <input id="field-people" name="people" type="text" inputmode="numeric" autocomplete="off" value="3" aria-describedby="help-people">
+          <p class="field-error" id="error-people" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the bill, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate per-person amounts</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Bill breakdown and per-person amounts</h2>
+      <p id="summary"></p>
+      <p id="check-line"></p>
+      <div class="table-scroll" role="region" aria-label="Per-person amounts" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Person</th><th scope="col">Amount</th></tr>
+          </thead>
+          <tbody id="share-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>The order is fixed: tax is the bill amount times the tax rate; the tip is the chosen base (the pre-tax amount, or the bill plus the already-rounded tax) times the tip percent; the total is the three added together. Money is computed in integer cents and percentages in integer milli-percent (percent × 1000), with no floating point anywhere; tax and tip each round half-up exactly once, and the total and the split never round again.</p>
+    <p>How the split works: the total is divided by the number of people; the quotient is everyone's base share, and each leftover cent goes to the next person in order, so shares differ by at most one cent and always add up to the exact total. Switching the tip base changes only the tip and the total — never the tax.</p>
+    <p>Inputs accept ASCII digits and one decimal point only: commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. Amounts are always shown as an integer part with exactly two decimals, with no thousands separators and no currency symbol. The downloaded report is always named bill-split-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Pre-tax or post-tax tip?</dt>
+      <dd>Customs differ — in the US the pre-tax amount is customary; this tool makes the base a choice, and the tax itself is always calculated on the bill amount.</dd>
+      <dt>Why do the first payers pay one cent more?</dt>
+      <dd>The total rarely divides evenly; each leftover cent goes to the next person in order, so the shares always add up to the exact total and differ by at most one cent.</dd>
+      <dt>What currency is this in?</dt>
+      <dd>The tool is currency-neutral: inputs and results use the same money unit, always with two decimal places.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
