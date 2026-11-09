@@ -33,7 +33,8 @@ export function attachSpikeDiagnostics(request, response, { requestId, pathOrdin
   emit(SERVER_EVENT.RECEIVED);
 }
 
-export function createSpikeServer({ getFault = () => 'normal', onRequest = () => {}, diagnostics } = {}) {
+export function createSpikeServer({ getFault = () => 'normal', onRequest = () => {}, diagnostics, distribution = false } = {}) {
+  const assetRoot = distribution ? path.join(projectRoot, 'dist') : publicRoot;
   if (diagnostics !== undefined && (!(diagnostics.pathOrdinals instanceof Map) || typeof diagnostics.onRecord !== 'function' || [...diagnostics.pathOrdinals].some(([key, value]) => typeof key !== 'string' || !Number.isSafeInteger(value) || value < 1))) throw new Error('SPIKE_DIAGNOSTIC_CONFIG_INVALID');
   let diagnosticRequestId = 0;
   const server = createStaticServer({
@@ -41,7 +42,7 @@ export function createSpikeServer({ getFault = () => 'normal', onRequest = () =>
     route: pathname => {
       if (pathname.startsWith('/spike/')) return { root: path.join(projectRoot, 'test', 'spike'), relative: pathname === '/spike/' ? 'index.html' : pathname.slice('/spike/'.length) };
       if (pathname.startsWith('/fixtures/')) return { root: path.join(projectRoot, 'test', 'fixtures'), relative: pathname.slice('/fixtures/'.length) };
-      if (pathname === '/model-manifest.json' || ['/js/', '/models/', '/vendor/'].some(prefix => pathname.startsWith(prefix))) return { root: publicRoot, relative: pathname.slice(1) };
+      if (pathname === '/model-manifest.json' || ['/js/', '/models/', '/vendor/'].some(prefix => pathname.startsWith(prefix))) return { root: assetRoot, relative: pathname.slice(1) };
       return null;
     },
   });
@@ -68,7 +69,7 @@ export function createSpikeServer({ getFault = () => 'normal', onRequest = () =>
     if (pathname === faultPath && ['missing', 'corrupt', 'redirect'].includes(fault)) {
       if (fault === 'missing') { response.writeHead(404, headers); response.end('Not found'); return; }
       if (fault === 'redirect') { response.writeHead(302, { ...headers, Location: '/spike/index.html' }); response.end(); return; }
-      const bytes = await readFile(path.join(publicRoot, faultPath.slice(1))); bytes[0] ^= 1;
+      const bytes = await readFile(path.join(assetRoot, faultPath.slice(1))); bytes[0] ^= 1;
       response.writeHead(200, { ...headers, 'Content-Type': 'application/json', 'Content-Length': bytes.length }); response.end(bytes); return;
     }
     original(request, response);
@@ -77,9 +78,10 @@ export function createSpikeServer({ getFault = () => 'normal', onRequest = () =>
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await verifyAssets();
   const { evidence, positional } = await measurementContext();
-  if (positional.length) throw new Error('SPIKE_ARGUMENT_INVALID');
+  if (positional.length > 1 || (positional.length === 1 && positional[0] !== 'distribution')) throw new Error('SPIKE_ARGUMENT_INVALID');
+  const distribution = positional[0] === 'distribution';
+  await verifyAssets(distribution ? path.join(projectRoot, 'dist') : publicRoot, undefined, { requireDistribution: distribution });
   const name = `server-${new Date().toISOString().replaceAll(/[:.]/gu, '-')}`;
   const auditPath = path.join(evidence, name + '-requests.jsonl');
   const controlPath = path.join(evidence, 'server-control.json');
@@ -87,6 +89,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   await writeFile(auditPath, '', { flag: 'wx' });
   let auditWrites = Promise.resolve();
   const server = createSpikeServer({
+    distribution,
     getFault: async () => {
       try {
         const bytes = await readFile(controlPath); if (bytes.length > 128) throw new Error('SPIKE_CONTROL_INVALID');

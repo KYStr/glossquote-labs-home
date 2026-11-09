@@ -1,3 +1,5 @@
+import { DECODER_BYTES, DECODER_DISTRIBUTION, DECODER_PATH, DECODER_SHA256, MAX_STATIC_ASSET_BYTES } from './decoder-distribution.mjs';
+
 export const MAX_MANIFEST_BYTES = 64 * 1024;
 export const MAX_TOTAL_BYTES = 300 * 1024 * 1024;
 export const MAX_ASSET_BYTES = 160 * 1024 * 1024;
@@ -31,7 +33,8 @@ function exact(value, fields) {
 }
 
 export function validateManifest(value, expected = {}) {
-  exact(value, ROOT_FIELDS);
+  const hasDistribution = value != null && Object.hasOwn(value, 'decoderDistribution');
+  exact(value, hasDistribution ? [...ROOT_FIELDS, 'decoderDistribution'] : ROOT_FIELDS);
   if (value.schemaVersion !== 1 || !/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/u.test(value.modelId)
     || !/^[a-f\d]{40}$/u.test(value.revision) || value.runtimeVersion !== '3.8.1') fail();
   for (const key of ['modelId', 'revision', 'runtimeVersion']) if (expected[key] !== undefined && value[key] !== expected[key]) fail();
@@ -56,7 +59,28 @@ export function validateManifest(value, expected = {}) {
     if (totalBytes > MAX_TOTAL_BYTES) fail();
     return Object.freeze({ ...file });
   });
-  const normalized = { ...value, dtype: Object.freeze({ ...value.dtype }), files: Object.freeze(files) };
+  if (hasDistribution) {
+    if (Object.keys(SELECTED_MODEL).some(key => value[key] !== SELECTED_MODEL[key])
+      || files.length !== REQUIRED_ASSET_PATHS.length || REQUIRED_ASSET_PATHS.some(assetPath => !paths.has(assetPath))
+      || files.some(file => file.path !== DECODER_PATH && file.bytes > MAX_STATIC_ASSET_BYTES)) fail();
+    const decoder = files.find(file => file.path === DECODER_PATH);
+    if (decoder.bytes !== DECODER_BYTES || decoder.sha256 !== DECODER_SHA256) fail();
+    const distribution = value.decoderDistribution;
+    exact(distribution, ['version', 'logicalPath', 'parts']);
+    if (distribution.version !== 1 || distribution.logicalPath !== DECODER_PATH
+      || !Array.isArray(distribution.parts) || distribution.parts.length !== DECODER_DISTRIBUTION.parts.length) fail();
+    let offset = 0;
+    for (const [index, expectedPart] of DECODER_DISTRIBUTION.parts.entries()) {
+      const part = distribution.parts[index];
+      exact(part, ['path', 'offset', 'bytes', 'sha256', 'mime']);
+      if (Object.keys(expectedPart).some(key => part[key] !== expectedPart[key])
+        || part.offset !== offset || part.bytes > MAX_STATIC_ASSET_BYTES || paths.has(part.path)) fail();
+      offset += part.bytes;
+    }
+    if (offset !== decoder.bytes) fail();
+  }
+  const normalized = { ...value, dtype: Object.freeze({ ...value.dtype }), files: Object.freeze(files),
+    ...(hasDistribution ? { decoderDistribution: DECODER_DISTRIBUTION } : {}) };
   if (new TextEncoder().encode(JSON.stringify(normalized)).byteLength > MAX_MANIFEST_BYTES) fail();
   return Object.freeze(normalized);
 }

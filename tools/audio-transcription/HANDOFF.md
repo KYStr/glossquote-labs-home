@@ -58,3 +58,11 @@ node scripts/build.mjs
 NC25 固定版 `NC25-12-INTEGRATED-2026-10-25-v1` 的 153 個來源輸入、20 個候選程式／版本檔和 72 個 inventory 項目已在原保存樹核對。完整重現需該份原始證據樹；共享 GitHub 候選包含工具原始碼和雜湊記錄。歷史 69 個 FAIL、3 個缺原生 terminal 保留，`fullNetworkAccepted` 與 `fullT02Accepted` 仍為 `false`。
 
 Windows Chrome 與 Edge 完整 T02 仍需各自的 cold load、三輪中英 warm 推論、速度與品質、UI 心跳、renderer 和 Worker 的每秒 OS 記憶體、取消／重試、全零音訊、Network／離線及資產故障閉鎖證據。原本的 1.681110 GiB FAIL 與 R11 Chrome 的 1.222889 GiB 子項 PASS 分開保留。這輪瀏覽器、原生終端和取樣的狀態為 `NOT_RUN_USER_FOCUS_INCIDENT`。來源只供 M1 草稿 PR 檢閱，獨立候選審查、正式交驗與上線均待後續 gate。
+## R12-T02-TRANSPORT — 固定 decoder 分片接入（2026-11-09）
+
+接續 PR181 固定來源 `c4db2022957cb57b6e782dc61a9e37bb2414fdd3`；維護基線 `7bff5ea27e1181b5bb3b6682439bb302c6cca15d` 的 `tools/audio-transcription/` 子樹 `f39b79adca3f8abd9aee20744b3258b57197ca60`。原所有權、模型、Transformers／ORT、推論設定、來源 manifest、原始候選及停用的選檔介面保留。
+
+- `node scripts/build.mjs` 只在生成的 `dist/model-manifest.json` 加入固定分片描述。19 個邏輯資產仍為 102,581,371 bytes；實體為 21 檔。Decoder 切為 20 MiB、20 MiB、11,764,499 bytes，核對每片和整體 SHA-256。產物不含完整 53,707,539-byte decoder，部署時只可使用已驗證的 `dist/`。來源 `public/` 和原本的開發路徑保留完整固定資產。
+- `AssetLoader` 依生成 manifest 只請求固定同源分片，依序串流到一份預配置的完整 decoder buffer，核對狀態、型別、邊界、各片及整體 SHA-256；有取消、超時或失敗就清除資產，沒有完整檔網路 fallback。既有 Worker 繼續用原 logical ONNX URL 讀已驗證的記憶體內容。
+- 離線測試用實際固定 decoder 及 loopback HTTP 驗證分片、完整路徑 404、重組和記憶體讀取、拒絕竄改與取消。既有原始準備命令 `node scripts/prepare-decoder-chunks.mjs` 保持可用。未來隔離 T02 可用 `node scripts/serve-spike.mjs distribution --evidence=<任務已核准證據路徑>` 讓 spike 取用 `dist/`，必須先 build。
+- 本輪只驗證傳輸。實際 Windows Chrome／Edge 語音辨識、OS 程序記憶體、完整 Network／offline、原生及產品驗收仍未跑；NC25 歷史 69 FAIL／3 缺 native terminals 仍保留。選檔仍停用、未發布；`fullNetworkAccepted=false`、`fullT02Accepted=false`。

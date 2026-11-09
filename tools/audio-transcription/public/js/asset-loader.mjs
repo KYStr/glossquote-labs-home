@@ -1,4 +1,5 @@
 import { validateSelectedManifest, totalAssetBytes } from './core/manifest.mjs';
+import { DECODER_PATH } from './core/decoder-distribution.mjs';
 import { memoryPhase, memoryTraceJob, createReadReceipt, READ_EVENT, READ_REASON } from './core/memory-phases.mjs';
 
 const failure = code => new Error(code);
@@ -31,51 +32,70 @@ export class AssetLoader {
     let integrityMs = 0;
     try {
       const total = totalAssetBytes(manifest);
-      for (const [index, file] of manifest.files.entries()) {
-        if (controller.signal.aborted) throw failure('MODEL_LOAD_FAILED');
-        const receipt = memoryTraceJob() < 0 ? undefined : createReadReceipt({ scopeCode: 1, ordinal: index + 1, readId: ++this.nextReceiptId, expectedBytes: file.bytes, hasSignal: 1 });
-        activeReceipt = receipt;
-        const started = performance.now();
-        const url = this.origin + file.path;
-        let response, offset = 0, reasonCode = READ_REASON.NONE, completed = false;
-        const snapshot = () => ({ receivedBytes: offset, readerLocked: Number(Boolean(response?.body?.locked)), lockObserved: 1, signalAborted: Number(controller.signal.aborted) });
-        try {
-          response = await this.nativeFetch(url, { method: 'GET', credentials: 'omit', redirect: 'error', cache: 'no-store', signal: controller.signal });
-          if (response.status !== 200 || response.redirected || !response.body || (response.url && response.url !== url)) { reasonCode = READ_REASON.RESPONSE_REJECTED; throw failure('MODEL_LOAD_FAILED'); }
-          const length = response.headers.get('content-length');
-          const encoding = response.headers.get('content-encoding');
-          if ((!encoding || encoding === 'identity') && length !== null && Number(length) !== file.bytes) {
-            reasonCode = READ_REASON.HEADER_LENGTH; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode });
-            await response.body.cancel(); throw failure('ASSET_INTEGRITY_FAILED');
+      let ordinal = 0;
+      for (const file of manifest.files) {
+        const chunks = file.path === DECODER_PATH ? manifest.decoderDistribution?.parts : undefined;
+        let buffer;
+        for (const part of chunks ?? [file]) {
+          if (controller.signal.aborted) throw failure('MODEL_LOAD_FAILED');
+          ordinal += 1;
+          const receipt = memoryTraceJob() < 0 ? undefined : createReadReceipt({ scopeCode: 1, ordinal, readId: ++this.nextReceiptId, expectedBytes: part.bytes, hasSignal: 1 });
+          activeReceipt = receipt;
+          const started = performance.now();
+          const url = this.origin + part.path;
+          let response, reader, offset = 0, reasonCode = READ_REASON.NONE, completed = false;
+          const snapshot = () => ({ receivedBytes: offset, readerLocked: Number(Boolean(response?.body?.locked)), lockObserved: 1, signalAborted: Number(controller.signal.aborted) });
+          try {
+            response = await this.nativeFetch(url, { method: 'GET', credentials: 'omit', redirect: 'error', cache: 'no-store', signal: controller.signal });
+            if (response.status !== 200 || response.redirected || !response.body || (response.url && response.url !== url)) { reasonCode = READ_REASON.RESPONSE_REJECTED; throw failure('MODEL_LOAD_FAILED'); }
+            if (chunks && response.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() !== part.mime) {
+              reasonCode = READ_REASON.RESPONSE_REJECTED; await response.body.cancel(); throw failure('MODEL_LOAD_FAILED');
+            }
+            const length = response.headers.get('content-length');
+            const encoding = response.headers.get('content-encoding');
+            if ((!encoding || encoding === 'identity') && length !== null && Number(length) !== part.bytes) {
+              reasonCode = READ_REASON.HEADER_LENGTH; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode });
+              await response.body.cancel(); throw failure('ASSET_INTEGRITY_FAILED');
+            }
+            buffer ??= new Uint8Array(file.bytes);
+            const target = chunks ? buffer.subarray(part.offset, part.offset + part.bytes) : buffer;
+            reader = response.body.getReader();
+            receipt?.record(READ_EVENT.READER_ACQUIRED, snapshot());
+            for (;;) {
+              const { done, value: chunk } = await reader.read();
+              if (controller.signal.aborted) { reasonCode = abortReason || READ_REASON.CALLER_SIGNAL; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode }); await reader.cancel(); throw failure('MODEL_LOAD_FAILED'); }
+              if (done) { receipt?.record(READ_EVENT.EOF, { ...snapshot(), eof: 1 }); break; }
+              if (offset + chunk.byteLength > part.bytes) { reasonCode = READ_REASON.SIZE_CAP; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode }); await reader.cancel(); throw failure('ASSET_INTEGRITY_FAILED'); }
+              target.set(chunk, offset); offset += chunk.byteLength; loaded += chunk.byteLength;
+              receipt?.update({ receivedBytes: offset }); onProgress({ loaded, total });
+            }
+            if (offset !== part.bytes) { reasonCode = READ_REASON.SHORT_READ; throw failure('ASSET_INTEGRITY_FAILED'); }
+            downloadMs += performance.now() - started;
+            const hashStarted = performance.now();
+            const digest = hex(new Uint8Array(await this.subtle.digest('SHA-256', target)));
+            integrityMs += performance.now() - hashStarted;
+            receipt?.record(READ_EVENT.HASH_RESULT, { ...snapshot(), hashChecked: 1, hashOk: Number(digest === part.sha256), reasonCode: digest === part.sha256 ? READ_REASON.NONE : READ_REASON.HASH_MISMATCH });
+            if (digest !== part.sha256) { reasonCode = READ_REASON.HASH_MISMATCH; throw failure('ASSET_INTEGRITY_FAILED'); }
+            if (controller.signal.aborted) { reasonCode = abortReason || READ_REASON.CALLER_SIGNAL; throw failure('MODEL_LOAD_FAILED'); }
+            completed = true;
+          } catch (error) {
+            receipt?.record(READ_EVENT.ERROR, { ...snapshot(), outcomeCode: 2, reasonCode: reasonCode || abortReason || READ_REASON.READ_ERROR });
+            throw error;
+          } finally {
+            // Preserve the legacy MF19 receipt; new distribution readers have no later consumer.
+            receipt?.record(READ_EVENT.FINISH, { ...snapshot(), outcomeCode: completed ? 1 : 2, reasonCode: reasonCode || (completed ? READ_REASON.NONE : abortReason || READ_REASON.READ_ERROR) });
+            if (chunks) reader?.releaseLock();
+            if (completed) activeReceipt = undefined;
           }
-          const buffer = new Uint8Array(file.bytes);
-          const reader = response.body.getReader();
-          receipt?.record(READ_EVENT.READER_ACQUIRED, snapshot());
-          for (;;) {
-            const { done, value: chunk } = await reader.read();
-            if (controller.signal.aborted) { reasonCode = abortReason || READ_REASON.CALLER_SIGNAL; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode }); await reader.cancel(); throw failure('MODEL_LOAD_FAILED'); }
-            if (done) { receipt?.record(READ_EVENT.EOF, { ...snapshot(), eof: 1 }); break; }
-            if (offset + chunk.byteLength > file.bytes) { reasonCode = READ_REASON.SIZE_CAP; receipt?.record(READ_EVENT.CANCEL_CALLED, { ...snapshot(), reasonCode }); await reader.cancel(); throw failure('ASSET_INTEGRITY_FAILED'); }
-            buffer.set(chunk, offset); offset += chunk.byteLength; loaded += chunk.byteLength;
-            receipt?.update({ receivedBytes: offset }); onProgress({ loaded, total });
-          }
-          if (offset !== file.bytes) { reasonCode = READ_REASON.SHORT_READ; throw failure('ASSET_INTEGRITY_FAILED'); }
-          downloadMs += performance.now() - started;
+        }
+        if (chunks) {
           const hashStarted = performance.now();
           const digest = hex(new Uint8Array(await this.subtle.digest('SHA-256', buffer)));
           integrityMs += performance.now() - hashStarted;
-          receipt?.record(READ_EVENT.HASH_RESULT, { ...snapshot(), hashChecked: 1, hashOk: Number(digest === file.sha256), reasonCode: digest === file.sha256 ? READ_REASON.NONE : READ_REASON.HASH_MISMATCH });
-          if (digest !== file.sha256) { reasonCode = READ_REASON.HASH_MISMATCH; throw failure('ASSET_INTEGRITY_FAILED'); }
-          if (controller.signal.aborted) { reasonCode = abortReason || READ_REASON.CALLER_SIGNAL; throw failure('MODEL_LOAD_FAILED'); }
-          this.verified.set(file.path, { buffer, mime: file.mime }); completed = true;
-        } catch (error) {
-          receipt?.record(READ_EVENT.ERROR, { ...snapshot(), outcomeCode: 2, reasonCode: reasonCode || abortReason || READ_REASON.READ_ERROR });
-          throw error;
-        } finally {
-          // MF19 M1 observes the existing locked-reader state. No releaseLock change.
-          receipt?.record(READ_EVENT.FINISH, { ...snapshot(), outcomeCode: completed ? 1 : 2, reasonCode: reasonCode || (completed ? READ_REASON.NONE : abortReason || READ_REASON.READ_ERROR) });
-          if (completed) activeReceipt = undefined;
+          if (digest !== file.sha256) throw failure('ASSET_INTEGRITY_FAILED');
+          if (controller.signal.aborted) throw failure('MODEL_LOAD_FAILED');
         }
+        this.verified.set(file.path, { buffer, mime: file.mime });
       }
       memoryPhase('asset-load-complete', { verifiedBytes: loaded });
       return { loadedBytes: loaded, downloadMs, integrityMs };

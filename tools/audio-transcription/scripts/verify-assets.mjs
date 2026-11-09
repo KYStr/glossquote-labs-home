@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseManifest, totalAssetBytes, SELECTED_MODEL, validateSelectedManifest } from '../public/js/core/manifest.mjs';
+import { physicalAssets } from '../public/js/core/decoder-distribution.mjs';
 
 export const selectedModel = SELECTED_MODEL;
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -49,15 +50,18 @@ async function listFiles(directory) {
   return files;
 }
 
-export async function verifyAssets(assetRoot = publicRoot, expected = selectedModel) {
+export async function verifyAssets(assetRoot = publicRoot, expected = selectedModel, { requireDistribution = false } = {}) {
   const manifest = parseManifest(await readFile(path.join(assetRoot, 'model-manifest.json'), 'utf8'), expected);
   if (manifest.modelId === selectedModel.modelId && manifest.revision === selectedModel.revision) validateSelectedManifest(manifest);
-  for (const file of manifest.files) await verifyFile(path.resolve(assetRoot, file.path.slice(1)), file, assetRoot);
-  const listed = new Set(manifest.files.map(file => path.resolve(assetRoot, file.path.slice(1))));
+  if (requireDistribution && !manifest.decoderDistribution) throw new Error('DECODER_DISTRIBUTION_REQUIRED');
+  const assets = physicalAssets(manifest);
+  for (const file of assets) await verifyFile(path.resolve(assetRoot, file.path.slice(1)), file, assetRoot);
+  const listed = new Set(assets.map(file => path.resolve(assetRoot, file.path.slice(1))));
   for (const directory of ['models', 'vendor']) {
     for (const file of await listFiles(path.join(assetRoot, directory))) if (!listed.has(file)) throw new Error('UNLISTED_PUBLIC_ASSET');
   }
-  return { modelId: manifest.modelId, revision: manifest.revision, files: manifest.files.length, bytes: totalAssetBytes(manifest) };
+  return { modelId: manifest.modelId, revision: manifest.revision, files: manifest.files.length, bytes: totalAssetBytes(manifest),
+    ...(manifest.decoderDistribution ? { physicalFiles: assets.length } : {}) };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
