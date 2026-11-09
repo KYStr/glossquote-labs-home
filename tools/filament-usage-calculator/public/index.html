@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>3D 列印線材用量換算｜Gloss Tools</title>
+<meta name="description" content="依線徑與材料密度，把 3D 列印線材的長度換算成重量、重量換算回長度，並估算線軸剩餘量與單次列印的線材成本。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>3D 列印線材用量換算</h1>
+  <p class="lede">開印前先核對：依線徑與材料密度把線材長度換成重量、重量換回長度；輸入整捲秤重與空軸重估算這捲還剩多少；再用整軸價格算出這一件的線材成本。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">模式、線徑、材料與數值</h2>
+      <form id="filament-form" novalidate>
+        <fieldset class="field">
+          <legend>模式</legend>
+          <label class="radio-row" for="field-mode-length">
+            <input id="field-mode-length" name="mode" type="radio" value="length" checked>
+            長度換重量
+          </label>
+          <label class="radio-row" for="field-mode-weight">
+            <input id="field-mode-weight" name="mode" type="radio" value="weight">
+            重量換長度
+          </label>
+          <label class="radio-row" for="field-mode-spool">
+            <input id="field-mode-spool" name="mode" type="radio" value="spool">
+            線軸剩餘
+          </label>
+          <label class="radio-row" for="field-mode-cost">
+            <input id="field-mode-cost" name="mode" type="radio" value="cost">
+            列印成本
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <fieldset class="field">
+          <legend>線徑</legend>
+          <label class="radio-row" for="field-diameter-175">
+            <input id="field-diameter-175" name="diameter" type="radio" value="1.75" checked>
+            1.75 mm
+          </label>
+          <label class="radio-row" for="field-diameter-285">
+            <input id="field-diameter-285" name="diameter" type="radio" value="2.85">
+            2.85 mm
+          </label>
+          <p class="field-error" id="error-diameter" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-material">材料</label>
+          <p class="help" id="help-material">密度為固定標稱值（g/cm³），所有模式皆生效。</p>
+          <select id="field-material" name="material" aria-describedby="help-material">
+            <option value="pla" selected>PLA（聚乳酸）— 1.24</option>
+            <option value="petg">PETG — 1.27</option>
+            <option value="abs">ABS — 1.05</option>
+            <option value="tpu">TPU（軟料）— 1.21</option>
+            <option value="asa">ASA — 1.07</option>
+            <option value="pc">PC（聚碳酸酯）— 1.20</option>
+          </select>
+          <p class="field-error" id="error-material" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lengthM">長度（m）</label>
+          <p class="help" id="help-lengthM">大於 0、最多 100000 m，最多 3 位小數。僅「長度換重量」模式生效。</p>
+          <input id="field-lengthM" name="lengthM" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-lengthM">
+          <p class="field-error" id="error-lengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightG">重量（g）</label>
+          <p class="help" id="help-weightG">大於 0、最多 1000000 g，最多 2 位小數。僅「重量換長度」模式生效。</p>
+          <input id="field-weightG" name="weightG" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-weightG" disabled>
+          <p class="field-error" id="error-weightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-grossWeightG">整捲總重（g）</label>
+          <p class="help" id="help-grossWeightG">連軸一起秤的重量；大於 0、最多 100000 g，最多 1 位小數。僅「線軸剩餘」模式生效。</p>
+          <input id="field-grossWeightG" name="grossWeightG" type="text" inputmode="decimal" autocomplete="off" value="850" aria-describedby="help-grossWeightG" disabled>
+          <p class="field-error" id="error-grossWeightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-emptySpoolPreset">空軸重預設</label>
+          <p class="help" id="help-emptySpoolPreset">常見空軸重，或選「自訂」輸入自己的量測值。僅「線軸剩餘」模式生效。</p>
+          <select id="field-emptySpoolPreset" name="emptySpoolPreset" aria-describedby="help-emptySpoolPreset" disabled>
+            <option value="140">140 g</option>
+            <option value="200" selected>200 g</option>
+            <option value="250">250 g</option>
+            <option value="custom">自訂</option>
+          </select>
+          <p class="field-error" id="error-emptySpoolPreset" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-emptySpoolCustomG">自訂空軸重（g）</label>
+          <p class="help" id="help-emptySpoolCustomG">0–10000 g，最多 1 位小數。僅在空軸重預設選「自訂」時生效。</p>
+          <input id="field-emptySpoolCustomG" name="emptySpoolCustomG" type="text" inputmode="decimal" autocomplete="off" value="200" aria-describedby="help-emptySpoolCustomG" disabled>
+          <p class="field-error" id="error-emptySpoolCustomG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-spoolPrice">整軸價格</label>
+          <p class="help" id="help-spoolPrice">大於 0、最多 1000000，最多 2 位小數。僅「列印成本」模式生效。</p>
+          <input id="field-spoolPrice" name="spoolPrice" type="text" inputmode="decimal" autocomplete="off" value="599" aria-describedby="help-spoolPrice" disabled>
+          <p class="field-error" id="error-spoolPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-spoolNetWeightG">整軸淨重（g）</label>
+          <p class="help" id="help-spoolNetWeightG">不含軸的線材淨重，常見為 1000 g；1–100000 g，最多 1 位小數。僅「列印成本」模式生效。</p>
+          <input id="field-spoolNetWeightG" name="spoolNetWeightG" type="text" inputmode="decimal" autocomplete="off" value="1000" aria-describedby="help-spoolNetWeightG" disabled>
+          <p class="field-error" id="error-spoolNetWeightG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-usageG">本次用量（g）</label>
+          <p class="help" id="help-usageG">切片軟體估計的本次列印用量；大於 0、最多 1000000 g，最多 1 位小數。僅「列印成本」模式生效。</p>
+          <input id="field-usageG" name="usageG" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-usageG" disabled>
+          <p class="field-error" id="error-usageG" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-currency">幣別</label>
+          <p class="help" id="help-currency">僅作顯示標籤，不換算匯率。僅「列印成本」模式生效。</p>
+          <select id="field-currency" name="currency" aria-describedby="help-currency" disabled>
+            <option value="TWD" selected>TWD（NT$）</option>
+            <option value="USD">USD（US$）</option>
+            <option value="EUR">EUR（€）</option>
+            <option value="JPY">JPY（¥）</option>
+          </select>
+          <p class="field-error" id="error-currency" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入數值或載入範例後按「計算換算」。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算換算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="換算明細" tabindex="0">
+        <table>
+          <tbody id="detail-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">密度為各材料的常見標稱值，實際線材會因品牌與配方不同而略有差異；結果供備料與估算參考。</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與限制</summary>
+    <p>每公尺重量 = 截面積（π × 半徑²）× 材料密度：線徑 1.75 mm 的截面積約 2.405 mm²，1 m 線材的體積恰為截面積的 cm³ 數，再乘密度（g/cm³）即為每公尺克數。長度換重量、重量換長度、線軸剩餘與成本都從這個每公尺重量推導，全程不先捨入，只在顯示時四捨五入一次。</p>
+    <p>線軸剩餘 = 整捲總重 − 空軸重，再除以每公尺重量得到剩餘長度；列印成本 = 整軸價格 × 本次用量 ÷ 整軸淨重（線性估算），幣別只作顯示。本工具不讀 G-code 或切片檔，不估算支撐、裙邊與流量差異，也不把結果當成切片軟體用量的保證。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼切片軟體的重量和這裡不同？</dt>
+      <dd>切片軟體依實際擠出路徑與流量計算，這裡依線徑與密度的標稱值換算，兩者可略有差異。</dd>
+      <dt>空軸重怎麼量？</dt>
+      <dd>用完一軸後秤空軸，或查品牌公布值；同品牌不同批也可能不同。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
