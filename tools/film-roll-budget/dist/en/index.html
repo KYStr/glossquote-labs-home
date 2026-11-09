@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Film Roll Frame Budget | Gloss Tools</title>
+<meta name="description" content="Budget a film roll by scene, reserve frames and allocate the rest by priority.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="../index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../en/">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching languages leaves this page; the draft you are editing will not be kept.</span></p>
+</header>
+<main>
+  <h1>Film Roll Frame Budget</h1>
+  <p class="intro">With only a fixed number of frames left on the roll, hold a few back for ad-hoc scenes, then allocate the rest by minimum and priority. The result lists the planned frames and the unmet target for each scene.</p>
+
+  <form id="budget-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Frames available</legend>
+          <p class="help">Remaining frames is the actual count left on the roll (0–200); frames held for ad-hoc scenes defaults to 0 and cannot exceed the remaining frames.</p>
+          <div class="totals-grid">
+            <div class="field">
+              <label for="remaining">Remaining frames</label>
+              <input type="text" id="remaining" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="e.g. 24">
+            </div>
+            <div class="field">
+              <label for="reserve">Frames held for ad-hoc scenes</label>
+              <input type="text" id="reserve" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Scenes</legend>
+          <p class="help">Up to 16 scenes. Short names are 1–24 characters and must be unique; each row takes a minimum and a target (0–200, target not below minimum), and a priority: 3 is top priority, 2 standard, 1 optional.</p>
+          <div id="scenes-body" class="rows"></div>
+          <button type="button" id="add-scene" class="secondary">Add a scene</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="allocate" class="primary">Allocate remaining frames</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed dummy data (24 frames remaining, 4 held) showing priority round-robin; press “Allocate remaining frames” to compute it.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Allocation results"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
