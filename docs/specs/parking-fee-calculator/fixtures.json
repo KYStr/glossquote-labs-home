@@ -1,0 +1,647 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 100,
+              "firstPeriods": 1,
+              "minutes": 130,
+              "nextPeriods": 3,
+              "rawFee": 100
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 100,
+          "totalMinutes": 130
+        }
+      },
+      "id": "same-day-basic",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T09:00",
+        "exit": "2026-11-09T11:10",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "同日停車，首段加三個後續段，未觸每日上限"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 0,
+              "firstPeriods": 1,
+              "minutes": 15,
+              "nextPeriods": 0,
+              "rawFee": 40
+            }
+          ],
+          "graceApplied": true,
+          "lostTicketApplied": false,
+          "totalFee": 0,
+          "totalMinutes": 15
+        }
+      },
+      "id": "grace-free",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T09:00",
+        "exit": "2026-11-09T09:15",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "總停車分鐘恰等於免費寬限，全額免費，逐日列仍顯示原價"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 40,
+              "firstPeriods": 1,
+              "minutes": 16,
+              "nextPeriods": 0,
+              "rawFee": 40
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 40,
+          "totalMinutes": 16
+        }
+      },
+      "id": "grace-just-exceeded",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T09:00",
+        "exit": "2026-11-09T09:16",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "超過寬限一分鐘，自入場起全額計費，不扣寬限"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 0,
+              "firstPeriods": 1,
+              "minutes": 10,
+              "nextPeriods": 0,
+              "rawFee": 40
+            },
+            {
+              "capped": false,
+              "date": "2026-11-10",
+              "fee": 0,
+              "firstPeriods": 1,
+              "minutes": 5,
+              "nextPeriods": 0,
+              "rawFee": 40
+            }
+          ],
+          "graceApplied": true,
+          "lostTicketApplied": false,
+          "totalFee": 0,
+          "totalMinutes": 15
+        }
+      },
+      "id": "grace-cross-midnight",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T23:50",
+        "exit": "2026-11-10T00:05",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "跨午夜但總停車分鐘恰等於寬限，寬限以總時長判定，兩日列皆免費"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 60,
+              "firstPeriods": 1,
+              "minutes": 90,
+              "nextPeriods": 1,
+              "rawFee": 60
+            },
+            {
+              "capped": false,
+              "date": "2026-11-10",
+              "fee": 60,
+              "firstPeriods": 1,
+              "minutes": 80,
+              "nextPeriods": 1,
+              "rawFee": 60
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 120,
+          "totalMinutes": 170
+        }
+      },
+      "id": "cross-midnight",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T22:30",
+        "exit": "2026-11-10T01:20",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "跨午夜，兩日各依當日分鐘獨立起算首段與後續段"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": true,
+              "date": "2026-11-09",
+              "fee": 200,
+              "firstPeriods": 1,
+              "minutes": 720,
+              "nextPeriods": 22,
+              "rawFee": 480
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 200,
+          "totalMinutes": 720
+        }
+      },
+      "id": "daily-cap",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T08:00",
+        "exit": "2026-11-09T20:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "同日長停，原價超過每日上限，當日費用封頂"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 160,
+              "firstPeriods": 1,
+              "minutes": 240,
+              "nextPeriods": 6,
+              "rawFee": 160
+            },
+            {
+              "capped": true,
+              "date": "2026-11-10",
+              "fee": 200,
+              "firstPeriods": 1,
+              "minutes": 1440,
+              "nextPeriods": 46,
+              "rawFee": 960
+            },
+            {
+              "capped": true,
+              "date": "2026-11-11",
+              "fee": 200,
+              "firstPeriods": 1,
+              "minutes": 600,
+              "nextPeriods": 18,
+              "rawFee": 400
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 560,
+          "totalMinutes": 2280
+        }
+      },
+      "id": "multi-day-cap",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T20:00",
+        "exit": "2026-11-11T10:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "三日停車，首日低於上限，整日與末日各自封頂"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 40,
+              "firstPeriods": 1,
+              "minutes": 60,
+              "nextPeriods": 0,
+              "rawFee": 40
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 40,
+          "totalMinutes": 60
+        }
+      },
+      "id": "exit-at-midnight",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T23:00",
+        "exit": "2026-11-10T00:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "出場恰在 00:00，出場日零分鐘不列，首段恰滿不加段"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "days": [],
+          "graceApplied": false,
+          "lostTicketApplied": true,
+          "totalFee": 1000,
+          "totalMinutes": 540
+        }
+      },
+      "id": "lost-ticket",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T09:00",
+        "exit": "2026-11-09T18:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": true,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "遺失票卡開關開啟，總額為定額費用，不產逐日列"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "ORDER",
+          "field": "exit",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "exit-before-entry",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T10:00",
+        "exit": "2026-11-09T09:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "出場早於入場，跨欄 ORDER 錯誤指向 exit"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "DATETIME_FORMAT",
+          "field": "entry",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "impossible-date",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-02-30T10:00",
+        "exit": "2026-11-09T10:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20"
+      },
+      "kind": "core",
+      "purpose": "文法正確但日期不存在（2 月 30 日），DATETIME_FORMAT 指向 entry"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "nextPrice",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "decimal-price",
+      "input": {
+        "dailyCap": "200",
+        "entry": "2026-11-09T09:00",
+        "exit": "2026-11-09T10:00",
+        "firstPeriodMinutes": "60",
+        "firstPrice": "40",
+        "graceMinutes": "15",
+        "lostTicket": false,
+        "lostTicketFee": "1000",
+        "nextPeriodMinutes": "30",
+        "nextPrice": "20.5"
+      },
+      "kind": "core",
+      "purpose": "價格只接受整數字串，小數點為 INTEGER_FORMAT 指向 nextPrice"
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "ORDER",
+            "field": "exit",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "dailyCap": "200",
+          "entry": "2026-11-09T09:00",
+          "exit": "2026-11-09T08:00",
+          "firstPeriodMinutes": "60",
+          "firstPrice": "40",
+          "graceMinutes": "15",
+          "lostTicket": false,
+          "lostTicketFee": "1000",
+          "nextPeriodMinutes": "30",
+          "nextPrice": "20"
+        },
+        "initial": {
+          "dailyCap": "200",
+          "entry": "2026-11-09T09:00",
+          "exit": "2026-11-09T11:10",
+          "firstPeriodMinutes": "60",
+          "firstPrice": "40",
+          "graceMinutes": "15",
+          "lostTicket": false,
+          "lostTicketFee": "1000",
+          "nextPeriodMinutes": "30",
+          "nextPrice": "20"
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "dailyCap": "200",
+            "entry": "2026-11-09T22:30",
+            "exit": "2026-11-10T01:20",
+            "firstPeriodMinutes": "60",
+            "firstPrice": "40",
+            "graceMinutes": "15",
+            "lostTicket": false,
+            "lostTicketFee": "1000",
+            "nextPeriodMinutes": "30",
+            "nextPrice": "20"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "dailyCap": "200",
+            "entry": "",
+            "exit": "",
+            "firstPeriodMinutes": "60",
+            "firstPrice": "40",
+            "graceMinutes": "15",
+            "lostTicket": false,
+            "lostTicketFee": "1000",
+            "nextPeriodMinutes": "30",
+            "nextPrice": "20"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "dailyCap": "200",
+          "entry": "2026-11-09T22:30",
+          "exit": "2026-11-10T01:20",
+          "firstPeriodMinutes": "60",
+          "firstPrice": "40",
+          "graceMinutes": "15",
+          "lostTicket": false,
+          "lostTicketFee": "1000",
+          "nextPeriodMinutes": "30",
+          "nextPrice": "20"
+        },
+        "lateResult": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 60,
+              "firstPeriods": 1,
+              "minutes": 90,
+              "nextPeriods": 1,
+              "rawFee": 60
+            },
+            {
+              "capped": false,
+              "date": "2026-11-10",
+              "fee": 60,
+              "firstPeriods": 1,
+              "minutes": 80,
+              "nextPeriods": 1,
+              "rawFee": 60
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 120,
+          "totalMinutes": 170
+        }
+      },
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "ORDER",
+            "field": "exit",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "ORDER",
+            "field": "exit",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "dailyCap": "200",
+          "entry": "2026-11-09T10:00",
+          "exit": "2026-11-09T09:00",
+          "firstPeriodMinutes": "60",
+          "firstPrice": "40",
+          "graceMinutes": "15",
+          "lostTicket": false,
+          "lostTicketFee": "1000",
+          "nextPeriodMinutes": "30",
+          "nextPrice": "20"
+        },
+        "olderDraft": {
+          "dailyCap": "200",
+          "entry": "2026-11-09T09:00",
+          "exit": "2026-11-09T11:10",
+          "firstPeriodMinutes": "60",
+          "firstPrice": "40",
+          "graceMinutes": "15",
+          "lostTicket": false,
+          "lostTicketFee": "1000",
+          "nextPeriodMinutes": "30",
+          "nextPrice": "20"
+        },
+        "olderLateResult": {
+          "days": [
+            {
+              "capped": false,
+              "date": "2026-11-09",
+              "fee": 100,
+              "firstPeriods": 1,
+              "minutes": 130,
+              "nextPeriods": 3,
+              "rawFee": 100
+            }
+          ],
+          "graceApplied": false,
+          "lostTicketApplied": false,
+          "totalFee": 100,
+          "totalMinutes": 130
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 1,
+  "slug": "parking-fee-calculator",
+  "specId": "spec-parking-fee-calculator-20261109"
+}
