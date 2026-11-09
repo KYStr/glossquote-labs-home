@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相框掛點定位｜Gloss Tools</title>
+<meta name="description" content="輸入相框尺寸、可用牆寬和掛點偏移，計算等距排列及每個掛點座標。">
+<link rel="canonical" href="https://glossquote.com/tools/frame-row-marking/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://glossquote.com/tools/frame-row-marking/index.html">
+<link rel="alternate" hreflang="en" href="https://glossquote.com/tools/frame-row-marking/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://glossquote.com/tools/frame-row-marking/index.html">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="https://glossquote.com/index.html">Gloss Tools</a>
+  <a class="lang-link" href="en/index.html" lang="en">English</a>
+</header>
+<main class="canvas">
+  <h1>相框掛點定位</h1>
+  <p class="intro">在一段已量好的牆面掛一排相框：輸入可用寬、每框尺寸與背面掛點偏移，算出等距排列與每個掛點相對同一基準角的讀數，方便用捲尺逐點標記。</p>
+  <p class="note">資料只留在這個頁面，不會上傳或儲存。離開本頁會清除草稿。</p>
+  <p id="boot-note" class="boot-note">載入中……若此訊息一直顯示，請重新載入頁面。</p>
+
+  <form id="mark-form" novalidate>
+    <div id="error-summary" class="error-summary" hidden>
+      <h2></h2>
+      <ul id="error-list"></ul>
+    </div>
+
+    <section class="panel" aria-labelledby="wall-heading">
+      <h2 id="wall-heading">牆面</h2>
+      <div class="field">
+        <label for="f-span">牆面可用寬（mm）</label>
+        <input id="f-span" type="text" inputmode="numeric" autocomplete="off" maxlength="12" required>
+        <p class="hint">整數，1–20000 mm。基準角在牆左端。</p>
+        <p class="field-error" id="f-span-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="f-gap">最小留白（mm）</label>
+        <input id="f-gap" type="text" inputmode="numeric" autocomplete="off" maxlength="12" value="0" required>
+        <p class="hint">整數，0–2000 mm。左右兩端與框間共用同一最少間距。</p>
+        <p class="field-error" id="f-gap-error" hidden></p>
+      </div>
+      <fieldset class="choice-group">
+        <legend>對齊方式</legend>
+        <label class="choice"><input type="radio" name="align" id="f-align-top" value="top" checked> 頂緣對齊</label>
+        <label class="choice"><input type="radio" name="align" id="f-align-center" value="center"> 中心對齊</label>
+        <p class="hint">中心對齊時，結果 Y 從最高框的頂緣基準向下量。</p>
+      </fieldset>
+    </section>
+
+    <section class="panel" aria-labelledby="frames-heading">
+      <h2 id="frames-heading">相框列</h2>
+      <p class="hint">由左到右輸入。每框一個掛點，掛點偏移以相框正面視角為準，掛點可在框邊。2–12 框。</p>
+      <div id="frames-list"></div>
+      <button type="button" id="add-frame-btn" class="btn btn-secondary">新增一框</button>
+    </section>
+
+    <div class="action-bar">
+      <button type="submit" id="submit-btn" class="btn btn-primary">算出牆上掛點</button>
+      <button type="button" id="cancel-btn" class="btn btn-secondary" hidden>取消</button>
+      <button type="button" id="example-btn" class="btn btn-secondary">載入範例</button>
+      <button type="button" id="clear-btn" class="btn btn-quiet">清除草稿</button>
+    </div>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <section id="results" class="panel results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">結果</h2>
+    <p id="gap-line" class="gap-line"></p>
+    <p id="deficit" class="deficit" hidden></p>
+    <div id="diagram" class="diagram" hidden>
+      <p class="diagram-label">牆面配置示意圖</p>
+      <div id="wall" class="wall"></div>
+    </div>
+    <div class="table-wrap" id="marks-table-wrap">
+      <table>
+        <caption>掛點座標表（毫米，相對同一基準角）</caption>
+        <thead>
+          <tr><th scope="col">框</th><th scope="col">左緣 X</th><th scope="col">頂緣 Y</th><th scope="col">掛點 X</th><th scope="col">掛點 Y</th></tr>
+        </thead>
+        <tbody id="marks-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<template id="frame-row-template">
+  <fieldset class="frame-row">
+    <legend></legend>
+    <div class="frame-grid">
+      <div class="field">
+        <label data-label-for="name"></label>
+        <input data-field="name" type="text" autocomplete="off" maxlength="128">
+        <p class="field-error" data-error-for="name" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="wMm"></label>
+        <input data-field="wMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="wMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hMm"></label>
+        <input data-field="hMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hookLeftMm"></label>
+        <input data-field="hookLeftMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hookLeftMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hookTopMm"></label>
+        <input data-field="hookTopMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hookTopMm" hidden></p>
+      </div>
+    </div>
+    <div class="row-actions">
+      <button type="button" data-action="up" class="btn btn-small">上移</button>
+      <button type="button" data-action="down" class="btn btn-small">下移</button>
+      <button type="button" data-action="remove" class="btn btn-small">移除</button>
+    </div>
+  </fieldset>
+</template>
+
+<noscript><p class="boot-note">此工具需要 JavaScript 才能計算。</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
