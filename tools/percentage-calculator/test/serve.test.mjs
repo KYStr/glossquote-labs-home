@@ -9,8 +9,9 @@ import { get } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
-const toolDir = new URL("..", import.meta.url).pathname;
+const toolDir = fileURLToPath(new URL("..", import.meta.url));
 
 function fetch(port, path, method = "GET") {
   return new Promise((resolvePromise, rejectPromise) => {

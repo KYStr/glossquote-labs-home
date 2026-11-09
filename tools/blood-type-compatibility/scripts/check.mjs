@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { access, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
@@ -79,7 +79,7 @@ if (!deepEqual(controllerCases.map((entry) => entry.id), [
   fail("controller fixture ids changed");
 }
 
-const core = await import(resolve(PUBLIC_ROOT, "js/core/blood.mjs"));
+const core = await import(pathToFileURL(resolve(PUBLIC_ROOT, "js/core/blood.mjs")).href);
 if (!deepEqual(core.TYPES, ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"])) {
   fail("TYPES must list the eight codes in canonical order");
 }

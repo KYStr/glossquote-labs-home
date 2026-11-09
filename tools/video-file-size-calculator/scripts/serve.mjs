@@ -19,7 +19,7 @@ const MIME = {
 };
 
 const CSP =
-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 function sendHeaders(res, contentType, isHtml) {
   res.setHeader("Content-Type", contentType);

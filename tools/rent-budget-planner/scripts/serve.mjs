@@ -23,7 +23,7 @@ const SECURITY_HEADERS = Object.freeze({
   "Cache-Control": "no-store",
   "X-Robots-Tag": "noindex, nofollow",
   "Content-Security-Policy":
-    "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 });
 

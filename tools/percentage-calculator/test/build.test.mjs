@@ -7,10 +7,11 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import test from "node:test";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const toolDir = new URL("..", import.meta.url).pathname;
+const toolDir = fileURLToPath(new URL("..", import.meta.url));
 
 async function buildTo(dir) {
   execFileSync(
@@ -29,7 +30,7 @@ async function hashTree(root) {
       else {
         const bytes = await readFile(path);
         entries.push(
-          `${relative(root, path)} ${createHash("sha256").update(bytes).digest("hex")}`
+          `${relative(root, path).split(sep).join("/")} ${createHash("sha256").update(bytes).digest("hex")}`
         );
       }
     }
@@ -74,7 +75,7 @@ test("the embedded worker source runs the core end to end", async () => {
     const posted = [];
     globalThis.self = { postMessage: (message) => posted.push(message) };
     try {
-      await import(workerPath);
+      await import(pathToFileURL(workerPath).href);
       assert.equal(typeof globalThis.self.onmessage, "function");
       globalThis.self.onmessage({
         data: { generation: 7, input: { mode: "share", first: "2", second: "3" } },

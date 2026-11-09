@@ -10,7 +10,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const PROJECT_ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const read = (path) => readFile(resolve(PROJECT_ROOT, path), "utf8");
@@ -60,7 +60,7 @@ const {
   REPORT_FILENAME,
   RULES,
   RULES_AS_OF,
-} = await import(resolve(PROJECT_ROOT, "public/js/core/baggage.mjs"));
+} = await import(pathToFileURL(resolve(PROJECT_ROOT, "public/js/core/baggage.mjs")).href);
 assert.equal(RULES_AS_OF, "2026-11-09");
 assert.equal(REPORT_FILENAME, "cabin-baggage-report.json");
 assert.deepEqual(AIRLINE_IDS, [

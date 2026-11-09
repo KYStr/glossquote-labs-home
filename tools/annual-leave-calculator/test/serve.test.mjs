@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { buildProject } from "../scripts/build.mjs";
 import { createStaticServer } from "../scripts/serve.mjs";
 
-const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
+const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SERVE_DIR = ".test-serve";
 
 async function withServer(fn) {

@@ -162,7 +162,7 @@ for (const [relativePath, expected] of Object.entries(EXPECTED)) {
 // 6. CSP in serve.mjs matches the SPEC exactly.
 const serveText = await readFile(resolve(PROJECT_ROOT, "scripts/serve.mjs"), "utf8");
 const expectedCsp =
-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 check(serveText.includes(expectedCsp), "serve.mjs CSP must match the SPEC exactly");
 
 // 7. Worker source consistency: regenerate and compare.

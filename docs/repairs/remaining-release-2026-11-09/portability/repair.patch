@@ -1,0 +1,545 @@
+diff --git a/tools/ac-capacity-calculator/scripts/serve.mjs b/tools/ac-capacity-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/ac-capacity-calculator/scripts/serve.mjs
++++ b/tools/ac-capacity-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/annual-leave-calculator/test/build.test.mjs b/tools/annual-leave-calculator/test/build.test.mjs
+index 4b37eb1aae4703c4abaeffb56a92df2356abfce6..da3c9ca0161353e63700b2909d939429e79baec1 100644
+--- a/tools/annual-leave-calculator/test/build.test.mjs
++++ b/tools/annual-leave-calculator/test/build.test.mjs
+@@ -3,10 +3,11 @@ import { createHash } from "node:crypto";
+ import { readFile, readdir, rm } from "node:fs/promises";
+ import { join, relative } from "node:path";
+ import test from "node:test";
++import { fileURLToPath } from "node:url";
+ import { buildProject } from "../scripts/build.mjs";
+ import { runProjectCheck } from "../scripts/check.mjs";
+ 
+-const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
++const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
+ 
+ async function hashTree(root) {
+   const entries = new Map();
+diff --git a/tools/annual-leave-calculator/test/serve.test.mjs b/tools/annual-leave-calculator/test/serve.test.mjs
+index 3849bb3a1450689c37aded701c4ac7c7a52337a1..48f6a8aea2f2d8d4b73757125d7e7c68c9d21a45 100644
+--- a/tools/annual-leave-calculator/test/serve.test.mjs
++++ b/tools/annual-leave-calculator/test/serve.test.mjs
+@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
+ import { rm } from "node:fs/promises";
+ import { join } from "node:path";
+ import test from "node:test";
++import { fileURLToPath } from "node:url";
+ import { buildProject } from "../scripts/build.mjs";
+ import { createStaticServer } from "../scripts/serve.mjs";
+ 
+-const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
++const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
+ const SERVE_DIR = ".test-serve";
+ 
+ async function withServer(fn) {
+diff --git a/tools/blood-type-compatibility/scripts/check.mjs b/tools/blood-type-compatibility/scripts/check.mjs
+index 6c84a144afe2761a0775d2f72da8543322ee7515..f9677a7fec0feb03b5d9ddd1c72cedd53ecf31e6 100644
+--- a/tools/blood-type-compatibility/scripts/check.mjs
++++ b/tools/blood-type-compatibility/scripts/check.mjs
+@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
+ import { createHash } from "node:crypto";
+ import { access, readFile } from "node:fs/promises";
+ import { dirname, resolve } from "node:path";
+-import { fileURLToPath } from "node:url";
++import { fileURLToPath, pathToFileURL } from "node:url";
+ import { promisify } from "node:util";
+ 
+ const execFileAsync = promisify(execFile);
+@@ -79,7 +79,7 @@ if (!deepEqual(controllerCases.map((entry) => entry.id), [
+   fail("controller fixture ids changed");
+ }
+ 
+-const core = await import(resolve(PUBLIC_ROOT, "js/core/blood.mjs"));
++const core = await import(pathToFileURL(resolve(PUBLIC_ROOT, "js/core/blood.mjs")).href);
+ if (!deepEqual(core.TYPES, ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"])) {
+   fail("TYPES must list the eight codes in canonical order");
+ }
+diff --git a/tools/blood-type-compatibility/scripts/serve.mjs b/tools/blood-type-compatibility/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/blood-type-compatibility/scripts/serve.mjs
++++ b/tools/blood-type-compatibility/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/body-fat-calculator/scripts/serve.mjs b/tools/body-fat-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/body-fat-calculator/scripts/serve.mjs
++++ b/tools/body-fat-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/cabin-baggage-checker/scripts/check.mjs b/tools/cabin-baggage-checker/scripts/check.mjs
+index 822d3c90ec60acea7b19ead5968a6f8d94ef1c3e..690cb8d9524511f7b620a5c2e833959ea3a14df1 100644
+--- a/tools/cabin-baggage-checker/scripts/check.mjs
++++ b/tools/cabin-baggage-checker/scripts/check.mjs
+@@ -10,7 +10,7 @@
+ import assert from "node:assert/strict";
+ import { access, readFile } from "node:fs/promises";
+ import { resolve } from "node:path";
+-import { fileURLToPath } from "node:url";
++import { fileURLToPath, pathToFileURL } from "node:url";
+ 
+ const PROJECT_ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
+ const read = (path) => readFile(resolve(PROJECT_ROOT, path), "utf8");
+@@ -60,7 +60,7 @@ const {
+   REPORT_FILENAME,
+   RULES,
+   RULES_AS_OF,
+-} = await import(resolve(PROJECT_ROOT, "public/js/core/baggage.mjs"));
++} = await import(pathToFileURL(resolve(PROJECT_ROOT, "public/js/core/baggage.mjs")).href);
+ assert.equal(RULES_AS_OF, "2026-11-09");
+ assert.equal(REPORT_FILENAME, "cabin-baggage-report.json");
+ assert.deepEqual(AIRLINE_IDS, [
+diff --git a/tools/cabin-baggage-checker/scripts/serve.mjs b/tools/cabin-baggage-checker/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/cabin-baggage-checker/scripts/serve.mjs
++++ b/tools/cabin-baggage-checker/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/chinese-zodiac-calculator/scripts/serve.mjs b/tools/chinese-zodiac-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/chinese-zodiac-calculator/scripts/serve.mjs
++++ b/tools/chinese-zodiac-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/coffee-brew-ratio/scripts/serve.mjs b/tools/coffee-brew-ratio/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/coffee-brew-ratio/scripts/serve.mjs
++++ b/tools/coffee-brew-ratio/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/concrete-bag-calculator/scripts/serve.mjs b/tools/concrete-bag-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/concrete-bag-calculator/scripts/serve.mjs
++++ b/tools/concrete-bag-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/discount-calculator/scripts/serve.mjs b/tools/discount-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/discount-calculator/scripts/serve.mjs
++++ b/tools/discount-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/download-time-calculator/scripts/serve.mjs b/tools/download-time-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/download-time-calculator/scripts/serve.mjs
++++ b/tools/download-time-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/filament-usage-calculator/scripts/serve.mjs b/tools/filament-usage-calculator/scripts/serve.mjs
+index 3219b8b117290da23dd86ece333c195c7053f165..94c16bbfd3e000ff6c8884a32b13a94dbaa612c0 100644
+--- a/tools/filament-usage-calculator/scripts/serve.mjs
++++ b/tools/filament-usage-calculator/scripts/serve.mjs
+@@ -19,7 +19,7 @@ const MIME = {
+ };
+ 
+ const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ function sendHeaders(res, contentType, isHtml) {
+   res.setHeader("Content-Type", contentType);
+diff --git a/tools/heart-rate-zones/scripts/serve.mjs b/tools/heart-rate-zones/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/heart-rate-zones/scripts/serve.mjs
++++ b/tools/heart-rate-zones/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/macro-split-calculator/scripts/serve.mjs b/tools/macro-split-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/macro-split-calculator/scripts/serve.mjs
++++ b/tools/macro-split-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/mahjong-score-calculator/scripts/serve.mjs b/tools/mahjong-score-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/mahjong-score-calculator/scripts/serve.mjs
++++ b/tools/mahjong-score-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/moon-phase-calculator/scripts/serve.mjs b/tools/moon-phase-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/moon-phase-calculator/scripts/serve.mjs
++++ b/tools/moon-phase-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/moving-box-estimator/scripts/serve.mjs b/tools/moving-box-estimator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/moving-box-estimator/scripts/serve.mjs
++++ b/tools/moving-box-estimator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/overtime-pay-calculator/scripts/serve.mjs b/tools/overtime-pay-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/overtime-pay-calculator/scripts/serve.mjs
++++ b/tools/overtime-pay-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/percentage-calculator/test/build.test.mjs b/tools/percentage-calculator/test/build.test.mjs
+index dee7e0407bd0913f355fe830102af2b5ccc22549..4c9366661de5451ec42a7bbc69100da5cb675b19 100644
+--- a/tools/percentage-calculator/test/build.test.mjs
++++ b/tools/percentage-calculator/test/build.test.mjs
+@@ -7,10 +7,11 @@ import { execFileSync } from "node:child_process";
+ import { createHash } from "node:crypto";
+ import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+-import { join, relative } from "node:path";
++import { join, relative, sep } from "node:path";
+ import test from "node:test";
++import { fileURLToPath, pathToFileURL } from "node:url";
+ 
+-const toolDir = new URL("..", import.meta.url).pathname;
++const toolDir = fileURLToPath(new URL("..", import.meta.url));
+ 
+ async function buildTo(dir) {
+   execFileSync(
+@@ -29,7 +30,7 @@ async function hashTree(root) {
+       else {
+         const bytes = await readFile(path);
+         entries.push(
+-          `${relative(root, path)} ${createHash("sha256").update(bytes).digest("hex")}`
++          `${relative(root, path).split(sep).join("/")} ${createHash("sha256").update(bytes).digest("hex")}`
+         );
+       }
+     }
+@@ -74,7 +75,7 @@ test("the embedded worker source runs the core end to end", async () => {
+     const posted = [];
+     globalThis.self = { postMessage: (message) => posted.push(message) };
+     try {
+-      await import(workerPath);
++      await import(pathToFileURL(workerPath).href);
+       assert.equal(typeof globalThis.self.onmessage, "function");
+       globalThis.self.onmessage({
+         data: { generation: 7, input: { mode: "share", first: "2", second: "3" } },
+diff --git a/tools/percentage-calculator/test/serve.test.mjs b/tools/percentage-calculator/test/serve.test.mjs
+index 913136494b2bb29531de851feee7c971c4d9920c..b9252380252a6f26d5b62415044fb467d1e7dd96 100644
+--- a/tools/percentage-calculator/test/serve.test.mjs
++++ b/tools/percentage-calculator/test/serve.test.mjs
+@@ -9,8 +9,9 @@ import { get } from "node:http";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import test from "node:test";
++import { fileURLToPath } from "node:url";
+ 
+-const toolDir = new URL("..", import.meta.url).pathname;
++const toolDir = fileURLToPath(new URL("..", import.meta.url));
+ 
+ function fetch(port, path, method = "GET") {
+   return new Promise((resolvePromise, rejectPromise) => {
+diff --git a/tools/protein-intake-calculator/scripts/serve.mjs b/tools/protein-intake-calculator/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/protein-intake-calculator/scripts/serve.mjs
++++ b/tools/protein-intake-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/red-envelope-guide/scripts/serve.mjs b/tools/red-envelope-guide/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/red-envelope-guide/scripts/serve.mjs
++++ b/tools/red-envelope-guide/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/rent-budget-planner/public/en/index.html b/tools/rent-budget-planner/public/en/index.html
+index 8cba2b70d6cc6aac8848dbc43199ea3aa0f5ee96..212b530b9ceacc07892d1d6cbbeda27710636747 100644
+--- a/tools/rent-budget-planner/public/en/index.html
++++ b/tools/rent-budget-planner/public/en/index.html
+@@ -6,7 +6,7 @@
+ <title>Rent Budget Planner | Gloss Tools</title>
+ <meta name="description" content="Work out the most rent you can afford from your monthly income and rent ratio, plus the full move-in cash: first month, deposit and agency fee.">
+ <meta name="robots" content="noindex, nofollow">
+-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
++<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+ <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+ <link rel="alternate" hreflang="en" href="./index.html">
+ <link rel="alternate" hreflang="x-default" href="../index.html">
+diff --git a/tools/rent-budget-planner/public/index.html b/tools/rent-budget-planner/public/index.html
+index 3cd791e46658179cba060fc1f64035d86f0bbe92..4de3f795595420820418153c06b09e4176fdf34e 100644
+--- a/tools/rent-budget-planner/public/index.html
++++ b/tools/rent-budget-planner/public/index.html
+@@ -6,7 +6,7 @@
+ <title>租屋預算規劃｜Gloss Tools</title>
+ <meta name="description" content="用月收入與租金比例算出可負擔的租金上限，再把簽約搬入要準備的第一個月租金、押金與仲介費一次算清。">
+ <meta name="robots" content="noindex, nofollow">
+-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
++<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+ <link rel="alternate" hreflang="zh-Hant" href="./index.html">
+ <link rel="alternate" hreflang="en" href="./en/index.html">
+ <link rel="alternate" hreflang="x-default" href="./index.html">
+diff --git a/tools/rent-budget-planner/scripts/serve.mjs b/tools/rent-budget-planner/scripts/serve.mjs
+index 5b90cee13130f09c9999b54f4c943d622003da72..f5bc9fb24b2baf4bedbeb740197864fdfef8ddcc 100644
+--- a/tools/rent-budget-planner/scripts/serve.mjs
++++ b/tools/rent-budget-planner/scripts/serve.mjs
+@@ -23,7 +23,7 @@ const SECURITY_HEADERS = Object.freeze({
+   "Cache-Control": "no-store",
+   "X-Robots-Tag": "noindex, nofollow",
+   "Content-Security-Policy":
+-    "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
++    "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+ });
+ 
+diff --git a/tools/ring-size-converter/scripts/serve.mjs b/tools/ring-size-converter/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/ring-size-converter/scripts/serve.mjs
++++ b/tools/ring-size-converter/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/school-entry-year/scripts/serve.mjs b/tools/school-entry-year/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/school-entry-year/scripts/serve.mjs
++++ b/tools/school-entry-year/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/shared-electricity-split/scripts/serve.mjs b/tools/shared-electricity-split/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/shared-electricity-split/scripts/serve.mjs
++++ b/tools/shared-electricity-split/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/stock-average-cost/scripts/check-generated.mjs b/tools/stock-average-cost/scripts/check-generated.mjs
+index 2af70d4c4a145a6332bc6dc66886ac0a74b3f39a..9a6b7648b82456427d0f475492f701245a74f23c 100644
+--- a/tools/stock-average-cost/scripts/check-generated.mjs
++++ b/tools/stock-average-cost/scripts/check-generated.mjs
+@@ -30,7 +30,7 @@ async function listFiles(dir, base = dir) {
+   for (const entry of entries) {
+     const full = path.join(dir, entry.name);
+     if (entry.isDirectory()) files.push(...(await listFiles(full, base)));
+-    else if (entry.isFile()) files.push(path.relative(base, full));
++    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
+   }
+   return files;
+ }
+diff --git a/tools/stock-average-cost/test/build.test.mjs b/tools/stock-average-cost/test/build.test.mjs
+index a9ff3e3f8b54fbac104f02789611865f9182eaf6..c6bc88dde40035e72f0a93ed638ee7c808042376 100644
+--- a/tools/stock-average-cost/test/build.test.mjs
++++ b/tools/stock-average-cost/test/build.test.mjs
+@@ -32,7 +32,7 @@ async function treeHash(dir, base = dir) {
+     } else if (entry.isFile()) {
+       const bytes = await readFile(full);
+       const hash = createHash('sha256').update(bytes).digest('hex');
+-      parts.push(`${hash}  ${path.relative(base, full)}`);
++      parts.push(`${hash}  ${path.relative(base, full).split(path.sep).join('/')}`);
+     }
+   }
+   return parts.join('\n');
+diff --git a/tools/sunrise-sunset-calculator/scripts/serve.mjs b/tools/sunrise-sunset-calculator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/sunrise-sunset-calculator/scripts/serve.mjs
++++ b/tools/sunrise-sunset-calculator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/trip-time-estimator/scripts/serve.mjs b/tools/trip-time-estimator/scripts/serve.mjs
+index 2d41c007bbe07fdfaeafd3831de21216511b4218..160c9e8da1f96a8762b3260af057f8714e8a0dbe 100644
+--- a/tools/trip-time-estimator/scripts/serve.mjs
++++ b/tools/trip-time-estimator/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/tv-viewing-distance/scripts/serve.mjs b/tools/tv-viewing-distance/scripts/serve.mjs
+index 823e1c3a5aff23ffca344b3ae2d376cb223cb5c9..a3a5588f3ef37c0d990611b7e722f6cb55e06bc9 100644
+--- a/tools/tv-viewing-distance/scripts/serve.mjs
++++ b/tools/tv-viewing-distance/scripts/serve.mjs
+@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],
+diff --git a/tools/video-file-size-calculator/scripts/serve.mjs b/tools/video-file-size-calculator/scripts/serve.mjs
+index 3219b8b117290da23dd86ece333c195c7053f165..94c16bbfd3e000ff6c8884a32b13a94dbaa612c0 100644
+--- a/tools/video-file-size-calculator/scripts/serve.mjs
++++ b/tools/video-file-size-calculator/scripts/serve.mjs
+@@ -19,7 +19,7 @@ const MIME = {
+ };
+ 
+ const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ function sendHeaders(res, contentType, isHtml) {
+   res.setHeader("Content-Type", contentType);
+diff --git a/tools/zodiac-sign-finder/scripts/check.mjs b/tools/zodiac-sign-finder/scripts/check.mjs
+index d388d1db8c3bb304163c69d0b66163158709f792..db52fb42317d8085a10b2e6cf9d854a8d6aee7e2 100644
+--- a/tools/zodiac-sign-finder/scripts/check.mjs
++++ b/tools/zodiac-sign-finder/scripts/check.mjs
+@@ -162,7 +162,7 @@ for (const [relativePath, expected] of Object.entries(EXPECTED)) {
+ // 6. CSP in serve.mjs matches the SPEC exactly.
+ const serveText = await readFile(resolve(PROJECT_ROOT, "scripts/serve.mjs"), "utf8");
+ const expectedCsp =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ check(serveText.includes(expectedCsp), "serve.mjs CSP must match the SPEC exactly");
+ 
+ // 7. Worker source consistency: regenerate and compare.
+diff --git a/tools/zodiac-sign-finder/scripts/serve.mjs b/tools/zodiac-sign-finder/scripts/serve.mjs
+index 3882ec720793f1fbe3ed1355011c29e937cadbde..cb8dcf42d069caf82c5ad5b04192766ccfbf9355 100644
+--- a/tools/zodiac-sign-finder/scripts/serve.mjs
++++ b/tools/zodiac-sign-finder/scripts/serve.mjs
+@@ -32,7 +32,7 @@ const SERVE_ROOT = resolve(PROJECT_ROOT, DIR);
+ const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
+ 
+ export const CSP =
+-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+ const MIME_TYPES = new Map([
+   [".html", "text/html; charset=utf-8"],

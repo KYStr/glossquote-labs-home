@@ -3,10 +3,11 @@ import { createHash } from "node:crypto";
 import { readFile, readdir, rm } from "node:fs/promises";
 import { join, relative } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { buildProject } from "../scripts/build.mjs";
 import { runProjectCheck } from "../scripts/check.mjs";
 
-const PROJECT_ROOT = new URL("..", import.meta.url).pathname;
+const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 async function hashTree(root) {
   const entries = new Map();

@@ -32,7 +32,7 @@ async function treeHash(dir, base = dir) {
     } else if (entry.isFile()) {
       const bytes = await readFile(full);
       const hash = createHash('sha256').update(bytes).digest('hex');
-      parts.push(`${hash}  ${path.relative(base, full)}`);
+      parts.push(`${hash}  ${path.relative(base, full).split(path.sep).join('/')}`);
     }
   }
   return parts.join('\n');

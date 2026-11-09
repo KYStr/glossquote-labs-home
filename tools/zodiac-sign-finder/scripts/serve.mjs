@@ -32,7 +32,7 @@ const SERVE_ROOT = resolve(PROJECT_ROOT, DIR);
 const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
 
 export const CSP =
-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 const MIME_TYPES = new Map([
   [".html", "text/html; charset=utf-8"],

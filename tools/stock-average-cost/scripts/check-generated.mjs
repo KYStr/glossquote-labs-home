@@ -30,7 +30,7 @@ async function listFiles(dir, base = dir) {
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) files.push(...(await listFiles(full, base)));
-    else if (entry.isFile()) files.push(path.relative(base, full));
+    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
   }
   return files;
 }

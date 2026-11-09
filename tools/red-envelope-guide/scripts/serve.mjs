@@ -34,7 +34,7 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
 const ORIGIN = `${["http", "://"].join("")}${HOST}:${PORT}`;
 
 export const CSP =
-  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 const MIME_TYPES = new Map([
   [".html", "text/html; charset=utf-8"],
