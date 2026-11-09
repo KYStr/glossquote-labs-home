@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPA 計算器 — GlossQuote Labs</title>
+<meta name="description" content="以學分加權精確計算 GPA（4.0 與 4.3 量尺），並試算達到目標 GPA 所需的未來平均成績點數；不可達與已保證的目標會誠實標示。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<main>
+<nav class="toplinks"><a href="../../">← GlossQuote Labs 首頁</a><a href="en/" hreflang="en">English</a></nav>
+<h1>GPA 計算器</h1>
+<p class="lede">輸入每門課的等第與學分，得到精確的學分加權 GPA；下方試算區回答「要達到目標 GPA，之後的學分平均要拿多少」。</p>
+
+<section class="panel" aria-labelledby="courses-h">
+<h2 id="courses-h">課程與 GPA</h2>
+<p>
+<label for="scale-select">量尺</label>
+<select id="scale-select">
+<option value="4.0">4.0 量尺（最高 A = 4.0）</option>
+<option value="4.3">4.3 量尺（最高 A+ = 4.3）</option>
+</select>
+</p>
+<div class="row-head" aria-hidden="true"><span>課程名稱（可選）</span><span>等第</span><span>學分</span><span>排除</span><span></span></div>
+<div id="rows"></div>
+<p>
+<button type="button" id="add-row">＋ 新增課程</button>
+<button type="button" id="clear-all">全部清除</button>
+</p>
+<p class="note" id="row-limit-note" hidden>已達 50 門課程上限，無法再新增。</p>
+<div class="totals" aria-live="polite">
+<div><small>總學分（計入）</small><span class="num" id="total-credits">—</span></div>
+<div><small>總成績點數</small><span class="num" id="total-points">—</span></div>
+<div><small>GPA</small><span class="big" id="gpa-value">—</span></div>
+</div>
+<p class="note" id="totals-note">請先加入至少一門完整且計入的課程。</p>
+<details>
+<summary>量尺對照表</summary>
+<table class="scale-table" id="scale-table"></table>
+</details>
+</section>
+
+<section class="panel" aria-labelledby="solver-h">
+<h2 id="solver-h">目標 GPA 試算</h2>
+<div class="solver-grid">
+<div><label for="sv-c0">已修學分</label><input type="number" id="sv-c0" min="0" max="1000" step="0.5" inputmode="decimal"><p class="field-error" id="err-c0" hidden></p></div>
+<div><label for="sv-g0">目前 GPA</label><input type="number" id="sv-g0" min="0" step="0.01" inputmode="decimal"><p class="field-error" id="err-g0" hidden></p></div>
+<div><label for="sv-c1">預計再修學分</label><input type="number" id="sv-c1" min="0.5" max="300" step="0.5" inputmode="decimal"><p class="field-error" id="err-c1" hidden></p></div>
+<div><label for="sv-t">目標 GPA</label><input type="number" id="sv-t" min="0" step="0.01" inputmode="decimal"><p class="field-error" id="err-t" hidden></p></div>
+</div>
+<p class="outcome" id="solver-outcome">填入四個欄位後，這裡會顯示試算結果。</p>
+</section>
+
+<p class="honesty">各校 GPA 計算方式不同（重修、科目抵免、加減分變體等）。本工具只實作上方量尺表的單純學分加權規則，結果是估算，不代表任何學校的正式成績，也不會推論獎學金或錄取結果。輸入的資料只在本頁計算，不會儲存或傳送。</p>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
