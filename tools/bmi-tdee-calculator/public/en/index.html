@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BMI &amp; TDEE Calculator | GlossQuote Labs</title>
+<meta name="description" content="Enter sex, age, height and weight to get your BMI with its WHO category, the healthy weight range for your height, Mifflin-St Jeor BMR, and TDEE for five activity levels. Every formula is printed on the page; your numbers never leave it.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant-TW" href="../index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p><a href="../../../en/">← Back to the GlossQuote Labs home page</a> · <a href="../index.html" hreflang="zh-Hant-TW">繁體中文</a></p>
+  <h1>BMI &amp; TDEE Calculator</h1>
+  <p>Enter your numbers to get your BMI with its WHO category, the healthy weight range for your height, a Mifflin-St Jeor basal metabolic rate, and total daily energy expenditure for five activity levels. Every formula is printed on this page, and the calculation happens only in your browser — nothing is uploaded or stored.</p>
+</header>
+<main>
+  <form id="inputs" autocomplete="off">
+    <fieldset>
+      <legend>Sex (used only for the BMR constant)</legend>
+      <label><input type="radio" name="sex" value="female" checked> Female</label>
+      <label><input type="radio" name="sex" value="male"> Male</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="age">Age (years)</label>
+      <input id="age" name="age" type="text" inputmode="numeric" value="30" aria-describedby="age-error">
+      <p class="error" id="age-error"></p>
+    </div>
+
+    <fieldset>
+      <legend>Units</legend>
+      <label><input type="radio" name="system" value="metric" checked> Metric (cm / kg)</label>
+      <label><input type="radio" name="system" value="imperial"> Imperial (ft / in / lb)</label>
+    </fieldset>
+
+    <div class="field" id="height-metric">
+      <label for="height-cm">Height (cm)</label>
+      <input id="height-cm" name="height-cm" type="text" inputmode="decimal" value="175" aria-describedby="height-error">
+    </div>
+    <div class="field" id="height-imperial" hidden>
+      <span class="field-label" id="height-imperial-label">Height (feet + inches)</span>
+      <span class="inline-inputs" role="group" aria-labelledby="height-imperial-label">
+        <input id="height-ft" name="height-ft" type="text" inputmode="numeric" value="5" aria-label="Feet" aria-describedby="height-error">
+        <span>ft</span>
+        <input id="height-in" name="height-in" type="text" inputmode="decimal" value="9" aria-label="Inches" aria-describedby="height-error">
+        <span>in</span>
+      </span>
+    </div>
+    <p class="error" id="height-error"></p>
+
+    <div class="field" id="weight-metric">
+      <label for="weight-kg">Weight (kg)</label>
+      <input id="weight-kg" name="weight-kg" type="text" inputmode="decimal" value="70" aria-describedby="weight-error">
+    </div>
+    <div class="field" id="weight-imperial" hidden>
+      <label for="weight-lb">Weight (lb)</label>
+      <input id="weight-lb" name="weight-lb" type="text" inputmode="decimal" value="154.3" aria-describedby="weight-error">
+    </div>
+    <p class="error" id="weight-error"></p>
+
+    <div class="field">
+      <label for="activity">Activity level</label>
+      <select id="activity" name="activity">
+        <option value="sedentary">Sedentary: desk work, little or no exercise (×1.2)</option>
+        <option value="light">Light: exercise 1–3 days/week (×1.375)</option>
+        <option value="moderate" selected>Moderate: exercise 3–5 days/week (×1.55)</option>
+        <option value="active">Active: hard exercise 6–7 days/week (×1.725)</option>
+        <option value="athlete">Athlete: physical job plus training, or twice-daily training (×1.9)</option>
+      </select>
+    </div>
+  </form>
+
+  <p class="statement"><strong>Important:</strong> the figures here are population-level estimates from standard formulas. They are not medical advice and cannot replace professional medical guidance. This tool deliberately gives no calorie target for gaining or losing weight.</p>
+
+  <section id="results" aria-live="off">
+    <h2>Your results</h2>
+    <p class="stale-note" id="stale-note" hidden></p>
+    <p class="under18-note" id="under18-note" hidden>Note: the age entered is under 18. These equations were derived from adult data, so treat the results as rough orientation only.</p>
+    <dl>
+      <div>
+        <dt>BMI</dt>
+        <dd><span id="bmi-value">–</span> (<span id="bmi-category">–</span>)</dd>
+      </div>
+      <div>
+        <dt>Healthy weight range</dt>
+        <dd id="healthy-range">–</dd>
+      </div>
+      <div>
+        <dt>Basal metabolic rate, BMR (Mifflin-St Jeor)</dt>
+        <dd id="bmr-value">–</dd>
+      </div>
+    </dl>
+
+    <h3>Total daily energy expenditure, TDEE (BMR × activity multiplier)</h3>
+    <table>
+      <thead>
+        <tr><th scope="col">Activity level</th><th scope="col">Multiplier</th><th scope="col">kcal/day</th></tr>
+      </thead>
+      <tbody id="tdee-body">
+        <tr><td>Sedentary: desk work, little or no exercise</td><td>1.2</td><td class="tdee-kcal">–</td></tr>
+        <tr><td>Light: exercise 1–3 days/week</td><td>1.375</td><td class="tdee-kcal">–</td></tr>
+        <tr><td>Moderate: exercise 3–5 days/week</td><td>1.55</td><td class="tdee-kcal">–</td></tr>
+        <tr><td>Active: hard exercise 6–7 days/week</td><td>1.725</td><td class="tdee-kcal">–</td></tr>
+        <tr><td>Athlete: physical job plus training, or twice-daily training</td><td>1.9</td><td class="tdee-kcal">–</td></tr>
+      </tbody>
+    </table>
+    <p>The highlighted row is the activity level you selected.</p>
+  </section>
+
+  <section>
+    <h2>Formulas and how results are judged (this page audits itself)</h2>
+    <ul>
+      <li>BMI = weight (kg) ÷ height (m)², computed from unrounded values.</li>
+      <li>Categories are judged on the <strong>unrounded</strong> BMI, not on the displayed one-decimal value: a displayed 18.5 can still be underweight, and a displayed 25.0 can still be normal.</li>
+      <li>WHO bands: underweight &lt; 18.5; normal 18.5–&lt;25; overweight 25–&lt;30; obese class I 30–&lt;35; obese class II 35–&lt;40; obese class III ≥ 40. Band names are range names, not a diagnosis.</li>
+      <li>Healthy weight range = [18.5 × height², 25 × height²); the upper bound is “stay below” that value (it is exclusive).</li>
+      <li>BMR uses the Mifflin-St Jeor equation: men = 10×weight (kg) + 6.25×height (cm) − 5×age + 5; women = 10×weight + 6.25×height − 5×age − 161.</li>
+      <li>TDEE = unrounded BMR × activity multiplier (1.2 / 1.375 / 1.55 / 1.725 / 1.9): an estimate of the daily energy needed to maintain current weight.</li>
+      <li>Unit conversion: 1 inch = 2.54 cm; 1 lb = 0.45359237 kg; internally everything is computed in unrounded metric values.</li>
+      <li>Information only (not a category verdict): Asia-Pacific public-health action points are BMI 23.0 and 27.5; the categories above still use the WHO bands.</li>
+    </ul>
+  </section>
+</main>
+<footer>
+  <p><a href="../../../en/">← Back to the GlossQuote Labs home page</a></p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
