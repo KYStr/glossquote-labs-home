@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Chinese Zodiac Calculator | Gloss Tools</title>
+<meta name="description" content="Find your Chinese zodiac sign from a Gregorian birth date using the Chinese New Year boundary, with the zodiac year's start and end dates and your Ben Ming Nian.">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../../en/">Home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Chinese Zodiac Calculator</h1>
+  <p class="lede">Enter a Gregorian birth date to get the correct Chinese zodiac sign, its heavenly stem and earthly branch, and the exact start and end dates of that zodiac year — no more off-by-one signs for January and February birthdays. Add an optional as-of date to see whether it is your Ben Ming Nian and when the next one starts. Everything is decided by a pinned Chinese New Year table for 1960–2035 (plus 1959 and 2036 boundary rows) and computed locally in your browser.</p>
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Birth &amp; as-of dates</h2>
+      <form id="zodiac-form" novalidate>
+        <div class="field">
+          <label for="field-birthDate">Birth date</label>
+          <p class="help" id="help-birthDate">Gregorian date, format YYYY-MM-DD, from 1960-01-01 to 2035-12-31.</p>
+          <input type="text" id="field-birthDate" name="birthDate" inputmode="numeric" autocomplete="off" aria-describedby="help-birthDate error-birthDate" aria-invalid="false">
+          <p class="field-error" id="error-birthDate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-asOfDate">As-of date (optional)</label>
+          <p class="help" id="help-asOfDate">Optional. Fill it in to check Ben Ming Nian and the next one; range 1960-01-01 to 2036-12-31. Leaving it blank does not affect the sign result.</p>
+          <input type="text" id="field-asOfDate" name="asOfDate" inputmode="numeric" autocomplete="off" aria-describedby="help-asOfDate error-asOfDate" aria-invalid="false">
+          <p class="field-error" id="error-asOfDate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status">Nothing looked up yet. Enter a birth date, or load the example.</p>
+        <p class="example-note" id="example-note" hidden>This is a synthetic example with no real personal data; press “Find my sign” after loading it.</p>
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">Find my sign</button>
+          <button type="button" class="button-secondary" id="example-btn">Load example</button>
+          <button type="button" class="button-secondary" id="reset-btn">Reset</button>
+          <button type="button" class="button-secondary" id="cancel-btn" disabled>Cancel</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">Zodiac result</h2>
+      <p class="result-headline" id="result-headline"></p>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" disabled>Download report</button>
+      </div>
+      <p class="disclaimer">This tool switches the zodiac year at Chinese New Year (lunar 1/1); BaZi traditions that switch at Li Chun may differ.</p>
+    </section>
+  </div>
+  <details class="details">
+    <summary>How the sign is decided, and the CNY table</summary>
+    <p>The zodiac year starts at Chinese New Year: a birth on or after that year's CNY takes that year's sign; a birth before it takes the previous year's sign. The CNY day itself already belongs to the new sign.</p>
+    <p>The tool carries a pinned Chinese New Year table for 1960–2035, plus boundary rows for 1959 and 2036 that settle births at the very start of 1960 and the very end of 2035. Dates outside the input ranges are reported as out of range — nothing is extrapolated.</p>
+    <p>The stem and branch come from the zodiac year: branch index = (year − 4) mod 12, stem index = (year − 4) mod 10. 1960 is a Geng-Zi Rat year, 1984 a Jia-Zi Rat year and 2024 a Jia-Chen Dragon year, exactly as the formulas give.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Zodiac year</th><th>Chinese New Year</th></tr></thead>
+        <tbody id="cny-table-body"></tbody>
+      </table>
+    </div>
+  </details>
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Why do January and February birthdays so often get the wrong sign?</dt>
+      <dd>Because the zodiac year starts at Chinese New Year (lunar 1/1), not on January 1. CNY falls between January 21 and February 20, so anyone born before it still belongs to the previous year's sign.</dd>
+      <dt>What is Ben Ming Nian?</dt>
+      <dd>When the as-of date falls in a zodiac year with the same sign as your birth year, that is your Ben Ming Nian — it comes around every 12 years. Enter an as-of date and this tool tells you whether it is one, and when the next one starts.</dd>
+      <dt>Why might a BaZi chart give a different sign?</dt>
+      <dd>BaZi switches the year at Li Chun (around February 4) instead of Chinese New Year. People born between Li Chun and CNY get different signs under the two systems. This tool uses the CNY boundary.</dd>
+    </dl>
+  </section>
+  <p class="privacy-note">This tool is fully offline: the calculation runs in a background worker in your browser. Nothing is sent, stored or tracked.</p>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
