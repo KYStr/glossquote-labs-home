@@ -1,6 +1,6 @@
 # Public SEO inspection release
 
-User authorized deployment of existing runnable candidates on 2026-11-09 to inspect SEO. This batch contains 65 tools plus https://review.glossquote.com/index.html and its /en/index.html directory. This source candidate records preparation; actual deployment is recorded separately in LIVE-RESULTS.md after HTTPS verification.
+User authorized deployment of existing runnable candidates on 2026-11-09 to inspect SEO. This batch contains 67 tools plus https://review.glossquote.com/index.html and its /en/index.html directory. This source candidate records preparation; actual deployment is recorded separately in LIVE-RESULTS.md after HTTPS verification.
 
 All new candidates remain **noindex, follow** with visible inspection notices. Canonical, reciprocal hreflang including x-default, robots and sitemap are built against real hosts. A sitemap does not override noindex. No new product has been marked accepted or externally passed by this maintenance release. Existing 47 live tools are preserved.
 
@@ -14,7 +14,7 @@ Use the existing reviewed local credential loader for deployments. No credential
 
 ## Known exclusions
 
-Video-to-audio and transcription lack required packaged execution resources; word frequency has a confirmed denominator defect; text-to-speech may select remote voices despite local-only copy; fluid typography lacks a separate static English page. These are not deployed as working tools. CSS Grid uses a byte-verified standalone packaging adapter because the author's Windows pathname handling fails; original build/check is not relabelled PASS.
+Video-to-audio and transcription lack required packaged execution resources; word frequency has a confirmed denominator defect; text-to-speech may select remote voices despite local-only copy; fluid typography lacks a separate static English page. SVG to PNG also remains excluded because its sanitizer preserves three demonstrated external-reference forms. These six tools are not deployed as working tools. CSS Grid uses a byte-verified standalone packaging adapter because the author's Windows pathname handling fails; original build/check is not relabelled PASS.
 
 ## Acceptance scope
 

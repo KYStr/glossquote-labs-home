@@ -165,6 +165,7 @@ function renderPage(locale, mode, tools) {
         <nav class="header-nav" aria-label="${locale === "zh" ? "主要導覽" : "Primary navigation"}">
           <div class="primary-nav">
             <a href="#all-tools">${escapeHtml(copy.toolsHeading)}</a>
+            <a href="https://review.glossquote.com${locale === "en" ? "/en/index.html" : "/index.html"}">${locale === "zh" ? "新工具檢查區" : "New tool previews"}</a>
             <a href="#about">${locale === "zh" ? "資料與隱私" : "Privacy"}</a>
           </div>
           <div class="language-nav" aria-label="${locale === "zh" ? "語言" : "Language"}">
