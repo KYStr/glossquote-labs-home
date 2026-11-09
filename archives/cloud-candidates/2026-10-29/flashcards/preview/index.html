@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>問答卡製作與練習 | GlossQuote</title>
+<meta name="description" content="貼上 CSV 問答，在瀏覽器翻面自評，下載進度 JSON 或可列印文字。不傳送或自動保存練習內容。">
+<link rel="stylesheet" href="./styles.css">
+<script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#work">前往工作區</a>
+<header class="site-header"><a class="brand" href="https://glossquote.com/index.html">GlossQuote<span> / 所有工具</span></a><nav aria-label="語言"><a id="language-link" href="./en/index.html" lang="en">English</a><small>切換語言會清除本頁資料。</small></nav></header>
+<main id="work">
+<div class="intro"><p class="eyebrow">GLOSSQUOTE · 學習工具 / 未發布預覽</p><h1>問答卡製作與練習</h1><p class="subtitle">先回想，再翻面。把自己的題目變成練習卡。</p><p>貼上兩欄 CSV，翻面核對答案並自評。需要保留時，下載進度或可列印文字。</p><p class="privacy">只在本頁記憶體處理；不自動保存、不傳送題答。離開前請自行匯出。</p></div>
+<div class="workspace">
+<section class="editor-panel" aria-labelledby="prepare-title"><h2 id="prepare-title">01 · 準備題答</h2>
+<p id="init-status" role="status">介面正在初始化；若沒有啟用，請使用支援 JavaScript 的瀏覽器。題答不會送出。</p><noscript><p class="error">此工具需要 JavaScript；目前輸入與提交停用，題答不會送出。</p></noscript>
+<form id="editor-form" autocomplete="off"><fieldset id="editor" disabled><legend class="visually-hidden">01 · 準備題答</legend>
+<label for="source">問答 CSV</label><p id="source-hint" class="hint">第一筆必須是 question,answer。逗號或換行請用雙引號包住，內容中的雙引號寫兩次。</p>
+<textarea id="source" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="source-hint source-bounds error" placeholder="question,answer
+法國首都？,巴黎"></textarea>
+<p id="source-bounds" class="hint">1–200 張；每面最多 2,000 Unicode 碼點。原始輸入最多 200,000 UTF-16 單位，且最多 262,144 UTF-8 bytes。超限整份拒絕，不截短。</p>
+<label class="checkbox" for="shuffle"><input id="shuffle" type="checkbox" aria-describedby="shuffle-hint">開始時洗牌</label><p id="shuffle-hint" class="hint">使用瀏覽器亂數；不保證每次順序不同。重新開始會重設所有自評。</p>
+<div class="actions"><button class="primary" id="start" type="submit" disabled>開始練習</button><button id="example" type="button">載入示範 CSV</button><button id="clear" type="button">清除本頁</button></div>
+</fieldset></form><p id="error" class="error" role="alert"></p><p id="status" class="status" role="status" aria-live="polite"></p>
+</section>
+<section class="practice-panel" id="practice" hidden aria-labelledby="practice-title"><h2 id="practice-title">02 · 想答案，然後翻面</h2><p id="summary" class="summary"></p><h3 id="position" tabindex="-1"></h3>
+<div class="card-face"><h4>題目</h4><p id="question" class="card-text"></p></div>
+<button id="reveal" type="button" class="primary" disabled>顯示答案</button>
+<div id="answer-region" class="card-face answer-face" hidden><h4 id="answer-heading" tabindex="-1">答案</h4><p id="answer" class="card-text"></p></div>
+<p id="rating" class="rating"></p><div class="actions"><button id="again" type="button" disabled>需要再練習</button><button id="remembered" type="button" disabled>已想起</button></div><div class="actions navigation"><button id="previous" type="button" disabled>上一張</button><button id="next" type="button" disabled>下一張</button></div>
+</section></div>
+<section id="exports" class="export-panel" hidden aria-labelledby="export-title"><h2 id="export-title">03 · 自行保存</h2><p>進度 JSON 包含全部題答、來源 ID、自評與目前位置。本版只匯出，不支援重新匯入。可列印 TXT 依來源順序列出所有答案，使用文字編輯器列印。</p><div class="actions"><button id="download-progress" type="button" disabled>下載進度 JSON</button><button id="download-print" type="button" disabled>下載可列印 TXT</button></div><details id="preview-details"><summary>檢視全部題答（包含答案）</summary><label for="print-preview">可列印文字預覽，可選取複製</label><textarea id="print-preview" rows="12" readonly spellcheck="false"></textarea></details></section>
+<section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">使用說明與常見問題</h2><details><summary>CSV 有什麼格式限制？</summary><p>必須精確使用 question,answer 兩欄標頭，不自動 trim、改大小寫或正規化 Unicode。CRLF/CR 換為 LF；接受開頭一個 BOM。引號內可有逗號、換行與成對雙引號。只接受檔尾一個記錄終止換行，其他空白記錄拒絕。</p></details>
+<details><summary>空白、重複題目與特殊字元怎麼處理？</summary><p>保留前後空白與重複卡片，每張有獨立來源 ID；但每面不可完全空白。未配對 surrogate 與 C0/C1 控制碼會拒絕，Tab 與換行除外。HTML 和腳本字樣只當純文字。碼點不是視覺字數。</p></details>
+<details><summary>自評會自動判斷對錯嗎？</summary><p>不會。顯示答案後由你選擇「需要再練習」或「已想起」，可以修正。同一卡只計最後一次自評，不自動跳卡或排複習日期。切換卡片先隱藏答案。</p></details>
+<details><summary>哪些操作會清掉練習？</summary><p>改 CSV、改洗牌選項、開始輸入法組字、載入範例或重新開始，都會清掉舊練習及自評。離頁或切語言也會清除；本頁不提供歷史、登入或同步。清除確認的取消/Escape 則保留工作。</p></details>
+<details><summary>匯出後可以繼續嗎？</summary><p>下載不影響目前練習。最多四個已啟動下載會暫留資料60秒，即使編輯或清除也保留這段時間；離頁立即釋放。JSON 保存可閱讀的題答及進度資料，但本版不重新匯入。TXT 包含全部答案且不含裁切線或雙面對位，請在文字編輯器選擇列印格式。下載不會替你上傳或分享。</p></details>
+<details><summary>完全沒有網路嗎？</summary><p>不是。第一次載入網站仍會向託管主機要求 HTML、CSS 與程式；題答處理沒有外送 API。不保證關閉後可離線重開，也無法清除你已下載的檔案或瀏覽器底層記憶體。這是 noindex 未發布預覽，並非正式上線或完整安全認證。</p></details></section>
+</main>
+<dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-body"><h2 id="clear-title">清除本頁資料？</h2><p id="clear-body">將清除輸入、練習與自評。已下載檔案不受影響。</p><div class="actions"><button id="cancel-clear" type="button">取消，保留資料</button><button id="confirm-clear" type="button" class="danger">確認清除</button></div></dialog>
+<footer>未發布候選 · 繁體中文 / English · 無帳號、無 AI、無同步</footer>
+</body></html>

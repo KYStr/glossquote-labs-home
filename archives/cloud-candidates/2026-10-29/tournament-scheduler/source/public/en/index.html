@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Generate single or double round-robin fixtures, byes and team schedules for 2–32 teams, entirely in this page.">
+<title>Round-Robin Scheduler · Gloss Tools</title>
+<link rel="stylesheet" href="/styles.css">
+<script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to tool</a>
+<header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools home</a><nav aria-label="Language"><a id="language-link" href="/index.html" hreflang="zh-Hant">繁體中文</a><small>Switching language clears this draft.</small></nav></header>
+<main id="main">
+<div class="intro"><p class="eyebrow">Unpublished preview · No indexing</p><h1>Round-Robin Scheduler</h1><p class="tagline">Every team. Every opponent.</p><p>Paste the teams, choose a format, then review each round and every team’s schedule.</p></div>
+<section class="workbench" aria-labelledby="setup-heading"><h2 id="setup-heading">01 / Set up teams</h2>
+<form id="scheduler" novalidate autocomplete="off"><fieldset id="editor" disabled><legend class="sr-only">01 / Set up teams</legend>
+<div class="input-grid"><div><label for="roster">Participating teams</label><p id="roster-hint" class="hint">One team per line, 2–32 teams. Blank lines are ignored; duplicate names remain distinct by # ID. Up to 64 Unicode code points per name and 8192 UTF-16 units for the roster.</p><textarea id="roster" rows="8" spellcheck="false" autocomplete="off" aria-describedby="roster-hint" placeholder="Team Alpha
+Team Beta
+Team Gamma"></textarea></div>
+<div class="settings"><label for="mode">Format</label><select id="mode" aria-describedby="mode-hint"><option value="single">Single: each pair once</option><option value="double">Double: each pair twice</option></select><p id="mode-hint" class="hint">The second leg reverses each pair’s left/right order. Left/right does not assign home/away.</p><button id="example" type="button">Load 5-team example</button></div></div>
+<div class="actions"><button id="clear" type="button">Clear all</button><button id="calculate" type="submit" class="primary" disabled>Generate schedule</button></div>
+</fieldset></form>
+<p id="init-status" class="hint">Preparing the tool. If controls stay disabled, check that JavaScript is available.</p><noscript><p>JavaScript is required to calculate in this page. With it disabled, no team data is submitted.</p></noscript>
+<div id="error-box" class="error" role="alert" tabindex="-1" hidden><strong>Check your input</strong><p id="error-text"></p></div>
+<p id="status" role="status" aria-live="polite" aria-atomic="true">No schedule yet.</p></section>
+<section id="result" hidden aria-labelledby="result-heading"><h2 id="result-heading" tabindex="-1">02 / Your schedule</h2><div id="summary" class="metrics"></div><p class="assumptions">Deterministic input-order fixtures, not a random draw. No dates, venues or time slots are assigned. Rest, venue and home/away fairness are not optimized.</p><h3>Fixtures by round</h3><div id="rounds" class="round-grid"></div><h3>Team schedules</h3><p class="hint">Expand a team to review every opponent and bye.</p><div id="team-schedules"></div>
+<div class="report-panel"><label for="report">Complete plain-text report</label><p id="report-hint" class="hint">Select the text manually if needed. Includes rounds and team schedules. TXT uses UTF-8, no BOM and no trailing newline.</p><textarea id="report" rows="10" readonly spellcheck="false" aria-describedby="report-hint"></textarea><div class="actions"><button id="copy" type="button" disabled>Copy report</button><button id="download" type="button" disabled>Download TXT</button></div><p class="hint">Each download has a 60-second handoff window; repeat downloads pause during that time.</p></div></section>
+<section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">How it works</h2><details><summary>How are byes handled?</summary><p>With an odd team count, one team has a bye in each round. Each team gets one bye in a single round robin and two in a double round robin. Even team counts have no byes. Identical inputs produce identical fixtures.</p></details><details><summary>Are teams saved or uploaded?</summary><p>No. Data stays in this page’s memory, with no account, storage, telemetry or external API. Loading the static page initially still needs network access. Leaving, refreshing or clearing loses the draft. Copies and downloads are managed by you and your browser.</p></details><details><summary>Is this a fair venue or home/away allocation?</summary><p>No. Every pair meets once in single mode and twice in double mode, but venues, time slots, rest intervals and home/away fairness are not optimized. This tool does not record scores or standings.</p></details></section>
+</main>
+<dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-description"><h2 id="clear-title">Clear the teams and schedule?</h2><p id="clear-description">This removes all current inputs and results and cannot be undone. Downloads or clipboard writes already handed to your browser cannot be recalled.</p><div class="actions"><button id="cancel-clear" type="button" autofocus>Keep data</button><button id="confirm-clear" type="button" class="primary">Confirm clear</button></div></dialog>
+<footer>Calculated in this page · No draft storage</footer>
+</body>
+</html>

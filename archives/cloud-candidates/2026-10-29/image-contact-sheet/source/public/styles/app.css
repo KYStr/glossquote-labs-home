@@ -1,0 +1,44 @@
+/* Product App 模式：紙色工作面、低調品牌、工具與實際縮圖占主位。 */
+:root { color-scheme: light; --gq-color-ink:#111410; --gq-color-paper:#f3f0e8; --gq-color-surface:#fff; --gq-color-acid:#c8f56a; --gq-color-text-muted:#55594f; --gq-color-separator:#b8bbb2; --gq-color-control-border:#60645c; --gq-color-danger-text:#8f2119; --gq-color-danger-surface:#ffe6e1; --gq-radius-control:.375rem; --gq-font-ui:"Geist","Segoe UI",system-ui,sans-serif; --gq-font-data:"Geist Mono","Cascadia Mono",ui-monospace,monospace; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--gq-color-paper); color:var(--gq-color-ink); font:1rem/1.5 var(--gq-font-ui); }
+a { color:inherit; text-underline-offset:.2em; }
+header { min-height:3.5rem; padding:.75rem 2rem; border-bottom:1px solid var(--gq-color-separator); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+.brand { font-weight:700; text-decoration:none; }.brand span { font-size:.75rem; font-weight:400; }
+nav { display:flex; gap:1.5rem; }nav a { display:inline-flex; align-items:center; min-height:2.75rem; }
+main { max-width:90rem; margin:auto; padding:2rem; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 .75rem; }h2 { font-size:1.125rem; margin:0; }p { margin:.75rem 0 1rem; }
+.intro p { color:var(--gq-color-text-muted); }.privacy { max-width:80ch; }
+.workspace { display:grid; grid-template-columns:15rem minmax(0,1fr); gap:2rem; margin:2rem 0; align-items:start; }
+.rail { border-top:2px solid var(--gq-color-ink); padding-top:1rem; }.rail h2 { margin-bottom:1rem; }
+label { display:block; margin:.75rem 0 .375rem; }
+input,select,button { font:inherit; color:inherit; min-height:2.75rem; border:1px solid var(--gq-color-control-border); border-radius:var(--gq-radius-control); background:var(--gq-color-surface); padding:.5rem .75rem; }
+input[type=number],select { width:100%; }button { cursor:pointer; }button:hover:not(:disabled) { background:#e7e4dc; }button:active:not(:disabled) { transform:translateY(1px); }
+button.primary { background:var(--gq-color-acid); font-weight:600; }button.primary:hover:not(:disabled) { background:#b5e455; }
+button:disabled,input:disabled,select:disabled { opacity:.55; cursor:not-allowed; }form>button,.rail>button { width:100%; margin:.5rem 0; }
+:focus-visible { outline:2px solid var(--gq-color-ink); outline-offset:2px; box-shadow:0 0 0 5px var(--gq-color-acid); }
+.skip { position:absolute; top:-6rem; left:1rem; padding:.5rem; background:var(--gq-color-acid); z-index:1; }.skip:focus { top:.5rem; }
+summary { cursor:pointer; min-height:2.75rem; padding:.625rem 0; }details { border-top:1px solid var(--gq-color-separator); }form details { margin-top:1rem; }
+.checkbox { display:flex; gap:.75rem; align-items:center; }.checkbox input { flex:0 0 auto; width:1.5rem; min-height:1.5rem; }
+.small { font-size:.875rem; color:var(--gq-color-text-muted); }.measure { font-family:var(--gq-font-data); font-size:.875rem; }
+.section-heading { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin-bottom:1rem; }
+.canvas-region { min-width:0; }.file-label { font-weight:600; }input[type=file] { max-width:100%; width:100%; overflow:hidden; }
+input::file-selector-button { font:inherit; min-height:2.75rem; margin-right:.5rem; border:1px solid var(--gq-color-control-border); border-radius:var(--gq-radius-control); background:var(--gq-color-acid); padding:.375rem .75rem; cursor:pointer; }
+#items { list-style:none; padding:0; margin:1rem 0; display:grid; gap:0; }
+#items li { display:grid; grid-template-columns:4.5rem minmax(0,1fr) auto; gap:1rem; align-items:center; padding:1rem 0; border-top:1px solid var(--gq-color-separator); }
+.thumb { width:4.5rem; height:4.5rem; display:grid; place-items:center; background:white; }.thumb canvas { display:block; max-width:100%; max-height:100%; }
+.item-description { min-width:0; }.item-description b { display:block; overflow-wrap:anywhere; unicode-bidi:plaintext; }.item-description span { display:block; color:var(--gq-color-text-muted); font-size:.875rem; }
+.item-actions { display:flex; flex-wrap:wrap; gap:.5rem; }.item-actions button { font-size:.875rem; }
+#status { min-height:3rem; padding:.75rem 0; border-top:1px solid var(--gq-color-separator); }.error { color:var(--gq-color-danger-text); background:var(--gq-color-danger-surface); padding:.75rem!important; }
+.result { margin-top:1.5rem; border-top:2px solid var(--gq-color-ink); padding-top:1rem; }.actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem; }
+.empty { min-height:12rem; display:grid; place-items:center; padding:2rem; background:var(--gq-color-surface); color:var(--gq-color-text-muted); text-align:center; border:1px dashed var(--gq-color-separator); }
+[hidden] { display:none!important; }#preview canvas { display:block; width:auto; max-width:100%; height:auto; border:1px solid var(--gq-color-separator); }
+.help { max-width:72ch; margin:3rem auto 1rem; }.help h2 { margin-bottom:1rem; }footer { padding:1.5rem 2rem; color:var(--gq-color-text-muted); border-top:1px solid var(--gq-color-separator); font-size:.875rem; }
+/* 中型螢幕只保留一側設定；縮圖工作區仍為主欄。 */
+@media (min-width:48rem) and (max-width:74.999rem) { main { padding:1.5rem; }.workspace { grid-template-columns:14rem minmax(0,1fr); gap:1.5rem; }#items li { grid-template-columns:4.5rem minmax(0,1fr); }.item-actions { grid-column:2; } }
+/* 小螢幕所有能力仍可使用，不隱藏設定或排序按鈕。 */
+@media (max-width:47.999rem) { header,main,footer { padding:1rem; }.brand span { display:block; }nav { gap:1rem; }.workspace { display:flex; flex-direction:column; gap:1.5rem; }.rail,.canvas-region { width:100%; }#items li { grid-template-columns:3rem minmax(0,1fr); gap:.75rem; }.thumb { width:3rem; height:3rem; }.item-actions { grid-column:1/-1; }h1 { font-size:1.75rem; }.empty { min-height:8rem; padding:1rem; } }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; }button:active:not(:disabled) { transform:none; } }
+
+/* 頁內確認保留可見焦點，原生 dialog 管理焦點界線及 Escape。 */
+dialog { max-width:min(32rem,calc(100% - 2rem)); padding:1.5rem; border:2px solid var(--gq-color-ink); border-radius:.625rem; background:var(--gq-color-paper); }dialog::backdrop { background:rgb(17 20 16 / 40%); }
