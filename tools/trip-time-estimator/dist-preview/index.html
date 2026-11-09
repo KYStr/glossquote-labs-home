@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>旅程時間估算｜Gloss Tools</title>
+<meta name="description" content="輸入出發地日期時間、兩地 UTC 偏移與飛行時間（或抵達時間），換算抵達地日期時間與跨日變化；固定偏移，不含日光節約時間。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="./en/index.html">English</a>
+    <a href="../../">回到工具首頁</a>
+  </span>
+</div>
+<p class="draft-note">切換語言或離開頁面會失去目前草稿。</p>
+
+<header class="page-head">
+  <h1>旅程時間估算</h1>
+  <p class="lede">輸入出發地日期時間、兩地 UTC 偏移與飛行時間（或抵達時間），換算抵達地日期時間與跨日變化；固定偏移，不含日光節約時間。</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">出發、偏移與旅程時間</h2>
+      <form id="trip-form" novalidate>
+        <fieldset class="field">
+          <legend>計算方式</legend>
+          <p class="help" id="help-mode">切換計算方式時，會立即清空另一種方式的專屬欄位，其餘欄位保留。</p>
+          <label class="radio-row">
+            <input type="radio" name="mode" id="field-mode" value="duration">
+            <span>以飛行時間推抵達</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="mode" id="field-mode-arrival" value="arrival">
+            <span>以抵達時間反推</span>
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-departureDate">出發日期</label>
+          <p class="help" id="help-departureDate">格式 YYYY-MM-DD，範圍 2000-01-01 至 2099-12-31。</p>
+          <input type="text" id="field-departureDate" aria-describedby="help-departureDate" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-departureDate" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-departureTime">出發時間（出發地）</label>
+          <p class="help" id="help-departureTime">24 小時制 HH:MM，出發地當地時間。</p>
+          <input type="text" id="field-departureTime" aria-describedby="help-departureTime" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-departureTime" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-departureOffset">出發地 UTC 偏移</label>
+          <p class="help" id="help-departureOffset">出發地相對 UTC 的固定偏移，-12:00 至 +14:00，每 15 分鐘一格。</p>
+          <select id="field-departureOffset" aria-describedby="help-departureOffset"></select>
+          <p class="field-error" id="error-departureOffset" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-arrivalOffset">抵達地 UTC 偏移</label>
+          <p class="help" id="help-arrivalOffset">抵達地相對 UTC 的固定偏移，-12:00 至 +14:00，每 15 分鐘一格。</p>
+          <select id="field-arrivalOffset" aria-describedby="help-arrivalOffset"></select>
+          <p class="field-error" id="error-arrivalOffset" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <span class="field-label" id="preset-label">常用航線（標準時間）</span>
+          <div class="preset-row" id="preset-row" role="group" aria-labelledby="preset-label"></div>
+          <p class="help">點選航線只會帶入兩地偏移，不會執行計算。標準時間，夏令時間請自行調整偏移。</p>
+        </div>
+
+        <div id="mode-duration-fields">
+          <div class="field">
+            <label for="field-duration">旅程時間（飛行時間）</label>
+            <p class="help" id="help-duration">格式 H:MM，例如 3:05；範圍 0:01 至 48:00。</p>
+            <input type="text" id="field-duration" aria-describedby="help-duration" autocomplete="off" spellcheck="false">
+            <p class="field-error" id="error-duration" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="mode-arrival-fields" hidden>
+          <div class="field">
+            <label for="field-arrivalTime">抵達時間（抵達地）</label>
+            <p class="help" id="help-arrivalTime">24 小時制 HH:MM，抵達地當地時間。</p>
+            <input type="text" id="field-arrivalTime" aria-describedby="help-arrivalTime" autocomplete="off" spellcheck="false">
+            <p class="field-error" id="error-arrivalTime" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label class="radio-row" for="field-arrivalNextDay">
+              <input type="checkbox" id="field-arrivalNextDay">
+              <span>抵達日期為出發日期的次日</span>
+            </label>
+            <p class="help" id="help-arrivalNextDay">抵達在出發隔天時開啟。本工具不會自動加 24 小時，抵達日期只由這個開關決定。</p>
+            <p class="field-error" id="error-arrivalNextDay" role="alert"></p>
+          </div>
+        </div>
+
+        <p class="disclaimer">本工具使用固定 UTC 偏移，不含日光節約時間與時區資料庫；實際航班與行程時間請以航空公司或營運單位公布為準。</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">計算旅程時間</button>
+          <button type="button" class="button-secondary" id="example-btn">載入範例</button>
+          <button type="button" class="button-secondary" id="reset-btn">重設</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">抵達時間與旅程長度</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>詳細讀數</h3>
+      <ul class="readings-list" id="readings-list"></ul>
+      <p class="disclaimer">本工具使用固定 UTC 偏移，不含日光節約時間與時區資料庫；實際航班與行程時間請以航空公司或營運單位公布為準。</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>下載報告（JSON）</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>計算方法與規則</summary>
+    <p>一切先換成「絕對分鐘」：出發日期換成民用曆日序號，乘以 1440 再加上出發時刻，減去出發地偏移，得到同一個絕對時刻；抵達時刻再以抵達地偏移讀回當地日期與時間。跨日標籤是抵達日期與出發日期的日序差。</p>
+    <p>「以抵達時間反推」模式下，抵達日期就是出發日期，或在開啟次日開關時加一天，僅此而已；工具不會因為抵達鐘面較小就自動加 24 小時。推得的旅程時間必須大於 0 且不超過 48 小時，否則會回報錯誤。</p>
+    <p>跨越國際換日線時，抵達日期可能比出發日期早一天，甚至早兩天；長程航班加上偏移差，跨日標籤可達 +4 天。請以日期與跨日標籤為準，不要只看鐘面時刻。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <h3>為什麼抵達時間看起來比出發還早？</h3>
+    <p>因為抵達地時區可能在出發地之後，鐘面讀數會倒退，甚至回到前一天；請看跨日標籤與抵達日期。</p>
+    <h3>有考慮日光節約時間嗎？</h3>
+    <p>沒有。本工具只用你輸入的固定 UTC 偏移；夏令時間期間請把偏移改成當地當時實際的偏移，實際航班時間以航空公司公布為準。</p>
+  </section>
+
+  <p class="privacy-note">所有計算都在你的瀏覽器中完成，不送出任何資料。</p>
+</main>
+</body>
+</html>

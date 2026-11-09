@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Concrete Bag Calculator | Gloss Tools</title>
+<meta name="description" content="Enter slab, strip footing or cylinder dimensions, count and waste allowance to get concrete volume in m³ and yd³ plus the premix bags needed in 40, 60 and 80 lb bag sizes.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Concrete Bag Calculator</h1>
+  <p class="lede">Pick a shape, enter centimetre dimensions, a count, and a waste allowance (default 10%) to get the net and waste-adjusted volume (m³ and yd³) plus the number of 40, 60, and 80 lb premix bags needed. The waste allowance is added once to the total volume, and bag counts are rounded up to whole bags from the unrounded volume. The result is a purchasing estimate, not a structural design.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Your pour</h2>
+      <form id="concrete-form" novalidate>
+        <fieldset class="field" id="shape-group">
+          <legend>Shape</legend>
+          <label class="radio-row" for="field-shape-slab">
+            <input id="field-shape-slab" name="shape" type="radio" value="slab" checked>
+            Slab
+          </label>
+          <label class="radio-row" for="field-shape-footing">
+            <input id="field-shape-footing" name="shape" type="radio" value="footing">
+            Strip footing
+          </label>
+          <label class="radio-row" for="field-shape-cylinder">
+            <input id="field-shape-cylinder" name="shape" type="radio" value="cylinder">
+            Cylinder
+          </label>
+          <p class="field-error" id="error-shape" role="alert"></p>
+        </fieldset>
+        <div class="field" data-shapes="slab footing">
+          <label for="field-lengthCm">Length (cm)</label>
+          <p class="help" id="help-lengthCm">Above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-lengthCm" name="lengthCm" type="text" inputmode="decimal" autocomplete="off" value="400" aria-describedby="help-lengthCm">
+          <p class="field-error" id="error-lengthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="slab footing">
+          <label for="field-widthCm">Width (cm)</label>
+          <p class="help" id="help-widthCm">Above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-widthCm" name="widthCm" type="text" inputmode="decimal" autocomplete="off" value="300" aria-describedby="help-widthCm">
+          <p class="field-error" id="error-widthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="slab">
+          <label for="field-thicknessCm">Thickness (cm)</label>
+          <p class="help" id="help-thicknessCm">Slab thickness, above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-thicknessCm" name="thicknessCm" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-thicknessCm">
+          <p class="field-error" id="error-thicknessCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="footing" hidden>
+          <label for="field-depthCm">Depth (cm)</label>
+          <p class="help" id="help-depthCm">Strip footing depth, above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-depthCm" name="depthCm" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-depthCm">
+          <p class="field-error" id="error-depthCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="cylinder" hidden>
+          <label for="field-diameterCm">Diameter (cm)</label>
+          <p class="help" id="help-diameterCm">Cylinder diameter, above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-diameterCm" name="diameterCm" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-diameterCm">
+          <p class="field-error" id="error-diameterCm" role="alert"></p>
+        </div>
+        <div class="field" data-shapes="cylinder" hidden>
+          <label for="field-heightCm">Height (cm)</label>
+          <p class="help" id="help-heightCm">Cylinder height, above 0 and at most 10000 cm, up to 2 decimal places.</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="200" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-count">Count</label>
+          <p class="help" id="help-count">A whole number from 1 to 999 (number of pieces).</p>
+          <input id="field-count" name="count" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-count">
+          <p class="field-error" id="error-count" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wastePct">Waste (%)</label>
+          <p class="help" id="help-wastePct">0 to 100%, up to 2 decimal places, default 10%. Waste is added once to the total volume.</p>
+          <input id="field-wastePct" name="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-wastePct">
+          <p class="field-error" id="error-wastePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter dimensions or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate concrete</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Volume and bags</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="table-scroll" role="region" aria-label="Bag counts table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Bag size</th><th scope="col">Yield per bag (m³)</th><th scope="col">Bags needed</th></tr>
+          </thead>
+          <tbody id="bag-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">Bag counts are computed from the unrounded waste-adjusted volume and rounded up to whole bags. The result is a purchasing estimate, not a structural design; site grading and thickness variation change actual usage.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and where the yields come from</summary>
+    <p>Volumes come from the centimetre dimensions: slabs and strip footings are length × width × thickness (depth); cylinders are π × (diameter/2)² × height, with π fixed to 30 decimal places. The net volume is multiplied by the count, then the waste allowance is added once to give the adjusted volume; each bag count is the unrounded adjusted volume divided by the per-bag yield, rounded up — the displayed 3-decimal volumes are never used to derive bag counts. All arithmetic is exact rational arithmetic with no floating point.</p>
+    <p>Per-bag yields are fixed from major premix manufacturers' published product data: a 40 lb bag yields about 0.30 ft³ (0.0084950539776 m³), a 60 lb bag about 0.45 ft³ (0.0127425809664 m³), and an 80 lb bag about 0.60 ft³ (0.0169901079552 m³), converted with 1 ft³ = 0.028316846592 m³. Results are shown on screen only — there is no download or export — and the text can be selected manually.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Where is the waste allowance applied?</dt>
+      <dd>It is added once to the total volume before converting to bags; the bag counts get no second allowance.</dd>
+      <dt>Are the yields guaranteed?</dt>
+      <dd>No. They are a purchasing estimate converted from the manufacturers' published per-bag yields; site grading and thickness variation change actual usage.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

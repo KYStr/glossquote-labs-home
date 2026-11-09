@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>點按節拍 BPM 偵測｜Gloss Tools</title>
+<meta name="description" content="跟著音樂點按幾下，以最近間隔的中位數即時量出 BPM、每拍毫秒與平均 BPM；停太久自動重新起算，全部在本機計算。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>點按節拍 BPM 偵測</h1>
+  <p class="lede">跟著音樂點按幾下，以最近間隔的中位數即時量出 BPM、每拍毫秒與平均 BPM；停太久自動重新起算，全部在本機計算。</p>
+
+  <div class="columns">
+    <section class="panel tap-panel" aria-labelledby="tap-heading">
+      <h2 id="tap-heading">敲擊</h2>
+      <button id="tap-btn" class="tap-button" type="button">敲擊</button>
+      <p class="help">跟著拍子點按這個按鈕，或聚焦後按 Space／Enter。間隔超過 2000 毫秒會自動重新起算。</p>
+    </section>
+
+    <section class="panel readings-panel" aria-labelledby="readings-heading">
+      <h2 id="readings-heading">讀數</h2>
+      <p id="status" class="status" role="status" aria-live="polite">點按開始</p>
+      <p id="reading-hint" class="reading-hint">點按開始</p>
+      <dl id="readings" class="readings" hidden>
+        <div class="reading reading-primary">
+          <dt>BPM（中位數）</dt>
+          <dd id="reading-bpm">—</dd>
+        </div>
+        <div class="reading">
+          <dt>每拍毫秒</dt>
+          <dd id="reading-ms">—</dd>
+        </div>
+        <div class="reading">
+          <dt>平均 BPM</dt>
+          <dd id="reading-mean">—</dd>
+        </div>
+        <div class="reading">
+          <dt>每秒拍數</dt>
+          <dd id="reading-bps">—</dd>
+        </div>
+        <div class="reading">
+          <dt>使用間隔數</dt>
+          <dd id="reading-intervals">—</dd>
+        </div>
+        <div class="reading" id="segment-row" hidden>
+          <dt>目前段落敲擊數</dt>
+          <dd id="reading-segment-taps">—</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel actions-panel" aria-labelledby="actions-heading">
+      <h2 id="actions-heading">操作</h2>
+      <div class="actions">
+        <button id="undo-btn" type="button">復原上一敲</button>
+        <button id="reset-btn" type="button">重設</button>
+      </div>
+      <p class="help">復原移除最後一次敲擊並重算；重設清空全部敲擊與匯入文字。</p>
+    </section>
+
+    <details class="panel import-panel">
+      <summary>匯入時間戳</summary>
+      <form id="import-form" novalidate>
+        <div class="field">
+          <label for="import-text">時間戳（整數毫秒，以逗號或空白分隔）</label>
+          <p class="help" id="help-import">最多 512 個，必須嚴格遞增。計算成功後，這組時間戳會取代目前的敲擊紀錄。</p>
+          <textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" aria-describedby="help-import"></textarea>
+          <p class="field-error" id="error-taps" role="alert"></p>
+        </div>
+        <div class="actions">
+          <button id="measure-btn" type="submit">計算</button>
+          <button id="cancel-btn" type="button" hidden>取消</button>
+          <button id="download-btn" type="button" hidden>下載報告</button>
+        </div>
+      </form>
+    </details>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">運作方式與限制</h2>
+    <ul>
+      <li>BPM 取自目前段落最近至多 8 個間隔的中位數；平均 BPM 以同一組間隔計算，兩者並列供對照。</li>
+      <li>相鄰敲擊間隔超過 2000 毫秒就重新起段：那一次敲擊是新段落的第一下，先前間隔不再列入。</li>
+      <li>敲擊時間只留在目前頁面記憶體，不上傳、不儲存；離開頁面即丟棄。</li>
+      <li>本工具只測量，不發出節拍聲、不錄音；量到的 BPM 請自行抄到節拍器設定。</li>
+    </ul>
+    <h3>為什麼用中位數？</h3>
+    <p>偶爾敲偏一下不會拉走讀數，平均值同時顯示供對照。</p>
+    <h3>停太久會怎樣？</h3>
+    <p>間隔超過 2000 ms 就重新起算，那一次敲擊是新段落的第一下，先前間隔不列入計算。</p>
+  </section>
+</main>
+</body>
+</html>

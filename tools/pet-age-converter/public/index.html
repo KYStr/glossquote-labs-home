@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>寵物年齡換算｜Gloss Tools</title>
+<meta name="description" content="把狗狗或貓咪的年齡換算成人類等效年齡：第一年 15 歲、第二年再加 9 歲，之後依物種與體型逐年增加，並標示生命階段。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>寵物年齡換算</h1>
+  <p class="lede">把狗狗或貓咪的年齡換算成人類等效年齡：第一年 15 歲、第二年再加 9 歲，之後依物種與體型逐年增加，並標示生命階段。</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">物種、體型與年齡</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <label for="species">物種</label>
+          <select id="species" aria-describedby="error-species">
+            <option value="dog" selected>狗</option>
+            <option value="cat">貓</option>
+          </select>
+          <p class="field-error" id="error-species" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="size">體型</label>
+          <select id="size" aria-describedby="help-size error-size">
+            <option value="">請選擇體型</option>
+            <option value="small">小型</option>
+            <option value="medium" selected>中型</option>
+            <option value="large">大型</option>
+            <option value="giant">巨型</option>
+          </select>
+          <p class="help" id="help-size">常見品種例（僅供對照，不參與計算）：小型：貴賓犬、吉娃娃；中型：米格魯、邊境牧羊犬；大型：黃金獵犬、德國牧羊犬；巨型：大丹犬、聖伯納犬。</p>
+          <p class="help" id="size-cat-note" hidden>貓不需要選體型</p>
+          <p class="field-error" id="error-size" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="years">歲</label>
+          <p class="help" id="help-years">0–38 的整數；總月數上限：狗 360 個月、貓 456 個月。</p>
+          <input id="years" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-years error-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="months">月</label>
+          <p class="help" id="help-months">0–11 的整數；整年可填 0。</p>
+          <input id="months" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-months error-months">
+          <p class="field-error" id="error-months" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">換算年齡</button>
+          <button id="example-btn" type="button">載入範例</button>
+          <button id="cancel-btn" type="button" hidden>取消</button>
+          <button id="reset-btn" type="button">重設</button>
+        </div>
+        <p class="help" id="example-note" hidden>已載入範例（合成資料），請按「換算年齡」執行。</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">人類等效年齡與生命階段</h2>
+      <p id="status" class="status" role="status" aria-live="polite">輸入寵物的年齡或載入範例後，按「換算年齡」。</p>
+      <div id="results" hidden>
+        <p class="result-total-line">人類等效年齡：<strong id="result-human-years">—</strong> 歲</p>
+        <p>生命階段：<span id="result-stage">—</span>（總月數 <span id="result-total-months">—</span> 個月）</p>
+        <table class="result-table">
+          <thead>
+            <tr><th scope="col">區段</th><th scope="col">人類年齡（歲）</th></tr>
+          </thead>
+          <tbody id="result-segments"></tbody>
+        </table>
+        <p class="result-note">經驗法則提醒：坊間「乘以 7」的算法不符合本分段模型——光是第一年就相當於人類 15 歲。請以分段計算結果為準，本結果僅供日常參考，不是獸醫建議。</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">運作方式與限制</h2>
+    <ul>
+      <li>換算模型固定：第一年相當於人類 15 歲，第二年再加 9 歲，之後每年增加——貓 4 歲；狗依體型：小型 4、中型 5、大型 6、巨型 7。</li>
+      <li>未滿一年的月份在目前所在段內按比例線性折算；生命階段以未捨入的精確年齡判定，三段顯示值各自獨立捨入。</li>
+      <li>年齡上限：狗 360 個月（30 歲）、貓 456 個月（38 歲）。資料只留在目前頁面，不上傳、不儲存；離開頁面即丟棄。本工具沒有下載或匯出。</li>
+    </ul>
+    <p>經驗法則提醒：坊間「乘以 7」的算法不符合本分段模型——光是第一年就相當於人類 15 歲。請以分段計算結果為準，本結果僅供日常參考，不是獸醫建議。</p>
+    <h3>月份怎麼算？</h3>
+    <p>未滿一年的部分，在目前所在的段內按比例線性折算，例如中型犬 3 歲 6 個月，第三段只算半年。</p>
+    <h3>為什麼三段加起來可能差 0.1？</h3>
+    <p>三段各自獨立四捨五入到小數一位，合計可能與總年齡的顯示值差 0.1；階段判定用未捨入的精確值，不受影響。</p>
+    <h3>這是醫療建議嗎？</h3>
+    <p>不是。這是經驗模型的參考換算；健康、飲食與運動請諮詢獸醫。</p>
+  </section>
+</main>
+</body>
+</html>

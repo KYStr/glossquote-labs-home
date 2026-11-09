@@ -1,0 +1,830 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-stock-average-cost-20261109",
+  "slug": "stock-average-cost",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "single-buy",
+      "kind": "core",
+      "purpose": "單筆買進、無費率，平均成本等於買價",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "100",
+            "price": "50"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [],
+          "totalRealizedPnl": "0.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 100,
+          "totalCostBasis": "5000.0000",
+          "averageCostPerShare": "50.0000",
+          "remainingLots": [
+            {
+              "shares": 100,
+              "costBasis": "5000.0000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fifo-sell-two-lots",
+      "kind": "core",
+      "purpose": "賣出跨越兩個買進批次，FIFO 先攤完早批次",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "100",
+            "price": "10"
+          },
+          {
+            "side": "buy",
+            "shares": "100",
+            "price": "20"
+          },
+          {
+            "side": "sell",
+            "shares": "150",
+            "price": "25"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [
+            {
+              "row": 3,
+              "shares": 150,
+              "proceeds": "3750.0000",
+              "costRelieved": "2000.0000",
+              "realizedPnl": "1750.0000"
+            }
+          ],
+          "totalRealizedPnl": "1750.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 50,
+          "totalCostBasis": "1000.0000",
+          "averageCostPerShare": "20.0000",
+          "remainingLots": [
+            {
+              "shares": 50,
+              "costBasis": "1000.0000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fee-on-buy",
+      "kind": "core",
+      "purpose": "費率 143 基點，手續費四捨五入後計入批次成本",
+      "input": {
+        "feeRateBps": "143",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "333",
+            "price": "12.3456"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [],
+          "totalRealizedPnl": "0.0000",
+          "totalFees": "58.7885",
+          "totalSharesHeld": 333,
+          "totalCostBasis": "4169.8733",
+          "averageCostPerShare": "12.5221",
+          "remainingLots": [
+            {
+              "shares": 333,
+              "costBasis": "4169.8733"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fee-buy-sell-flat",
+      "kind": "core",
+      "purpose": "買賣同費率，全數賣出後持股零、平均成本 null",
+      "input": {
+        "feeRateBps": "100",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "200",
+            "price": "40"
+          },
+          {
+            "side": "sell",
+            "shares": "200",
+            "price": "45"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [
+            {
+              "row": 2,
+              "shares": 200,
+              "proceeds": "8910.0000",
+              "costRelieved": "8080.0000",
+              "realizedPnl": "830.0000"
+            }
+          ],
+          "totalRealizedPnl": "830.0000",
+          "totalFees": "170.0000",
+          "totalSharesHeld": 0,
+          "totalCostBasis": "0.0000",
+          "averageCostPerShare": null,
+          "remainingLots": []
+        }
+      }
+    },
+    {
+      "id": "relief-rounding-half-up",
+      "kind": "core",
+      "purpose": "含費批次部分攤提的捨入與平均成本 .5 進位",
+      "input": {
+        "feeRateBps": "100",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "7",
+            "price": "14.2857"
+          },
+          {
+            "side": "sell",
+            "shares": "3",
+            "price": "15"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [
+            {
+              "row": 2,
+              "shares": 3,
+              "proceeds": "44.5500",
+              "costRelieved": "43.2857",
+              "realizedPnl": "1.2643"
+            }
+          ],
+          "totalRealizedPnl": "1.2643",
+          "totalFees": "1.4500",
+          "totalSharesHeld": 4,
+          "totalCostBasis": "57.7142",
+          "averageCostPerShare": "14.4286",
+          "remainingLots": [
+            {
+              "shares": 4,
+              "costBasis": "57.7142"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sell-all-loss-rebuy",
+      "kind": "core",
+      "purpose": "虧損賣光後再買進，已實現損益為負且不影響新批次",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "50",
+            "price": "20"
+          },
+          {
+            "side": "sell",
+            "shares": "50",
+            "price": "18"
+          },
+          {
+            "side": "buy",
+            "shares": "10",
+            "price": "22"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [
+            {
+              "row": 2,
+              "shares": 50,
+              "proceeds": "900.0000",
+              "costRelieved": "1000.0000",
+              "realizedPnl": "-100.0000"
+            }
+          ],
+          "totalRealizedPnl": "-100.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 10,
+          "totalCostBasis": "220.0000",
+          "averageCostPerShare": "22.0000",
+          "remainingLots": [
+            {
+              "shares": 10,
+              "costBasis": "220.0000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "oversell",
+      "kind": "core",
+      "purpose": "賣出超過持股，OVERSOLD 指出賣出列",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "100",
+            "price": "10"
+          },
+          {
+            "side": "sell",
+            "shares": "101",
+            "price": "12"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OVERSOLD",
+          "field": "trades",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "shares-fraction",
+      "kind": "core",
+      "purpose": "股數帶小數，INTEGER_FORMAT 指出欄位與列",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "1.5",
+            "price": "10"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "shares",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "max-trades",
+      "kind": "core",
+      "purpose": "恰好 20 筆合法輸入",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1.0000"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "sells": [],
+          "totalRealizedPnl": "0.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 20,
+          "totalCostBasis": "20.0000",
+          "averageCostPerShare": "1.0000",
+          "remainingLots": [
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            },
+            {
+              "shares": 1,
+              "costBasis": "1.0000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "too-many-rows",
+      "kind": "core",
+      "purpose": "第 21 筆觸發 ROW_LIMIT",
+      "input": {
+        "feeRateBps": "0",
+        "trades": [
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          },
+          {
+            "side": "buy",
+            "shares": "1",
+            "price": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "trades",
+          "row": 21
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為賣超輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "feeRateBps": "0",
+          "trades": [
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "10"
+            },
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "20"
+            },
+            {
+              "side": "sell",
+              "shares": "150",
+              "price": "25"
+            }
+          ]
+        },
+        "edit": {
+          "feeRateBps": "0",
+          "trades": [
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "10"
+            },
+            {
+              "side": "sell",
+              "shares": "101",
+              "price": "12"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OVERSOLD",
+            "field": "trades",
+            "row": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "feeRateBps": "0",
+          "trades": [
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "50"
+            }
+          ]
+        },
+        "lateResult": {
+          "sells": [],
+          "totalRealizedPnl": "0.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 100,
+          "totalCostBasis": "5000.0000",
+          "averageCostPerShare": "50.0000",
+          "remainingLots": [
+            {
+              "shares": 100,
+              "costBasis": "5000.0000"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "feeRateBps": "0",
+            "trades": [
+              {
+                "side": "buy",
+                "shares": "100",
+                "price": "50"
+              }
+            ]
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "feeRateBps": "0",
+            "trades": [
+              {
+                "side": "buy",
+                "shares": "",
+                "price": ""
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "feeRateBps": "0",
+          "trades": [
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "50"
+            }
+          ]
+        },
+        "newerDraft": {
+          "feeRateBps": "0",
+          "trades": [
+            {
+              "side": "buy",
+              "shares": "100",
+              "price": "10"
+            },
+            {
+              "side": "sell",
+              "shares": "101",
+              "price": "12"
+            }
+          ]
+        },
+        "olderLateResult": {
+          "sells": [],
+          "totalRealizedPnl": "0.0000",
+          "totalFees": "0.0000",
+          "totalSharesHeld": 100,
+          "totalCostBasis": "5000.0000",
+          "averageCostPerShare": "50.0000",
+          "remainingLots": [
+            {
+              "shares": 100,
+              "costBasis": "5000.0000"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OVERSOLD",
+            "field": "trades",
+            "row": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "OVERSOLD",
+            "field": "trades",
+            "row": 2
+          }
+        }
+      }
+    }
+  ]
+}

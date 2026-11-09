@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Caffeine Half-Life Calculator | Gloss Tools</title>
+<meta name="description" content="Enter when you had each coffee, tea or energy drink and estimate how much caffeine remains at a query time and at bedtime, using a half-life you choose.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>Caffeine Half-Life Calculator</h1>
+  <p class="lede">Enter when you had each coffee, tea or energy drink and estimate how much caffeine remains at a query time and at bedtime, using a half-life you choose.</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Today's intake entries</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <span class="field-label" id="entries-label">Intake entries (time, drink preset or custom mg)</span>
+          <div id="entry-rows" role="group" aria-labelledby="entries-label"></div>
+          <div class="actions">
+            <button id="add-entry-btn" type="button">Add an entry</button>
+          </div>
+          <p class="help">1–8 entries. Each entry picks a drink preset or “Custom mg” with your own milligrams — never both.</p>
+          <p class="field-error" id="error-entries" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="half-life">Half-life (hours)</label>
+          <p class="help" id="help-half-life">Default 5; enter 3–8 (one decimal place).</p>
+          <input id="half-life" type="text" value="5" autocomplete="off" spellcheck="false" aria-describedby="help-half-life error-halfLifeHours">
+          <p class="field-error" id="error-halfLifeHours" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="query-time">Query time</label>
+          <p class="help" id="help-query-time">Format HH:MM, for example 15:30.</p>
+          <input id="query-time" type="text" placeholder="HH:MM" autocomplete="off" spellcheck="false" aria-describedby="help-query-time error-queryTime">
+          <p class="field-error" id="error-queryTime" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="bedtime">Bedtime (optional)</label>
+          <p class="help" id="help-bedtime">Format HH:MM. A time earlier than the query time means after midnight tonight.</p>
+          <input id="bedtime" type="text" placeholder="HH:MM" autocomplete="off" spellcheck="false" aria-describedby="help-bedtime error-bedtime">
+          <p class="field-error" id="error-bedtime" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">Calculate remaining caffeine</button>
+          <button id="example-btn" type="button">Load example</button>
+          <button id="cancel-btn" type="button" hidden>Cancel</button>
+          <button id="reset-btn" type="button">Reset</button>
+        </div>
+        <p class="help" id="example-note" hidden>Example loaded (synthetic data). Press “Calculate remaining caffeine” to run it.</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">Remaining at the query time</h2>
+      <p id="status" class="status" role="status" aria-live="polite">Enter intake entries or load the example, then press “Calculate remaining caffeine”.</p>
+      <div id="results" hidden>
+        <p class="result-total-line">Total remaining at <span id="result-query-time">—</span>: <strong id="result-total">—</strong> mg</p>
+        <p class="help" id="result-notyet-all" hidden>None of the entries has been consumed yet at the query time, so the total is 0.0.</p>
+        <table class="result-table">
+          <thead>
+            <tr><th scope="col">Time</th><th scope="col">mg</th><th scope="col">Elapsed (min)</th><th scope="col">Remaining (mg)</th></tr>
+          </thead>
+          <tbody id="result-entries"></tbody>
+        </table>
+        <h3>Next 6 hours</h3>
+        <ul id="result-series" class="result-series"></ul>
+        <div id="result-bedtime-block" hidden>
+          <h3>Bedtime</h3>
+          <p id="result-bedtime"></p>
+        </div>
+        <p class="result-note">Half-life varies by person (roughly 3–8 hours). This tool estimates with the half-life you set; values are for reference only and are not medical advice.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">How it works and limits</h2>
+    <ul>
+      <li>Each entry decays exponentially from its intake moment with the same half-life: after t minutes, mg × 2^(−t / half-life minutes) remains. An entry later than the query time contributes nothing (no wrap to the previous day).</li>
+      <li>The total is rounded to one decimal after summing the unrounded per-entry contributions; each entry is rounded separately, so the displayed total can differ from the sum of the displayed entries by 0.1 mg.</li>
+      <li>Drink presets are a fixed table: Espresso (30 ml) 63, Brewed coffee (240 ml) 95, Black tea (240 ml) 47, Green tea (240 ml) 28, Cola (355 ml) 34, Energy drink (250 ml) 80.</li>
+      <li>Single-day clock model only: no absorption delay, no multi-day tracking, no sleep prediction. Data stays in this page — nothing is uploaded or stored, and leaving the page discards it. This tool has no download or export.</li>
+    </ul>
+    <h3>What if the query time is earlier than a drink?</h3>
+    <p>It contributes nothing before its intake time; the hourly series starts counting it once its time passes.</p>
+    <h3>Can this predict my sleep?</h3>
+    <p>No. It is a decay estimate with a single half-life; individual metabolism varies widely.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>分租電費分攤｜Gloss Tools</title>
+<meta name="description" content="輸入總電費與各房分電表的起訖度數：公共用電先平均分攤，再用最大餘數法按用電比例分配，保證各房金額加總恰好等於總電費。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>分租電費分攤</h1>
+  <p class="lede">拿到一張已知總額的電費帳單，輸入各房分電表的起訖度數：公共用電先平均分攤，再按用電比例分配，各房金額加總恰好等於總電費，不再有對不上帳的尾差。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">總電費與總表度數</h2>
+      <form id="split-form" novalidate>
+        <div class="field">
+          <label for="field-totalBill">總電費（元）</label>
+          <p class="help" id="help-totalBill">必填，整數元，0 至 99,999,999。</p>
+          <input id="field-totalBill" name="totalBill" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-totalBill">
+          <p class="field-error" id="error-totalBill" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-totalDelta">總表度數差（度，選填）</label>
+          <p class="help" id="help-totalDelta">留空表示沒有總表度數，只按各房度數比例分攤。最多一位小數，0 至 999,999.9 度。</p>
+          <input id="field-totalDelta" name="totalDelta" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-totalDelta">
+          <p class="field-error" id="error-totalDelta" role="alert"></p>
+        </div>
+
+        <h2>各房分電表</h2>
+        <p class="field-error" id="error-rooms" role="alert"></p>
+        <div id="rooms"></div>
+        <div class="actions">
+          <button type="button" id="add-room-btn" class="button-secondary">新增房間</button>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算分攤</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每房應付金額</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="每房分攤表" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">房間</th>
+              <th scope="col">用電度數（度）</th>
+              <th scope="col" id="col-common">公共分攤度數（度）</th>
+              <th scope="col">計費度數（度）</th>
+              <th scope="col">占比</th>
+              <th scope="col">金額（元）</th>
+            </tr>
+          </thead>
+          <tbody id="room-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>有總表度數時，公共用電是總表度數差減去各房用電合計，先平均分給每一間房，再併入各房自己的用電形成權重；金額按權重用最大餘數法分攤：先取每房的整數元下限，剩下的元數依餘數由大到小依序加 1 元，餘數相同時依輸入順序，所以各房金額加總恰好等於總電費。沒有總表度數時，只按各房用電比例分攤。各房用電皆為 0 且沒有公共用電時，改為平均分攤。</p>
+    <p>占比顯示到小數一位，公共分攤度數與計費度數各自獨立四捨五入，顯示值加總不一定恰好等於總表度數或 100.0%；金額一律以精確權重計算，不以顯示度數回算。房間名稱先做 NFC 正規化並去掉首尾空格，最多 24 個字元。</p>
+    <p>下載的報告檔名固定為 shared-electricity-split-report.json，內容是結果的精簡 JSON，鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>公共用電怎麼算？</dt>
+      <dd>總表度數減各房分表度數之和，先平均分給每間房，再併入各房用電按比例分攤。</dd>
+      <dt>為什麼占比加起來不是 100%？</dt>
+      <dd>占比只顯示到小數一位，捨入後不一定恰好 100%；金額以最大餘數法分攤，加總一定等於總電費。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

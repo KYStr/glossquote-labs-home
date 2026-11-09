@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>體脂率計算機｜Gloss Tools</title>
+<meta name="description" content="用身高、頸圍、腰圍（女性再加臀圍）與體重，以美國海軍圍度法估算體脂率、脂肪重量與淨體重。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>體脂率計算機</h1>
+  <p class="lede">用身高、頸圍、腰圍（女性再加臀圍）與體重，以美國海軍圍度法估算體脂率、ACE 類別、脂肪重量與淨體重。結果是估計值，適合看趨勢，不是醫療量測。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">量測值</h2>
+      <form id="bodyfat-form" novalidate>
+        <fieldset class="field" id="field-sex">
+          <legend>性別</legend>
+          <div class="radio-row">
+            <label><input type="radio" id="field-sex-male" name="sex" value="male" checked>男性</label>
+            <label><input type="radio" id="field-sex-female" name="sex" value="female">女性</label>
+          </div>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-heightCm">身高（公分）</label>
+          <p class="help" id="help-heightCm">脫鞋站立量測。範圍 100 至 250 公分。</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-neckCm">頸圍（公分）</label>
+          <p class="help" id="help-neckCm">在喉結下方量測，皮尺與脖子長軸垂直。範圍 20 至 80 公分。</p>
+          <input id="field-neckCm" name="neckCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-neckCm">
+          <p class="field-error" id="error-neckCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-waistCm">腰圍（公分）</label>
+          <p class="help" id="help-waistCm">男性量肚臍水平位置；女性量腰部最細處。皮尺保持水平，正常吐氣結束時量測，貼合但不壓迫皮膚。範圍 40 至 300 公分。</p>
+          <input id="field-waistCm" name="waistCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-waistCm">
+          <p class="field-error" id="error-waistCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-hipCm">臀圍（公分）</label>
+          <p class="help" id="help-hipCm">量臀部最寬處，皮尺保持水平。女性必填，範圍 40 至 300 公分；男性不適用。</p>
+          <input id="field-hipCm" name="hipCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-hipCm" disabled>
+          <p class="field-error" id="error-hipCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">體重（公斤）</label>
+          <p class="help" id="help-weightKg">範圍 25 至 500 公斤。</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入量測值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算體脂率</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">體脂率與類別</h2>
+      <p class="result-pct" id="result-pct"></p>
+      <p class="result-category" id="result-category"></p>
+      <dl class="result-facts">
+        <div><dt>脂肪重量</dt><dd id="result-fat"></dd></div>
+        <div><dt>淨體重</dt><dd id="result-lean"></dd></div>
+      </dl>
+      <p class="disclaimer">本工具以美國海軍圍度法估算體脂率，結果是估計值，不是醫療量測，不能取代專業體組成檢測或醫療建議。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與限制</summary>
+    <p>先在公分下算圍度組合（男性：腰圍 − 頸圍；女性：腰圍 ＋ 臀圍 − 頸圍），再除以 2.54 換算成英吋，套用美國海軍圍度法（Hodgdon &amp; Beckett 1984）的 log10 公式與原始常數；身高同樣換算成英吋。體脂率、脂肪重量與淨體重都顯示一位小數，類別依 ACE 體脂率類別表以捨入後的體脂率判定。下載的報告檔名固定為 body-fat-report.json。</p>
+    <p>本工具以美國海軍圍度法估算體脂率，結果是估計值，不是醫療量測，不能取代專業體組成檢測或醫療建議。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這個方法準嗎？</dt>
+      <dd>圍度法是估算，和 DEXA 等專業檢測會有誤差，適合看趨勢。</dd>
+      <dt>為什麼男性不用臀圍？</dt>
+      <dd>美國海軍公式男性只用腰圍與頸圍，女性才加入臀圍。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

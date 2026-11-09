@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Discount Calculator | Gloss Tools</title>
+<meta name="description" content="Trace two stacked discounts, a coupon and after-discount tax step by step to the final unit price, total, amount saved and effective percent off.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Discount Calculator</h1>
+  <p class="lede">Trace two stacked discounts, a coupon and after-discount tax step by step to the final unit price, total, amount saved and effective percent off. Stacked discounts multiply, they do not add: 20% off then 10% off means paying 72%, not 70%.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">List price (per item)</h2>
+      <form id="discount-form" novalidate>
+        <div class="field">
+          <label for="field-price">List price (per item)</label>
+          <p class="help" id="help-price">20% off = pay 80% （八折）, 10% off = pay 90% （九折）. Amounts: up to 7 integer digits and 2 decimal places, range 0.01–9,999,999.99.</p>
+          <input id="field-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="1000" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <h2>First discount, % off</h2>
+        <div class="field">
+          <label for="field-discount1">First discount, % off</label>
+          <p class="help" id="help-discount1">Percent off: enter 20 for 八折， 10 for 九折； 0 means no such discount. At most two decimal places, range 0–100.</p>
+          <input id="field-discount1" name="discount1" type="text" inputmode="decimal" autocomplete="off" value="20" aria-describedby="help-discount1">
+          <p class="field-error" id="error-discount1" role="alert"></p>
+        </div>
+        <h2>Second discount, % off, and coupon</h2>
+        <div class="field">
+          <label for="field-discount2">Second discount, % off</label>
+          <p class="help" id="help-discount2">Multiplies with the first discount instead of adding to it; 0 means no such discount. At most two decimal places, range 0–100.</p>
+          <input id="field-discount2" name="discount2" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-discount2">
+          <p class="field-error" id="error-discount2" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-coupon">Coupon</label>
+          <p class="help" id="help-coupon">A fixed-amount coupon, applied after both discounts and before tax; a coupon larger than the discounted price only brings it to 0. 0 means no coupon. Same amount format as the list price.</p>
+          <input id="field-coupon" name="coupon" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="help-coupon">
+          <p class="field-error" id="error-coupon" role="alert"></p>
+        </div>
+        <h2>Tax rate % (applied after discounts) and quantity</h2>
+        <div class="field">
+          <label for="field-taxRate">Tax rate % (applied after discounts)</label>
+          <p class="help" id="help-taxRate">Applied to the price after the discounts and the coupon. At most two decimal places, range 0–100. This tool does not provide or verify any statutory tax rate; the rate comes from you.</p>
+          <input id="field-taxRate" name="taxRate" type="text" inputmode="decimal" autocomplete="off" value="5" aria-describedby="help-taxRate">
+          <p class="field-error" id="error-taxRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-quantity">Quantity</label>
+          <p class="help" id="help-quantity">A whole number, range 1–999.</p>
+          <input id="field-quantity" name="quantity" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-quantity">
+          <p class="field-error" id="error-quantity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a price and discounts, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate discount</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download breakdown</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Step-by-step price trace</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Step-by-step price trace" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Step</th><th scope="col">Discount / tax rate</th><th scope="col">Change</th><th scope="col">Price</th></tr>
+          </thead>
+          <tbody id="step-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>The order is fixed: the list price is multiplied by the first discount, then by the second, then the coupon is subtracted, and tax is added last on the discounted price. Money is computed in integer cents and percentages in basis points (1/100 of a percent), and every step rounds half-up to a whole cent. All five steps are always listed; a step with no discount or no coupon shows an amount of 0. A coupon larger than the discounted price only brings it to 0 — the price never goes negative, and the trace shows the amount actually applied.</p>
+    <p>The total saved, the effective percent off and the zhe figure are all measured on the pre-tax discounted price: tax is not a discount and never counts as savings. The zhe figure is the discounted price as a share of the list price (paying 72% is about 7.2 zhe; paying the full list price is 10.0, paying nothing is 0.0). The tax rate comes from you; this tool does not provide or verify any statutory tax rate table.</p>
+    <p>Inputs accept ASCII digits and one decimal point only: commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. The downloaded breakdown is always named discount-calculator-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What does 八折 mean?</dt>
+      <dd>You pay 80% of the list price, i.e. 20% off.</dd>
+      <dt>Is 20% off plus another 10% off the same as 30% off?</dt>
+      <dd>No. Paying 80% then 90% leaves 72% of the price, an effective 28% off.</dd>
+      <dt>Is tax applied before or after discounts?</dt>
+      <dd>This tool always applies tax to the price after both discounts and the coupon.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

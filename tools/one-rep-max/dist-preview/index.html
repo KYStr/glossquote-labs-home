@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>最大肌力 1RM 計算機｜Gloss Tools</title>
+<meta name="description" content="輸入你能完成的重量與次數，用 Epley 與 Brzycki 兩個公式估算最大肌力（1RM），並列出各百分比對應的訓練重量。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>最大肌力 1RM 計算機</h1>
+  <p class="lede">輸入你能完成的重量與次數，用 Epley 與 Brzycki 兩個公式估算最大肌力（1RM），並列出各百分比對應的訓練重量。</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">輸入</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <label for="weight">重量、單位</label>
+          <div class="weight-row">
+            <input id="weight" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="help-weight">
+            <div class="unit-group" id="unit-group" role="radiogroup" aria-label="單位">
+              <label class="unit-option"><input type="radio" name="unit" id="unit-kg" value="kg" checked> 公斤（kg）</label>
+              <label class="unit-option"><input type="radio" name="unit" id="unit-lb" value="lb"> 磅（lb）</label>
+            </div>
+          </div>
+          <p class="help" id="help-weight">最多兩位小數，大於 0 且不超過 1500（依所選單位）。輸出重量一律公斤。</p>
+          <p class="field-error" id="error-weight" role="alert"></p>
+          <p class="field-error" id="error-unit" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="reps">次數</label>
+          <input id="reps" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-reps">
+          <p class="help" id="help-reps">剛才那一組完成的次數，1 到 30 次。</p>
+          <p class="field-error" id="error-reps" role="alert"></p>
+        </div>
+
+        <p class="field-error" id="error-general" role="alert"></p>
+
+        <div class="actions">
+          <button id="calculate-btn" type="submit">計算 1RM</button>
+          <button id="cancel-btn" type="button" hidden>取消</button>
+          <button id="example-btn" type="button">載入範例</button>
+          <button id="reset-btn" type="button">重設</button>
+        </div>
+        <p class="help" id="example-note" hidden>已載入範例（100 公斤、5 次），按「計算 1RM」執行。</p>
+      </form>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">估算 1RM</h2>
+      <p id="status" class="status" role="status" aria-live="polite">請輸入重量與次數，或載入範例。</p>
+      <p id="result-empty" class="help">計算後這裡會顯示估計 1RM、兩個公式各自的估計與百分比對照表。</p>
+      <div id="result" hidden>
+        <p class="result-main">
+          <span class="result-main-label">估算 1RM</span>
+          <strong id="result-1rm">—</strong>
+          <span>公斤</span>
+        </p>
+        <dl class="result-formulas">
+          <div class="formula">
+            <dt>Epley 公式</dt>
+            <dd><span id="result-epley">—</span> 公斤</dd>
+          </div>
+          <div class="formula">
+            <dt>Brzycki 公式</dt>
+            <dd><span id="result-brzycki">—</span> 公斤</dd>
+          </div>
+        </dl>
+        <p id="result-note" class="notice" hidden>注意：次數超過 10 次時，公式估算的誤差會明顯變大，這個結果僅供參考。</p>
+        <h3>百分比對照表</h3>
+        <table class="pct-table">
+          <thead>
+            <tr><th scope="col">百分比</th><th scope="col">重量（公斤）</th><th scope="col">參考次數</th></tr>
+          </thead>
+          <tbody id="pct-rows"></tbody>
+        </table>
+        <p class="disclaimer">1RM 是以公式估算，不是實際測試結果；嘗試最大重量時請使用護槓並請人補手。</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">運作方式與限制</h2>
+    <ul>
+      <li>兩個公式並列：Epley 與 Brzycki 用不同的次數—重量關係估算，主要結果取兩者平均。</li>
+      <li>次數為 1 時，能完成的重量就是 1RM 本身，兩公式都直接等於輸入重量。</li>
+      <li>輸出重量一律公斤，並以 0.5 公斤為階梯，方便直接照槓片裝槓；百分比對照表以已捨入的估算 1RM 為基準。</li>
+      <li>估算不是測量：次數越多誤差越大，實際嘗試最大重量時請使用護槓並請人補手。</li>
+      <li>輸入只留在目前頁面，不上傳、不儲存；離開頁面即丟棄。</li>
+    </ul>
+    <h3>兩個公式為什麼不同？</h3>
+    <p>兩者用不同的次數—重量關係模型，本工具兩個都列出，並以平均值作為主要結果。</p>
+    <h3>次數填越多越準嗎？</h3>
+    <p>不是。超過約 10 次後估算誤差明顯變大。</p>
+    <h3>為什麼重量以 0.5 公斤為單位？</h3>
+    <p>健身房槓片通常以 0.5 公斤為最小調整單位，結果直接對應可裝的重量。</p>
+  </section>
+</main>
+</body>
+</html>

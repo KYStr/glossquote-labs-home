@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信用卡還款試算｜Gloss Tools</title>
+<meta name="description" content="輸入信用卡欠款餘額與年利率，試算每月固定還款要多久還清、總利息多少，或在目標月數內還清每月要繳多少；含永遠還不完的偵測。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+  <p class="draft-note">切換語言或離開頁面將失去目前草稿。</p>
+</header>
+<main class="page">
+  <h1>信用卡還款試算</h1>
+  <p class="intro">輸入帳單上的欠款餘額與年利率 APR，試算每月固定繳一個金額要多久還清、總利息多少；或要在目標月數內還清，每個月該繳多少。若每月還款連利息都 cover 不了，工具會直接指出這筆欠款永遠還不完。</p>
+  <p class="disclosure">這是依上述模型的試算，實際帳單金額以發卡銀行結算為準；未含年費、違約金、預借現金與最低應繳規則。</p>
+
+  <form id="payoff-form" novalidate>
+    <section class="card">
+      <h2>欠款餘額、年利率 APR</h2>
+      <div class="field">
+        <label for="balance">欠款餘額（元）</label>
+        <input id="balance" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="balance-error">
+        <p id="balance-error" class="error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="apr-percent">年利率 APR（%）</label>
+        <input id="apr-percent" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="apr-percent-error">
+        <p id="apr-percent-error" class="error" hidden></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>還款方式</h2>
+      <div class="mode-group">
+        <label class="mode-option"><input type="radio" name="payoff-mode" id="mode-payment" value="payment"> 每月固定還款</label>
+        <label class="mode-option"><input type="radio" name="payoff-mode" id="mode-months" value="months"> 目標月數</label>
+      </div>
+      <div class="field" id="payment-field">
+        <label for="monthly-payment">每月還款金額（元）</label>
+        <input id="monthly-payment" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="monthly-payment-error">
+        <p id="monthly-payment-error" class="error" hidden></p>
+      </div>
+      <div class="field" id="months-field" hidden>
+        <label for="target-months">目標月數（個月）</label>
+        <input id="target-months" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="target-months-error">
+        <p id="target-months-error" class="error" hidden></p>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">計算還款計畫</button>
+      <button type="button" id="example-button">載入範例</button>
+      <button type="button" id="reset-button">重設</button>
+      <button type="button" id="cancel-button" hidden>取消</button>
+    </div>
+    <p id="example-note" class="note" hidden></p>
+    <p id="status-message" class="status" aria-live="polite"></p>
+  </form>
+
+  <section class="card" id="result-section" hidden>
+    <h2>還清月數與總利息</h2>
+    <dl class="summary">
+      <div class="summary-row"><dt>還清月數（個月）</dt><dd id="sum-months"></dd></div>
+      <div class="summary-row" id="sum-required-row" hidden><dt>每月應繳</dt><dd id="sum-required"></dd></div>
+      <div class="summary-row"><dt>總利息</dt><dd id="sum-interest"></dd></div>
+      <div class="summary-row"><dt>總付款</dt><dd id="sum-paid"></dd></div>
+      <div class="summary-row"><dt>最後一期金額</dt><dd id="sum-final"></dd></div>
+    </dl>
+    <h3>每月還款明細</h3>
+    <div class="table-scroll" id="schedule-region" aria-label="每月還款明細" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">月份</th><th scope="col">還款</th><th scope="col">利息</th><th scope="col">本金</th><th scope="col">餘額</th></tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <button type="button" id="page-prev">上一頁</button>
+      <span id="page-info"></span>
+      <button type="button" id="page-next">下一頁</button>
+    </div>
+    <button type="button" id="download-button" class="primary">下載報告</button>
+  </section>
+
+  <section class="card">
+    <h2>模型說明</h2>
+    <ul>
+      <li>利息每月按月初餘額計算，付款先沖利息、再沖本金；金額一律以整數分計算，利息四捨五入至分（half-up）。</li>
+      <li>目標月數模式以年金公式精確求每月應繳、無條件進位到分，再以同一月結模擬驗證實際還清月數。</li>
+      <li>模擬上限為 600 個月；目前設定若在上限內還不完，工具會明示，不會給假排程。</li>
+      <li>本工具不連接銀行、不匯入帳單，也未模擬最低應繳金額規則、年費、違約金、預借現金或分段利率。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>常見問題</h2>
+    <h3>為什麼顯示永遠還不完？</h3>
+    <p>每月還款不超過第一個月利息時，餘額永遠不會減少。</p>
+    <h3>目標月數的每月金額怎麼算？</h3>
+    <p>以年金公式精確計算、無條件進位到分，再以同一月結模擬驗證。</p>
+  </section>
+</main>
+</body>
+</html>

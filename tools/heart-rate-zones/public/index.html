@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>心率區間計算機｜Gloss Tools</title>
+<meta name="description" content="輸入年齡與靜止心率，用 Tanaka 公式估算最大心率，算出五個心率區間與 Karvonen 儲備心率區間。估算值因人而異，非醫療建議。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>心率區間計算機</h1>
+  <p class="lede">輸入年齡，同時得到 Fox 與 Tanaka 兩種最大心率估算；區間以 Tanaka 為準算出五個 % 最大心率區間。填了靜止心率，還會多一張 Karvonen 儲備心率區間表。有實測最大心率時填入即可覆蓋公式估算，年齡可不填。兩張表都給整數 bpm 上下限，可直接照填手錶或訓練 app。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="zones-form" novalidate>
+        <div class="field">
+          <label for="field-age">年齡</label>
+          <p class="help" id="help-age">10–100 歲，整數。未填實測最大心率時必填。</p>
+          <input id="field-age" name="age" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-age">
+          <p class="field-error" id="error-age" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-measuredMaxHr">實測最大心率（選填）</label>
+          <p class="help" id="help-measuredMaxHr">100–230 bpm，整數。有填時優先於公式估算。</p>
+          <input id="field-measuredMaxHr" name="measuredMaxHr" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-measuredMaxHr">
+          <p class="field-error" id="error-measuredMaxHr" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-restingHr">靜止心率（選填）</label>
+          <p class="help" id="help-restingHr">30–120 bpm，整數，須低於最大心率。有填才計算 Karvonen 儲備心率區間。</p>
+          <input id="field-restingHr" name="restingHr" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-restingHr">
+          <p class="field-error" id="error-restingHr" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入年齡，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算心率區間</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">最大心率摘要</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>心率區間（% 最大心率）</h3>
+      <div class="table-scroll" role="region" aria-label="心率區間表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">區間</th><th scope="col">帶別</th><th scope="col">心率（bpm）</th><th scope="col">用途</th></tr>
+          </thead>
+          <tbody id="zone-rows"></tbody>
+        </table>
+      </div>
+      <div id="karvonen-block" hidden>
+        <h3>儲備心率區間（Karvonen）</h3>
+        <p id="karvonen-meta"></p>
+        <div class="table-scroll" role="region" aria-label="儲備心率區間表" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">區間</th><th scope="col">帶別</th><th scope="col">心率（bpm）</th><th scope="col">用途</th></tr>
+            </thead>
+            <tbody id="karvonen-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <p id="karvonen-missing" hidden></p>
+      <p class="disclaimer">本工具以公式估算最大心率，個人實際值可能不同；結果僅供運動參考，不是醫療建議。如有心血管疾病或身體不適，請先諮詢醫師。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與公式出處</summary>
+    <p>Fox 公式為 220 − 年齡；Tanaka 公式為 208 − 0.7 × 年齡，出自 Tanaka, Monahan &amp; Seals (2001), “Age-predicted maximal heart rate revisited”, Journal of the American College of Cardiology 37(1)。Tanaka 結果先四捨五入為整數最大心率，再以共享邊界 +1 規則切出五個連續區間：每一區下限等於前一區上限加 1，第五區上限恆等於採用最大心率。</p>
+    <p>Karvonen 法以心率儲備（採用最大心率 − 靜止心率）乘帶別百分比再加回靜止心率，邊界同樣四捨五入並採共享邊界 +1 規則。全部計算以整數十分位算術完成，不使用浮點數。本工具不提供下載或複製按鈕，結果可直接在畫面上選取文字。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼有兩個最大心率公式？</dt>
+      <dd>Fox（220 − 年齡）較舊、誤差較大；Tanaka（208 − 0.7 × 年齡）來自較新的研究，本工具以 Tanaka 計算區間，Fox 僅供對照。</dd>
+      <dt>有實測最大心率時怎麼辦？</dt>
+      <dd>填入「實測最大心率」後會優先於公式估算，兩張區間表都改以實測值計算，年齡可不填。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

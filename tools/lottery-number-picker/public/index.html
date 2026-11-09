@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>樂透選號器｜Gloss Tools</title>
+<meta name="description" content="用固定種子重現的亂數，幫大樂透、威力彩、今彩539 產生選號；同一個種子永遠產生同一組號碼，每種組合出現的機會都相等。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>樂透選號器</h1>
+  <p class="lede">用固定種子重現的亂數，幫大樂透、威力彩、今彩539 產生選號；同一個種子永遠產生同一組號碼，每種組合出現的機會都相等。</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">選號設定</h2>
+      <form id="picks-form" novalidate>
+        <div class="field">
+          <label for="game">遊戲</label>
+          <select id="game" aria-describedby="error-game">
+            <option value="lotto649">大樂透</option>
+            <option value="power638">威力彩</option>
+            <option value="daily539">今彩539</option>
+          </select>
+          <p class="field-error" id="error-game" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="seed">種子</label>
+          <p class="help" id="help-seed">留空時會自動產生一個種子並顯示出來，之後可用同一種子重現。</p>
+          <input id="seed" type="text" autocomplete="off" spellcheck="false" aria-describedby="help-seed error-seed">
+          <p class="field-error" id="error-seed" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="set-count">組數</label>
+          <p class="help" id="help-set-count">1–10 組。</p>
+          <input id="set-count" type="text" value="3" autocomplete="off" spellcheck="false" aria-describedby="help-set-count error-setCount">
+          <p class="field-error" id="error-setCount" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="exclude">排除號碼</label>
+          <p class="help" id="help-exclude">只套用到第一區；威力彩第二區不排除。以逗號分隔，例如 1, 2, 3。</p>
+          <input id="exclude" type="text" autocomplete="off" spellcheck="false" aria-describedby="help-exclude error-exclude">
+          <p class="field-error" id="error-exclude" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">產生號碼</button>
+          <button id="example-btn" type="button">載入範例</button>
+          <button id="cancel-btn" type="button" hidden>取消</button>
+          <button id="reset-btn" type="button">重設</button>
+        </div>
+        <p class="help" id="example-note" hidden>已載入範例（合成資料：大樂透、種子 42、3 組、無排除），請按「產生號碼」執行。</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">產生的號碼</h2>
+      <p id="status" class="status" role="status" aria-live="polite">輸入種子與組數，或載入範例後，按「產生號碼」。</p>
+      <div id="results" hidden>
+        <p class="result-summary" id="result-summary"></p>
+        <div id="result-sets"></div>
+        <p class="result-note">每種號碼組合出現的機率完全相等；本工具不能預測開獎結果，任何號碼組合的中獎機率都相同。</p>
+        <div class="actions">
+          <button id="copy-btn" type="button" disabled>複製號碼</button>
+          <button id="download-btn" type="button" disabled>下載號碼</button>
+        </div>
+        <p class="help" id="copy-note" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">運作方式與限制</h2>
+    <ul>
+      <li>遊戲規則固定：大樂透第一區 1–49 選 6；威力彩第一區 1–38 選 6、第二區 1–8 選 1；今彩539 第一區 1–39 選 5。</li>
+      <li>產生器由種子完全決定（mulberry32）；同一個種子、遊戲、組數與排除清單，永遠產生逐位相同的結果。排除只套用第一區。</li>
+      <li>本工具是選號輔助：不查開獎結果、不對獎、不做號碼統計或預測，也不連到任何購買流程。資料只留在目前頁面，不上傳、不儲存；離開頁面即丟棄。</li>
+    </ul>
+    <h3>同一個種子為什麼每次號碼都一樣？</h3>
+    <p>產生器由種子完全決定，同種子必然同結果，方便重現與核對。</p>
+    <h3>產生的號碼比較容易中獎嗎？</h3>
+    <p>不會。每種組合機率完全相等，本工具不能預測開獎結果。</p>
+    <h3>排除號碼會改變其他號碼的中獎率嗎？</h3>
+    <p>不會，只是不讓被排除的號碼出現在結果中；其餘每種組合仍完全相等。</p>
+  </section>
+</main>
+</body>
+</html>

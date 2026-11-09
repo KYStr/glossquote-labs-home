@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>TV Viewing Distance Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a TV diagonal to get the 16:9 screen width and height plus minimum, ideal and maximum viewing distances from THX and SMPTE rules of thumb — or work backwards from your sofa distance to a size range.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>TV Viewing Distance Calculator</h1>
+  <p class="lede">Before you buy, check the fit: enter a TV diagonal to see the actual 16:9 screen width and height plus the minimum, ideal and maximum viewing distances — or enter your sofa-to-wall distance to work backwards to a recommended size range. The multipliers are rules of thumb, not exact viewing-angle conversions.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Enter a diagonal, a distance, or both</h2>
+      <form id="tv-form" novalidate>
+        <div class="field">
+          <label for="field-diagonalIn">TV diagonal (inches)</label>
+          <p class="help" id="help-diagonalIn">10 to 120 inches, at most one decimal place. When a distance is also given, the tool judges whether that distance suits this size.</p>
+          <input id="field-diagonalIn" name="diagonalIn" type="text" inputmode="decimal" autocomplete="off" value="55" aria-describedby="help-diagonalIn">
+          <p class="field-error" id="error-diagonalIn" role="alert"></p>
+          <div class="chips" role="group" aria-label="Common size shortcuts">
+            <button type="button" class="chip" data-quick-size="32">32 in</button>
+            <button type="button" class="chip" data-quick-size="43">43 in</button>
+            <button type="button" class="chip" data-quick-size="50">50 in</button>
+            <button type="button" class="chip" data-quick-size="55">55 in</button>
+            <button type="button" class="chip" data-quick-size="65">65 in</button>
+            <button type="button" class="chip" data-quick-size="75">75 in</button>
+            <button type="button" class="chip" data-quick-size="85">85 in</button>
+            <button type="button" class="chip" data-quick-size="98">98 in</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="field-roomDistanceCm">Distance from sofa to TV (cm, optional)</label>
+          <p class="help" id="help-roomDistanceCm">30 to 1500 cm, at most one decimal place. Fill in only this field to work backwards to a size range.</p>
+          <input id="field-roomDistanceCm" name="roomDistanceCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-roomDistanceCm">
+          <p class="field-error" id="error-roomDistanceCm" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>Resolution</legend>
+          <p class="help" id="help-resolution">4K changes only the minimum-distance multiplier (1.0); the ideal and maximum distances do not change with resolution.</p>
+          <div class="radios" aria-describedby="help-resolution">
+            <label class="radio"><input type="radio" name="resolution" value="FHD" checked> FHD</label>
+            <label class="radio"><input type="radio" name="resolution" value="UHD4K"> UHD 4K</label>
+          </div>
+          <p class="field-error" id="error-resolution" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a diagonal or a distance, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate viewing distance</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Results</h2>
+      <p id="summary"></p>
+      <div id="forward-block" hidden>
+        <div class="table-scroll" role="region" aria-label="Viewing distances" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Distance</th><th scope="col">cm (m)</th></tr>
+            </thead>
+            <tbody id="distance-rows"></tbody>
+          </table>
+        </div>
+        <p class="fit-line" id="fit-line" hidden></p>
+      </div>
+      <div id="inverse-block" hidden>
+        <ul id="inverse-lines"></ul>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Multiplier table and how it is calculated</summary>
+    <div class="table-scroll" role="region" aria-label="Multiplier table" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">Distance</th><th scope="col">Multiplier (× diagonal in inches)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Minimum</th><td>FHD 1.2; UHD 4K 1.0</td></tr>
+          <tr><th scope="row">Ideal low</th><td>1.5</td></tr>
+          <tr><th scope="row">Ideal high</th><td>2.0</td></tr>
+          <tr><th scope="row">Maximum</th><td>2.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The screen is fixed at 16:9: width = diagonal × 2.54 × 16/√337, height = diagonal × 2.54 × 9/√337 (1 inch = 2.54 cm). Each distance is diagonal × multiplier × 2.54, computed in exact decimal arithmetic before any rounding. In inverse mode the distance is first converted to inches, then divided by the ideal 1.5–2.0, minimum and maximum multipliers to give the range and its bounds. The downloaded report is always named tv-viewing-distance-report.json and holds the result as compact JSON with keys sorted by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Are these distances exact viewing-angle conversions?</dt>
+      <dd>No. They are fixed rules of thumb based on THX (about 36–40°) and SMPTE (about 30°) viewing-angle guidance: minimum 1.2×, ideal 1.5–2.0× and maximum 2.5× the diagonal.</dd>
+      <dt>Why can you sit closer with 4K?</dt>
+      <dd>At a higher resolution pixels are harder to see at the same distance, so this tool sets the 4K minimum-distance multiplier to 1.0. The ideal and maximum distances do not change with resolution.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

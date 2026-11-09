@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percentage Calculator | Gloss Tools</title>
+<meta name="description" content="Three everyday percentage questions in one place: X% of a number, a share as a percentage, and percentage change, computed exactly on your device.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Percentage Calculator</h1>
+    <p class="lede">Three everyday percentage questions in one place: X% of a number, a share as a percentage, and the percentage change from A to B. Everything is computed exactly, on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <fieldset class="mode-group">
+        <legend>Calculation mode</legend>
+        <div class="segmented" role="radiogroup" aria-label="Calculation mode">
+          <label class="segment">
+            <input type="radio" name="mode" value="of" checked>
+            <span>Percent of a number</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="share">
+            <span>Share as a percentage</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="change">
+            <span>Percentage change</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-mode" hidden></p>
+      </fieldset>
+
+      <div class="fields">
+        <div class="field">
+          <label for="input-first" id="label-first">Percentage (%)</label>
+          <input id="input-first" name="first" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="20">
+          <p class="field-error" id="error-first" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-second" id="label-second">Base number</label>
+          <input id="input-second" name="second" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="150">
+          <p class="field-error" id="error-second" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate percentage</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter values, or load the example.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Exact value</dt>
+          <dd><span id="result-value"></span><span id="result-suffix"></span></dd>
+        </div>
+        <div id="result-direction-row" hidden>
+          <dt>Direction</dt>
+          <dd id="result-direction"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>Rules and limits</summary>
+      <ul>
+        <li>Number format: a decimal number such as 12.5. No thousands commas, exponents, plus signs, or leading/trailing decimal points.</li>
+        <li>Each field holds at most 24 characters; the absolute value is at most 999,999,999,999.</li>
+        <li>The page rounds the exact result to two decimals and trims trailing zeros; the downloadable report keeps the ten-decimal exact value.</li>
+        <li>A share whose whole is 0, or a change whose starting value is 0, cannot be calculated and returns a fixed error.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>How is percentage change calculated?</h3>
+    <p>(new − start) ÷ start × 100; a starting value of zero cannot be used.</p>
+    <h3>Why does the page show two decimals?</h3>
+    <p>The page rounds the exact result to two decimals and trims trailing zeros; the downloadable report keeps the ten-decimal value.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The Percentage Calculator runs offline on your device. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

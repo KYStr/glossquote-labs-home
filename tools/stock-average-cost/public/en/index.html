@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Enter buys and sells in order to track FIFO cost basis, average cost per share and realized profit or loss per sell, with an optional fee rate.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Stock Average Cost Calculator | Gloss Tools</title>
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="spacer"></span>
+  <p class="draft-note">Switching language or leaving the page discards the draft.</p>
+  <a href="../index.html" lang="zh-Hant">繁體中文</a>
+</header>
+<main>
+  <h1>Stock Average Cost Calculator</h1>
+  <p class="lede">Bought the same stock in several lots and sold part of it? Enter shares and prices in the order they happened (up to 20 trades), with one optional fee rate; the tool relieves cost on a FIFO basis and shows current holdings, remaining cost, average cost, and realized profit or loss per sell. It runs locally, never connects to a brokerage account, and uses the currency unit you enter.</p>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Input</h2>
+      <label for="fee-input">Fee rate (basis points)</label>
+      <p class="help" id="fee-help">One rate applies to the whole list; 0 means no fees. 100 basis points = 1%. Buy fees add to cost, sell fees reduce proceeds; securities transaction tax is not included.</p>
+      <input id="fee-input" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="fee-help">
+
+      <h3 id="trades-heading">Trades</h3>
+      <div class="table-region editor-region" role="region" aria-labelledby="trades-heading" tabindex="0">
+        <table id="trades-table">
+          <caption>In the order they happened; the row order is the processing order and is never sorted for you.</caption>
+          <thead>
+            <tr><th scope="col">Side</th><th scope="col">Shares</th><th scope="col">Price per share</th><th scope="col">Actions</th></tr>
+          </thead>
+          <tbody id="trades-body">
+            <tr>
+              <td>
+                <select class="side-select" aria-label="Row 1 side">
+                  <option value="buy" selected>Buy</option>
+                  <option value="sell">Sell</option>
+                </select>
+              </td>
+              <td><input class="shares-input" type="text" inputmode="numeric" autocomplete="off" value="" aria-label="Row 1 shares"></td>
+              <td><input class="price-input" type="text" inputmode="decimal" autocomplete="off" value="" aria-label="Row 1 price per share"></td>
+              <td class="row-actions">
+                <button type="button" class="move-up small" aria-label="Move row 1 up" disabled>↑</button>
+                <button type="button" class="move-down small" aria-label="Move row 1 down" disabled>↓</button>
+                <button type="button" class="delete-row small" aria-label="Delete row 1" disabled>×</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="add-row-button">Add row</button>
+      </div>
+      <p class="example-note" id="row-limit-note" hidden>The 20-trade limit is reached; no more rows can be added.</p>
+
+      <details class="rules" id="rules">
+        <summary>Rules and limits</summary>
+        <ul>
+          <li>At most 20 trades; shares are whole numbers from 1 to 999,999,999; price per share has up to 7 integer digits and 4 decimal digits, minimum 0.0001.</li>
+          <li>Fee rate from 0 to 1000 basis points (0%–10%). Each fee is the trade amount times the rate, rounded half-up to 0.0001.</li>
+          <li>Sells relieve the earliest buy lots first (FIFO); a lot that is fully relieved settles at exactly its remaining cost, leaving no rounding residue.</li>
+          <li>Amounts are computed exactly in units of 0.0001 with no floating point; the average cost is rounded half-up to 0.0001.</li>
+          <li>A sell larger than the shares held at that point fails the whole run and points at that sell row.</li>
+          <li>Securities transaction tax, the health-insurance supplementary premium, and dividends are not included; results are estimates, not a brokerage statement or a tax document.</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">Calculate average cost</button>
+        <button type="button" id="example-button">Load example</button>
+        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="cancel-button" hidden>Cancel</button>
+        <button type="button" id="download-button" hidden>Download report</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <p id="status-text">Enter trades, or load the example.</p>
+      </div>
+      <p class="example-note" id="example-note" hidden>Example loaded. This is demo data, not your trade history.</p>
+      <div class="error-box" id="error-box" hidden>
+        <p id="error-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="result-section" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">Holdings summary and sell results</h2>
+      <dl class="summary" id="result-summary"></dl>
+      <p class="empty-note" id="average-note" hidden>No shares held, so no average cost.</p>
+
+      <h3 id="sells-heading">Sell details</h3>
+      <p class="empty-note" id="sells-empty" hidden>No sells yet.</p>
+      <div class="table-region" id="sells-region" role="region" aria-labelledby="sells-heading" tabindex="0">
+        <table id="sells-table">
+          <caption>One row per sell, in order.</caption>
+          <thead>
+            <tr><th scope="col">Row</th><th scope="col">Shares</th><th scope="col">Proceeds</th><th scope="col">Cost relieved</th><th scope="col">Realized P&amp;L</th></tr>
+          </thead>
+          <tbody id="sells-table-body"></tbody>
+        </table>
+      </div>
+
+      <h3 id="lots-heading">Remaining lots</h3>
+      <p class="empty-note" id="lots-empty" hidden>No remaining holdings.</p>
+      <div class="table-region" id="lots-region" role="region" aria-labelledby="lots-heading" tabindex="0">
+        <table id="lots-table">
+          <caption>Buy lots not yet relieved, oldest first.</caption>
+          <thead>
+            <tr><th scope="col">Lot</th><th scope="col">Shares</th><th scope="col">Cost basis</th></tr>
+          </thead>
+          <tbody id="lots-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is sell cost relieved?</dt>
+      <dd>FIFO: the earliest buy lots are relieved first, and a lot that is fully relieved settles at exactly its remaining cost.</dd>
+      <dt>How are fees calculated?</dt>
+      <dd>Each trade's fee is its amount times the rate, rounded half-up to 0.0001; buy fees add to cost, sell fees reduce proceeds. The rate is entered in basis points (100 bps = 1%). Securities transaction tax is not included.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p>This tool runs entirely in your browser. Nothing is uploaded or stored; leaving the page discards the draft.</p>
+  </footer>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

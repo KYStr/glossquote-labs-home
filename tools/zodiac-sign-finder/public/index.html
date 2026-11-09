@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>西洋星座查詢｜Gloss Tools</title>
+<meta name="description" content="輸入出生月日，依固定的熱帶黃道日期表查出西洋星座、符號、元素與模式；交界首末日附提示，年份選填只驗證日期存在、不影響結果。">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <span class="status"><span class="status-badge" id="status-badge" data-tone="info">尚未開始</span></span>
+  <nav class="lang-nav" aria-label="語言">
+    <a id="lang-link" href="en/index.html" lang="en">English</a>
+    <span aria-hidden="true">·</span>
+    <a id="home-link" href="../../">回首頁</a>
+  </nav>
+</header>
+
+<main>
+  <h1>西洋星座查詢</h1>
+  <p class="lede">輸入出生月、日，依固定的熱帶黃道日期表查出西洋星座、符號、日期範圍、元素與模式。全部計算都在本機進行，不上傳、不保存。</p>
+
+  <div class="notice" role="note">
+    <p>切換語言或離開頁面會失去目前草稿。結果只對目前輸入快照有效；修改輸入會立即撤銷舊結果與下載。</p>
+  </div>
+
+  <form id="zodiac-form" novalidate>
+    <div class="fields">
+      <div class="field">
+        <label for="month-input">出生月
+          <span class="hint">1–12，只輸入數字。</span>
+        </label>
+        <input id="month-input" name="month" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="month-error">
+        <p class="field-error" id="month-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="day-input">出生日
+          <span class="hint">1–31，只輸入數字。</span>
+        </label>
+        <input id="day-input" name="day" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="day-error">
+        <p class="field-error" id="day-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="year-input">出生年（選填）
+          <span class="hint">年份選填，只用來檢查日期是否存在，不影響星座。</span>
+        </label>
+        <input id="year-input" name="year" type="text" inputmode="numeric" autocomplete="off"
+          spellcheck="false" aria-describedby="year-error">
+        <p class="field-error" id="year-error" hidden></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="find-button" class="primary">查詢星座</button>
+      <button type="button" id="example-button">載入範例</button>
+      <button type="button" id="cancel-button" hidden>取消</button>
+      <button type="button" id="reset-button">重設</button>
+    </div>
+
+    <p class="status-line" id="status-line" role="status" aria-live="polite">請輸入出生月、日，或載入範例。</p>
+  </form>
+
+  <section class="result" id="result" aria-labelledby="result-heading" hidden>
+    <h2 id="result-heading">查詢結果</h2>
+    <p class="sign-line"><span class="sign-symbol" id="result-symbol"></span> <span class="sign-name" id="result-name"></span></p>
+    <p class="result-range" id="result-range"></p>
+    <p class="result-attrs" id="result-attrs"></p>
+    <p class="result-cusp" id="result-cusp" hidden></p>
+    <p class="result-neighbour" id="result-neighbour" hidden></p>
+    <div class="download-row">
+      <button type="button" id="download-button">下載報告</button>
+    </div>
+  </section>
+
+  <details>
+    <summary>輸入規則</summary>
+    <ul>
+      <li>月、日必填；年份選填。每個欄位只接受十進位整數（0 或非零開頭、無空白與小數），最多 8 個字元。</li>
+      <li>範圍：月 1–12、日 1–31、年 1–9999；日期還必須在該月存在。</li>
+      <li>2 月 29 日：不填年份視為有效；填閏年有效；填非閏年會回報日期不存在。</li>
+      <li>日期表固定，不依年份或出生時間變動；落在某星座首日或末日時，結果會附交界提示與相鄰星座。</li>
+      <li>星座只由月、日決定，年份永遠不改變查詢結果。</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>常見問題</summary>
+    <p><strong>2 月 29 日出生是什麼星座？</strong><br>雙魚座。年份只用來檢查日期是否存在；不填年份時 2 月 29 日也視為有效。</p>
+    <p><strong>為什麼交界日有特別提示？</strong><br>實際交界時刻隨年份略有不同，本工具使用固定日期表，並在每個星座的首日與末日附上提示。</p>
+  </details>
+</main>
+
+<footer>
+  <p>完全在本機運作：無帳號、無上傳、不保留紀錄。報告檔名固定為 <code>zodiac-sign-report.json</code>。</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

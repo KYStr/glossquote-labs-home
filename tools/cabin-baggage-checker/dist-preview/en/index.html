@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cabin Baggage Checker | Gloss Tools</title>
+<meta name="description" content="Enter your cabin bag's three dimensions and weight to check it against the published economy carry-on rules of EVA Air, China Airlines, STARLUX, Tigerair Taiwan, ANA and JAL, with per-airline pass/fail and margins.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Cabin Baggage Checker</h1>
+  <p class="lede">Enter your main bag's three dimensions and weight (personal item optional) to check it against six airlines' economy-class (international) carry-on rules at once: the three sides are sorted and compared side by side, weight is judged by each airline's own rule, and every airline gets a pass/fail with margins. The comparison uses a rules table verified on 2026-11-09, not a live lookup.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Baggage and airlines</h2>
+      <form id="baggage-form" novalidate>
+        <fieldset class="field">
+          <legend>Main bag size (cm): length, width, height</legend>
+          <p class="help" id="help-bag-size">The three sides can be entered in any order; the tool sorts them before comparing. Dimensions include wheels, handles and side pockets; each side must be over 0 and at most 200 cm, with at most one decimal place.</p>
+          <div class="field-grid">
+            <div class="subfield">
+              <label for="field-bagLength">Length (cm)</label>
+              <input id="field-bagLength" name="bagLength" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+            <div class="subfield">
+              <label for="field-bagWidth">Width (cm)</label>
+              <input id="field-bagWidth" name="bagWidth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+            <div class="subfield">
+              <label for="field-bagHeight">Height (cm)</label>
+              <input id="field-bagHeight" name="bagHeight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bag-size">
+            </div>
+          </div>
+          <p class="field-error" id="error-bagLength" role="alert"></p>
+          <p class="field-error" id="error-bagWidth" role="alert"></p>
+          <p class="field-error" id="error-bagHeight" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-bagWeightKg">Main bag weight (kg)</label>
+          <p class="help" id="help-bagWeightKg">Over 0 and at most 100 kg, with at most one decimal place.</p>
+          <input id="field-bagWeightKg" name="bagWeightKg" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-bagWeightKg">
+          <p class="field-error" id="error-bagWeightKg" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>Personal item (optional): length, width, height, weight</legend>
+          <p class="help" id="help-personal">Leave all four blank if you have no personal item; if any one is filled in, all four are required. Dimension rules match the main bag; weight is at most 100 kg.</p>
+          <div class="field-grid">
+            <div class="subfield">
+              <label for="field-personalLength">Length (cm)</label>
+              <input id="field-personalLength" name="personalLength" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalWidth">Width (cm)</label>
+              <input id="field-personalWidth" name="personalWidth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalHeight">Height (cm)</label>
+              <input id="field-personalHeight" name="personalHeight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+            <div class="subfield">
+              <label for="field-personalWeightKg">Weight (kg)</label>
+              <input id="field-personalWeightKg" name="personalWeightKg" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-personal">
+            </div>
+          </div>
+          <p class="field-error" id="error-personalLength" role="alert"></p>
+          <p class="field-error" id="error-personalWidth" role="alert"></p>
+          <p class="field-error" id="error-personalHeight" role="alert"></p>
+          <p class="field-error" id="error-personalWeightKg" role="alert"></p>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Airlines to check</legend>
+          <p class="help" id="help-airlines">All six are selected by default; select at least one.</p>
+          <label class="check-row" for="field-airline-eva">
+            <input id="field-airline-eva" name="airlines" type="checkbox" value="eva" checked>
+            EVA Air
+          </label>
+          <label class="check-row" for="field-airline-china-airlines">
+            <input id="field-airline-china-airlines" name="airlines" type="checkbox" value="china-airlines" checked>
+            China Airlines
+          </label>
+          <label class="check-row" for="field-airline-starlux">
+            <input id="field-airline-starlux" name="airlines" type="checkbox" value="starlux" checked>
+            STARLUX Airlines
+          </label>
+          <label class="check-row" for="field-airline-tigerair-taiwan">
+            <input id="field-airline-tigerair-taiwan" name="airlines" type="checkbox" value="tigerair-taiwan" checked>
+            Tigerair Taiwan
+          </label>
+          <label class="check-row" for="field-airline-ana">
+            <input id="field-airline-ana" name="airlines" type="checkbox" value="ana" checked>
+            ANA
+          </label>
+          <label class="check-row" for="field-airline-jal">
+            <input id="field-airline-jal" name="airlines" type="checkbox" value="jal" checked>
+            Japan Airlines
+          </label>
+          <p class="field-error" id="error-airlines" role="alert"></p>
+        </fieldset>
+        <p class="field-error" id="error-form" role="alert"></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing checked yet. Enter your bag's size and weight, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Check baggage</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Results by airline</h2>
+      <p id="summary"></p>
+      <p id="sorted-note"></p>
+      <div class="table-scroll" role="region" aria-label="Results by airline" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Airline</th><th scope="col">Verdict</th><th scope="col">Size limit (cm)</th><th scope="col">Side margins (cm)</th><th scope="col">Weight</th><th scope="col">Personal item</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">比對結果依 2026-11-09 查核之各航空公司公開規定（經濟艙），僅供參考。規定可能變更，行李是否可登機以航空公司官網與現場認定為準。 / Checked against each airline's published economy-class rules as verified on 2026-11-09, for reference only. Rules can change; the airline's official website and airport staff have the final say.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How the check works and about the rules table</summary>
+    <p>Your three sides are sorted from largest to smallest and compared side by side with each airline's limits; any side over its limit fails the size check. This tool does not apply the airlines' alternative "sum of three sides ≤ 115 cm" rule. Weight comes in two kinds: EVA Air and China Airlines apply 7 kg to the main bag alone (main-bag rule); STARLUX applies 7 kg, and Tigerair Taiwan, ANA and JAL apply 10 kg, to the main bag plus personal item combined (total rule). Personal-item limits: EVA Air and STARLUX 40×30×10 cm, China Airlines 40×30×15 cm, ANA 40×30×20 cm; Tigerair Taiwan and JAL publish no dimensions, shown as "not specified" and never affecting the verdict. ANA and JAL figures are for international aircraft with 100+ seats. The report cabin-baggage-report.json is the result in a fixed JSON format, available for download. All numbers carry exactly one decimal place, without thousands separators.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Should I include wheels and handles?</dt>
+      <dd>Yes. All six airlines count wheels, handles and side pockets; measure the outside of the packed bag.</dd>
+      <dt>Why is STARLUX stricter on weight?</dt>
+      <dd>STARLUX caps the main bag and personal item together at 7 kg in Economy, while EVA Air and China Airlines apply 7 kg to the main bag alone.</dd>
+      <dt>Does the order of the three sides matter?</dt>
+      <dd>No. The tool sorts your three sides from largest to smallest and compares them side by side with each airline's limits.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All checking happens locally in this page. Your input is not uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pet Age Converter | Gloss Tools</title>
+<meta name="description" content="Convert a dog's or cat's age to human-equivalent years with a pinned piecewise model: 15 for the first year, +9 for the second, then a per-year increment by species and size, plus a life-stage label.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout" id="app" aria-busy="false">
+  <h1>Pet Age Converter</h1>
+  <p class="lede">Convert a dog's or cat's age to human-equivalent years with a pinned piecewise model: 15 for the first year, +9 for the second, then a per-year increment by species and size, plus a life-stage label.</p>
+
+  <div class="columns">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Species, size and age</h2>
+      <form id="calc-form" novalidate>
+        <div class="field">
+          <label for="species">Species</label>
+          <select id="species" aria-describedby="error-species">
+            <option value="dog" selected>Dog</option>
+            <option value="cat">Cat</option>
+          </select>
+          <p class="field-error" id="error-species" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="size">Size</label>
+          <select id="size" aria-describedby="help-size error-size">
+            <option value="">Select a size</option>
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+            <option value="giant">Giant</option>
+          </select>
+          <p class="help" id="help-size">Common breed examples (for reference only; not used in the calculation): Small: Poodle, Chihuahua; Medium: Beagle, Border Collie; Large: Golden Retriever, German Shepherd; Giant: Great Dane, Saint Bernard.</p>
+          <p class="help" id="size-cat-note" hidden>Cats do not need a size</p>
+          <p class="field-error" id="error-size" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="years">Years</label>
+          <p class="help" id="help-years">A whole number from 0 to 38; total-month caps: 360 months for dogs, 456 months for cats.</p>
+          <input id="years" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-years error-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="months">Months</label>
+          <p class="help" id="help-months">A whole number from 0 to 11; use 0 for a whole number of years.</p>
+          <input id="months" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="help-months error-months">
+          <p class="field-error" id="error-months" role="alert"></p>
+        </div>
+
+        <div class="actions">
+          <button id="run-btn" type="submit">Convert age</button>
+          <button id="example-btn" type="button">Load example</button>
+          <button id="cancel-btn" type="button" hidden>Cancel</button>
+          <button id="reset-btn" type="button">Reset</button>
+        </div>
+        <p class="help" id="example-note" hidden>Example loaded (synthetic data). Press "Convert age" to run it.</p>
+      </form>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">Human-equivalent age and life stage</h2>
+      <p id="status" class="status" role="status" aria-live="polite">Enter your pet's age or load the example, then press "Convert age".</p>
+      <div id="results" hidden>
+        <p class="result-total-line">Human-equivalent age: <strong id="result-human-years">—</strong> years</p>
+        <p>Life stage: <span id="result-stage">—</span> (total months: <span id="result-total-months">—</span>)</p>
+        <table class="result-table">
+          <thead>
+            <tr><th scope="col">Segment</th><th scope="col">Human years</th></tr>
+          </thead>
+          <tbody id="result-segments"></tbody>
+        </table>
+        <p class="result-note">Rule-of-thumb note: the popular 'multiply by 7' shortcut does not match this piecewise model — the first year alone equals 15 human years. Treat the result as an everyday reference, not veterinary advice.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes" aria-labelledby="notes-heading">
+    <h2 id="notes-heading">How it works and limits</h2>
+    <ul>
+      <li>The conversion model is fixed: the first year equals 15 human years, the second year adds 9, and each later year adds 4 for cats; for dogs, 4 (small), 5 (medium), 6 (large) or 7 (giant) by size.</li>
+      <li>Partial years are prorated linearly inside the current segment; the life stage is decided by the exact unrounded age, and each segment display is rounded independently.</li>
+      <li>Age caps: 360 months (30 years) for dogs and 456 months (38 years) for cats. Data stays on this page only — nothing is uploaded or stored, and leaving the page discards it. This tool has no download or export.</li>
+    </ul>
+    <p>Rule-of-thumb note: the popular 'multiply by 7' shortcut does not match this piecewise model — the first year alone equals 15 human years. Treat the result as an everyday reference, not veterinary advice.</p>
+    <h3>How are months counted?</h3>
+    <p>A partial year is prorated linearly inside its current segment — a 3-year-6-month medium dog accrues only half of the third segment's year.</p>
+    <h3>Why can the three segments differ from the total by 0.1?</h3>
+    <p>Each segment is rounded to one decimal independently, so their sum can differ from the displayed total by 0.1; the life stage uses the exact unrounded value.</p>
+    <h3>Is this medical advice?</h3>
+    <p>No. It is a reference conversion from a rule-of-thumb model; ask a veterinarian about health, diet and exercise.</p>
+  </section>
+</main>
+</body>
+</html>

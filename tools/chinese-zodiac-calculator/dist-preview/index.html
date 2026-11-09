@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>農曆生肖查詢｜Gloss Tools</title>
+<meta name="description" content="輸入國曆出生日期，以農曆春節為交界查正確生肖、干支與生肖年起訖，並判讀本命年；附 1960–2035 年春節日期表。">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../../">回首頁</a>
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+  </nav>
+</header>
+<main class="layout">
+  <h1>農曆生肖查詢</h1>
+  <p class="lede">輸入國曆出生日期，立刻查出正確生肖、干支與該生肖年的起訖；1、2 月出生也不怕算錯年。填入查詢日期（選填），還能看是不是本命年、下一個本命年是哪一年。判定只用寫死的 1960–2035 年春節日期表（另附 1959 與 2036 邊界列），全部在本機計算，不連網、不儲存。</p>
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">出生與查詢日期</h2>
+      <form id="zodiac-form" novalidate>
+        <div class="field">
+          <label for="field-birthDate">出生日期</label>
+          <p class="help" id="help-birthDate">國曆日期，格式 YYYY-MM-DD，範圍 1960-01-01 至 2035-12-31。</p>
+          <input type="text" id="field-birthDate" name="birthDate" inputmode="numeric" autocomplete="off" aria-describedby="help-birthDate error-birthDate" aria-invalid="false">
+          <p class="field-error" id="error-birthDate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-asOfDate">查詢日期（選填）</label>
+          <p class="help" id="help-asOfDate">選填。填了才判讀本命年與下一個本命年；範圍 1960-01-01 至 2036-12-31，留空不影響生肖結果。</p>
+          <input type="text" id="field-asOfDate" name="asOfDate" inputmode="numeric" autocomplete="off" aria-describedby="help-asOfDate error-asOfDate" aria-invalid="false">
+          <p class="field-error" id="error-asOfDate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status">尚未查詢。輸入出生日期，或按「載入範例」。</p>
+        <p class="example-note" id="example-note" hidden>這是合成範例，不含真實個資；載入後請按「查詢生肖」執行。</p>
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">查詢生肖</button>
+          <button type="button" class="button-secondary" id="example-btn">載入範例</button>
+          <button type="button" class="button-secondary" id="reset-btn">重設</button>
+          <button type="button" class="button-secondary" id="cancel-btn" disabled>取消</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="results-heading">
+      <h2 id="results-heading">生肖結果</h2>
+      <p class="result-headline" id="result-headline"></p>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" disabled>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具以農曆正月初一（春節）為生肖交界；八字命理以立春交界者，結果可能不同。</p>
+    </section>
+  </div>
+  <details class="details">
+    <summary>判定方式與春節日期表</summary>
+    <p>生肖年以春節為界：出生日在該年春節當天或之後，屬該年生肖；春節之前，屬前一年。春節當天起用新生肖。</p>
+    <p>本工具內建 1960–2035 年春節日期表，另附 1959 與 2036 兩列邊界列，用來判定 1960 年初與 2035 年末的歸屬；表外日期一律回報超出範圍，不外推。</p>
+    <p>干支由生肖年公式推得：地支序 =（生肖年 − 4）mod 12，天干序 =（生肖年 − 4）mod 10。1960 年為庚子鼠年、1984 年為甲子鼠年、2024 年為甲辰龍年，與公式一致。</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>生肖年</th><th>春節日期</th></tr></thead>
+        <tbody id="cny-table-body"></tbody>
+      </table>
+    </div>
+  </details>
+  <section class="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼 1、2 月出生的人，生肖常常被算錯？</dt>
+      <dd>因為生肖年不是從 1 月 1 日開始，而是從農曆正月初一（春節）開始。春節通常落在 1 月 21 日至 2 月 20 日之間，出生在春節之前，就還屬於前一年的生肖。</dd>
+      <dt>什麼是本命年？</dt>
+      <dd>查詢日期落在與出生生肖相同的生肖年，就是本命年，每 12 年一次。填入查詢日期，本工具會判讀是否為本命年，並列出下一個本命年是哪一年、何時開始。</dd>
+      <dt>為什麼八字排盤給的生肖可能不一樣？</dt>
+      <dd>八字命理以立春（約 2 月 4 日）為年界，和春節不同；出生在立春與春節之間的人，兩種算法會給出不同生肖。本工具採春節交界。</dd>
+    </dl>
+  </section>
+  <p class="privacy-note">本工具完全離線：計算在你的瀏覽器內以背景執行緒完成，不連網、不儲存、不傳送任何輸入。</p>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

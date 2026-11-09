@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>租屋預算規劃｜Gloss Tools</title>
+<meta name="description" content="用月收入與租金比例算出可負擔的租金上限，再把簽約搬入要準備的第一個月租金、押金與仲介費一次算清。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a href="../../">Gloss Tools 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+  <p class="draft-note">切換語言或離開頁面會失去目前草稿。</p>
+</header>
+<main class="page" id="app-main">
+  <h1>租屋預算規劃</h1>
+  <p class="intro">先用月實領收入和你選的租金比例，確認可負擔的租金上限；再對一間候選物件，算清簽約搬入要準備的總現金（第一個月租金、押金、仲介費）與每月繳完房租後的餘額。全部在本頁離線計算，不上傳、不儲存。</p>
+
+  <section class="workspace" id="workspace" aria-busy="false">
+    <form id="budget-form" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="income">月實領收入（元）</label>
+          <input id="income" type="text" inputmode="numeric" autocomplete="off" value="45000" aria-describedby="err-income">
+          <p class="error" id="err-income" hidden></p>
+        </div>
+        <div class="field">
+          <label for="ratio-preset">租金比例</label>
+          <select id="ratio-preset" aria-describedby="err-ratio-preset">
+            <option value="P25">25%</option>
+            <option value="P30" selected>30%</option>
+            <option value="P33">33⅓（三分之一）</option>
+            <option value="CUSTOM">自訂</option>
+          </select>
+          <p class="error" id="err-ratio-preset" hidden></p>
+        </div>
+        <div class="field">
+          <label for="custom-ratio">自訂比例（％，整數 1–100）</label>
+          <input id="custom-ratio" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="err-custom-ratio">
+          <p class="error" id="err-custom-ratio" hidden></p>
+        </div>
+        <div class="field">
+          <label for="candidate-rent">候選租金（元／月）</label>
+          <input id="candidate-rent" type="text" inputmode="numeric" autocomplete="off" value="12000" aria-describedby="err-candidate-rent">
+          <p class="error" id="err-candidate-rent" hidden></p>
+        </div>
+        <div class="field">
+          <label for="deposit-months">押金月數</label>
+          <select id="deposit-months" aria-describedby="err-deposit-months">
+            <option value="0">0 個月</option>
+            <option value="1">1 個月</option>
+            <option value="2" selected>2 個月</option>
+            <option value="3">3 個月</option>
+          </select>
+          <p class="error" id="err-deposit-months" hidden></p>
+        </div>
+        <div class="field">
+          <label for="agency-fee">仲介費（月）</label>
+          <select id="agency-fee" aria-describedby="err-agency-fee">
+            <option value="0">0 個月</option>
+            <option value="0.5" selected>0.5 個月</option>
+            <option value="1">1 個月</option>
+          </select>
+          <p class="error" id="err-agency-fee" hidden></p>
+        </div>
+      </div>
+
+      <details class="notes">
+        <summary>輸入格式與範圍</summary>
+        <ul>
+          <li>金額只收整數新台幣，不加千分位、符號或小數。月收入上限 999,999,999 元，候選租金上限 99,999,999 元。</li>
+          <li>自訂比例只在比例選「自訂」時需要，整數 1–100；未選自訂時本欄忽略。</li>
+          <li>押金與仲介費月數是試算參數，預設押金 2 個月、仲介費 0.5 個月為台灣常見行情，非簽約建議。</li>
+        </ul>
+      </details>
+
+      <div class="actions">
+        <button type="submit" id="calculate" class="primary">計算租屋預算</button>
+        <button type="button" id="load-example">載入範例</button>
+        <button type="button" id="cancel" hidden>取消</button>
+        <button type="button" id="reset">重設</button>
+      </div>
+      <p class="status" id="status-message" role="status" aria-live="polite"></p>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <section class="results" id="results" hidden aria-label="計算結果">
+      <h2>可負擔上限與搬入現金</h2>
+      <dl class="result-list">
+        <div><dt>可負擔租金上限</dt><dd id="result-max-rent">—</dd></div>
+        <div><dt>候選租金占收入</dt><dd id="result-share">—</dd></div>
+        <div><dt>是否超標</dt><dd id="result-verdict">—</dd></div>
+        <div><dt>第一個月租金</dt><dd id="result-first-month">—</dd></div>
+        <div><dt>押金</dt><dd id="result-deposit">—</dd></div>
+        <div><dt>仲介費</dt><dd id="result-agency-fee">—</dd></div>
+        <div><dt>搬入總額</dt><dd id="result-total">—</dd></div>
+        <div><dt>每月餘額</dt><dd id="result-remainder">—</dd></div>
+      </dl>
+      <p class="warning" id="result-warning" hidden></p>
+      <button type="button" id="download-report" hidden>下載報告</button>
+    </section>
+  </section>
+
+  <section class="faq" aria-label="常見問題">
+    <h2>常見問題</h2>
+    <h3>33⅓ 預設怎麼算？</h3>
+    <p>直接用收入的三分之一，無條件捨去到整數元，不會超過比例。</p>
+    <h3>仲介費半個月是固定的嗎？</h3>
+    <p>不是，可改成 0 或 1 個月；半個月是台灣常見行情，本工具只是試算。</p>
+  </section>
+</main>
+</body>
+</html>

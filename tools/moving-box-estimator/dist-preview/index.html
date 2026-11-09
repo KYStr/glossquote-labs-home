@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>搬家紙箱估算｜Gloss Tools</title>
+<meta name="description" content="依住宅型態與生活習慣，估算搬家要買的小、中、大紙箱數量，以及膠帶和包裝紙的捲數。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>搬家紙箱估算</h1>
+  <p class="lede">搬家前先估要買幾箱：選住宅型態，再勾選符合你家的加量選項，就會得到小、中、大紙箱各幾箱，以及膠帶和包裝紙各幾捲，可以直接照著下單。數字是依一般家庭物品量推估的參考值，不是任何賣場或搬家公司的保證數量。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="boxes-form" novalidate>
+        <fieldset class="field" id="field-homeType" aria-describedby="help-homeType">
+          <legend>住宅型態</legend>
+          <p class="help" id="help-homeType">五選一。括號內是該戶型的基準箱數（中箱當量）。</p>
+          <label class="radio-row"><input type="radio" name="homeType" value="studio" checked> 套房 <span class="hint">基準 15 箱</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="one-bedroom"> 一房 <span class="hint">基準 25 箱</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="two-bedroom"> 二房 <span class="hint">基準 40 箱</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="three-bedroom"> 三房 <span class="hint">基準 60 箱</span></label>
+          <label class="radio-row"><input type="radio" name="homeType" value="four-bedroom"> 四房 <span class="hint">基準 80 箱</span></label>
+          <p class="field-error" id="error-homeType" role="alert"></p>
+        </fieldset>
+        <fieldset class="field" id="field-extras">
+          <legend>加量選項</legend>
+          <p class="help" id="help-extras">符合你家的就勾起來，每個開關的固定加量標在旁邊。</p>
+          <label class="radio-row"><input type="checkbox" id="field-manyBooks"> 書很多 <span class="hint">+8 小箱</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-largeKitchen"> 廚房大 <span class="hint">+6 中箱</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-manyClothes"> 衣物多 <span class="hint">+5 中箱</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-fragileItems"> 易碎品多 <span class="hint">+4 小箱，包裝紙多 1 捲</span></label>
+          <label class="radio-row"><input type="checkbox" id="field-livedOver5Years"> 已居住 5 年以上 <span class="hint">小計 +20%，無條件進位，上調箱數計中箱</span></label>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。選擇住宅型態與加量選項，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算紙箱數量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">需要的紙箱與耗材</h2>
+      <dl class="summary-list">
+        <div class="summary-row"><dt>總箱數</dt><dd id="summary-total"></dd></div>
+      </dl>
+      <div class="table-scroll" role="region" aria-label="紙箱與耗材數量表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數量</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer">這是依一般家庭物品量推估的參考值，實際數量會因每戶物品多寡而不同；建議寧可多備幾箱，也不要買太少。</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式</summary>
+    <p>基準箱數依戶型固定：套房 15、一房 25、二房 40、三房 60、四房 80（以中箱當量計的總箱數）。基準先依小 30%／中 50% 拆分，小與中無條件進位，大箱取剩餘，所以三種尺寸恆合計為基準數。</p>
+    <p>加量在拆分之後、上調之前計入：書很多 +8 小箱、易碎品多 +4 小箱、廚房大 +6 中箱、衣物多 +5 中箱。勾了「已居住 5 年以上」時，把含加量的小計上調 20%，無條件進位，上調的箱數全數計中箱。耗材以每 10 箱 1 捲估（無條件進位）：膠帶與包裝紙相同，易碎品多時包裝紙再多備 1 捲。這些數字是產品設計常數，不是法規或官方統計。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>小／中／大箱怎麼分工？</dt>
+      <dd>小箱裝書和重物，中箱裝一般雜物，大箱裝衣物、寢具等輕而蓬鬆的物品。</dd>
+      <dt>住 5 年以上的 +20% 怎麼算？</dt>
+      <dd>住越久累積的物品通常越多，這個開關把小計上調 20%，無條件進位，上調的箱數全算中箱；東西少可以關掉。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

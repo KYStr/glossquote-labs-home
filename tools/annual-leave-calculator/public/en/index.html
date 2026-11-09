@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annual Leave Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a start date and a reference date to get statutory annual leave days, the current leave period and remaining days under Article 38 of Taiwan's Labor Standards Act.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../en/index.html">Gloss Tools</a>
+  <span class="topbar-title">Annual Leave Calculator</span>
+  <span class="lang-switch">
+    <a href="../index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+    <span class="draft-warning">Switching language or leaving this page discards the current draft.</span>
+  </span>
+</header>
+<main class="layout">
+  <section class="panel input-panel" aria-labelledby="page-title">
+    <h1 id="page-title">Annual Leave Calculator</h1>
+    <p class="lede">Enter a start date and a reference date to get statutory annual leave days, the current leave period and remaining days under Article 38 of Taiwan's Labor Standards Act. One employee, anniversary-based periods, whole days only; your input stays in this page's draft and is never sent or stored.</p>
+    <form id="leave-form" novalidate>
+      <div class="field">
+        <label for="start-date">Start date</label>
+        <input id="start-date" name="startDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="start-date-error">
+        <p class="field-error" id="start-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="reference-date">Reference date</label>
+        <input id="reference-date" name="referenceDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="reference-date-error">
+        <p class="field-error" id="reference-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="used-days">Days already used in this period (optional)</label>
+        <input id="used-days" name="usedDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0" aria-describedby="used-days-hint used-days-error">
+        <p class="field-hint" id="used-days-hint">Counts only the current period. Leave blank for 0.</p>
+        <p class="field-error" id="used-days-error" role="alert" hidden></p>
+      </div>
+      <div class="actions">
+        <button type="submit" class="button primary" id="run-btn">Calculate leave</button>
+        <button type="button" class="button" id="cancel-btn" hidden>Cancel</button>
+        <button type="button" class="button" id="example-btn">Load example</button>
+        <button type="button" class="button" id="today-btn">Use today</button>
+        <button type="button" class="button quiet" id="reset-btn">Reset</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <section class="panel result-panel" id="result-panel" aria-labelledby="result-heading" aria-busy="false">
+    <h2 id="result-heading">Remaining days and current period</h2>
+    <p class="result-empty" id="result-empty">No result yet. Enter a start date and a reference date, then select “Calculate leave”.</p>
+    <div id="result-body" hidden>
+      <p class="remaining"><span class="remaining-label">Remaining days</span> <span class="remaining-value" id="remaining-value">0</span> <span class="remaining-unit">days</span></p>
+      <p class="stage-message" id="stage-message" hidden></p>
+      <dl class="details">
+        <div class="detail-row"><dt>Tenure (years)</dt><dd id="tenure-years">0</dd></div>
+        <div class="detail-row"><dt>Tenure (months)</dt><dd id="tenure-months">0</dd></div>
+        <div class="detail-row"><dt>Tenure (days)</dt><dd id="tenure-days">0</dd></div>
+        <div class="detail-row"><dt>Leave days this period</dt><dd id="entitlement-value">0</dd></div>
+        <div class="detail-row"><dt>Days used this period</dt><dd id="used-value">0</dd></div>
+        <div class="detail-row"><dt>Remaining days</dt><dd id="remaining-value-detail">0</dd></div>
+        <div class="detail-row"><dt>Current period</dt><dd id="period-value">—</dd></div>
+        <div class="detail-row"><dt>Next grant date and days</dt><dd id="next-grant-value">—</dd></div>
+      </dl>
+      <p class="feb29-note" id="feb29-note" hidden></p>
+    </div>
+  </section>
+  <section class="panel info-panel" aria-labelledby="info-heading">
+    <h2 id="info-heading">Statutory days and legal basis</h2>
+    <h3>Annual leave table, Labor Standards Act Article 38</h3>
+    <table class="leave-table">
+      <thead><tr><th scope="col">Tenure</th><th scope="col">Leave days</th></tr></thead>
+      <tbody>
+        <tr><td>Under 6 months</td><td>0 days</td></tr>
+        <tr><td>6 months to under 1 year</td><td>3 days</td></tr>
+        <tr><td>1 year</td><td>7 days</td></tr>
+        <tr><td>2 years</td><td>10 days</td></tr>
+        <tr><td>3 years to under 5 years</td><td>14 days</td></tr>
+        <tr><td>5 years to under 10 years</td><td>15 days</td></tr>
+        <tr><td>10 years or more</td><td>1 extra day per year, up to 30 days</td></tr>
+      </tbody>
+    </table>
+    <p>Legal basis: Article 38 of the Labor Standards Act (version effective January 1, 2017). This tool estimates days from tenure and dates only; it does not cover company calendar-year cycles, deferrals or expiry payouts, half-day or hourly units, separation settlements, or company extras. Dates are Asia/Taipei calendar days; years are limited to 1900–2100.</p>
+    <h3>Frequently asked questions</h3>
+    <dl class="faq">
+      <div class="faq-item"><dt>Started on Feb 29?</dt><dd>In non-leap years the anniversary falls on Feb 28.</dd></div>
+      <div class="faq-item"><dt>Which law sets the days?</dt><dd>The tenure table in Article 38 of the Labor Standards Act (version effective Jan 1, 2017).</dd></div>
+      <div class="faq-item"><dt>Is this an official leave system?</dt><dd>No — it estimates statutory days from dates only; deferrals, payouts and company extras are not included.</dd></div>
+    </dl>
+  </section>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Body Fat Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate body fat percentage, fat mass and lean mass from height, neck, waist (plus hip for women) and weight with the US Navy circumference method.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Body Fat Calculator</h1>
+  <p class="lede">Estimate body fat percentage, fat mass and lean mass from height, neck, waist (plus hip for women) and weight with the US Navy circumference method. The result is an estimate, best used to track trends, not a medical measurement.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Your measurements</h2>
+      <form id="bodyfat-form" novalidate>
+        <fieldset class="field" id="field-sex">
+          <legend>Sex</legend>
+          <div class="radio-row">
+            <label><input type="radio" id="field-sex-male" name="sex" value="male" checked>Male</label>
+            <label><input type="radio" id="field-sex-female" name="sex" value="female">Female</label>
+          </div>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-heightCm">Height (cm)</label>
+          <p class="help" id="help-heightCm">Measure standing, without shoes. Range 100 to 250 cm.</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-neckCm">Neck (cm)</label>
+          <p class="help" id="help-neckCm">Measure just below the Adam's apple, with the tape perpendicular to the neck. Range 20 to 80 cm.</p>
+          <input id="field-neckCm" name="neckCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-neckCm">
+          <p class="field-error" id="error-neckCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-waistCm">Waist (cm)</label>
+          <p class="help" id="help-waistCm">Men: at navel level. Women: at the narrowest point of the waist. Keep the tape horizontal, measure at the end of a normal exhale, snug but not compressing the skin. Range 40 to 300 cm.</p>
+          <input id="field-waistCm" name="waistCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-waistCm">
+          <p class="field-error" id="error-waistCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-hipCm">Hip (cm)</label>
+          <p class="help" id="help-hipCm">Measure at the widest point of the hips, with the tape horizontal. Required for women, range 40 to 300 cm; not used for men.</p>
+          <input id="field-hipCm" name="hipCm" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-hipCm" disabled>
+          <p class="field-error" id="error-hipCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">Weight (kg)</label>
+          <p class="help" id="help-weightKg">Range 25 to 500 kg.</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your measurements, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate body fat</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Body fat percentage and category</h2>
+      <p class="result-pct" id="result-pct"></p>
+      <p class="result-category" id="result-category"></p>
+      <dl class="result-facts">
+        <div><dt>Fat mass</dt><dd id="result-fat"></dd></div>
+        <div><dt>Lean mass</dt><dd id="result-lean"></dd></div>
+      </dl>
+      <p class="disclaimer">This tool estimates body fat percentage using the US Navy circumference method. Results are estimates, not medical measurements, and do not replace professional body-composition assessment or medical advice.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it works and its limits</summary>
+    <p>The circumference combination is formed in centimetres first (men: waist − neck; women: waist + hip − neck), then divided by 2.54 into inches for the US Navy circumference method (Hodgdon &amp; Beckett 1984) log10 formulas with their original constants; height is converted the same way. Body fat percentage, fat mass and lean mass are shown to one decimal place, and the category follows the ACE body fat percentage table applied to the rounded percentage. The download is always named body-fat-report.json.</p>
+    <p>This tool estimates body fat percentage using the US Navy circumference method. Results are estimates, not medical measurements, and do not replace professional body-composition assessment or medical advice.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How accurate is this method?</dt>
+      <dd>The circumference method is an estimate and differs from professional scans such as DEXA; it is best used to track trends.</dd>
+      <dt>Why do men not enter hip?</dt>
+      <dd>The US Navy formula uses waist and neck for men; hip is only part of the women's formula.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page; your input is not uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
