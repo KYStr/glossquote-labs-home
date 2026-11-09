@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Arrange up to 30 JPEG or PNG images into numbered thumbnails in your browser. Download a PNG overview and full-filename text index without uploading images.">
+  <title>Photo Contact Sheet | Thumbnails and Filename Index</title>
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#tool">Skip to tool</a>
+<header><a class="brand" data-leave href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a><nav aria-label="All tools"><a data-leave href="https://glossquote.com/en/index.html">All tools</a><a data-leave href="../index.html" lang="zh-Hant">繁體中文</a></nav></header>
+<main id="tool">
+  <div class="intro"><h1>Photo contact sheet</h1><p>Make one overview of your photos. Find the originals by number.</p></div>
+  <p class="privacy">Images are processed only in this page, without uploads. Reloading or switching language clears your work.</p>
+  <noscript><p class="error">This tool needs JavaScript. Image processing takes place only in your browser.</p></noscript>
+  <div class="workspace">
+    <section class="rail" aria-labelledby="settings-heading">
+      <h2 id="settings-heading">Layout settings</h2>
+      <form id="settings">
+        <label for="columns">Columns per row</label><input id="columns" type="number" min="1" max="6" step="1" value="4" required disabled>
+        <label for="tile">Thumbnail maximum edge (px)</label><select id="tile" disabled><option>120</option><option>180</option><option selected>240</option><option>320</option></select>
+        <details><summary>Spacing and labels</summary><div class="advanced">
+          <label for="gap">Image spacing (0–64 px)</label><input id="gap" type="number" min="0" max="64" step="1" value="16" required disabled>
+          <label for="margin">Page margin (0–96 px)</label><input id="margin" type="number" min="0" max="96" step="1" value="24" required disabled>
+          <label class="checkbox" for="labels"><input id="labels" type="checkbox" checked disabled>Show filenames in PNG</label>
+        </div></details>
+        <p class="small">Numbers always remain visible. PNG filenames may be shortened; download the index for complete names. Names may contain personal information. Review before sharing.</p>
+        <p id="estimate" class="measure"></p>
+        <button id="build" class="primary" type="submit" disabled>Build overview</button>
+      </form>
+      <button id="clear" type="button" disabled>Clear all</button>
+    </section>
+    <div class="canvas-region">
+      <section aria-labelledby="sources-heading">
+        <div class="section-heading"><h2 id="sources-heading">Images and order</h2><span id="count" class="measure">0 / 30</span></div>
+        <label class="file-label" for="files">Add JPEG / PNG</label><input id="files" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" multiple disabled aria-describedby="file-note">
+        <p id="file-note" class="small">Up to 30 images; 8 MiB each, 64 MiB total. Starts in the selected order.</p>
+        <ol id="items"></ol>
+      </section>
+      <p id="status" role="status" aria-live="polite" aria-atomic="true"></p><button id="cancel" type="button" hidden disabled>Cancel processing</button>
+      <section class="result" aria-labelledby="preview-heading">
+        <div class="section-heading"><h2 id="preview-heading">Overview preview</h2></div>
+        <div class="actions"><button id="png" type="button" disabled>Download PNG</button><button id="index" type="button" disabled>Download filename index</button></div>
+        <p id="empty" class="empty">Add images and build your overview to see the result here.</p><div id="preview"></div>
+      </section>
+    </div>
+  </div>
+  <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">How it works</h2>
+    <details><summary>Format and usage limits</summary><p>Up to 30 images; 8 MiB each and 64 MiB combined original file size. Each image may have up to 16 million pixels and an 8192 px edge. Supports static PNG and 8-bit baseline / progressive JPEG. No APNG, GIF, WebP, SVG, HEIC or CMYK JPEG. Browser support and available memory vary; images within these limits may still fail.</p><p>Output is limited to 16 million pixels, 8192 px per edge and a 64 MiB PNG. Images are not cropped or enlarged; transparency appears white. This is a thumbnail overview, not a full-quality photo archive. Originals are not modified.</p></details>
+    <details><summary>Where are the complete filenames?</summary><p>Download the filename index as well as the PNG. Each index line contains a number, a Tab and the complete filename as a JSON string. Newlines and control characters are escaped. Numbers follow the current order; filenames need not be unique.</p></details>
+    <details><summary>Will orientation and colors match exactly?</summary><p>The tool reads supported EXIF orientation before browser decoding and stops on dimension mismatches. Orientation, colors and fonts may still vary by browser. Inspect the preview. Original photo metadata is not copied; color or DPI fidelity is not guaranteed.</p></details>
+    <details><summary>Does cancelling or clearing securely erase data?</summary><p>No. Cancellation stops further work but cannot interrupt native decoding immediately; its result is discarded when it finishes. Clearing releases page references, not downloaded files. Browser or operating-system memory erasure is not guaranteed.</p></details>
+  </section>
+</main>
+<dialog id="confirmation" aria-labelledby="confirm-heading" aria-describedby="confirm-note"><h2 id="confirm-heading">Discard current work?</h2><p id="confirm-note">Images and undownloaded results will be cleared and cannot be restored. Cancel and download first if you want to keep them.</p><div class="actions"><button id="keep" type="button">Keep working</button><button id="discard" type="button">Discard and continue</button></div></dialog>
+<footer>Unpublished candidate · Local preview is not indexed</footer>
+</body>
+</html>

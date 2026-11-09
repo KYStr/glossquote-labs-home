@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Flashcards and Practice | GlossQuote</title>
+<meta name="description" content="Paste CSV questions and answers, reveal and self-rate recall locally, then download progress JSON or printable text. No processing upload or automatic saving.">
+<link rel="stylesheet" href="../styles.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#work">Skip to workspace</a>
+<header class="site-header"><a class="brand" href="https://glossquote.com/en/index.html">GlossQuote<span> / All tools</span></a><nav aria-label="Language"><a id="language-link" href="../index.html" lang="zh-Hant">繁體中文</a><small>Changing language clears this page.</small></nav></header>
+<main id="work">
+<div class="intro"><p class="eyebrow">GLOSSQUOTE · STUDY TOOLS / UNPUBLISHED PREVIEW</p><h1>Flashcards and Practice</h1><p class="subtitle">Recall first. Reveal next. Practice your own questions.</p><p>Paste two-column CSV, check each answer and rate your recall. Download progress or printable text when you want to keep it.</p><p class="privacy">Processed in this page’s memory. No automatic saving or question upload. Export before leaving.</p></div>
+<div class="workspace">
+<section class="editor-panel" aria-labelledby="prepare-title"><h2 id="prepare-title">01 · Prepare your cards</h2>
+<p id="init-status" role="status">Initializing. If controls stay disabled, use a browser with JavaScript support. Questions will not be submitted.</p><noscript><p class="error">This tool requires JavaScript. Input and submission are disabled; questions will not be sent.</p></noscript>
+<form id="editor-form" autocomplete="off"><fieldset id="editor" disabled><legend class="visually-hidden">01 · Prepare your cards</legend>
+<label for="source">Questions and answers CSV</label><p id="source-hint" class="hint">The first record must be question,answer. Quote fields containing commas or newlines; double each quote inside quoted fields.</p>
+<textarea id="source" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="source-hint source-bounds error" placeholder="question,answer
+Capital of France?,Paris"></textarea>
+<p id="source-bounds" class="hint">1–200 cards; up to 2,000 Unicode code points per face. Raw input: at most 200,000 UTF-16 units and 262,144 UTF-8 bytes. Oversized input is rejected, never truncated.</p>
+<label class="checkbox" for="shuffle"><input id="shuffle" type="checkbox" aria-describedby="shuffle-hint">Shuffle when starting</label><p id="shuffle-hint" class="hint">Uses browser randomness; consecutive orders can match. Restarting resets all ratings.</p>
+<div class="actions"><button class="primary" id="start" type="submit" disabled>Start practice</button><button id="example" type="button">Load sample CSV</button><button id="clear" type="button">Clear this page</button></div>
+</fieldset></form><p id="error" class="error" role="alert"></p><p id="status" class="status" role="status" aria-live="polite"></p>
+</section>
+<section class="practice-panel" id="practice" hidden aria-labelledby="practice-title"><h2 id="practice-title">02 · Recall, then reveal</h2><p id="summary" class="summary"></p><h3 id="position" tabindex="-1"></h3>
+<div class="card-face"><h4>Question</h4><p id="question" class="card-text"></p></div>
+<button id="reveal" type="button" class="primary" disabled>Reveal answer</button>
+<div id="answer-region" class="card-face answer-face" hidden><h4 id="answer-heading" tabindex="-1">Answer</h4><p id="answer" class="card-text"></p></div>
+<p id="rating" class="rating"></p><div class="actions"><button id="again" type="button" disabled>Practice again</button><button id="remembered" type="button" disabled>Remembered</button></div><div class="actions navigation"><button id="previous" type="button" disabled>Previous card</button><button id="next" type="button" disabled>Next card</button></div>
+</section></div>
+<section id="exports" class="export-panel" hidden aria-labelledby="export-title"><h2 id="export-title">03 · Keep your work</h2><p>Progress JSON includes every question, answer, source ID, rating and current position. This version exports only; it cannot re-import progress. Printable TXT lists all answers in source order for printing from a text editor.</p><div class="actions"><button id="download-progress" type="button" disabled>Download progress JSON</button><button id="download-print" type="button" disabled>Download printable TXT</button></div><details id="preview-details"><summary>Review every card (includes answers)</summary><label for="print-preview">Printable text preview; select to copy manually</label><textarea id="print-preview" rows="12" readonly spellcheck="false"></textarea></details></section>
+<section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">How it works & common questions</h2><details><summary>What CSV format is accepted?</summary><p>Use exactly the two-column header question,answer. No trimming, case changes or Unicode normalization. CRLF/CR become LF; one leading BOM is accepted. Quoted fields can contain commas, newlines and doubled quotes. One final record-ending newline is allowed; other blank records are rejected.</p></details>
+<details><summary>What happens to spaces, duplicates and special characters?</summary><p>Edge spaces and duplicate cards stay intact. Every card has its own source ID, but neither face may be entirely whitespace. Unpaired surrogates and C0/C1 controls are rejected, except Tab and line feed. HTML and script-looking text stay plain text. Code points are not visual character counts.</p></details>
+<details><summary>Does the tool automatically grade my answers?</summary><p>No. After revealing the answer, choose Practice again or Remembered. You can change that rating; only the latest rating per card is counted. The tool does not move automatically or schedule spaced repetition. Changing cards hides the answer.</p></details>
+<details><summary>What clears my practice?</summary><p>Editing CSV, changing shuffle, beginning IME composition, loading a sample or restarting clears the previous practice and ratings. Leaving or changing language clears the page too. There is no history, account or sync. Cancel or Escape in the clear confirmation keeps your work.</p></details>
+<details><summary>Can I keep practicing after an export?</summary><p>Downloading leaves the current practice intact. Up to four started downloads keep temporary data for 60 seconds, even after editing or clearing; leaving the page releases them immediately. JSON saves readable questions and progress, but this version cannot import it again. TXT includes all answers, without crop marks or duplex alignment; choose your layout in a text editor. Exporting does not upload or share your file.</p></details>
+<details><summary>Is there no network traffic at all?</summary><p>No. Loading the site still requests HTML, CSS and scripts from its host; question processing has no upload API. Reopening offline is not guaranteed. The page cannot delete downloaded files or erase browser internals. This is an unpublished noindex preview, not a live release or comprehensive security certification.</p></details></section>
+</main>
+<dialog id="clear-dialog" aria-labelledby="clear-title" aria-describedby="clear-body"><h2 id="clear-title">Clear this page?</h2><p id="clear-body">This removes input, practice and ratings. Downloaded files are not affected.</p><div class="actions"><button id="cancel-clear" type="button">Cancel; keep my work</button><button id="confirm-clear" type="button" class="danger">Confirm clear</button></div></dialog>
+<footer>Unpublished candidate · 繁體中文 / English · No accounts, AI or sync</footer>
+</body></html>

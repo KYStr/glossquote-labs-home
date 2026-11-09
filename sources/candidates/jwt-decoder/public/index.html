@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JWT 解碼與主張檢視 | GlossQuote 工具</title>
+<meta name="description" content="在本機解碼 JWT 的標頭與酬載 JSON，對照裝置時鐘陳述 exp、nbf、iat 時間主張。簽章未經驗證；token 不上傳、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>JWT 解碼與主張檢視</h1>
+  <p class="warning">在本機瀏覽器中解碼。簽章未經驗證——任何人都能偽造這些內容。絕不要貼上你不願意給同事看的 token。</p>
+  <p class="intro">貼上三段式 token（標頭.酬載.簽章），即在本機解碼標頭與酬載的 JSON，把 exp、nbf、iat 等時間主張換算成本機時間，並對照裝置時鐘陳述狀態。本工具只解碼、不驗證：不連網、不儲存、不把 token 寫入網址；離開或重整分頁，token 即消失。</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="token-input">Token（緊湊格式）</label>
+      <textarea id="token-input" rows="4" autocomplete="off" spellcheck="false" class="mono" aria-describedby="input-error"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <button type="button" id="clear-button">清除</button>
+      <p id="copy-note" class="note" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div id="results" hidden>
+    <section class="card" aria-label="時間狀態">
+      <h2>時間狀態</h2>
+      <p id="status-line" class="status-line"></p>
+      <p id="status-caption" class="note">狀態只陳述時間主張與裝置時鐘的關係——簽章未經驗證。</p>
+      <p id="checked-at" class="note"></p>
+    </section>
+
+    <section class="card" aria-label="標頭">
+      <h2>標頭（Header）</h2>
+      <div id="header-summary"></div>
+      <pre id="header-json" class="pane mono"></pre>
+      <button type="button" id="copy-header">複製標頭 JSON</button>
+    </section>
+
+    <section class="card" aria-label="酬載">
+      <h2>酬載（Payload）</h2>
+      <pre id="payload-json" class="pane mono"></pre>
+      <button type="button" id="copy-payload">複製酬載 JSON</button>
+      <table class="group-table">
+        <thead>
+          <tr><th>主張</th><th>原始值</th><th>說明</th></tr>
+        </thead>
+        <tbody id="claims-body"></tbody>
+      </table>
+    </section>
+
+    <section class="card" aria-label="簽章">
+      <h2>簽章（Signature）</h2>
+      <pre id="signature-text" class="pane mono"></pre>
+      <p id="signature-meta" class="note"></p>
+      <p class="note">本工具未驗證此簽章。</p>
+    </section>
+  </div>
+
+  <details class="card">
+    <summary>使用說明與限制</summary>
+    <ul>
+      <li>本工具解碼三段式 token；五段式輸入是 JWE（加密的 JWT），本工具不解密。</li>
+      <li>時間狀態以這台裝置的時鐘為基準：裝置時鐘錯誤，讀數就錯誤。</li>
+      <li>alg 只照實顯示：alg=none 與任何其他 alg 值相同看待，不特別信任。</li>
+      <li>JSON 物件內若有重複的鍵，依 JSON.parse 語意以最後一個為準；漂亮列印無法同時顯示兩者。</li>
+      <li>輸入上限為 16,384 個字元；超過即拒絕，不截斷。</li>
+      <li>文件與測試中的範例 token 皆為合成資料，其簽章段是假字串，不是真正的 HMAC。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

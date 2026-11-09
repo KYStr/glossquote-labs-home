@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Paste SRT subtitles, shift every cue earlier or later by a precise amount, review the full result, and download it. Text only; no video or audio is read.">
+  <title>Subtitle Time Shift | GlossQuote Tools</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script type="module" src="../app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to subtitle workspace</a>
+  <header><div class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">GlossQuote Tools</a>
+    <nav aria-label="Site navigation"><a href="https://glossquote.com/en/index.html">All tools</a><a id="language" href="../index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav>
+  </div></header>
+  <main id="main">
+    <div class="intro">
+      <h1>Subtitle Time Shift</h1>
+      <p>Paste SRT and move every cue earlier or later by the same amount. Review the complete result before choosing to download.</p>
+      <p class="muted">Text is processed in this page's memory; changing language or leaving clears the draft.</p>
+    </div>
+    <noscript><p class="error">JavaScript is needed to process text. This page will not submit or upload subtitles.</p></noscript>
+    <section id="workspace" class="workspace" aria-label="Subtitle workspace">
+      <div class="editor">
+        <label for="srt-input">SRT subtitle text</label>
+        <textarea id="srt-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="input-help error" disabled></textarea>
+        <p id="input-help" class="help">Paste text; no video or audio is read. Up to 2,000 cues and 1,048,576 raw UTF-8 bytes. See the format limits below.</p>
+        <div class="controls">
+          <div><label for="direction">Shift direction</label><select id="direction" aria-describedby="error" disabled><option value="earlier" selected>Earlier</option><option value="later">Later</option></select></div>
+          <div><label for="seconds">Seconds (up to three decimal places)</label><input id="seconds" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false" aria-describedby="seconds-help error" disabled><p id="seconds-help" class="help">0 to 3,600 seconds, such as 1.25. Use ASCII digits.</p></div>
+        </div>
+        <div class="actions"><button id="shift" type="button" class="primary" disabled>Shift subtitles</button><button id="cancel-job" type="button" hidden>Cancel processing</button><button id="clear" type="button" disabled>Clear draft</button></div>
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Paste SRT, choose a direction and amount, then shift.</p>
+        <p id="error" class="error" role="alert" aria-atomic="true" hidden></p>
+      </div>
+      <section id="result" class="output" aria-labelledby="output-heading" hidden>
+        <h2 id="output-heading">Shifted result</h2>
+        <label for="srt-output">Complete SRT output (read-only)</label>
+        <textarea id="srt-output" readonly spellcheck="false" autocomplete="off" aria-describedby="download-help"></textarea>
+        <dl class="summary">
+          <div><dt>First original cue (input order)</dt><dd id="first-input"></dd></div>
+          <div><dt>First shifted cue</dt><dd id="first-output"></dd></div>
+          <div><dt>Last original cue (input order)</dt><dd id="last-input"></dd></div>
+          <div><dt>Last shifted cue</dt><dd id="last-output"></dd></div>
+        </dl>
+        <a id="download" class="download" download="subtitles-shifted.srt" aria-disabled="true" tabindex="-1">Download subtitles-shifted.srt</a>
+        <p id="download-help" class="help">UTF-8, no BOM, with LF newlines. Each download link lasts 30 seconds, up to eight at once. Browser settings may show a save prompt; this page cannot confirm that the file was saved.</p>
+      </section>
+    </section>
+    <section class="guidance" aria-labelledby="help-heading">
+      <h2 id="help-heading">Format and usage limits</h2>
+      <p>This tool supports the SRT subset documented here, rather than every dialect. <a href="https://www.loc.gov/preservation/digital/formats/fdd/fdd000569.shtml" rel="noreferrer">Read the Library of Congress overview of SubRip</a>.</p>
+      <details><summary>Check the supported SRT format</summary><ul>
+        <li>Each cue has an index, a timing line and one to ten text lines, in that order. Separate cues with blank lines. Lines containing only ASCII spaces or tabs also count as separators.</li>
+        <li>Indexes have one to six ASCII digits, with values 1 to 999999, strictly increasing. Leading zeros and gaps are kept; output is not renumbered.</li>
+        <li>Use <code>00:00:01,000 --&gt; 00:00:02,500</code> with at least one ASCII space or tab on each side of the arrow. Hours are two digits from 00 to 99, minutes and seconds are 00 to 59, and milliseconds have three digits. Omit surrounding spaces and settings. Start must precede end.</li>
+        <li>Text lines can have up to 1,000 Unicode characters. Surrounding spaces and HTML-looking text are preserved literally. A numeric index followed by a timing line is unsupported as subtitle text; check for a missing separator.</li>
+        <li>Raw input is limited to both 1,048,576 UTF-16 units and 1,048,576 UTF-8 bytes, including BOM and original newlines. NUL and incomplete Unicode characters are rejected. Only one initial BOM is removed; CRLF and CR become LF.</li>
+        <li>Indexes and input order are kept, including overlapping cues and cues out of time order. Output uses one space around the arrow, one blank line between cues, and exactly one final LF.</li>
+      </ul></details>
+      <details><summary>How do I shift SRT subtitle timing?</summary><p>Paste SRT text supported by this tool, choose earlier or later, enter seconds, and review the complete result.</p></details>
+      <details><summary>How far can I shift it?</summary><p>The amount is 0 to 3,600 seconds with up to three decimal places; every shifted cue must remain between 00:00:00,000 and 99:59:59,999.</p></details>
+      <details><summary>Why was the whole subtitle file rejected?</summary><p>This tool accepts only its documented SRT subset. A format error or any cue outside the time range rejects the entire result.</p></details>
+      <details><summary>Does it read video or upload subtitles?</summary><p>No. Pasted text is processed in this page's memory; no video, audio, or cloud processing is used. Opening the page still downloads website files. This version does not save data or promise full offline use.</p></details>
+      <details><summary>Can it fix gradually increasing desynchronization?</summary><p>No. It applies exactly the same time offset to every cue. It does not transcribe, convert VTT or choose an offset, and cannot guarantee synchronization with a particular video.</p></details>
+    </section>
+  </main>
+  <footer><p>Gloss Tools by GlossQuote · Local preview</p><a href="https://glossquote.com/en/index.html">Back to all tools</a></footer>
+  <dialog id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-body"><h2 id="confirm-title">Confirm clearing draft</h2><p id="confirm-body">Continuing discards your draft and result.</p><div class="actions"><button id="confirm-cancel" type="button" autofocus>Cancel</button><button id="confirm-continue" type="button">Continue</button></div></dialog>
+</body>
+</html>

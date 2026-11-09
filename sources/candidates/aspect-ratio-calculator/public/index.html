@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="alternate" hreflang="zh-Hant" href="./index.html">
+    <link rel="alternate" hreflang="en" href="./en/index.html">
+    <link rel="alternate" hreflang="x-default" href="./index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>長寬比計算：化簡比率與求另一邊｜GlossQuote-Labs</title>
+    <meta name="description" content="在瀏覽器內把尺寸化簡為精確比率，或由比率與一邊求出另一邊。結果以分數顯示精確值；接近的知名比率只標示「接近」，不取代計算結果。工具不保存或上傳輸入。">
+    <link rel="stylesheet" href="./styles/tokens.css">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://glossquote.com/index.html">GlossQuote-Labs</a>
+      <span class="location">長寬比計算</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="語言">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="./index.html" aria-current="page">繁體中文</a>
+          <a lang="en" hreflang="en" href="./en/index.html">English</a>
+        </nav>
+        <p class="language-note">前往其他頁面會清除目前輸入。</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">長寬比計算</h1>
+        <p class="intro">輸入寬與高，得到精確的化簡比率；或輸入比率與其中一邊，求出另一邊。計算全部使用整數與分數，不先四捨五入；接近知名比率時只會標示「接近」，不會把你的尺寸偷換成知名比率。</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          此瀏覽器無法啟動計算工具。請在支援 JavaScript 模組的瀏覽器開啟。下方的使用說明與預設清單仍可閱讀。
+        </p>
+
+        <form id="tool-form">
+          <fieldset id="tool-controls" disabled>
+            <legend class="visually-hidden">長寬比計算工作區</legend>
+
+            <fieldset class="radio-group">
+              <legend>模式</legend>
+              <label class="radio-option"><input type="radio" name="mode" value="a" checked> 尺寸 → 比率</label>
+              <label class="radio-option"><input type="radio" name="mode" value="b"> 比率 ＋ 一邊 → 另一邊</label>
+            </fieldset>
+
+            <div id="panel-a">
+              <div class="field-row">
+                <div class="field">
+                  <label for="a-width">寬度</label>
+                  <input id="a-width" name="aWidth" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1920" aria-describedby="a-width-help" aria-invalid="false">
+                  <p id="a-width-help" class="field-help">整數，1 到 100,000。</p>
+                  <p id="a-width-error" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="a-height">高度</label>
+                  <input id="a-height" name="aHeight" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1080" aria-describedby="a-height-help" aria-invalid="false">
+                  <p id="a-height-help" class="field-help">整數，1 到 100,000。</p>
+                  <p id="a-height-error" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <section class="result-section" aria-labelledby="a-result-title">
+                <h2 id="a-result-title">結果</h2>
+                <p class="output-line"><span class="output-label">化簡比率</span> <output id="a-ratio" class="output-value" aria-label="化簡比率">16:9</output></p>
+                <p class="output-line"><span class="output-label">小數（寬 ÷ 高）</span> <output id="a-decimal" class="output-value" aria-label="小數比率">1.7778</output></p>
+                <p class="output-line"><span class="output-label">高度佔寬度</span> <output id="a-percent" class="output-value" aria-label="高度佔寬度的百分比">56.25%</output></p>
+                <p class="output-line"><span class="output-label">最接近的預設</span> <output id="a-note" class="output-value" aria-label="最接近的預設比率">正好是 16:9</output></p>
+                <p id="a-stale" class="stale-note" hidden>已過時：欄位有誤，顯示上次有效的結果。</p>
+              </section>
+            </div>
+
+            <div id="panel-b" hidden>
+              <div class="field-row">
+                <div class="field">
+                  <label for="b-ratio-w">比率的寬</label>
+                  <input id="b-ratio-w" name="bRatioW" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="16" aria-describedby="b-ratio-help" aria-invalid="false">
+                  <p id="b-ratio-w-error" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="b-ratio-h">比率的高</label>
+                  <input id="b-ratio-h" name="bRatioH" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="9" aria-describedby="b-ratio-help" aria-invalid="false">
+                  <p id="b-ratio-h-error" class="field-error" hidden></p>
+                </div>
+              </div>
+              <p id="b-ratio-help" class="field-help">比率兩邊大於 0、不超過 10,000，小數最多 3 位，例如 2.39 或 1.85。</p>
+
+              <div class="preset-block">
+                <p class="preset-title" id="preset-title">預設比率（填入上方欄位）</p>
+                <div class="preset-grid" role="group" aria-labelledby="preset-title">
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="1" data-preset-h="1">1:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="5" data-preset-h="4">5:4</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="4" data-preset-h="3">4:3</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="3" data-preset-h="2">3:2</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="16" data-preset-h="10">16:10</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="16" data-preset-h="9">16:9</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="1.85" data-preset-h="1">1.85:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="2.39" data-preset-h="1">2.39:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="4" data-preset-h="5">4:5</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="3" data-preset-h="4">3:4</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="2" data-preset-h="3">2:3</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="9" data-preset-h="16">9:16</button>
+                </div>
+              </div>
+
+              <fieldset class="radio-group">
+                <legend>要求哪一邊</legend>
+                <label class="radio-option"><input type="radio" name="solve" value="height" checked> 已知寬度，求高度</label>
+                <label class="radio-option"><input type="radio" name="solve" value="width"> 已知高度，求寬度</label>
+              </fieldset>
+
+              <div class="field">
+                <label for="b-given" id="b-given-label">已知寬度</label>
+                <input id="b-given" name="bGiven" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="1280" aria-describedby="b-given-help" aria-invalid="false">
+                <p id="b-given-help" class="field-help">大於 0、不超過 100,000，小數最多 2 位。</p>
+                <p id="b-given-error" class="field-error" hidden></p>
+              </div>
+
+              <section class="result-section" aria-labelledby="b-result-title">
+                <h2 id="b-result-title">結果</h2>
+                <p class="output-line"><span class="output-label">化簡比率</span> <output id="b-ratio-out" class="output-value" aria-label="化簡比率">16:9</output></p>
+                <p class="output-line"><span class="output-label" id="b-solved-label">求得的高度</span> <output id="b-solved" class="output-value" aria-label="求得的邊">720</output></p>
+                <p id="b-stale" class="stale-note" hidden>已過時：欄位有誤，顯示上次有效的結果。</p>
+                <button id="b-use" type="button" class="button button-secondary">把這組寬高帶入「尺寸 → 比率」</button>
+                <p id="b-use-reason" class="field-help" hidden>模式 A 只接受整數；目前這組結果不全是整數，所以不能帶入。</p>
+              </section>
+            </div>
+          </fieldset>
+        </form>
+
+        <p id="tool-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+      </section>
+
+      <section class="usage-notes" aria-labelledby="usage-title">
+        <h2 id="usage-title">使用方式與限制</h2>
+        <p>模式 A 的寬與高必須是 1 到 100,000 的整數。模式 B 的比率兩邊大於 0、不超過 10,000，小數最多 3 位；已知邊大於 0、不超過 100,000，小數最多 2 位。超過小數位數的輸入會被拒絕並說明上限，不會默默截斷。</p>
+        <p>欄位有誤時，該模式的結果會停留在上次有效的值並標示「已過時」；另一個模式不受影響。重新載入頁面會回到預設值，輸入不會被保存。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>預設比率清單</h2>
+        <ul class="content-list">
+          <li><strong>橫向：</strong>1:1、5:4、4:3、3:2、16:10、16:9、1.85:1、2.39:1。</li>
+          <li><strong>直向：</strong>4:5、3:4、2:3、9:16。</li>
+          <li>預設只是輸入捷徑。模式 A 的註記只會說「正好是」或「接近」，不會用預設取代計算出的比率。</li>
+        </ul>
+      </section>
+
+      <section class="reference-section">
+        <h2>數字如何計算</h2>
+        <p>化簡使用最大公因數；模式 B 先把小數比率放大為整數再化簡（2.39:1 會變成 239:100）。求另一邊使用精確分數：結果是整數就直接顯示，不是整數時同時顯示四捨五入到小數 2 位的數字和精確分數，例如 418.41（100000/239）。四捨五入只發生在顯示，採用四捨五入（恰好一半時進位），不影響內部計算。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>資料如何處理</h2>
+        <p>計算在這個頁面的瀏覽器中完成。工具不寫入瀏覽器儲存空間、不上傳數字，數字也不會出現在網址或頁面標題中；重新載入會清空輸入。網站主機仍可能收到一般頁面請求所需的連線資訊。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>常見問題</h2>
+        <dl class="faq-list">
+          <div>
+            <dt>為什麼 1366×768 不直接顯示 16:9？</dt>
+            <dd>因為它化簡後是 683:384，不是 16:9。兩者很接近（差 0.0009），所以工具會標示「接近 16:9（差 0.0009）」，但呈現的比率仍是精確的 683:384，裁切時才不會被誤導。</dd>
+          </div>
+          <div>
+            <dt>結果旁邊的分數是什麼意思？</dt>
+            <dd>分數是精確值。例如高度 3000/7 約是 428.57；畫面同時給你四捨五入的數字和分數，你可以自己決定要取多少。</dd>
+          </div>
+          <div>
+            <dt>輸入 21:9 為什麼顯示 7:3？</dt>
+            <dd>21:9 化簡後就是 7:3，兩者完全相等。畫面會寫成「21:9 = 7:3」，讓你看見換算前後的對應。</dd>
+          </div>
+          <div>
+            <dt>這個工具可以縮放或裁切圖片嗎？</dt>
+            <dd>不可以。它只計算比率與邊長，不讀取或處理任何檔案。</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+    <footer class="site-footer" aria-labelledby="site-footer-title">
+      <div class="site-footer-content">
+        <h2 id="site-footer-title">更多工具</h2>
+        <nav aria-label="更多 GlossQuote 工具">
+          <ul class="footer-links">
+            <li><a href="https://glossquote.com/index.html">GlossQuote-Labs 首頁</a></li>
+            <li><a href="https://units.glossquote.com/index.html">常用單位換算</a></li>
+          </ul>
+        </nav>
+        <p class="footer-note">離開本頁會清除目前輸入。</p>
+      </div>
+    </footer>
+  </body>
+</html>

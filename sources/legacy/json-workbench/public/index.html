@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在瀏覽器檢查 JSON、找出重複鍵，選擇兩空格排版或壓成一行。保留原始數字和字串寫法，工作內容不送往處理伺服器。">
+  <title>JSON 檢查與排版・保留數字原文｜GlossQuote-Labs</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#source">跳到 JSON 原文</a>
+  <header class="topbar"><a href="https://glossquote.com/index.html">GlossQuote-Labs <span class="location">/ JSON</span></a><nav aria-label="語言"><a href="en/index.html" lang="en" hreflang="en">English</a></nav></header>
+  <main>
+    <div class="intro"><h1>JSON 檢查與排版</h1><p>原始數字與字串寫法保留；重複鍵會停止處理。</p></div>
+    <noscript><p class="notice">本工具需要 JavaScript 與 Web Worker 才能在本機處理 JSON。下方說明仍可閱讀。</p></noscript>
+    <div class="workbench">
+      <div class="source-pane">
+        <label for="source">JSON 原文</label>
+        <p id="source-help" class="field-help">貼上 JSON；最多 256 KiB，不自動讀取剪貼簿。</p>
+        <textarea id="source" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="source-help status"></textarea>
+      </div>
+      <div class="controls">
+        <fieldset><legend>排版模式</legend><div class="modes"><label><input type="radio" name="mode" value="pretty" checked>兩空格排版</label><label><input type="radio" name="mode" value="compact">壓成一行</label></div></fieldset>
+        <div class="actions"><button id="run" class="primary" type="button" disabled>檢查並整理</button><button id="cancel" type="button" disabled>取消</button><button id="clear" class="quiet" type="button">全部清除</button></div>
+      </div>
+      <div class="feedback">
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">貼上 JSON，檢查後再複製整理結果。</p>
+        <div id="error-actions" class="actions error-actions" hidden><button id="go-to-error" type="button" disabled aria-controls="source" aria-describedby="status error-help">前往錯誤位置</button><p id="error-help" class="field-help">只移動插入點，原文不改動。</p></div>
+      </div>
+      <div class="result-pane">
+        <label for="output">整理結果</label>
+        <p id="output-help" class="field-help">檢查完成後，結果會出現在這裡。</p>
+        <textarea id="output" wrap="off" spellcheck="false" readonly aria-describedby="output-help"></textarea>
+        <div class="actions export-actions"><button id="copy" type="button" disabled>複製結果</button><button id="download" type="button" disabled>下載 JSON</button></div>
+        <p id="export-status" class="field-help" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <p class="privacy">工作內容僅在當次頁面的記憶體處理。來源不送往處理伺服器。</p>
+    <section class="help" aria-labelledby="help-title">
+      <h2 id="help-title">如何檢查與整理 JSON</h2>
+      <p>貼入 JSON，確認語法與重複鍵檢查後，複製更容易閱讀的排版。大型整數和小數的原始文字寫法會保留，但不代表所有下游軟體都支援相同精度。</p>
+      <ol><li>貼上 JSON 原文，選擇「兩空格排版」或「壓成一行」。</li><li>按「檢查並整理」。若錯誤有位置，按「前往錯誤位置」移動插入點，再自行修正並重新檢查；原文不會自動變更。</li><li>複製整理結果，或下載 UTF-8、無 BOM 的 formatted.json。</li></ol>
+      <details><summary>大小、結構與互通性限制</summary><ul>
+        <li>輸入最多 262,144 UTF-8 bytes（256 KiB），先檢查 UTF-16 長度不超過 262,144。</li>
+        <li>最多 50,000 個 token（含標點、不含空白），容器巢狀最多 64 層。</li>
+        <li>單一字串原文含引號最多 65,536 UTF-16 code units；數字最多 4,096。</li>
+        <li>輸出最多 4,194,304 UTF-8 bytes（4 MiB），處理上限 5 秒；超限不產生部分結果。</li>
+        <li>只接受一個完整 JSON value，包含字串、數字、布林與 null。拒絕註解、尾逗號、BOM、重複鍵與未配對的 Unicode surrogate。</li>
+      </ul><p>錯誤的行與欄從 1 開始，offset 從 0 開始；欄以 UTF-16 code units 計算，CRLF 算一次換行。沒有 schema 驗證、JSON5 或自動修復功能。</p></details>
+      <h2 class="faq-title">常見問題</h2>
+      <details><summary>會改變很長的數字嗎？</summary><p>只調整 token 之間的空白，不先轉為 JavaScript Number，所以數字原始字面會保留，包括 -0、1.2300、1e400 與大型整數。原文保留不代表下游軟體也能精確使用它們。</p></details>
+      <details><summary>為什麼重複鍵不能格式化？</summary><p>不同軟體可能只保留一筆或採不同結果；此工具會停止處理，請先明確選定來源。鍵以解碼後的字串精確比較，不改大小寫、不去空白或做 Unicode 正規化。</p></details>
+      <details><summary>支援註解或尾逗號嗎？</summary><p>不支援。本工具只接受限制範圍內的嚴格 JSON，不會自動猜修復方式。</p></details>
+      <details><summary>我的 JSON 會被保存嗎？</summary><p>工具只在本次頁面記憶體處理；重新載入不主動恢復內容，來源與結果不寫入網址或瀏覽器儲存空間。網站載入仍需取得 HTML、CSS 與程式資源；工作內容不送往處理伺服器。</p><p>「全部清除」移除本頁持有的內容、停止工作並恢復預設模式，不能撤回已下載檔案、既有剪貼簿或抹除底層實體記憶體。載入完成後可離線處理；關閉後離線重新開啟未提供保證。</p></details>
+    </section>
+  </main>
+  <footer>GlossQuote-Labs</footer>
+</body>
+</html>

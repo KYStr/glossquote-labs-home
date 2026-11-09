@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>Compare and Merge Lists: Find Added and Shared Items | GlossQuote</title>
+  <meta name="description" content="Paste two line-separated lists to find items unique to each side, shared items, and a stable merged list locally in your browser. Choose trimming and case rules; no upload or account is needed.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#lists">Skip to lists</a>
+  <header class="topbar"><span class="brand">Gloss Tools by GlossQuote</span><nav aria-label="Language"><a href="/index.html" lang="zh-Hant" hreflang="zh-Hant">繁體中文</a></nav></header>
+  <main id="lists" tabindex="-1">
+    <h1>Compare and merge lists</h1>
+    <p class="intro">Paste two lists to see what is new, what is missing, what they share, and a de-duplicated merge.</p>
+    <p class="privacy">Processed in this page’s memory. No upload or saved drafts. Leaving or reloading clears the lists.</p>
+    <noscript><p class="error-notice">Enable JavaScript to compare lists locally.</p></noscript>
+    <form id="compare-form" autocomplete="off" novalidate>
+      <div class="inputs">
+        <div class="field">
+          <label for="a-text">List A</label>
+          <p class="hint" id="a-hint">One item per line. Each list: up to 5,000 non-empty items and 100,000 UTF-16 characters. Each item: up to 200 Unicode code points.</p>
+          <textarea id="a-text" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="a-hint a-counter a-error" aria-invalid="false"></textarea>
+          <p class="counter" id="a-counter"></p>
+          <p class="field-error" id="a-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="b-text">List B</label>
+          <p class="hint" id="b-hint">One item per line. Each list: up to 5,000 non-empty items and 100,000 UTF-16 characters. Each item: up to 200 Unicode code points.</p>
+          <textarea id="b-text" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="b-hint b-counter b-error" aria-invalid="false"></textarea>
+          <p class="counter" id="b-counter"></p>
+          <p class="field-error" id="b-error" hidden></p>
+        </div>
+      </div>
+      <fieldset><legend>Comparison rules</legend><div class="rules">
+        <label class="choice"><input type="checkbox" id="trim-items" checked><span>Trim spaces around each item<small>On by default. Turn off to preserve outer spaces. Blank-only lines are always ignored.</small></span></label>
+        <label class="choice"><input type="checkbox" id="ignore-case"><span>Ignore case<small>Off by default. When on, alice and ALICE share a key; the first spelling is kept.</small></span></label>
+      </div></fieldset>
+      <div class="actions"><button id="compare" class="primary" type="submit">Compare lists</button><button id="example" type="button">Load fictional example</button><button id="clear" type="button">Clear</button></div>
+      <p id="error-notice" class="error-notice" role="alert" hidden></p>
+    </form>
+    <section class="results" aria-labelledby="results-heading">
+      <h2 id="results-heading">Comparison results</h2>
+      <p id="comparison-status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div id="input-summary" class="input-summary" hidden>
+        <div class="side-summary"><h3>List A</h3><dl><dt>Input lines</dt><dd id="a-rawLineCount"></dd><dt>Blank lines ignored</dt><dd id="a-blankLineCount"></dd><dt>Non-empty items</dt><dd id="a-nonEmptyLineCount"></dd><dt>Unique items</dt><dd id="a-uniqueCount"></dd><dt>Duplicate lines</dt><dd id="a-duplicateCount"></dd></dl></div>
+        <div class="side-summary"><h3>List B</h3><dl><dt>Input lines</dt><dd id="b-rawLineCount"></dd><dt>Blank lines ignored</dt><dd id="b-blankLineCount"></dd><dt>Non-empty items</dt><dd id="b-nonEmptyLineCount"></dd><dt>Unique items</dt><dd id="b-uniqueCount"></dd><dt>Duplicate lines</dt><dd id="b-duplicateCount"></dd></dl></div>
+      </div>
+      <p class="details-note">First line numbers start at 1 and include blank lines. Occurrences include the first item. Each list’s repeated items appear once.</p>
+      <div class="result-grid">
+        <section class="result-section" aria-labelledby="aOnly-title">
+          <div class="result-head"><h3 id="aOnly-title">Only in A <span class="result-count" id="aOnly-count">—</span></h3><button type="button" id="aOnly-copy" aria-label="Copy: Only in A" aria-describedby="aOnly-hint" aria-busy="false" disabled>Copy</button></div>
+          <p class="copy-hint" id="aOnly-hint">No items to copy</p>
+          <p class="empty" id="aOnly-empty">Results appear after comparison.</p>
+          <ul class="result-rows" id="aOnly-rows"></ul>
+          <p class="copy-status" id="aOnly-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="aOnly-fallback" hidden><label for="aOnly-manual">Manually copy the entire list in this section</label><textarea id="aOnly-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="bOnly-title">
+          <div class="result-head"><h3 id="bOnly-title">Only in B <span class="result-count" id="bOnly-count">—</span></h3><button type="button" id="bOnly-copy" aria-label="Copy: Only in B" aria-describedby="bOnly-hint" aria-busy="false" disabled>Copy</button></div>
+          <p class="copy-hint" id="bOnly-hint">No items to copy</p>
+          <p class="empty" id="bOnly-empty">Results appear after comparison.</p>
+          <ul class="result-rows" id="bOnly-rows"></ul>
+          <p class="copy-status" id="bOnly-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="bOnly-fallback" hidden><label for="bOnly-manual">Manually copy the entire list in this section</label><textarea id="bOnly-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="intersection-title">
+          <div class="result-head"><h3 id="intersection-title">Shared items <span class="result-count" id="intersection-count">—</span></h3><button type="button" id="intersection-copy" aria-label="Copy: Shared items" aria-describedby="intersection-hint" aria-busy="false" disabled>Copy</button></div>
+          <p class="copy-hint" id="intersection-hint">No items to copy</p>
+          <p class="empty" id="intersection-empty">Results appear after comparison.</p>
+          <ul class="result-rows" id="intersection-rows"></ul>
+          <p class="copy-status" id="intersection-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="intersection-fallback" hidden><label for="intersection-manual">Manually copy the entire list in this section</label><textarea id="intersection-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+        <section class="result-section" aria-labelledby="merged-title">
+          <div class="result-head"><h3 id="merged-title">Merged list <span class="result-count" id="merged-count">—</span></h3><button type="button" id="merged-copy" aria-label="Copy: Merged list" aria-describedby="merged-hint" aria-busy="false" disabled>Copy</button></div>
+          <p class="copy-hint" id="merged-hint">No items to copy</p>
+          <p class="empty" id="merged-empty">Results appear after comparison.</p>
+          <ul class="result-rows" id="merged-rows"></ul>
+          <p class="copy-status" id="merged-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="fallback" id="merged-fallback" hidden><label for="merged-manual">Manually copy the entire list in this section</label><textarea id="merged-manual" rows="5" readonly spellcheck="false" autocomplete="off"></textarea></div>
+        </section>
+      </div>
+    </section>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">How it works</h2>
+      <h3>Does this compare line by line?</h3><p>No. It checks whether each item exists in the other list. The two lists do not need the same order. This is not a line-by-line text diff.</p>
+      <h3>What makes two items match?</h3><p>By default, outer spaces are trimmed and matching is case-sensitive. Turn trimming off to preserve outer spaces. Ignore case uses JavaScript’s toLowerCase key. It does not normalize spelling, synonyms, NFC, or NFKC, or decide whether records represent the same person.</p>
+      <h3>What happens to duplicates in one list?</h3><p>Each list keeps the first item’s text and line number and counts duplicate lines. Shared items use A’s first spelling. The merged list keeps A’s order, then adds items from B that have not appeared in A.</p>
+      <h3>Are the lists uploaded or saved?</h3><p>The lists are calculated in this page’s memory without uploading or saving drafts. Leaving or reloading clears them. Your environment manages the OS clipboard, browser extensions, and the destination where you paste copied text.</p>
+      <h3>Does an empty result mean failure?</h3><p>No. Valid lists may have no items in a category. Even two blank lists are valid. Empty results say “No matching items” and have no content to copy.</p>
+    </section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote</span><a href="https://glossquote.com/en/index.html">All tools</a></footer>
+</body>
+</html>

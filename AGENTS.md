@@ -25,3 +25,13 @@
 - 逐件完成後先用原有 block 保存真實完成 checkpoint／候選定位，blocker 明寫「待整批交驗，非退修」，resumeCondition 明寫 `batch submit ready`，不能顯示為正在製作或在等修正。全部製作完成後再一次保存 GitHub 產品來源批次；GitHub commit 與 registry submit 是兩個不同步驟，仍需原批准範圍。
 - 整批交驗以各件原 claim 的 resume→submit 操作列逐件固定 candidate/PR/evidence，暫存期間各件都已 block；resume 只恢復交驗前狀態，不是新的實作執行證據。一次 CAS 可容納 5 組 resume/submit。每件均獨立審查相同固定候選的完整約定面向，禁止混分、自評或把預領當執行；未完成檢查仍 NOT_RUN。交驗、accepted、merge、部署分開，不擴發布/分享/憑證/費用權限。
 - 單件 apply 保留相容與修復用途，但同樣受未交付 5 件與 working 1 件上限限制。正式批領使用 apply-batch；不是以五次單領繞過整批不足檢查。既有本地盤點、主頁 baseline、他人 owner 完全不變。
+
+## 單一來源與接續手冊（2026-11-09 使用者更新）
+
+使用者要求將分散工具整理至共用repo並補足大量完整預案。先讀 [START-HERE](START-HERE.md) 及 [接續說明書](docs/AGENT-HANDBOOK.md)。新工具在本repo `tools/<slug>/` 以獨立codex分支/PR交驗，不再新建獨立repo；此項取代較舊一工具一repo偏好。舊repo/commit/候選/owner及既有部署保留，來源快照不可冒充新accepted。
+
+`sources/`、`archives/`為固定證據，不直接改產品；原owner依 [遷移規則](docs/SOURCE-LAYOUT.md) 在有效claim下把固定來源轉至tools後才修改，不重領或覆蓋另一端成果。根npm test只涵蓋首頁/協作；不可遞迴執行所有快照。
+
+新預案每份八節、明確使用情境、字面測例和九必要產品面向，非作者文件審查後才ready。文檔完整不等於產品通過。現行40庫存、5held/1working、P1補庫/P3製作、本人ACK與唯一CAS/readback全保留；本次不更換homepage reconciliation基線，也不代替其他actor採用規則。
+
+不得干擾使用者桌面/焦點/IME/clipboard；隱藏本地tab不代表隔離。GitHub操作禁止改global/system Git/gh認證或尋找憑證，Windows持久環境不得修改。交付保持一個ZIP。

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML 實體編碼與解碼 | GlossQuote 工具</title>
+<meta name="description" content="在本機編碼與解碼 HTML 字元參照：完整的 WHATWG 命名表、C1 對照與替代字元規則、逐筆變更清單與無法解析清單。不連網、不儲存，解碼不等於淨化。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>HTML 實體編碼器與解碼器</h1>
+  <p class="intro">依 WHATWG HTML 標準的字元參照規則在本機轉換文字：編碼可選只處理五個必要字元或連非 ASCII 一併轉換，解碼附逐筆變更清單與無法解析清單。解碼只是讓你看懂文字內容，不會讓標記變得可以安全插入；把文字編碼後顯示，不等於淨化（sanitisation）。本工具不支援省略分號的舊式寫法（例如沒有分號的 &amp），這類輸入會保持原樣。</p>
+
+  <section class="card" aria-labelledby="tool-heading">
+    <h2 id="tool-heading">轉換</h2>
+    <div class="field">
+      <label for="mode-select">模式</label>
+      <select id="mode-select">
+        <option value="decode" selected>解碼（參照 → 文字）</option>
+        <option value="encode">編碼（文字 → 參照）</option>
+      </select>
+    </div>
+    <div class="field" id="encode-options" hidden>
+      <label><input id="opt-nonascii" type="checkbox"> 非 ASCII 字元也編碼</label>
+      <label for="opt-style">參照形式</label>
+      <select id="opt-style">
+        <option value="named" selected>命名優先（無名時用十進位）</option>
+        <option value="decimal">只用十進位</option>
+        <option value="hex">只用十六進位</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="input-text">輸入（上限 100,000 字元）</label>
+      <textarea id="input-text" rows="7" spellcheck="false"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="output-text">輸出</label>
+      <textarea id="output-text" rows="7" readonly spellcheck="false"></textarea>
+    </div>
+    <div class="field">
+      <button type="button" id="copy-output">複製輸出</button>
+      <span id="counts-line" class="status-line" role="status"></span>
+    </div>
+    <p id="double-hint" class="warning" hidden>輸出裡還有可解碼的參照，看起來像雙重編碼。<button type="button" id="decode-again">再解碼一次</button></p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section class="card" aria-labelledby="changes-heading">
+    <h2 id="changes-heading">變更清單</h2>
+    <p id="changes-summary" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>位置</th><th>來源</th><th>結果</th><th>規則</th></tr></thead>
+      <tbody id="changes-body"></tbody>
+    </table>
+    <h2>無法解析</h2>
+    <p id="unresolved-summary" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>位置</th><th>片段</th><th>原因</th></tr></thead>
+      <tbody id="unresolved-body"></tbody>
+    </table>
+  </section>
+
+  <details class="card">
+    <summary>運作方式與限制</summary>
+    <ul>
+      <li>命名表是完整的 WHATWG 命名字元參照集（2,231 條，含 2,125 個分號形式），以資料檔 vendored 進本頁面，來源與雜湊記錄在 repo 的 PROVENANCE.md；解碼只查分號形式。</li>
+      <li>數字參照照標準規則：數值 0、代理對範圍、超過 U+10FFFF 都換成替代字元 U+FFFD；0x80–0x9F 經 C1 表對照。缺少分號的數字參照仍會轉換，但會在變更清單標明。</li>
+      <li>變更清單的位置以字碼點計算（不是 UTF-16 單位），星平面字元不會推移後面的位置。清單最多顯示前 500 筆並註明總數，轉換本身不受顯示上限影響。</li>
+      <li>輸入上限 100,000 字元，超過直接拒絕並顯示字數，不會偷偷截斷。</li>
+      <li>輸入與輸出只以文字呈現，從不被當成標記解析；什麼都不儲存、不連網。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

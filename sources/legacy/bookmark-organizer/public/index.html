@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>書籤匯出整理｜本機重複連結整理工具</title>
+  <meta name="description" content="在瀏覽器本機整理書籤 HTML，檢視完全相同的連結、調整資料夾並下載可匯入檔案。">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到整理工作區</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a><span class="product-name">書籤匯出整理</span><nav aria-label="語言"><a href="/en/index.html" lang="en" hreflang="en">English</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>整理書籤匯出檔</h1><span class="candidate">本機候選版；尚未部署</span><p>先檢閱重複連結與資料夾，再決定輸出內容。來源檔不會改動。</p></div>
+    <p class="language-note">切換語言會離開此頁；未下載的書籤整理結果會遺失。</p>
+    <noscript><p class="notice">此工具需要 JavaScript 才能在目前頁面解析及整理檔案。沒有上傳途徑。</p></noscript>
+    <section class="import-section" aria-labelledby="import-title">
+      <div><h2 id="import-title">選擇書籤 HTML</h2><label for="source">從瀏覽器匯出的單一 HTML 檔</label><input id="source" type="file" accept=".html,.htm,text/html" aria-describedby="limits privacy"><p id="source-summary" class="source-summary"></p></div>
+      <div class="import-help"><p id="limits">UTF-8 · 最多 2 MiB · 3000 筆連結 · 12 層資料夾</p><p id="privacy">只在目前分頁記憶體處理，不上傳、不開啟連結、不載入圖示。重新開始或離頁會清除頁面內的資料與下載暫存，不會刪除已下載檔案。</p><details><summary>支援的匯出格式</summary><p>接受列明的 Netscape 書籤 HTML：DL / DT / H3 / A 結構、常見外殼與 metadata。只允許不含帳密的絕對 HTTP/HTTPS 網址。不支援的標記會拒絕整份檔案，不會靜默略過項目。</p><p>不宣稱完整支援所有瀏覽器匯出變體。空資料夾可檢閱；HTML 依納入的書籤建立非空路徑。</p></details></div>
+    </section>
+    <div class="state-bar"><p id="status" role="status" aria-live="polite"></p><button id="cancel" type="button" hidden>取消處理</button><button id="reset" type="button" disabled>重新開始</button></div>
+    <div id="error" class="error notice" role="alert" tabindex="-1" hidden></div>
+    <section id="workspace" aria-labelledby="review-title" hidden>
+      <div class="review-heading"><h2 id="review-title">檢閱書籤</h2><p id="summary"></p></div>
+      <p class="hint">所有書籤預設納入。建議保留只作提示；「只保留所選項」或取消納入時會先確認。搜尋與資料夾篩選只影響顯示，輸出仍以納入勾選為準。</p>
+      <div class="workspace-grid">
+        <aside aria-labelledby="folders-title"><h3 id="folders-title">資料夾樹</h3><p class="hint">括號為直接位於此資料夾的筆數；選取資料夾也顯示子路徑。</p><div id="folder-tree" class="folder-tree" role="group" aria-label="資料夾路徑篩選"></div></aside>
+        <div class="canvas">
+          <div class="filters"><div class="field"><label for="search">搜尋標題或網址</label><input id="search" type="search" maxlength="2048" autocomplete="off"></div><div class="field"><label for="view-mode">顯示項目</label><select id="view-mode"><option value="all">全部書籤</option><option value="duplicates">只看重複網址</option><option value="excluded">只看排除項目</option></select></div></div>
+          <p id="visible-count" class="hint" role="status"></p>
+          <div id="confirmation" class="notice confirmation" role="group" aria-label="確認排除" hidden><p id="confirmation-copy"></p><p id="confirmation-target" class="url"></p><div class="actions"><button id="confirm-exclude" type="button">確認更新納入項目</button><button id="cancel-exclude" type="button">取消，維持原狀</button></div></div>
+          <section id="folder-editor" class="notice editor" aria-labelledby="folder-editor-title" hidden><h3 id="folder-editor-title"></h3><form id="folder-form"><div class="field"><label for="destination">移到現有資料夾</label><select id="destination"></select></div><div class="field"><label for="new-path">或建立新路徑（每行一個資料夾名稱）</label><textarea id="new-path" rows="3" maxlength="4096" aria-describedby="path-help folder-error"></textarea><p id="path-help" class="hint">填寫完整路徑，最多 12 層、每層 1–255 UTF-8 bytes。留空使用上方選項；選根目錄可移出資料夾。「/」可作名稱文字。</p></div><p id="folder-error" class="field-error" role="alert"></p><div class="actions"><button type="submit">套用路徑</button><button id="cancel-move" type="button">取消移動</button></div></form></section>
+          <div id="bookmarks" aria-label="書籤與完全相同網址群組"></div>
+          <details class="rename"><summary>更名資料夾與所有子路徑</summary><form id="rename-form"><div class="field"><label for="rename-from">要更名的資料夾</label><select id="rename-from"></select></div><div class="field"><label for="rename-path">新的完整路徑（每行一個名稱）</label><textarea id="rename-path" rows="3" maxlength="4096" aria-describedby="rename-help rename-error"></textarea><p id="rename-help" class="hint">更新此資料夾下所有書籤與子路徑；相同路徑會合併。原路徑仍保留在 JSON。最多 12 層、每層 1–255 UTF-8 bytes；不能為空、.、.. 或含控制字元。</p></div><p id="rename-error" class="field-error" role="alert"></p><button id="rename-submit" type="submit">更新資料夾與子路徑</button></form></details>
+        </div>
+      </div>
+      <section class="export-section" aria-labelledby="export-title"><h2 id="export-title">下載整理結果</h2><p id="output-summary"></p><div class="actions"><button id="download-html" class="primary" type="button" disabled>下載匯入 HTML</button><button id="download-json" type="button" disabled>下載 JSON 備份</button></div><p class="hint">產物只在你點擊下載後建立。結果沒有自動到期時間；修改後請重新下載。工具不會替你匯入瀏覽器。</p></section>
+    </section>
+    <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+    <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">使用前的幾個問題</h2><details><summary>工具會開啟書籤網站嗎？</summary><p>不會。URL 只作文字檢查和完全相同字串分組，沒有網路請求。</p></details><details><summary>網址只有 query 不同會合併嗎？</summary><p>不會。query 不同是不同字串，也會保留為不同群組。</p></details><details><summary>工具會自動刪除重複書籤嗎？</summary><p>不會。預設全部納入，需由你明確排除後才會從 HTML 輸出移除；JSON 備份仍保留所有項目。</p></details><details><summary>ICON 或 favicon 會載入嗎？</summary><p>不會。匯出中的 ICON metadata 會忽略，不解碼、不顯示、不請求。</p></details><details><summary>所有瀏覽器書籤檔都支援嗎？</summary><p>本候選只接受列明的 Netscape profile。未支援的標記會拒絕整份，避免悄悄漏掉項目。</p></details></section>
+  </main>
+  <footer><span>Gloss Tools by GlossQuote</span><a href="https://glossquote.com/index.html">返回工具首頁</a></footer>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# Quote worksheet design
+
+Use the existing Gloss Tools worksheet system: ink #111410, warm paper #f3f0e8, white surfaces, acid #c8f56a for primary completion, muted text #55594f and control borders #60645c. System font fallbacks require no remote font download. Keep labels visible, errors associated, actions adjacent to affected content,44px controls, visible two-layer focus and reduced-motion behavior. Wide layout uses editor plus dominant preview; compact layout has explicit edit/preview controls. Preserve320px reflow and verify actual keyboard, zoom and assistive paths separately; CSS alone is not acceptance evidence.

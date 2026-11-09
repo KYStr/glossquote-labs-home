@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>批次文字套版｜依名單產生個人化通知</title>
+  <meta name="description" content="貼上 CSV 名單和通知範本，逐筆預覽個人化文字，找出缺值後下載 TXT 或 JSON；不會寄送訊息。">
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到工作區</a>
+  <header class="topbar">
+    <a class="family" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <span class="product-name">批次文字套版</span>
+    <nav aria-label="語言與資料"><a href="./en/index.html" hreflang="en" lang="en">English</a><button id="reset" type="button" class="quiet">清除全部資料</button></nav>
+  </header>
+  <div class="work-shell">
+    <nav class="step-nav" aria-label="工作步驟">
+      <a href="#source-section">1. 加入名單</a>
+      <a href="#template-section">2. 編寫範本</a>
+      <a href="#review-section">3. 檢查與產生</a>
+      <a href="#preview-section">逐筆預覽</a>
+      <p>切換語言會清除本頁資料。</p>
+    </nav>
+    <main id="workspace" tabindex="-1">
+      <div class="page-heading"><h1>一份通知，逐人套入名單</h1><p>把名單欄位套入通知範本，逐筆核對後複製或下載。訊息由你決定如何送出。</p></div>
+      <noscript><p class="notice warning">請啟用 JavaScript，才能在此頁讀取名單與產生通知。</p></noscript>
+      <section id="source-section" aria-labelledby="source-heading">
+        <div class="section-heading"><h2 id="source-heading">1. 加入名單</h2><button type="button" id="sample">載入合成範例</button></div>
+        <p class="help">範例會取代名單和範本。</p>
+        <label for="csv">貼上 CSV 名單</label>
+        <p id="source-help" class="help">首列是欄名；欄名不可重複或留空。UTF-8 CSV，最多 1 MiB、1,000 筆、30 欄。</p>
+        <textarea id="csv" rows="5" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="source-help source-status validation-error" placeholder="姓名,編號
+小王,001"></textarea>
+        <div class="file-field"><label for="csv-file">或選擇 CSV 檔案</label><input type="file" id="csv-file" accept=".csv,text/csv" aria-describedby="file-help source-status validation-error"><p id="file-help" class="help">只讀取你選的檔案。檔案驗證通過後才會取代貼文；讀取期間舊成果立即作廢。</p></div>
+        <p id="source-status" class="source-status"></p>
+        <button id="reuse-paste" type="button" hidden>載入保留的貼文</button>
+      </section>
+      <section id="template-section" aria-labelledby="template-heading">
+        <h2 id="template-heading">2. 編寫範本</h2>
+        <div class="label-row"><label for="template">通知範本</label><span id="template-count" class="count">0 / 32,768</span></div>
+        <p id="template-help" class="help">用 {{完整欄名}} 代入；空格與大小寫必須完全一致。只做一次文字代入，不支援條件句。</p>
+        <textarea id="template" rows="8" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="template-help template-count validation-error" placeholder="您好{{姓名}}，您的活動編號是{{編號}}。"></textarea>
+        <details class="field-inspector"><summary>可用欄位與寫法</summary><p class="help">下方保留欄名原有空格。將完整標記放進範本即可。</p><ul id="fields" class="field-list"><li>載入名單後，這裡會列出可用的欄位。</li></ul></details>
+      </section>
+      <section id="review-section" aria-labelledby="review-heading">
+        <h2 id="review-heading">3. 檢查與產生</h2>
+        <div class="check-field"><input id="allow-blank" type="checkbox" aria-describedby="allow-help blank-warning"><label for="allow-blank">允許空白代入</label></div>
+        <p id="allow-help" class="help">預設會阻止有缺值的整批通知。勾選後，使用到的空欄會變成空字串。只有空字串算缺值，空格會保留。</p>
+        <p id="literal-warning" class="notice warning" hidden>範本沒有佔位符，每列會得到相同文字。</p>
+        <p id="blank-warning" class="notice warning" hidden></p>
+        <p id="validation-error" class="notice warning" hidden></p>
+        <div id="unknown-fields" class="notice warning" hidden></div>
+        <div id="missing" class="missing-summary"></div>
+        <p id="stale-notice" class="notice warning" hidden>範本、名單或空白選項已改，舊預覽已作廢。請重新產生。</p>
+        <div class="action-bar"><button id="generate" type="button" class="primary" disabled>產生預覽</button><button id="cancel" type="button" hidden>取消產生／讀取</button></div>
+        <p id="status" class="notice" role="status" aria-live="polite" aria-atomic="true">選一份 CSV 名單，或先輸入範本。</p>
+      </section>
+      <section id="preview-section" class="preview-section" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">逐筆預覽</h2>
+        <p id="preview-empty" class="empty-state">產生後，這裡會顯示第一筆通知。你可以逐筆檢查，再複製或下載。</p>
+        <div id="preview-content" hidden>
+          <div class="preview-toolbar"><p id="row-label" aria-live="polite"></p><div class="row-navigation"><button id="previous" type="button" disabled>上一筆</button><button id="next" type="button" disabled>下一筆</button></div></div>
+          <div class="jump-control"><label for="row-number">前往資料列</label><input id="row-number" type="number" inputmode="numeric" min="1" max="1" step="1" disabled><button id="jump" type="button" disabled>前往</button></div>
+          <pre id="preview" tabindex="0" aria-labelledby="preview-heading row-label"></pre>
+          <p id="blank-record" class="notice warning" hidden></p>
+          <div class="action-bar"><button id="copy" type="button" disabled>複製這筆</button><a id="download-txt" class="button" hidden>下載全部 TXT</a><a id="download-json" class="button" hidden>下載全部 JSON</a></div>
+          <p id="copy-status" role="status" aria-live="polite"></p>
+          <div id="copy-fallback" hidden><label for="copy-text">可手動複製的目前通知</label><textarea id="copy-text" rows="6" readonly spellcheck="false" aria-describedby="copy-status"></textarea><button id="select-text" type="button">選取這筆文字</button></div>
+          <p id="export-size" class="help"></p>
+          <p class="help">檔名固定為 personalized-text.txt 與 personalized-text.json。TXT 用資料列編號分段，JSON 包含範本、欄名及缺值紀錄；請自行保存與妥善處理。</p>
+        </div>
+      </section>
+      <aside class="privacy" aria-labelledby="privacy-heading"><h2 id="privacy-heading">資料留在目前頁面</h2><p>名單、範本和成果只保留在本頁記憶體，不上傳、不保存歷史。清除、切換語言或離頁會清除本頁引用；不會刪除你已下載的檔案，也不代表安全抹除。</p></aside>
+      <details class="format-help"><summary>支援的格式與限制</summary><p>只接受 UTF-8 CSV。欄值中的逗號、換行和雙引號須依 CSV 引用規則；資料列分隔符需一致（CRLF、LF 或 CR）。範本最多 32,768 個 UTF-16 字元單位，完整 TXT 與 JSON 合計最多 8 MiB。</p></details>
+      <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">常見問題</h2><details><summary>範本支援條件句或自動判斷嗎？</summary><p>不支援；只做 {{欄名}} 的一次字面代入。</p></details>
+<details><summary>資料會自動寄出嗎？</summary><p>不會。工具只建立可檢查、可下載或單筆複製的文字。</p></details>
+<details><summary>有空白欄位會怎樣？</summary><p>預設整批暫停並列出缺值；你可以先修正名單，或明確選擇讓空值代入空字串。</p></details></section>
+      <footer><span>Gloss Tools by GlossQuote · 本地預覽候選</span><a href="https://glossquote.com/index.html">所有 Gloss 工具</a></footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+    <link rel="alternate" hreflang="en" href="./index.html">
+    <link rel="alternate" hreflang="x-default" href="../index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Aspect Ratio Calculator: Simplify Ratios and Solve Dimensions｜GlossQuote-Labs</title>
+    <meta name="description" content="Simplify dimensions to an exact ratio, or solve the other side from a ratio and one dimension, in your browser. Non-integer results show the exact fraction; a nearby famous ratio is only labelled close, never substituted. Nothing is saved or uploaded.">
+    <link rel="stylesheet" href="../styles/tokens.css">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://glossquote.com/en/index.html">GlossQuote-Labs</a>
+      <span class="location">Aspect Ratio Calculator</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="Language">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="../index.html">繁體中文</a>
+          <a lang="en" hreflang="en" href="./index.html" aria-current="page">English</a>
+        </nav>
+        <p class="language-note">Switching pages clears the current input.</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">Aspect Ratio Calculator</h1>
+        <p class="intro">Enter a width and height to get the exact simplified ratio, or enter a ratio plus one side to solve the other. All arithmetic uses integers and fractions with no early rounding; when your size is merely near a famous ratio, the page says so — it never swaps your numbers for the famous one.</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          This browser cannot start the calculator. Please open it in a browser that supports JavaScript modules. The usage notes and preset list below remain readable.
+        </p>
+
+        <form id="tool-form">
+          <fieldset id="tool-controls" disabled>
+            <legend class="visually-hidden">Aspect ratio calculator workspace</legend>
+
+            <fieldset class="radio-group">
+              <legend>Mode</legend>
+              <label class="radio-option"><input type="radio" name="mode" value="a" checked> Dimensions → ratio</label>
+              <label class="radio-option"><input type="radio" name="mode" value="b"> Ratio + one side → the other side</label>
+            </fieldset>
+
+            <div id="panel-a">
+              <div class="field-row">
+                <div class="field">
+                  <label for="a-width">Width</label>
+                  <input id="a-width" name="aWidth" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1920" aria-describedby="a-width-help" aria-invalid="false">
+                  <p id="a-width-help" class="field-help">A whole number from 1 to 100,000.</p>
+                  <p id="a-width-error" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="a-height">Height</label>
+                  <input id="a-height" name="aHeight" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1080" aria-describedby="a-height-help" aria-invalid="false">
+                  <p id="a-height-help" class="field-help">A whole number from 1 to 100,000.</p>
+                  <p id="a-height-error" class="field-error" hidden></p>
+                </div>
+              </div>
+
+              <section class="result-section" aria-labelledby="a-result-title">
+                <h2 id="a-result-title">Result</h2>
+                <p class="output-line"><span class="output-label">Simplified ratio</span> <output id="a-ratio" class="output-value" aria-label="Simplified ratio">16:9</output></p>
+                <p class="output-line"><span class="output-label">Decimal (width ÷ height)</span> <output id="a-decimal" class="output-value" aria-label="Decimal ratio">1.7778</output></p>
+                <p class="output-line"><span class="output-label">Height as a share of width</span> <output id="a-percent" class="output-value" aria-label="Height as a percentage of width">56.25%</output></p>
+                <p class="output-line"><span class="output-label">Nearest preset</span> <output id="a-note" class="output-value" aria-label="Nearest preset ratio">Exactly 16:9</output></p>
+                <p id="a-stale" class="stale-note" hidden>Out of date: a field is invalid, so the last valid result is shown.</p>
+              </section>
+            </div>
+
+            <div id="panel-b" hidden>
+              <div class="field-row">
+                <div class="field">
+                  <label for="b-ratio-w">Ratio width</label>
+                  <input id="b-ratio-w" name="bRatioW" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="16" aria-describedby="b-ratio-help" aria-invalid="false">
+                  <p id="b-ratio-w-error" class="field-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="b-ratio-h">Ratio height</label>
+                  <input id="b-ratio-h" name="bRatioH" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="9" aria-describedby="b-ratio-help" aria-invalid="false">
+                  <p id="b-ratio-h-error" class="field-error" hidden></p>
+                </div>
+              </div>
+              <p id="b-ratio-help" class="field-help">Both ratio parts are greater than 0 and at most 10,000, with up to 3 decimal places, such as 2.39 or 1.85.</p>
+
+              <div class="preset-block">
+                <p class="preset-title" id="preset-title">Preset ratios (fill the fields above)</p>
+                <div class="preset-grid" role="group" aria-labelledby="preset-title">
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="1" data-preset-h="1">1:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="5" data-preset-h="4">5:4</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="4" data-preset-h="3">4:3</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="3" data-preset-h="2">3:2</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="16" data-preset-h="10">16:10</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="16" data-preset-h="9">16:9</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="1.85" data-preset-h="1">1.85:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="2.39" data-preset-h="1">2.39:1</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="4" data-preset-h="5">4:5</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="3" data-preset-h="4">3:4</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="2" data-preset-h="3">2:3</button>
+                  <button type="button" class="button button-secondary preset-button" data-preset-w="9" data-preset-h="16">9:16</button>
+                </div>
+              </div>
+
+              <fieldset class="radio-group">
+                <legend>Which side to solve</legend>
+                <label class="radio-option"><input type="radio" name="solve" value="height" checked> Width is known, solve height</label>
+                <label class="radio-option"><input type="radio" name="solve" value="width"> Height is known, solve width</label>
+              </fieldset>
+
+              <div class="field">
+                <label for="b-given" id="b-given-label">Known width</label>
+                <input id="b-given" name="bGiven" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="1280" aria-describedby="b-given-help" aria-invalid="false">
+                <p id="b-given-help" class="field-help">Greater than 0 and at most 100,000, with up to 2 decimal places.</p>
+                <p id="b-given-error" class="field-error" hidden></p>
+              </div>
+
+              <section class="result-section" aria-labelledby="b-result-title">
+                <h2 id="b-result-title">Result</h2>
+                <p class="output-line"><span class="output-label">Simplified ratio</span> <output id="b-ratio-out" class="output-value" aria-label="Simplified ratio">16:9</output></p>
+                <p class="output-line"><span class="output-label" id="b-solved-label">Solved height</span> <output id="b-solved" class="output-value" aria-label="Solved side">720</output></p>
+                <p id="b-stale" class="stale-note" hidden>Out of date: a field is invalid, so the last valid result is shown.</p>
+                <button id="b-use" type="button" class="button button-secondary">Use this width and height in “Dimensions → ratio”</button>
+                <p id="b-use-reason" class="field-help" hidden>Mode A accepts integers only; this result pair is not all integers, so it cannot be carried over.</p>
+              </section>
+            </div>
+          </fieldset>
+        </form>
+
+        <p id="tool-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+      </section>
+
+      <section class="usage-notes" aria-labelledby="usage-title">
+        <h2 id="usage-title">How to use it and its limits</h2>
+        <p>In Mode A, width and height must be whole numbers from 1 to 100,000. In Mode B, both ratio parts are greater than 0 and at most 10,000 with up to 3 decimal places; the known side is greater than 0 and at most 100,000 with up to 2 decimal places. Input with too many decimal places is refused with the limit stated — it is never silently truncated.</p>
+        <p>While a field is invalid, that mode's results stay at their last valid values and are marked out of date; the other mode is unaffected. Reloading the page returns to the defaults; nothing you type is saved.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>The preset list</h2>
+        <ul class="content-list">
+          <li><strong>Landscape:</strong> 1:1, 5:4, 4:3, 3:2, 16:10, 16:9, 1.85:1, 2.39:1.</li>
+          <li><strong>Portrait:</strong> 4:5, 3:4, 2:3, 9:16.</li>
+          <li>Presets are input shortcuts only. The Mode A note says “exactly” or “close to”; it never replaces the computed ratio with a preset.</li>
+        </ul>
+      </section>
+
+      <section class="reference-section">
+        <h2>How the numbers are computed</h2>
+        <p>Simplification uses the greatest common divisor. Mode B first scales decimal ratio parts into integers, then simplifies (2.39:1 becomes 239:100). The other side is solved as an exact fraction: an integer result is shown plainly; otherwise the page shows the value rounded to 2 decimals together with the exact fraction, for example 418.41 (100000/239). Rounding is display-only, half away from zero, and never feeds back into the arithmetic.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>How your data is handled</h2>
+        <p>The calculation runs in this page in your browser. The tool does not write to browser storage and does not upload your numbers; numbers never appear in the address bar or the page title, and reloading clears the input. The web host may still receive the connection information any page request requires.</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>Frequently asked questions</h2>
+        <dl class="faq-list">
+          <div>
+            <dt>Why is 1366×768 not shown as 16:9?</dt>
+            <dd>Because it simplifies to 683:384, not 16:9. The two are close (they differ by 0.0009), so the tool notes “Close to 16:9 (differs by 0.0009)” while still presenting the exact 683:384, so a crop is not misled.</dd>
+          </div>
+          <div>
+            <dt>What does the fraction next to a result mean?</dt>
+            <dd>The fraction is the exact value. A height of 3000/7 is about 428.57; the page gives you both the rounded number and the fraction so you can choose your own rounding.</dd>
+          </div>
+          <div>
+            <dt>Why does entering 21:9 show 7:3?</dt>
+            <dd>21:9 simplifies to 7:3; the two are exactly equal. The page writes “21:9 = 7:3” so you can see the typed form and the simplified form together.</dd>
+          </div>
+          <div>
+            <dt>Can this tool resize or crop images?</dt>
+            <dd>No. It calculates ratios and side lengths only; it never reads or processes any file.</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+    <footer class="site-footer" aria-labelledby="site-footer-title">
+      <div class="site-footer-content">
+        <h2 id="site-footer-title">More tools</h2>
+        <nav aria-label="More GlossQuote tools">
+          <ul class="footer-links">
+            <li><a href="https://glossquote.com/en/index.html">GlossQuote-Labs home</a></li>
+            <li><a href="https://units.glossquote.com/en/index.html">Unit Converter</a></li>
+          </ul>
+        </nav>
+        <p class="footer-note">Leaving this page clears the current input.</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Arrange local JPEG and PNG files into one uncropped, numbered contact sheet with an optional filename index. Export PNG and text.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Photo Contact Sheet Maker | Number and Review Images</title>
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to workspace</a>
+  <header class="topbar">
+    <a class="family-link" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <nav aria-label="Language"><a href="../index.html" lang="zh-TW" hreflang="zh-Hant">繁體中文</a></nav>
+  </header>
+  <main id="main">
+    <div class="intro">
+      <div><p class="product-name">Photo contact sheet</p><h1>Make a numbered sheet people can use to pick photos</h1></div>
+      <p class="privacy-note">Processed in this page. No photo uploads.<br>Whole images. White background. One PNG.</p>
+    </div>
+    <noscript><p class="notice">Enable JavaScript to process photos locally. Files are not uploaded.</p></noscript>
+    <p id="capability-error" class="notice" role="alert" hidden></p>
+    <div class="app-shell">
+      <section class="sources" aria-labelledby="sources-title">
+        <div class="section-heading"><h2 id="sources-title">Photo order</h2><span id="count" class="data">0 / 30 photos</span></div>
+        <label class="file-picker" for="files">Add JPEG / PNG
+          <input id="files" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple aria-describedby="input-limits">
+        </label>
+        <p id="input-limits" class="help">Up to 30 · 8 MiB each · 64 MiB total</p>
+        <p id="empty-list" class="empty-list">No photos yet. Add images, set their order, then make your contact sheet.</p>
+        <ol id="source-list" class="source-list" aria-label="Photos and numbers"></ol>
+        <button id="reset" class="quiet" type="button" disabled>Clear selection</button>
+      </section>
+      <section class="sheet" aria-labelledby="sheet-title">
+        <div class="sheet-toolbar">
+          <h2 id="sheet-title">Contact sheet</h2>
+          <div class="settings">
+            <label class="columns-field" for="columns">Columns <select id="columns"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+            <label class="check-field"><input id="show-names" type="checkbox"> Show filenames in PNG</label>
+          </div>
+        </div>
+        <div id="workspace" class="canvas-region" role="region" aria-label="Contact sheet preview" aria-describedby="preview-summary" aria-busy="false" tabindex="0">
+          <div id="preview-empty" class="preview-empty"><span class="empty-number" aria-hidden="true">1</span><p>Give every photo a number.<br>Then share one sheet so people can pick their favorites.</p></div>
+          <canvas id="preview" width="0" height="0" role="img" aria-label="Generated photo contact sheet" aria-describedby="preview-summary" hidden></canvas>
+        </div>
+        <div class="preview-meta"><p id="preview-summary" class="help">Your complete contact sheet will appear here after you make it.</p><label for="preview-scale">Preview <select id="preview-scale" disabled><option value="fit">Fit width</option><option value="actual">Actual size</option></select></label></div>
+        <p id="dimensions" class="dimensions data">—</p>
+        <div class="action-bar">
+          <button id="generate" class="primary" type="button" disabled>Make contact sheet</button>
+          <button id="cancel" type="button" disabled>Stop processing</button>
+          <div class="downloads"><button id="download-png" type="button" disabled>Download PNG</button><button id="download-text" type="button" disabled>Download index TXT</button></div>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Add the JPEG or PNG files you want to organize.</p>
+      </section>
+    </div>
+    <section class="guide" aria-labelledby="guide-title">
+      <h2 id="guide-title">Share the numbers. Keep your originals.</h2>
+      <p>Add images → adjust their order with the up/down buttons → choose columns and make your sheet → download PNG and TXT. The text index always includes full filenames in the same order as the PNG. Changing order or settings clears the output until you make a new sheet.</p>
+      <details><summary>Format, size and processing limits</summary><div class="details-body">
+        <p>Static JPEG / PNG only, after file header and browser decoding checks. APNG, GIF, SVG, HEIC, unknown and damaged formats are rejected. The header determines the actual format.</p>
+        <p>Up to 30 images, 8 MiB each and 64 MiB total. Each image is limited to 16 MP and 8,192 px on either edge. The output is limited to 16 MP, 8,192 px per edge, 64 MiB PNG and 128 KiB TXT. Large photos can still fail if the browser runs out of memory.</p>
+        <p>Images are scaled proportionally and centered without cropping. Transparent areas become white. Filename labels show up to 32 Unicode characters on two lines; the TXT keeps full names. Files are processed in this page's memory without browser storage. The export does not carry source location or camera metadata.</p>
+        <p>Stopping waits for the current image operation to finish. Clearing or leaving releases the data this page holds. Downloads already handed to your browser cannot be recalled; originals and downloaded files on your computer are not deleted.</p>
+      </div></details>
+      <details><summary>Are photos cropped?</summary><p class="details-body">No. Each photo is scaled proportionally and centered with blank space where needed. Unused cells in the last row also stay white.</p></details>
+      <details><summary>How do numbers map to filenames?</summary><p class="details-body">The PNG always shows numbers and can also show shortened filenames. Each TXT row lists the number, full filename and visual pixel dimensions. Filenames are JSON strings: newlines and tabs appear as escaped text and cannot create extra entries.</p></details>
+    </section>
+  </main>
+  <footer><a href="https://glossquote.com/en/index.html">Back to Gloss Tools</a><span>Photo contact sheet · Local candidate preview</span></footer>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>報價單快速製作｜Gloss Tools</title>
+  <meta name="description" content="輸入雙方名稱、品項、數量、單價和自訂折扣，預覽並下載靜態 HTML 報價單與 JSON。計算在此頁完成；不提供稅務判斷或發票。">
+  <link rel="stylesheet" href="styles/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到報價工作區</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html" rel="noreferrer">Gloss Tools <span>by GlossQuote</span></a>
+    <span class="product-name">報價單快速製作</span>
+    <a href="en/index.html" lang="en" aria-label="Switch to English; clears this page’s draft">English</a>
+  </header>
+  <main>
+    <div class="intro">
+      <div><h1>把品項整理成一份清楚的報價</h1><p>填入明確金額與自訂稅率，先檢查預覽，再下載給客戶。</p></div>
+      <p class="draft-badge" id="draft-state" role="status" aria-live="polite">空白草稿</p>
+    </div>
+    <p class="data-notice">報價只在這個頁面處理。下載由你明確啟動；關閉頁面會清除目前草稿。<br>要保存並恢復草稿，請下載 JSON；切換語言前也請先保存。</p>
+    <p class="notice" id="js-required">請啟用 JavaScript 才能編輯與計算；這個候選頁不連線保存報價。</p>
+    <nav class="panel-switch" aria-label="報價工作區檢視">
+      <button id="tab-edit" type="button" aria-pressed="true" aria-controls="edit-panel">編輯報價</button>
+      <button id="tab-preview" type="button" aria-pressed="false" aria-controls="preview-panel">預覽報價</button>
+    </nav>
+    <div id="workspace" class="workspace" data-panel="edit" tabindex="-1">
+      <section id="edit-panel" class="editor" aria-labelledby="editor-heading">
+        <div class="section-heading"><h2 id="editor-heading" tabindex="-1">報價草稿</h2><p id="item-count">品項數: 1 / 50</p></div>
+        <form id="quote-form" novalidate autocomplete="off">
+          <div id="errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+          <div class="field-pair parties-input">
+            <div class="field"><label for="from">出價方</label><input id="from" name="from" type="text" autocomplete="off" aria-describedby="from-help from-error"><small id="from-help">可留白；最多 120 字，不可換行。</small><span id="from-error" class="field-error" hidden></span></div>
+            <div class="field"><label for="to">客戶</label><input id="to" name="to" type="text" autocomplete="off" aria-describedby="to-help to-error"><small id="to-help">可留白；最多 120 字，不可換行。</small><span id="to-error" class="field-error" hidden></span></div>
+          </div>
+          <div class="field"><label for="currency">幣別標籤</label><input id="currency" name="currency" type="text" value="TWD" autocomplete="off" spellcheck="false" aria-describedby="currency-help currency-error"><small id="currency-help">1–8 個大寫英數字；僅為顯示文字，不換匯。</small><span id="currency-error" class="field-error" hidden></span></div>
+          <div class="items-heading"><h3>品項</h3><span>數量最多 3 位小數，單價最多 2 位。</span></div>
+          <div id="item-list" tabindex="-1"></div>
+          <button id="add-item" type="button">＋ 加入品項</button>
+          <p id="item-limit" class="notice" hidden></p>
+          <div class="field-pair adjustments">
+            <div class="field"><label for="discount">固定折扣</label><input id="discount" name="discount" type="text" inputmode="decimal" value="0" class="number-input" aria-describedby="discount-help discount-error"><small id="discount-help">0 至小計；固定金額，最多 2 位小數。</small><span id="discount-error" class="field-error" hidden></span></div>
+            <div class="field"><label for="taxRate">自訂稅率（%）</label><input id="taxRate" name="taxRate" type="text" inputmode="decimal" value="0" class="number-input" aria-describedby="taxRate-help taxRate-error"><small id="taxRate-help">0–100，最多 2 位小數；不判斷適用性。</small><span id="taxRate-error" class="field-error" hidden></span></div>
+          </div>
+          <div class="field"><label for="note">備註</label><textarea id="note" name="note" rows="4" aria-describedby="note-help note-error"></textarea><small id="note-help">最多 2000 字，可換行；不要填秘密或付款資料。</small><span id="note-error" class="field-error" hidden></span></div>
+          <button id="create-preview" class="primary" type="submit">產生預覽</button>
+        </form>
+        <div class="draft-tools">
+          <h3>恢復或清除草稿</h3>
+          <div class="field"><label for="import-file">匯入 JSON</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="import-help"><small id="import-help">單一 UTF-8 JSON，最多 512 KiB。讀取後確認才整份取代。</small></div>
+          <section id="import-panel" class="notice" aria-label="JSON 匯入狀態" aria-busy="false" hidden>
+            <p id="import-message" role="status" aria-live="polite"></p>
+            <div class="actions"><button id="cancel-import" type="button">取消匯入</button><button id="confirm-import" type="button" hidden>確認取代草稿</button></div>
+          </section>
+          <button id="clear-draft" class="quiet" type="button">清除草稿</button>
+          <section id="clear-panel" class="notice" aria-labelledby="clear-title" hidden>
+            <h4 id="clear-title">清除目前草稿與產物？</h4><p>草稿、預覽和下載連結都會清除。已下載的檔案不受影響。</p>
+            <div class="actions"><button id="cancel-clear" type="button">保留草稿</button><button id="confirm-clear" class="danger" type="button">確認清除</button></div>
+          </section>
+          <p id="action-status" class="small" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <section id="preview-panel" class="preview" aria-labelledby="preview-heading">
+        <div class="section-heading"><h2 id="preview-heading" tabindex="-1">報價預覽</h2><p id="preview-state">空白草稿</p></div>
+        <article id="quote-canvas" class="quote-paper" aria-label="目前報價內容"></article>
+        <div id="downloads" class="download-bar" hidden><a id="download-html" class="button primary" download="quote.html">下載 HTML</a><a id="download-json" class="button" download="quote.json">下載 JSON</a><p>HTML 可交給客戶；JSON 留作下次編輯。合計上限 512 KiB。</p></div>
+        <p id="download-note" class="small" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+    <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">使用前確認</h2>
+      <details><summary>這會替我確認稅率嗎？</summary><p>不會。稅率由你輸入；工具只按你輸入的數字計算，不判斷是否適用。</p></details>
+      <details><summary>下載的是發票嗎？</summary><p>不是。HTML 和 JSON 是你自行填寫的報價資料，不包含發票、簽章或法律效力判斷。</p></details>
+      <details><summary>修改品項後，舊報價還能下載嗎？</summary><p>不行。來源一改，預覽和舊下載連結立即失效；重新產生後才能下載新版。</p></details>
+    </section>
+  </main>
+  <footer class="page-footer"><a href="https://glossquote.com/index.html" rel="noreferrer">返回 Gloss Tools 首頁</a><span>本地候選版本 · 不自動儲存草稿</span></footer>
+</body>
+</html>

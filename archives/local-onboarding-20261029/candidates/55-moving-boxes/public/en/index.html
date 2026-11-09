@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Moving box inventory | GlossQuote</title>
+  <meta name="description" content="Moving box inventory in your browser. Review the result and export it locally without uploading your input.">
+  <link rel="stylesheet" href="/styles/app.css"><script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to box inventory</a>
+  <header class="topbar"><a href="https://glossquote.com/en/index.html">Gloss Tools</a><span>Moving box inventory</span><nav aria-label="Page navigation"><a href="https://glossquote.com/en/index.html">All tools</a><a id="language-link" href="/index.html" lang="zh-Hant">繁體中文</a></nav></header>
+  <main id="main">
+    <div class="intro"><h1>Moving box inventory</h1><p>Record items as you pack, then find the charger or pot by box and destination room. Export a room moving list, box contents, and a project JSON to restore later.</p></div>
+    <p class="notice">Processed in this page’s memory only, without automatic saving. Reloading, closing or switching language loses unexported data. Download the project JSON to keep it. Preview awaiting full acceptance.</p>
+    <noscript><p class="error">JavaScript is required. Editing and exports remain disabled until it is available in a supported browser.</p></noscript>
+    <p id="status" class="status" role="status" aria-live="polite">Initializing. If this does not finish, check that your browser supports JavaScript modules.</p>
+    <p id="error" class="error" role="alert" hidden></p>
+    <p id="draft-notice" class="notice" hidden></p>
+    <section id="language-confirmation" class="confirmation" aria-labelledby="language-heading" hidden tabindex="-1"><h2 id="language-heading">Switch language?</h2><p>Switching pages discards this page’s unexported data and edits. Download the project JSON before leaving.</p><div class="actions"><a class="button danger" href="/index.html" lang="zh-Hant">Switch to 繁體中文</a><button id="language-cancel" type="button">Stay on this page</button></div></section>
+    <fieldset id="application-controls" disabled>
+      <legend class="sr-only">Box inventory workspace</legend>
+      <section class="search-zone" aria-labelledby="search-heading">
+        <h2 id="search-heading">Find an item</h2><label for="search-input">Item, notes, box ID or room</label><input id="search-input" type="search" maxlength="1000" autocomplete="off" aria-describedby="search-help"><p id="search-help" class="help">Search changes only this view and never deletes your inventory. An empty search returns all items.</p>
+        <details id="search-results"><summary id="search-summary">All items</summary><p id="search-empty"></p><ul id="search-list" class="search-list"></ul><div id="search-pagination" class="actions"></div></details>
+      </section>
+      <div class="workspace-grid">
+        <aside class="box-rail" aria-labelledby="boxes-heading"><div class="section-heading"><h2 id="boxes-heading">Box index</h2><span id="counts" class="muted"></span></div>
+          <div class="compact-selector"><label for="box-select">Select a box to edit</label><select id="box-select"></select></div>
+          <nav aria-label="Box and destination room index" class="desktop-index"><ul id="box-index"></ul></nav>
+          <form id="new-box-form" novalidate><h3>Add a box</h3><p id="box-id-help" class="help">Box IDs are case sensitive: a and A are different boxes. Leave blank for the first available BX number.</p>
+            <label for="new-box-id">Box ID (up to 40 characters; blank for automatic)</label><input id="new-box-id" maxlength="180" autocomplete="off" aria-describedby="box-id-help error">
+            <label for="new-box-room">Destination room (required, up to 80 characters)</label><input id="new-box-room" maxlength="260" required autocomplete="off" aria-describedby="error">
+            <label class="check"><input id="new-box-priority" type="checkbox">Open first</label>
+            <label for="new-box-notes">Box notes (up to 500 characters, one line)</label><input id="new-box-notes" maxlength="1100" autocomplete="off" aria-describedby="error">
+            <div class="actions"><button id="add-box" type="submit" class="primary">Add a box</button><button id="reset-box" type="button">Clear fields</button></div>
+          </form>
+        </aside>
+        <section id="workspace" class="canvas" aria-label="Current box and contents"></section>
+      </div>
+      <section id="confirmation" class="confirmation" aria-labelledby="confirm-heading" hidden tabindex="-1"><h2 id="confirm-heading"></h2><p id="confirm-summary"></p><p id="confirm-warning"></p><ul id="confirm-preview"></ul><div class="actions"><button id="confirm-action" type="button" class="danger"></button><button id="cancel-action" type="button">Cancel</button></div></section>
+      <section class="exports" aria-labelledby="export-heading"><div><h2 id="export-heading">Lists and project backup</h2><p>The room moving list groups box IDs and unpacking priority by room. Box contents include item names and quantities. Keep the project JSON to continue editing later.</p></div>
+        <label for="export-mode">Export content (all saved boxes)</label><select id="export-mode"><option value="rooms">Room moving list · TXT</option><option value="boxes">Box contents · TXT</option><option value="json">Project backup · JSON</option></select>
+        <div class="actions"><button id="prepare-export" type="button">Preview export</button><button id="download-export" type="button" disabled>Download file</button></div>
+        <div id="output-panel" hidden><p id="output-filename" class="mono"></p><label for="output-text">Export preview (selectable text)</label><textarea id="output-text" readonly rows="12" spellcheck="false"></textarea><p class="help">If your browser blocks the download, select and save the preview text yourself.</p></div>
+      </section>
+      <section class="restore" aria-labelledby="restore-heading"><h2 id="restore-heading">Restore a project JSON</h2><p>Up to 8 MiB (8,388,608 bytes). The whole file is validated before showing box and item counts. Nothing is replaced until you confirm; errors and cancellation retain your current inventory.</p><label for="import-file">Select a project JSON file</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="error"><button id="cancel-read" type="button" hidden>Cancel reading</button>
+        <details><summary>Or paste project JSON</summary><label for="import-text">Project JSON text</label><textarea id="import-text" rows="5" maxlength="8388608" spellcheck="false" autocomplete="off" aria-describedby="error"></textarea><button id="parse-import" type="button">Validate and preview import</button></details>
+      </section>
+      <section class="utilities" aria-label="Other inventory actions"><button id="load-example" type="button">Load labeled fictional example</button><button id="clear-all" type="button" class="danger">Clear all page data (cannot undo)</button><p class="help">Up to 100 boxes and 1,000 item entries. Use one line per text field. No automatic saving. Clearing this page does not remove previously downloaded files or promise secure memory erasure.</p></section>
+    </fieldset>
+    <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">How to use</h2><details><summary>Are boxes saved automatically?</summary><p>No. Download the project JSON to restore it later. There is no account, cloud sync or automatic saving.</p></details><details><summary>What if search finds nothing?</summary><p>The inventory is retained and the empty result is clearly shown. Search also checks box IDs, rooms and notes.</p></details><details><summary>Can I move an item to another box?</summary><p>Yes. A move preserves its ID and does not duplicate it. Items with the same name can still be recorded separately.</p></details><details><summary>Do I need a label printer or network service?</summary><p>No. Exports are text lists and project JSON, without addresses, weight pricing or printer integration. This tool needs native JavaScript modules, Blob downloads and FileReader. Unsupported browsers stop safely.</p></details></section>
+  </main><footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/en/index.html">All tools</a></footer>
+</body>
+</html>

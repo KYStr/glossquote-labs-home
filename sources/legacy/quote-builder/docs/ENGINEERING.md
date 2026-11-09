@@ -1,0 +1,3 @@
+# Engineering contract
+
+Node24+ native ESM, built-ins only, no package install. Browser runtime is HTML/CSS/ESM. Core arithmetic uses bounded decimal strings and BigInt; input schemas reject unknown fields and preserve field-specific errors. All tests use fake data and local temporary copies. The README gate order bootstraps preview dist before tests. Build serves/copies only fixed assets and refuses unknown paths or links. A source lock pins accepted public bytes; legitimate product changes require a reviewed update, not a force bypass. Legacy audit scripts are optional and never deploy or read credentials.

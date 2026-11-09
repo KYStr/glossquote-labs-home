@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cron Expression Explainer | GlossQuote Tools</title>
+<meta name="description" content="Explains standard five-field cron expressions: per-field prose, the next ten runs in your local timezone, and a two-way field builder. Quartz tokens (?, L, W, #), seconds and year fields are named errors, never silently accepted.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Cron Expression Explainer</h1>
+  <p class="intro">This tool speaks standard five-field Vixie/POSIX cron (minute, hour, day of month, month, day of week). Paste an expression to get a per-field explanation, a plain-language summary of the whole schedule, and the next ten firing times in your local timezone. Quartz dialect tokens (<span class="mono">?</span>, <span class="mono">L</span>, <span class="mono">W</span>, <span class="mono">#</span>), seconds/year fields and <span class="mono">@reboot</span> are out of scope — they produce a named error, never a silent misreading.</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="expression-input">Cron expression (five fields)</label>
+      <input id="expression-input" type="text" autocomplete="off" spellcheck="false" class="mono" value="0 9 * * 1-5">
+      <p id="expression-error" class="error" role="alert" hidden></p>
+    </div>
+    <div class="field">
+      <label for="start-input">Start moment (empty = now; local time)</label>
+      <input id="start-input" type="datetime-local">
+      <button type="button" id="start-reset">Reset to now</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Explanation</h2>
+    <ul id="field-lines" class="field-lines"></ul>
+    <p id="schedule-line"></p>
+  </section>
+
+  <section class="card">
+    <h2>Next runs</h2>
+    <p id="runs-heading" class="note"></p>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Weekday</th><th>Time</th></tr>
+      </thead>
+      <tbody id="runs-body"></tbody>
+    </table>
+    <p id="runs-note" class="note"></p>
+  </section>
+
+  <section class="card">
+    <h2>Field builder</h2>
+    <p class="note">Build each field with the controls and the expression above is rewritten in canonical form; edit the text directly and the builder follows — a shape it cannot represent is labelled "custom" and is never silently rewritten.</p>
+    <div id="builder-rows"></div>
+  </section>
+
+  <section class="card">
+    <h2>How the rules work</h2>
+    <ul>
+      <li>The DOM/DOW OR rule: when both day fields are restricted (neither starts with <span class="mono">*</span>), the job runs when EITHER matches — the most common cron surprise, and the explanation calls it out explicitly.</li>
+      <li>What <span class="mono">a/n</span> means: <span class="mono">5/15</span> is <span class="mono">5-59/15</span> (from a to the maximum, every n), not "only at a".</li>
+      <li>In the weekday field, both 0 and 7 are Sunday; names (JAN–DEC, SUN–SAT) are case-insensitive.</li>
+      <li>Supported macros: <span class="mono">@hourly</span>, <span class="mono">@daily</span>, <span class="mono">@midnight</span>, <span class="mono">@weekly</span>, <span class="mono">@monthly</span>, <span class="mono">@yearly</span>, <span class="mono">@annually</span> — entered macros expand visibly into fields.</li>
+      <li>A local time that does not exist because of a DST transition (such as 02:30 on a spring-forward day) never fires; enumeration follows platform time semantics without compensation.</li>
+      <li>When nothing fires, the tool says so: the search window is four years plus a day (covering the leap-day cycle), and a schedule like February 31st never fires.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

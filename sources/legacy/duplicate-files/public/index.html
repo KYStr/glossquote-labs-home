@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>重複檔案找出來｜本機檔案比對</title>
+  <meta name="description" content="在瀏覽器本機找出內容完全相同的檔案，確認要保留哪一份，再下載清單。">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳至檔案工作表</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <span>重複檔案找出來</span>
+    <nav aria-label="語言"><a href="/en/index.html" lang="en" aria-describedby="language-warning">English</a></nav>
+  </header>
+  <main id="workspace">
+    <p id="language-warning" class="language-warning">切換語言會離開此頁；未下載的報告和分析結果會遺失。</p>
+    <div class="intro">
+      <p class="candidate">本機候選版；尚未部署</p>
+      <h1>找出內容相同的檔案</h1>
+      <p class="lead">逐 byte 驗證相同檔案；你決定保留項目，工具不會刪檔。</p>
+      <p>檔案僅在目前分頁分析，不上傳、不持久儲存。離開或清除頁面會失去尚未下載的報告。</p>
+    </div>
+    <noscript><p class="error">請啟用 JavaScript 才能在本機分析；未讀取任何檔案。</p></noscript>
+    <p id="capability-error" class="error" role="alert" hidden></p>
+    <div class="source-workspace">
+      <section id="dropzone" class="sources" aria-labelledby="sources-title">
+        <div class="section-heading"><h2 id="sources-title">選取來源</h2><span id="selection-count" class="data">0 / 200</span></div>
+        <div class="selection-action">
+          <label id="file-label" class="file-picker primary" for="files"><span id="choose-label">選取檔案</span><input id="files" class="visually-hidden" type="file" multiple aria-describedby="limits source-help error"></label>
+          <p>也可將檔案拖放到這裡</p>
+        </div>
+        <p id="source-help" class="muted">來源序號從 0 開始；同名檔案仍會分開列出。再次選檔會加入清單，並清除舊分析。</p>
+        <p id="selection-summary">尚未選取檔案。</p>
+        <ol id="source-list" class="source-list" start="0" aria-label="已選檔案"></ol>
+        <p id="empty-sources" class="empty-hint">選取至少一個檔案，再開始掃描。名稱不同也能找出相同內容。</p>
+      </section>
+      <aside class="scan-controls" aria-labelledby="limits-title">
+        <h2 id="limits-title">本次掃描</h2>
+        <dl id="limits"><div><dt>檔案數</dt><dd>最多 200 個</dd></div><div><dt>單檔大小</dt><dd>最多 32 MiB</dd></div><div><dt>合計大小</dt><dd>最多 128 MiB</dd></div></dl>
+        <p class="muted">先依大小與 SHA-256 篩選，再逐 byte 確認。空檔案也會比對。</p>
+        <div class="actions"><button id="scan" class="primary" type="button" disabled>開始掃描</button><button id="reset" class="quiet" type="button" disabled>重新開始</button></div>
+        <p class="muted">只產生清單，不刪除、搬移或改寫來源檔。</p>
+      </aside>
+    </div>
+    <div class="status-area">
+      <p id="feedback" role="status" aria-live="polite" aria-atomic="true">選取檔案後即可開始。</p>
+      <p id="error" class="error" role="alert" hidden></p>
+      <div id="progress-panel" class="progress-panel" hidden><progress id="scan-progress" max="1" value="0" aria-label="檔案雜湊進度" aria-describedby="feedback"></progress><button id="cancel" class="primary" type="button">取消掃描</button></div>
+    </div>
+    <section id="results" class="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">比對結果</h2>
+      <p>每組預設保留最早選取的來源。只有重複群組能改選保留項目；這些選擇只會改變報告。</p>
+      <dl id="summary" class="summary"></dl>
+      <p id="no-duplicates" class="notice" hidden>沒有找到內容完全相同的檔案。仍可下載全部保留的清單。</p>
+      <div id="groups" class="groups"></div>
+      <div class="report-actions"><button id="download-json" class="primary" type="button">下載 JSON 清單</button><button id="download-txt" type="button">下載 TXT 清單</button></div>
+      <p class="muted">清單包含檔名、來源序號、大小與 SHA-256，請自行妥善保存。預估可節省空間是重複副本的合計，工具不會釋放磁碟空間。</p>
+      <details id="report-preview"><summary>預覽目前 JSON / TXT 清單</summary><p class="muted">預覽將檔名控制字元顯示為 escape；下載保留原始名稱。只有按下下載才建立本機報告檔。</p><h3>JSON</h3><pre id="json-preview" dir="ltr" tabindex="0" aria-label="JSON 清單預覽"></pre><h3>TXT</h3><pre id="txt-preview" dir="ltr" tabindex="0" aria-label="TXT 清單預覽"></pre></details>
+    </section>
+    <section class="help" aria-labelledby="faq-title">
+      <h2 id="faq-title">常見問題</h2>
+      <details><summary>工具會刪除重複檔嗎？</summary><p>不會，只產生報告；你可自行決定是否處理來源檔。</p></details>
+      <details><summary>檔名相同就算重複嗎？</summary><p>不會。工具先按大小與 SHA-256 找候選，再逐 byte 比對內容。</p></details>
+      <details><summary>不同檔名但內容相同會找到嗎？</summary><p>會；名稱不參與判斷，報告用選取順序索引區分。</p></details>
+      <details><summary>空檔案會被忽略嗎？</summary><p>不會，空檔案可分組；重複空檔不會產生 bytes 節省。</p></details>
+      <details><summary>檔案會上傳嗎？</summary><p>不會，候選版在目前分頁本機分析。沒有帳號或背景上傳。下載的報告不會由本工具自動清除。</p></details>
+    </section>
+  </main>
+  <footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/index.html">返回工具首頁</a></footer>
+</body>
+</html>

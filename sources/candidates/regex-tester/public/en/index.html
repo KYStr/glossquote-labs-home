@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regex Tester and Replacer | GlossQuote Tools</title>
+<meta name="description" content="Test JavaScript (ECMAScript) regular expressions locally: matches highlighted in place, capture groups listed, replace results previewed. Patterns and text are never uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote Home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Regex Tester and Replacer</h1>
+  <p class="intro">This tool uses the browser's built-in ECMAScript (JavaScript) RegExp engine — what you verify here is exactly what your JavaScript program would do. Other regex flavours (PCRE, Python, Java, .NET) behave differently; patterns are not interchangeable. Everything runs on your device: the pattern and test text are never uploaded, stored, or placed in the URL.</p>
+  <p class="warning">Warning: a pathological pattern (for example nested quantifiers over a long text) can freeze this tab, because a JavaScript regular expression cannot be interrupted once started. This tool offers no "timeout" or "safe mode"; the input limits (pattern 500 characters, text 50,000 characters, replacement 1,000 characters, all counted in Unicode code points) are the only mitigation.</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="pattern">Pattern</label>
+      <input id="pattern" type="text" autocomplete="off" spellcheck="false" class="mono">
+      <p id="pattern-error" class="error" role="alert"></p>
+    </div>
+
+    <fieldset class="field">
+      <legend>Flags</legend>
+      <label><input id="flag-g" type="checkbox" checked> <span class="mono">g</span> — global: find every match, otherwise only the first</label>
+      <label><input id="flag-i" type="checkbox"> <span class="mono">i</span> — ignore case</label>
+      <label><input id="flag-m" type="checkbox"> <span class="mono">m</span> — multiline: ^ and $ also match at line starts and ends</label>
+      <label><input id="flag-s" type="checkbox"> <span class="mono">s</span> — dotAll: . also matches line terminators</label>
+      <label><input id="flag-u" type="checkbox"> <span class="mono">u</span> — Unicode: work in code points; enables \u{…} and Unicode property classes</label>
+      <label><input id="flag-y" type="checkbox"> <span class="mono">y</span> — sticky: match only exactly at the current position</label>
+    </fieldset>
+
+    <div class="field">
+      <span class="field-label">Presets (click to fill pattern and text; flags stay as set)</span>
+      <div class="preset-row">
+        <button type="button" id="preset-email">Email-like address</button>
+        <button type="button" id="preset-date">ISO date</button>
+        <button type="button" id="preset-order">Order number</button>
+        <button type="button" id="preset-log">Log timestamp</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sample-text">Test text</label>
+      <textarea id="sample-text" rows="6" spellcheck="false" class="mono"></textarea>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Highlighted result</span>
+      <div id="highlight-view" class="highlight mono" aria-label="Test text with matches highlighted"></div>
+    </div>
+
+    <div id="match-list" class="match-list"></div>
+    <p id="result-footer" class="note"></p>
+
+    <div class="field">
+      <button type="button" id="replace-toggle" aria-expanded="false">Replace mode</button>
+    </div>
+    <div id="replace-panel" hidden>
+      <div class="field">
+        <label for="replacement">Replacement (supports $$, $&amp;, $`, $', $1…$99, $&lt;name&gt;)</label>
+        <input id="replacement" type="text" autocomplete="off" spellcheck="false" class="mono">
+      </div>
+      <div class="field">
+        <span class="field-label">Replace result</span>
+        <pre id="replace-result" class="replace-result mono"></pre>
+        <p id="replace-count" class="note"></p>
+        <button type="button" id="copy-result">Copy replace result</button>
+      </div>
+    </div>
+
+    <p>
+      <button type="button" id="clear-button">Clear all</button>
+      <span id="status-note" class="note"></span>
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>ECMAScript flavour notes</h2>
+    <ul>
+      <li>Lookbehind assertions and named groups <span class="mono">(?&lt;name&gt;…)</span> are supported.</li>
+      <li>Possessive quantifiers, atomic groups, balancing groups and <span class="mono">\G</span> are not supported.</li>
+      <li><span class="mono">\d</span> matches ASCII digits only, even under the u flag.</li>
+      <li><span class="mono">.</span> does not match line terminators unless the s flag is set.</li>
+      <li>Enumeration stops at 1,000 matches and says so; the list is then labelled partial.</li>
+      <li>Groups that did not participate are shown distinctly from groups that matched the empty string.</li>
+    </ul>
+  </section>
+
+  <p id="announce" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文字朗讀 | GlossQuote 工具</title>
+<meta name="description" content="把貼上的文字用瀏覽器提供的聲音朗讀出來：逐句標示、播放與暫停、語速與音高調整。文字不離開你的裝置；選用網路聲音時會先明示。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>文字朗讀</h1>
+  <p class="intro">貼上文字、挑一個瀏覽器提供的聲音，就能把文字讀給你聽：逐句標示目前讀到哪一句，可以播放、暫停、繼續與停止，也能點任何一句從那句開始。文字只留在這個分頁的記憶體裡——不儲存、不上傳；唯一的例外是「網路聲音」：選到這種聲音時，文字會傳給該聲音的提供者，頁面會在你選到時先提醒。</p>
+  <p class="warning">本工具不能把朗讀錄成音檔：瀏覽器平台本身無法擷取語音合成的輸出，所以這裡不提供下載按鈕。需要音檔時，請改用能匯出的錄音或 TTS 軟體。</p>
+
+  <section id="unsupported-panel" class="card" hidden>
+    <h2>這個瀏覽器不支援語音合成</h2>
+    <p>你的瀏覽器沒有提供 <span class="mono">speechSynthesis</span>，所以無法朗讀。請改用最新版的 Chrome、Edge、Firefox 或 Safari 再試。</p>
+  </section>
+
+  <section id="reader-panel" class="card" hidden>
+    <div class="field">
+      <label for="text-input">朗讀文字</label>
+      <textarea id="text-input" rows="8" spellcheck="false"></textarea>
+      <p class="note"><span id="char-count">0 / 20000 字元</span></p>
+      <p>
+        <label for="file-input">開啟本機 .txt 檔案</label>
+        <input id="file-input" type="file" accept=".txt,text/plain">
+        <button type="button" id="clear-button">清除文字</button>
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="voice-select">聲音</label>
+      <select id="voice-select"></select>
+      <p id="voices-status" class="note"></p>
+      <p id="network-notice" class="warning" hidden>你選的是網路聲音：以這個聲音朗讀時，文字會傳送給該聲音的提供者。本工具本身不會把文字傳到任何地方。</p>
+    </div>
+
+    <div class="field">
+      <label for="rate-input">語速（<output id="rate-value">1.0×</output>）</label>
+      <input id="rate-input" type="range" min="0.5" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="field">
+      <label for="pitch-input">音高（<output id="pitch-value">1.0</output>）</label>
+      <input id="pitch-input" type="range" min="0" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="field">
+      <span class="field-label">播放控制</span>
+      <div class="preset-row">
+        <button type="button" id="play-button">播放</button>
+        <button type="button" id="pause-button" hidden>暫停</button>
+        <button type="button" id="resume-button" hidden>繼續</button>
+        <button type="button" id="stop-button">停止</button>
+      </div>
+      <p id="progress-text" class="note">尚未開始朗讀</p>
+      <progress id="progress-meter" max="100" value="0"></progress>
+    </div>
+
+    <p id="error-box" class="error" role="alert" hidden></p>
+
+    <div class="field">
+      <span class="field-label">句子預覽（朗讀中會標示目前句子；待機時點句子可從該句開始）</span>
+      <ol id="sentence-list" class="sentence-list"></ol>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>使用須知</h2>
+    <ul>
+      <li>播放中修改聲音、語速或音高，會從下一段文字開始生效；停止則立即生效。</li>
+      <li>暫停行為因平台而異：某些本機聲音可能忽略暫停。進度以「段」為單位計算，因此標示與進度仍正確。</li>
+      <li>把分頁切到背景時是否繼續朗讀，由瀏覽器與系統決定，本工具無法保證。</li>
+      <li>分句是為了標示與分段的規則化切分：偶爾多切或少切，只影響標示的粒度，不會改變朗讀的文字內容與順序。</li>
+      <li>聲音清單由你的瀏覽器與作業系統提供，這個工具無法新增聲音；清單為空時，請確認系統已安裝語音。</li>
+      <li>朗讀中編輯文字會立刻停止朗讀，避免繼續讀到已經刪除的內容。</li>
+    </ul>
+  </section>
+
+  <p id="live-region" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>

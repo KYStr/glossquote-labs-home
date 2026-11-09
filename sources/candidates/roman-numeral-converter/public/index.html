@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="alternate" hreflang="zh-Hant" href="./index.html">
+    <link rel="alternate" hreflang="en" href="./en/index.html">
+    <link rel="alternate" hreflang="x-default" href="./index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>羅馬數字轉換：整數與標準形互轉｜GlossQuote-Labs</title>
+    <meta name="description" content="在瀏覽器內把 1 到 3999 的整數轉成標準羅馬數字，或把羅馬數字轉回整數，並列出分解表。非標準寫法會被指出寬鬆值與正確標準形，不會被默默接受。工具不保存或上傳輸入。">
+    <link rel="stylesheet" href="./styles/tokens.css">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://glossquote.com/index.html">GlossQuote-Labs</a>
+      <span class="location">羅馬數字轉換</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="語言">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="./index.html" aria-current="page">繁體中文</a>
+          <a lang="en" hreflang="en" href="./en/index.html">English</a>
+        </nav>
+        <p class="language-note">前往其他頁面會清除目前輸入。</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">羅馬數字轉換</h1>
+        <p class="intro">在任一欄輸入，另一欄與分解表會立刻更新。這裡的「標準形」只有一個定義：由貪婪表產生的那串字。像 IC 這種非標準寫法不會被默默接受，而是會告訴你它的寬鬆值是 99、標準形是 XCIX。</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          此瀏覽器無法啟動轉換工具。請在支援 JavaScript 模組的瀏覽器開啟。下方的使用說明與參考表仍可閱讀。
+        </p>
+
+        <form id="tool-form">
+          <fieldset id="tool-controls" disabled>
+            <legend class="visually-hidden">羅馬數字轉換工作區</legend>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="int-field">整數（1–3999）</label>
+                <input id="int-field" name="intValue" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1994" aria-describedby="int-help" aria-invalid="false">
+                <p id="int-help" class="field-help">只接受數字，最多 4 位；前導零以數值讀取（007 = 7）。</p>
+                <p id="int-error" class="field-error" hidden></p>
+                <p id="int-note" class="field-help" hidden></p>
+                <p class="field-actions"><button id="int-copy" type="button" class="button button-secondary">複製整數</button></p>
+              </div>
+              <div class="field">
+                <label for="roman-field">羅馬數字</label>
+                <input id="roman-field" name="romanValue" type="text" autocomplete="off" spellcheck="false" value="MCMXCIV" aria-describedby="roman-help" aria-invalid="false">
+                <p id="roman-help" class="field-help">小寫會自動視為大寫；最長 15 個字元；只接受標準形。</p>
+                <p id="roman-error" class="field-error" hidden></p>
+                <p class="field-actions"><button id="roman-copy" type="button" class="button button-secondary">複製羅馬數字</button></p>
+              </div>
+            </div>
+
+            <p id="stale-note" class="stale-note" hidden>已過時：欄位有誤，顯示上次有效的結果。</p>
+
+            <section class="breakdown-wrap" aria-labelledby="breakdown-title">
+              <h2 id="breakdown-title">分解表</h2>
+              <table class="data-table">
+                <thead><tr><th scope="col">符號組</th><th scope="col">值</th></tr></thead>
+                <tbody id="breakdown-body">
+                  <tr><td>M</td><td>1000</td></tr>
+                  <tr><td>CM</td><td>900</td></tr>
+                  <tr><td>XC</td><td>90</td></tr>
+                  <tr><td>IV</td><td>4</td></tr>
+                </tbody>
+                <tfoot><tr><th scope="row">總計</th><td id="breakdown-total">1994</td></tr></tfoot>
+              </table>
+            </section>
+          </fieldset>
+        </form>
+
+        <p id="tool-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+      </section>
+
+      <section class="usage-notes" aria-labelledby="usage-title">
+        <h2 id="usage-title">使用方式與限制</h2>
+        <p>整數範圍是 1 到 3999。羅馬數字沒有 0，所以 0 不是轉換結果，而是會說明這一點的錯誤；4000 以上需要上畫線（vinculum）記號，不在本工具範圍內，一樣會明示拒絕，不會硬湊。</p>
+        <p>羅馬欄位最長 15 個字元（最長的標準形 3888 = MMMDCCCLXXXVIII 正好 15 個字元）。小寫輸入會視為大寫；欄位中間的空白是無效字元，會指出位置。欄位有誤時，另一欄與分解表會停留在上次有效的值並標示「已過時」，複製按鈕同時停用，不會讓你複製到過期的轉換。</p>
+        <p>傳統鐘面常把 4 寫成 IIII，那是鐘錶設計的慣例；本工具只報告標準形 IV，不提供 IIII 模式。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>十三項參考表（貪婪表）</h2>
+        <table class="data-table">
+          <thead><tr><th scope="col">符號組</th><th scope="col">值</th></tr></thead>
+          <tbody>
+            <tr><td>M</td><td>1000</td></tr>
+            <tr><td>CM</td><td>900</td></tr>
+            <tr><td>D</td><td>500</td></tr>
+            <tr><td>CD</td><td>400</td></tr>
+            <tr><td>C</td><td>100</td></tr>
+            <tr><td>XC</td><td>90</td></tr>
+            <tr><td>L</td><td>50</td></tr>
+            <tr><td>XL</td><td>40</td></tr>
+            <tr><td>X</td><td>10</td></tr>
+            <tr><td>IX</td><td>9</td></tr>
+            <tr><td>V</td><td>5</td></tr>
+            <tr><td>IV</td><td>4</td></tr>
+            <tr><td>I</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <p>由大到小逐項取用，就是標準形的產生方式；分解表也來自同一個過程，不會和顯示的字串不一致。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>什麼算「標準形」</h2>
+        <p>判定方式只有一個：把輸入逐字讀出寬鬆值（後面接更大符號時減、否則加），再把這個值用貪婪表重新產生；重產生的字串和輸入完全相同，才算標準形。常見的推論都由這個定義自然得出，只是說明、不是額外檢查：I、X、C、M 最多重複三次；V、L、D 不重複；減法只出現在表中的六組（IV、IX、XL、XC、CD、CM）。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>資料如何處理</h2>
+        <p>轉換在這個頁面的瀏覽器中完成。工具不寫入瀏覽器儲存空間、不上傳輸入，數值也不會出現在網址或頁面標題中；重新載入會回到預設值。網站主機仍可能收到一般頁面請求所需的連線資訊。</p>
+      </section>
+
+      <section class="reference-section">
+        <h2>常見問題</h2>
+        <dl class="faq-list">
+          <div>
+            <dt>為什麼 IC 不算 99？</dt>
+            <dd>因為減法只能用緊鄰的次一級符號：99 要先拆成 90 + 9，也就是 XC + IX = XCIX。IC 跳過了一級，所以它只是「寬鬆值 99」的非標準寫法。</dd>
+          </div>
+          <div>
+            <dt>為什麼沒有 0？</dt>
+            <dd>羅馬數字系統本身沒有零的符號，也沒有位值制的空位概念。要表示「沒有」，只能用文字，不能用這套符號。</dd>
+          </div>
+          <div>
+            <dt>時鐘上的 4 為什麼常寫成 IIII？</dt>
+            <dd>那是傳統鐘面的設計慣例（常見說法包括與 IIII 對面的 VIII 視覺平衡）。慣例歸慣例，標準形仍是 IV，本工具只報告標準形。</dd>
+          </div>
+          <div>
+            <dt>可以轉換 4000 以上嗎？</dt>
+            <dd>不可以。歷史上 4000 以上會在符號上方加線表示乘以 1000，那是另一套記號，不在本工具範圍內；輸入 4000 會看到明示的上限說明。</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+    <footer class="site-footer" aria-labelledby="site-footer-title">
+      <div class="site-footer-content">
+        <h2 id="site-footer-title">更多工具</h2>
+        <nav aria-label="更多 GlossQuote 工具">
+          <ul class="footer-links">
+            <li><a href="https://glossquote.com/index.html">GlossQuote-Labs 首頁</a></li>
+            <li><a href="https://units.glossquote.com/index.html">常用單位換算</a></li>
+          </ul>
+        </nav>
+        <p class="footer-note">離開本頁會清除目前輸入。</p>
+      </div>
+    </footer>
+  </body>
+</html>

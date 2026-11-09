@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Find Duplicate Files — Local File Comparison</title>
+  <meta name="description" content="Find byte-identical files in your browser, choose which copy to keep, and download a report.">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to file worksheet</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <span>Find duplicate files</span>
+    <nav aria-label="Language"><a href="/index.html" lang="zh-Hant" aria-describedby="language-warning">繁體中文</a></nav>
+  </header>
+  <main id="workspace">
+    <p id="language-warning" class="language-warning">Changing language leaves this page. Selected files and undownloaded reports will be lost.</p>
+    <div class="intro">
+      <p class="candidate">Local candidate; not deployed</p>
+      <h1>Find files with identical content</h1>
+      <p class="lead">Byte-verify matches. You choose what to keep; this tool never deletes files.</p>
+      <p>Files are analyzed in this tab, without uploads or persistent storage. Leaving or clearing the page loses undownloaded reports.</p>
+    </div>
+    <noscript><p class="error">Enable JavaScript for local analysis. No files have been read.</p></noscript>
+    <p id="capability-error" class="error" role="alert" hidden></p>
+    <div class="source-workspace">
+      <section id="dropzone" class="sources" aria-labelledby="sources-title">
+        <div class="section-heading"><h2 id="sources-title">Select sources</h2><span id="selection-count" class="data">0 / 200</span></div>
+        <div class="selection-action">
+          <label id="file-label" class="file-picker primary" for="files"><span id="choose-label">Choose files</span><input id="files" class="visually-hidden" type="file" multiple aria-describedby="limits source-help error"></label>
+          <p>Or drop files here</p>
+        </div>
+        <p id="source-help" class="muted">Source indexes start at 0; matching names remain separate entries. Choosing more files adds to this list and clears the old analysis.</p>
+        <p id="selection-summary">No files selected.</p>
+        <ol id="source-list" class="source-list" start="0" aria-label="Selected files"></ol>
+        <p id="empty-sources" class="empty-hint">Choose at least one file, then start scanning. Different names can still have identical content.</p>
+      </section>
+      <aside class="scan-controls" aria-labelledby="limits-title">
+        <h2 id="limits-title">This scan</h2>
+        <dl id="limits"><div><dt>File count</dt><dd>Up to 200</dd></div><div><dt>Per file</dt><dd>Up to 32 MiB</dd></div><div><dt>Total size</dt><dd>Up to 128 MiB</dd></div></dl>
+        <p class="muted">Candidates are narrowed by size and SHA-256, then verified byte for byte. Empty files are included.</p>
+        <div class="actions"><button id="scan" class="primary" type="button" disabled>Start scan</button><button id="reset" class="quiet" type="button" disabled>Start over</button></div>
+        <p class="muted">Creates a list. Never deletes, moves or overwrites source files.</p>
+      </aside>
+    </div>
+    <div class="status-area">
+      <p id="feedback" role="status" aria-live="polite" aria-atomic="true">Choose files to get started.</p>
+      <p id="error" class="error" role="alert" hidden></p>
+      <div id="progress-panel" class="progress-panel" hidden><progress id="scan-progress" max="1" value="0" aria-label="File hashing progress" aria-describedby="feedback"></progress><button id="cancel" class="primary" type="button">Cancel scan</button></div>
+    </div>
+    <section id="results" class="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">Comparison results</h2>
+      <p>The earliest selected source is kept by default. You can change the keeper in duplicate groups; choices only change the report.</p>
+      <dl id="summary" class="summary"></dl>
+      <p id="no-duplicates" class="notice" hidden>No byte-identical files found. You can still download a list that keeps every file.</p>
+      <div id="groups" class="groups"></div>
+      <div class="report-actions"><button id="download-json" class="primary" type="button">Download JSON list</button><button id="download-txt" type="button">Download TXT list</button></div>
+      <p class="muted">Reports include names, source indexes, sizes and SHA-256 hashes. Store them with care. Potential savings total the duplicate copies; this tool does not free disk space.</p>
+      <details id="report-preview"><summary>Preview current JSON / TXT list</summary><p class="muted">The preview shows name controls as escapes; downloads preserve original names. Local report files are created only when you choose download.</p><h3>JSON</h3><pre id="json-preview" dir="ltr" tabindex="0" aria-label="JSON list preview"></pre><h3>TXT</h3><pre id="txt-preview" dir="ltr" tabindex="0" aria-label="TXT list preview"></pre></details>
+    </section>
+    <section class="help" aria-labelledby="faq-title">
+      <h2 id="faq-title">Common questions</h2>
+      <details><summary>Does the tool delete duplicates?</summary><p>No. It creates a report; you decide what to do with the source files.</p></details>
+      <details><summary>Do matching names count as duplicates?</summary><p>No. Candidates are grouped by size and SHA-256, then compared byte for byte.</p></details>
+      <details><summary>Can it find identical files with different names?</summary><p>Yes. Names do not determine matches; the report uses selection indexes to distinguish them.</p></details>
+      <details><summary>Are empty files ignored?</summary><p>No. Empty files can form a duplicate group, though removing one saves zero bytes.</p></details>
+      <details><summary>Are files uploaded?</summary><p>No. The candidate analyzes files locally in the current tab. There are no accounts or background uploads. Downloaded reports are not cleared automatically.</p></details>
+    </section>
+  </main>
+  <footer>Gloss Tools by GlossQuote · <a href="https://glossquote.com/en/index.html">All tools</a></footer>
+</body>
+</html>

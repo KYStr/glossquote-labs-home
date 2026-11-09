@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在瀏覽器內疊合兩張相同尺寸圖片，調整透明度並查看像素差異。圖片不上傳。">
+  <meta name="referrer" content="no-referrer">
+  <title>兩張圖片疊合校稿 · GlossQuote</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+  <header class="site-header"><a href="https://glossquote.com/index.html">回到工具首頁</a><a id="language-link" href="./en/index.html" lang="en">English</a></header>
+  <main>
+    <div class="hero"><p class="eyebrow">GLOSSQUOTE LABS · 候選工具</p><h1>兩張圖片疊合校稿</h1><p class="intro">把修改前與修改後放在一起，讓細微改動浮現。</p><p class="privacy">圖片只在此瀏覽器處理，不會上傳或儲存。</p></div>
+    <noscript><p class="notice">此工具需要啟用 JavaScript；圖片仍只在此瀏覽器處理。</p></noscript>
+    <section class="panel" aria-labelledby="choose-heading"><h2 id="choose-heading">01 / 選擇兩個版本</h2><p id="limits" class="muted">每張接受靜態 PNG 或 JPEG，最多 10 MiB、4 百萬像素，單邊不超過 4096 px。方向處理後的寬與高必須相同；不會自動縮放。</p><div class="file-grid"><label class="file-card" for="before"><strong>A · 修改前</strong><input id="before" type="file" accept="image/png,image/jpeg" aria-describedby="limits before-meta"><span id="before-meta" class="file-meta">尚未選取圖片</span></label><label class="file-card" for="after"><strong>B · 修改後</strong><input id="after" type="file" accept="image/png,image/jpeg" aria-describedby="limits after-meta"><span id="after-meta" class="file-meta">尚未選取圖片</span></label></div></section>
+    <section class="panel" aria-labelledby="adjust-heading"><h2 id="adjust-heading">02 / 設定校稿方式</h2><fieldset id="settings"><legend>顯示模式</legend><div class="mode-row"><label><input type="radio" name="mode" value="overlay" checked> 透明疊合</label><label><input type="radio" name="mode" value="difference"> 絕對差異</label></div><div class="opacity-label"><label for="opacity">B 圖透明疊合比例</label><output id="opacity-value" for="opacity">50%</output></div><input id="opacity" type="range" min="0" max="100" step="1" value="50" aria-describedby="opacity-help"><p id="opacity-help" class="muted">0% 只顯示 A；100% 只顯示 B。差異模式不使用此比例。</p></fieldset><div class="actions"><button id="generate" type="button" disabled>產生預覽</button><button id="cancel" type="button" class="secondary" disabled>取消處理</button><button id="clear" type="button" class="quiet">清除全部</button></div><p id="status" role="status" aria-live="polite" aria-atomic="true">等待兩張圖片。</p></section>
+    <section id="result" class="panel result-panel" aria-labelledby="result-heading" aria-busy="false"><div class="result-heading"><h2 id="result-heading">03 / 校稿預覽</h2><label class="view-control"><input id="actual-size" type="checkbox"> 以 1:1 像素顯示（可捲動）</label></div><p id="empty-result" class="empty-result">選擇兩張圖片並產生預覽。變更來源或設定會立即清除舊結果。</p><div id="canvas-wrap" class="canvas-wrap" tabindex="0" role="region" aria-label="校稿結果" hidden><canvas id="preview" width="1" height="1" role="img" aria-label="校稿結果">校稿結果</canvas></div><p id="result-info" class="muted" hidden></p></section>
+    <details class="help" open><summary>如何閱讀差異？</summary><p>兩張圖片各自先合成到白底，再計算每個 RGB 色頻的絕對差。黑色代表該像素在白底上的顏色相同；越亮表示該色頻差異越大。透明疊合也使用這兩張白底影像。</p><p>這是視覺校稿，不是圖片真偽檢測。透明區域的隱藏顏色、白底不可見的透明度差異、原始位元組及中繼資料不在比較範圍。瀏覽器解碼與色彩轉換可能影響結果；不保證印刷色準。</p><p>取消後不會提交舊結果；原生圖片解碼未必能立即停止。新工作會等待上一個解碼完成，不會同時堆疊。若瀏覽器長時間無回應，請重新載入頁面。</p></details>
+  </main>
+  <footer>未發布候選 · 不使用帳號、追蹤、雲端處理或瀏覽器儲存。</footer>
+<section class="panel"><h2>Browser fixture runner — synthetic data only</h2><button type="button" id="run-browser-tests">Run browser fixtures</button><pre id="browser-test-log" role="status"></pre></section><script type="module" src="./browser-tests.mjs"></script></body>
+</html>

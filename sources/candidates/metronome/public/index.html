@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>節拍器（WebAudio）| GlossQuote 工具</title>
+<meta name="description" content="以裝置音訊時鐘預先排程的節拍器：30–240 BPM、固定拍號清單與細分拍、重音、點按定速。點擊全由程式合成，不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>節拍器</h1>
+  <p class="intro">每一聲點擊都由這台裝置的音訊時鐘計算並預先排程，計時不受主執行緒忙碌影響。時機由音訊時鐘產生；在部分瀏覽器中，切離本頁時聲音可能被瀏覽器暫停，本工具不宣稱背景持續播放。</p>
+  <p id="hidden-note" class="warning" hidden>你剛才切離了本頁；在部分瀏覽器中，音訊可能在隱藏期間被暫停，拍點已依音訊時鐘回到目前位置，不會補播錯過的點擊。</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="bpm-range">速度（BPM）</label>
+      <input id="bpm-range" type="range" min="30" max="240" step="1" value="100">
+      <div class="preset-row">
+        <button type="button" id="bpm-minus" aria-label="減慢 1 BPM">−</button>
+        <input id="bpm-number" type="number" min="30" max="240" step="1" value="100" aria-label="BPM 數值">
+        <button type="button" id="bpm-plus" aria-label="加快 1 BPM">＋</button>
+        <button type="button" id="tap-button">點按定速（Tap）</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="signature">拍號</label>
+      <select id="signature">
+        <option value="2/4">2/4</option>
+        <option value="3/4">3/4</option>
+        <option value="4/4" selected>4/4</option>
+        <option value="5/4">5/4</option>
+        <option value="6/4">6/4</option>
+        <option value="7/4">7/4</option>
+        <option value="2/8">2/8</option>
+        <option value="3/8">3/8</option>
+        <option value="6/8">6/8</option>
+        <option value="9/8">9/8</option>
+        <option value="12/8">12/8</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="subdivision">每拍細分</label>
+      <select id="subdivision">
+        <option value="1" selected>1（不細分）</option>
+        <option value="2">2（八分音符）</option>
+        <option value="3">3（三連音）</option>
+        <option value="4">4（十六分音符）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label><input id="accent" type="checkbox" checked> 第一拍重音</label>
+    </div>
+    <div class="field">
+      <label for="volume">音量 <span id="volume-value">80%</span></label>
+      <input id="volume" type="range" min="0" max="100" step="1" value="80">
+    </div>
+    <div class="field">
+      <button type="button" id="start-stop">開始</button>
+      <span id="beat-dot" class="dot" aria-hidden="true">1</span>
+      <span id="position-line" class="status-line" role="status"></span>
+    </div>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <details class="card">
+    <summary>運作方式與限制</summary>
+    <ul>
+      <li>排程採預覽式（lookahead）：每 25 毫秒檢查一次，將 0.12 秒內的點擊預先排入音訊時鐘；事件時間只由音訊時鐘的累加決定，計時器的抖動不會進入拍點。</li>
+      <li>點擊全由振盪器合成（重音 1568 Hz、一般拍 1046 Hz、細分拍 784 Hz，各 50 毫秒內結束），沒有任何音訊檔案。</li>
+      <li>點按定速：連續點按的間隔在 2.0 秒內視為同一輪，以最近至多 6 個間隔的平均計算 BPM，並限制在 30–240。</li>
+      <li>播放中修改速度、拍號或細分，只影響尚未排程的事件；已在預覽窗內的點擊維持原時刻。</li>
+      <li>設定只存在於記憶體；重整即回到預設（100 BPM、4/4、細分 1、重音開、音量 80%）。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

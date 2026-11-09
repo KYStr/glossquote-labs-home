@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Entity Encoder and Decoder | GlossQuote Tools</title>
+<meta name="description" content="Encode and decode HTML character references locally: the complete WHATWG named table, the C1 remapping and replacement-character rules, a per-replacement change list and an unresolved list. No network, no storage; decoding is not sanitisation.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site navigation">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>HTML Entity Encoder and Decoder</h1>
+  <p class="intro">Convert text locally under the WHATWG HTML Standard's character-reference rules: encoding escapes just the mandatory five or every non-ASCII character as well, and decoding comes with a per-replacement change list and an unresolved list. Decoding shows you what the text says — it does not make markup safe to insert, and encoding text for display is not sanitisation. Semicolon-less legacy references (such as &amp without the semicolon) are not supported and stay literal.</p>
+
+  <section class="card" aria-labelledby="tool-heading">
+    <h2 id="tool-heading">Convert</h2>
+    <div class="field">
+      <label for="mode-select">Mode</label>
+      <select id="mode-select">
+        <option value="decode" selected>Decode (references → text)</option>
+        <option value="encode">Encode (text → references)</option>
+      </select>
+    </div>
+    <div class="field" id="encode-options" hidden>
+      <label><input id="opt-nonascii" type="checkbox"> Also encode non-ASCII characters</label>
+      <label for="opt-style">Reference style</label>
+      <select id="opt-style">
+        <option value="named" selected>Named where available (decimal fallback)</option>
+        <option value="decimal">Decimal only</option>
+        <option value="hex">Hexadecimal only</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="input-text">Input (cap 100,000 characters)</label>
+      <textarea id="input-text" rows="7" spellcheck="false"></textarea>
+      <p id="input-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="output-text">Output</label>
+      <textarea id="output-text" rows="7" readonly spellcheck="false"></textarea>
+    </div>
+    <div class="field">
+      <button type="button" id="copy-output">Copy output</button>
+      <span id="counts-line" class="status-line" role="status"></span>
+    </div>
+    <p id="double-hint" class="warning" hidden>The output still contains a decodable reference — it looks double-encoded. <button type="button" id="decode-again">Decode again</button></p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section class="card" aria-labelledby="changes-heading">
+    <h2 id="changes-heading">Change list</h2>
+    <p id="changes-summary" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>Position</th><th>Source</th><th>Result</th><th>Rule</th></tr></thead>
+      <tbody id="changes-body"></tbody>
+    </table>
+    <h2>Unresolved</h2>
+    <p id="unresolved-summary" class="status-line" role="status"></p>
+    <table>
+      <thead><tr><th>Position</th><th>Token</th><th>Reason</th></tr></thead>
+      <tbody id="unresolved-body"></tbody>
+    </table>
+  </section>
+
+  <details class="card">
+    <summary>How it works and its limits</summary>
+    <ul>
+      <li>The named table is the complete WHATWG named character reference set (2,231 entries, 2,125 of them semicolon forms), vendored as a data file; its source and hashes are recorded in the repo's PROVENANCE.md. Decoding only ever looks up the semicolon forms.</li>
+      <li>Numeric references follow the Standard: value 0, the surrogate range and anything above U+10FFFF become the replacement character U+FFFD, and 0x80–0x9F go through the C1 remapping table. A numeric reference missing its semicolon still converts, flagged in the change list.</li>
+      <li>Change-list positions are code-point indices, not UTF-16 units, so astral characters do not shift later positions. The list renders at most the first 500 rows with the total shown; the conversion itself is never capped by the display cap.</li>
+      <li>Input is capped at 100,000 characters; beyond that it is refused with the count shown, never silently truncated.</li>
+      <li>Input and output render as text only and are never parsed as markup; nothing is stored and nothing is sent anywhere.</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Markdown 預覽與 HTML 匯出 | GlossQuote Labs</title>
+    <meta name="description" content="完全在本機運算的 Markdown 即時預覽：子集語法公開、原始 HTML 一律轉義，可匯出單一獨立 HTML 檔案。">
+    <meta name="robots" content="noindex, nofollow">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https: http:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    >
+    <link rel="alternate" hreflang="zh-Hant" href="./">
+    <link rel="alternate" hreflang="en" href="./en/">
+    <link rel="stylesheet" href="./styles/tokens.css">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.mjs"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="home-link" href="https://glossquote.com/">GlossQuote</a>
+      <p class="lang-switch"><a href="./en/" hreflang="en">English</a></p>
+    </header>
+    <main>
+      <h1>Markdown 預覽與 HTML 匯出</h1>
+      <p class="lede">
+        在本機即時預覽 Markdown，語法子集與偏差全部公開在下方說明；原始 HTML 一律轉義顯示、
+        連結協定有白名單。可複製預覽 HTML，或下載一個樣式內嵌、離線可開的獨立 HTML 檔案。
+        草稿只存在於頁面記憶體，不儲存、不傳送。
+      </p>
+
+      <p id="limit-error" class="error" role="alert" hidden></p>
+
+      <div class="panes">
+        <section class="pane">
+          <div class="pane-head">
+            <label for="editor">Markdown 編輯器</label>
+            <span class="pane-actions">
+              <button id="sample-button" type="button">載入範例</button>
+              <button id="clear-button" type="button">清除</button>
+            </span>
+          </div>
+          <textarea id="editor" rows="18" spellcheck="false" autocomplete="off"></textarea>
+          <p id="counts" class="counts">0 字元 · 0 字</p>
+        </section>
+        <section class="pane">
+          <div class="pane-head">
+            <span id="preview-label">預覽</span>
+            <span class="pane-actions">
+              <label class="sync"><input id="sync-toggle" type="checkbox" checked> 同步捲動</label>
+              <button id="copy-button" type="button" disabled>複製 HTML</button>
+              <button id="export-button" type="button" disabled>匯出 HTML 檔案</button>
+            </span>
+          </div>
+          <div id="preview" class="preview" role="region" aria-labelledby="preview-label" tabindex="0"></div>
+        </section>
+      </div>
+
+      <p id="status-note" class="status"></p>
+      <p id="announce" class="visually-hidden" aria-live="polite"></p>
+
+      <details id="help" class="help">
+        <summary>支援的語法子集與偏差（完整清單）</summary>
+        <p>
+          支援：ATX 標題（1–6)、段落、程式碼區塊、引言、無序/有序/任務清單、分隔線、
+          管道表格（含欄位對齊）、行內程式碼、斜體/粗體/刪除線、行內連結與圖片、
+          完整參考式連結、尖括號自動連結、反斜線跳脫、行尾兩空白或反斜線的強制換行。
+        </p>
+        <p>
+          與完整 CommonMark 的偏差（完整清單）：不支援 Setext 標題；原始 HTML 一律轉義、
+          不執行；不支援摺疊式 <code>[文字][]</code> 與捷徑式 <code>[文字]</code> 參考連結；
+          裸網址不自動連結；HTML 實體僅透傳具名集合
+          <code>&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;#39; &amp;nbsp;</code>
+          與數字字元參照，其餘 <code>&amp;名稱;</code> 依字面顯示。
+        </p>
+        <p>
+          注意：草稿中的圖片網址會在預覽時由你的瀏覽器向外請求（預覽已設定不送出參照來源），
+          若草稿含敏感圖片網址，請先移除再預覽。
+        </p>
+      </details>
+    </main>
+  </body>
+</html>

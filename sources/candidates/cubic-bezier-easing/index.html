@@ -1,0 +1,55 @@
+<!doctype html> <!-- 宣告 HTML 文件 -->
+<html lang="zh-Hant"> <!-- 指定頁面語言 -->
+<head> <!-- 開始頁面描述 -->
+<meta charset="utf-8"> <!-- 固定 UTF-8 編碼 -->
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 允許裝置寬度與正常縮放 -->
+<title>Cubic Bézier 緩動探索器 | GlossQuote Labs</title> <!-- 固定繁中介面結構與可及性內容。 -->
+<meta name="description" content="用控制點探索時間與進度，讀取樣本表及 CSS。純本機計算、不保存輸入。"> <!-- 固定繁中介面結構與可及性內容。 -->
+<meta name="robots" content="noindex, nofollow"> <!-- 固定繁中介面結構與可及性內容。 -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"> <!-- 靜態預覽也限制資源；frame-ancestors 由正式預覽伺服器標頭提供。 -->
+<link rel="stylesheet" href="style.css"> <!-- 固定繁中介面結構與可及性內容。 -->
+<script type="module" src="src/boot.mjs"></script> <!-- 固定繁中介面結構與可及性內容。 -->
+</head> <!-- 固定繁中介面結構與可及性內容。 -->
+<body>
+<noscript><p>此本機計算工具需要啟用 JavaScript。</p></noscript> <!-- 無腳本時仍給可讀限制。 --> <!-- 固定繁中介面結構與可及性內容。 -->
+<nav aria-label="Cubic Bézier 緩動探索器"><a href="https://glossquote.com/index.html">返回主頁</a><span>GQ / LABS</span><a href="en/index.html" lang="en">English</a></nav> <!-- 固定繁中介面結構與可及性內容。 -->
+<main> <!-- 固定繁中介面結構與可及性內容。 -->
+<header><p class="eyebrow">GLOSSQUOTE LABS / MOTION STUDY 01</p><h1>讓時間，<br>有自己的節奏。</h1><p class="intro">四個控制值，一條緩動曲線。x 是時間，y 是進度；進度可以小於 0% 或超過 100%。輸出只有 timing-function，不含時長。</p><p class="navigation-note">離開或切換語言不保留輸入；重新載入會回到初值。</p></header> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="workspace"> <!-- 固定繁中介面結構與可及性內容。 -->
+<section class="panel controls" aria-labelledby="control-title"><h2 id="control-title">01 / 定義曲線</h2><form id="form" novalidate><p id="number-help">最多三位小數。不接受空白、加號或指數。x1 大於 x2 仍合法。</p> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="fields"> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="field"><label for="x1">控制點 1 · X1</label><p id="x1-help">時間範圍 0–1</p><input id="x1" name="x1" type="text" inputmode="decimal" value="0.25" autocomplete="off" spellcheck="false" aria-describedby="x1-help number-help x1-error"><p class="error" id="x1-error"></p></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="field"><label for="y1">控制點 1 · Y1</label><p id="y1-help">進度範圍 −1–2</p><input id="y1" name="y1" type="text" inputmode="decimal" value="0.1" autocomplete="off" spellcheck="false" aria-describedby="y1-help number-help y1-error"><p class="error" id="y1-error"></p></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="field"><label for="x2">控制點 2 · X2</label><p id="x2-help">時間範圍 0–1</p><input id="x2" name="x2" type="text" inputmode="decimal" value="0.25" autocomplete="off" spellcheck="false" aria-describedby="x2-help number-help x2-error"><p class="error" id="x2-error"></p></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="field"><label for="y2">控制點 2 · Y2</label><p id="y2-help">進度範圍 −1–2</p><input id="y2" name="y2" type="text" inputmode="decimal" value="1" autocomplete="off" spellcheck="false" aria-describedby="y2-help number-help y2-error"><p class="error" id="y2-error"></p></div> <!-- 固定繁中介面結構與可及性內容。 -->
+</div> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="buttons"><button id="generate" type="submit">產生曲線</button><button id="clear" class="secondary" type="button">清除</button></div></form> <!-- 固定繁中介面結構與可及性內容。 -->
+<label class="reduce"><input id="reduced" type="checkbox"> 減少動態</label><p id="reduced-reason" class="hint"></p><p id="status" role="status" aria-live="polite" aria-atomic="true"></p></section> <!-- 固定繁中介面結構與可及性內容。 -->
+<section class="panel result" aria-labelledby="result-title"><h2 id="result-title">02 / 閱讀結果</h2><div id="empty"><p class="empty-title">尚未產生結果</p><p>按「產生曲線」，在這裡查看曲線、九個樣本與 CSS。</p><div class="empty-art" aria-hidden="true">0 ─────── 1</div></div><div id="result" hidden><p id="summary" class="mono"></p> <!-- 固定繁中介面結構與可及性內容。 -->
+<p class="hint">橫軸是時間 x，縱軸是進度 y。時間不等於曲線參數 t；先反解 t 才計算進度。</p> <!-- 明確區分可見座標與內部參數。 -->
+<svg id="graph" viewBox="0 0 640 400" role="img" aria-labelledby="graph-title graph-desc"><title id="graph-title">時間 → 進度</title><desc id="graph-desc">固定時間範圍 0 到 1，進度範圍負 1 到 2。線上 257 個點描述曲線；下方表格提供九個時間的精確格式化進度。</desc><g id="plot"></g></svg> <!-- 固定繁中介面結構與可及性內容。 -->
+<table><caption>九個時間樣本</caption><thead><tr><th scope="col">時間</th><th scope="col">曲線進度</th><th scope="col">線性參考</th></tr></thead><tbody id="samples"></tbody></table> <!-- 固定繁中介面結構與可及性內容。 -->
+<fieldset id="times"><legend>選擇靜態觀察時刻</legend><div class="radios"> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="0" checked> 0%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="125000" > 12.5%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="250000" > 25%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="375000" > 37.5%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="500000" > 50%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="625000" > 62.5%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="750000" > 75%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="875000" > 87.5%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+<label><input type="radio" name="time" value="1000000" > 100%</label> <!-- 固定繁中介面結構與可及性內容。 -->
+</div></fieldset> <!-- 固定繁中介面結構與可及性內容。 -->
+<h3>一次播放，兩種節奏</h3><p>示範固定 2 秒。兩軌共用 −100% 至 200% 範圍；圓點是線性，菱形是本曲線。負進度與超過 100% 不會被裁切。</p><p id="position" class="mono"></p> <!-- 固定繁中介面結構與可及性內容。 -->
+<div id="tracks"><p>● 線性</p><svg class="track" viewBox="0 0 600 62" role="img" aria-label="● 線性"><path d="M 12 24 H 588" class="track-line"/><path d="M 204 16 V 32 M 396 16 V 32" class="ticks"/><text x="12" y="56">−100%</text><text x="204" y="56" text-anchor="middle">0%</text><text x="396" y="56" text-anchor="middle">100%</text><text x="588" y="56" text-anchor="end">200%</text><circle id="linear-marker" cx="204" cy="24" r="8"/></svg><p>◆ 本曲線</p><svg class="track" viewBox="0 0 600 62" role="img" aria-label="◆ 本曲線"><path d="M 12 24 H 588" class="track-line"/><path d="M 204 16 V 32 M 396 16 V 32" class="ticks"/><text x="12" y="56">−100%</text><text x="204" y="56" text-anchor="middle">0%</text><text x="396" y="56" text-anchor="middle">100%</text><text x="588" y="56" text-anchor="end">200%</text><polygon id="curve-marker" points="204,14 214,24 204,34 194,24"/></svg></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<div class="buttons playback"><button id="play" type="button">播放一次</button><button id="pause" class="secondary" type="button" disabled>暫停</button><button id="continue" class="secondary" type="button" disabled>繼續</button><button id="stop" class="secondary" type="button" disabled>停止</button></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<h3>03 / 取得 CSS</h3><label for="css">CSS</label><textarea id="css" readonly rows="4" spellcheck="false" aria-describedby="manual"></textarea><p id="manual">也可在唯讀文字框內選取後手動複製。輸出不含 duration。</p><button id="copy" type="button">複製 CSS</button><p id="copy-status" role="status" aria-live="polite"></p><p class="hint">已啟動的系統複製可能完成；修改或離開只取消本頁成功提示，不會清空系統剪貼簿。</p></div></section></div> <!-- 固定繁中介面結構與可及性內容。 -->
+<section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">閱讀曲線</h2> <!-- 固定繁中介面結構與可及性內容。 -->
+<details><summary>為什麼進度會超過 100%？</summary><p>y 控制點可以在 −1 至 2 之間，曲線因此能先退後或超越終點再回來。它不是物理彈簧模擬。</p></details> <!-- 固定繁中介面結構與可及性內容。 -->
+<details><summary>x1 可以大於 x2 嗎？</summary><p>可以。兩個 x 值都在 0 至 1 之間即可；本工具精確二分反解時間，不會交換你的控制點。</p></details> <!-- 固定繁中介面結構與可及性內容。 -->
+<details><summary>資料會去哪裡？</summary><p>計算只在此頁完成。不儲存、上傳或寫入網址；沒有分析追蹤。複製只在你明確按下按鈕後寫入剪貼簿，從不讀取。</p></details> <!-- 固定繁中介面結構與可及性內容。 -->
+</section> <!-- 固定繁中介面結構與可及性內容。 -->
+</main> <!-- 固定繁中介面結構與可及性內容。 -->
+<footer>預覽候選 · 尚未獨立驗收 · 不含部署與正式上線聲明。</footer> <!-- 固定繁中介面結構與可及性內容。 -->
+</body> <!-- 固定繁中介面結構與可及性內容。 -->
+</html> <!-- 固定繁中介面結構與可及性內容。 -->

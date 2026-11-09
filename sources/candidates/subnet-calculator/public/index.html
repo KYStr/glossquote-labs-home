@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPv4 子網計算機 | GlossQuote 工具</title>
+<meta name="description" content="IPv4 子網計算：網路位址、廣播位址、可用主機範圍、位址分類與二進位邊界；還能切分子網、檢查位址是否在子網內。全部在本機以整數精確運算，不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>IPv4 子網計算機</h1>
+  <p class="intro">輸入位址與前綴，立即得到網路位址、廣播位址（broadcast）、可用主機範圍、位址分類與二進位邊界；也能把網路切成子網，或檢查另一個位址是否在子網內。全部運算都在你的裝置上以整數精確完成，不連網、不儲存。本工具僅支援 IPv4，不處理 IPv6。</p>
+
+  <section class="card">
+    <fieldset class="field">
+      <legend>模式</legend>
+      <label><input id="mode-analysis" type="radio" name="mode" checked> 子網分析</label>
+      <label><input id="mode-split" type="radio" name="mode"> 切分子網</label>
+      <label><input id="mode-member" type="radio" name="mode"> 成員檢查</label>
+    </fieldset>
+
+    <div class="field">
+      <label for="address-input">IPv4 位址（可直接貼上 CIDR，例如 192.168.1.64/26）</label>
+      <input id="address-input" type="text" autocomplete="off" spellcheck="false" class="mono" placeholder="192.168.1.64">
+      <p id="address-error" class="error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="prefix-input">前綴長度（0–32）</label>
+      <input id="prefix-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" class="mono">
+      <p id="prefix-error" class="error" role="alert" hidden></p>
+    </div>
+
+    <div class="field">
+      <label for="netmask-input">子網路遮罩（與前綴互相連動）</label>
+      <input id="netmask-input" type="text" autocomplete="off" spellcheck="false" class="mono">
+      <p id="netmask-error" class="error" role="alert" hidden></p>
+    </div>
+  </section>
+
+  <section id="analysis-panel" class="card">
+    <h2>分析結果</h2>
+    <p id="result-hint" class="note">輸入有效位址後，這裡會即時顯示計算結果。</p>
+    <dl id="analysis-rows"></dl>
+    <p id="analysis-note" class="note"></p>
+    <p>
+      <button type="button" id="copy-button" disabled>複製分析摘要</button>
+      <span id="copy-status" class="note"></span>
+    </p>
+  </section>
+
+  <section id="split-panel" class="card" hidden>
+    <h2>切分子網</h2>
+    <div class="field">
+      <label for="child-prefix-input">子網前綴長度（必須比母網前綴長）</label>
+      <input id="child-prefix-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" class="mono" placeholder="26">
+      <p id="split-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="split-summary" class="note"></p>
+    <table>
+      <thead>
+        <tr><th>網路位址</th><th>廣播位址</th><th>第一個可用</th><th>最後一個可用</th><th>可用主機數</th></tr>
+      </thead>
+      <tbody id="split-body"></tbody>
+    </table>
+  </section>
+
+  <section id="member-panel" class="card" hidden>
+    <h2>成員檢查</h2>
+    <div class="field">
+      <label for="member-input">要檢查的位址</label>
+      <input id="member-input" type="text" autocomplete="off" spellcheck="false" class="mono" placeholder="192.168.1.100">
+      <p id="member-error" class="error" role="alert" hidden></p>
+    </div>
+    <p id="member-verdict"></p>
+  </section>
+
+  <section class="card">
+    <h2>規則說明</h2>
+    <ul>
+      <li>/31 是 RFC 3021 點對點連結：兩個位址都可用，不套用「總數減二」。</li>
+      <li>/32 是主機路由（host route）：網路、廣播與可用位址就是該位址本身。</li>
+      <li>位址段不接受前導零（例如 192.168.01.1 是錯誤）：歷史上前導零會被解讀為八進位，本工具直接拒絕，不猜測。</li>
+      <li>遮罩必須連續（若干個 1 之後接著 0）；像 255.255.0.255 這種不連續遮罩是錯誤，不是模式。</li>
+      <li>位址分類與「歷史級別」是兩件事：分類看特殊用途範圍（私有、回送、文件範例等），歷史級別只依第一個位元組，早已不代表路由行為。</li>
+      <li>切分清單最多列出前 256 個子網，但總數一律以精確整數顯示。</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

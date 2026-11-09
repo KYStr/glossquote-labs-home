@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+import { root } from './files.mjs';
+import { parseInput } from '../public/js/core/parser.js';
+import { moveBookmark, renameFolder, setIncluded } from '../public/js/core/organizer.js';
+import { createOutputs } from '../public/js/core/export-json.js';
+const input = '<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<TITLE>Ignored envelope</TITLE>\n<DL><p><DT><H3>Imported</H3><DL><p><DT><A HREF="https://example.com/a" ICON="data:,ignored">Example &amp; Tools</A><DT><A HREF="https://example.com/a">Duplicate</A><DT><A HREF="https://example.com/a?x=1">Query one</A><DT><A HREF="https://example.com/a?x=2">Query two</A><DT><A HREF="https://example.com/markup">&lt;img src=x onerror=alert(1)&gt;</A></DL><p></DL><p>\n';
+const job = parseInput(new TextEncoder().encode(input), { jobId: 'synthetic-evidence' });
+assert.equal(job.status, 'ready');
+setIncluded(job, 1, false, true);
+moveBookmark(job, 0, ['Work', '2026']);
+renameFolder(job, ['Imported'], ['Saved']);
+const artifacts = createOutputs(job);
+const folder = path.join(root, 'evidence', 'm1', 'outputs');
+await mkdir(folder, { recursive: true });
+await writeFile(path.join(folder, 'synthetic-input.html'), input);
+await writeFile(path.join(folder, 'bookmarks-organized.html'), new Uint8Array(await artifacts.exportHtml.arrayBuffer()));
+await writeFile(path.join(folder, 'duplicate-report.json'), new Uint8Array(await artifacts.backupJson.arrayBuffer()));
+const htmlBytes = await readFile(path.join(folder, 'bookmarks-organized.html'));
+const reparsed = parseInput(htmlBytes);
+const expectedHtmlRows = [['Example & Tools', 'https://example.com/a', ['Work', '2026']], ['Query one', 'https://example.com/a?x=1', ['Saved']], ['Query two', 'https://example.com/a?x=2', ['Saved']], ['<img src=x onerror=alert(1)>', 'https://example.com/markup', ['Saved']]];
+assert.deepEqual(reparsed.bookmarks.map(item => [item.title, item.href, item.folderPath]), expectedHtmlRows);
+const json = JSON.parse(await readFile(path.join(folder, 'duplicate-report.json'), 'utf8'));
+assert.deepEqual(Object.keys(json), ['schemaVersion', 'kind', 'parserProfile', 'bookmarks', 'duplicateGroups']);
+assert.deepEqual(json.bookmarks.map(item => [item.sourceIndex, item.title, item.included, item.originalFolderPath, item.folderPath]), [[0, 'Example & Tools', true, ['Imported'], ['Work', '2026']], [1, 'Duplicate', false, ['Imported'], ['Saved']], [2, 'Query one', true, ['Imported'], ['Saved']], [3, 'Query two', true, ['Imported'], ['Saved']], [4, '<img src=x onerror=alert(1)>', true, ['Imported'], ['Saved']]]);
+assert.deepEqual(json.duplicateGroups.map(item => [item.exactHref, item.memberSourceIndexes, item.suggestedKeeperSourceIndex]), [['https://example.com/a', [0, 1], 0], ['https://example.com/a?x=1', [2], 2], ['https://example.com/a?x=2', [3], 3], ['https://example.com/markup', [4], 4]]);
+assert(!/ICON|ICON_URI|<img|<script|&amp;lt;/.test(htmlBytes.toString('utf8')));
+const files = [];
+for (const name of ['synthetic-input.html', 'bookmarks-organized.html', 'duplicate-report.json']) {
+  const buffer = await readFile(path.join(folder, name));
+  files.push({ path: `evidence/m1/outputs/${name}`, bytes: buffer.length, sha256: createHash('sha256').update(buffer).digest('hex') });
+}
+const report = { status: 'PASS_NODE_ARTIFACT_CONTENT', syntheticOnly: true, browserDownload: 'NOT_RUN_USER_FOCUS_INCIDENT', expectedHtmlRows, sourceBookmarks: 5, htmlBookmarks: 4, jsonBookmarks: 5, files };
+await writeFile(path.join(folder, 'verification.json'), JSON.stringify(report, null, 2) + '\n');
+process.stdout.write(JSON.stringify(report, null, 2) + '\n');

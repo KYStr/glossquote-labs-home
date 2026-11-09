@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>正規表示式測試與取代 | GlossQuote 工具</title>
+<meta name="description" content="在本機測試 JavaScript（ECMAScript）正規表示式：即時標示符合位置、列出擷取群組，並預覽取代結果。樣式與文字不上傳、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>正規表示式測試與取代</h1>
+  <p class="intro">本工具使用瀏覽器內建的 ECMAScript（JavaScript）RegExp 引擎——你在這裡驗證的，就是你的 JavaScript 程式會做的事；不同 regex 風格（PCRE、Python、Java、.NET）的行為並不相同，樣式不可直接互換。全部運算都在你的裝置上進行，樣式與測試文字不上傳、不儲存、不寫入網址。</p>
+  <p class="warning">注意：病態樣式（例如巢狀量詞配上大量文字）可能讓這個分頁凍結，因為 JavaScript 的正規表示式無法中途喊停。本工具不提供「逾時」或「安全模式」；輸入長度上限（樣式 500 字元、文字 50,000 字元、取代字串 1,000 字元，皆以 Unicode 碼點計）是唯一的緩解措施。</p>
+
+  <section class="card">
+    <div class="field">
+      <label for="pattern">樣式（pattern）</label>
+      <input id="pattern" type="text" autocomplete="off" spellcheck="false" class="mono">
+      <p id="pattern-error" class="error" role="alert"></p>
+    </div>
+
+    <fieldset class="field">
+      <legend>旗標（flags）</legend>
+      <label><input id="flag-g" type="checkbox" checked> <span class="mono">g</span> — 全域：找出全部符合，否則只找第一筆</label>
+      <label><input id="flag-i" type="checkbox"> <span class="mono">i</span> — 忽略大小寫</label>
+      <label><input id="flag-m" type="checkbox"> <span class="mono">m</span> — 多行：^ 與 $ 也符合每一行的開頭與結尾</label>
+      <label><input id="flag-s" type="checkbox"> <span class="mono">s</span> — dotAll：. 也符合換行字元</label>
+      <label><input id="flag-u" type="checkbox"> <span class="mono">u</span> — Unicode：以碼點為單位處理，支援 \u{…} 與 Unicode 屬性</label>
+      <label><input id="flag-y" type="checkbox"> <span class="mono">y</span> — 黏著：只符合正好從目前位置開始的結果</label>
+    </fieldset>
+
+    <div class="field">
+      <span class="field-label">範例（點選後填入樣式與文字，旗標不變）</span>
+      <div class="preset-row">
+        <button type="button" id="preset-email">電子郵件樣式</button>
+        <button type="button" id="preset-date">ISO 日期</button>
+        <button type="button" id="preset-order">訂單編號</button>
+        <button type="button" id="preset-log">日誌時間戳</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sample-text">測試文字</label>
+      <textarea id="sample-text" rows="6" spellcheck="false" class="mono"></textarea>
+    </div>
+
+    <div class="field">
+      <span class="field-label">標示結果</span>
+      <div id="highlight-view" class="highlight mono" aria-label="標示後的測試文字"></div>
+    </div>
+
+    <div id="match-list" class="match-list"></div>
+    <p id="result-footer" class="note"></p>
+
+    <div class="field">
+      <button type="button" id="replace-toggle" aria-expanded="false">取代模式</button>
+    </div>
+    <div id="replace-panel" hidden>
+      <div class="field">
+        <label for="replacement">取代字串（支援 $$、$&amp;、$`、$'、$1…$99、$&lt;name&gt;）</label>
+        <input id="replacement" type="text" autocomplete="off" spellcheck="false" class="mono">
+      </div>
+      <div class="field">
+        <span class="field-label">取代結果</span>
+        <pre id="replace-result" class="replace-result mono"></pre>
+        <p id="replace-count" class="note"></p>
+        <button type="button" id="copy-result">複製取代結果</button>
+      </div>
+    </div>
+
+    <p>
+      <button type="button" id="clear-button">全部清除</button>
+      <span id="status-note" class="note"></span>
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>ECMAScript 風格速記</h2>
+    <ul>
+      <li>支援回顧斷言（lookbehind）與具名群組 <span class="mono">(?&lt;name&gt;…)</span>。</li>
+      <li>不支援佔有量詞、原子群組、平衡群組與 <span class="mono">\G</span>。</li>
+      <li><span class="mono">\d</span> 只符合 ASCII 數字，即使開啟 u 旗標也一樣。</li>
+      <li><span class="mono">.</span> 不符合換行等行終止符，除非開啟 s 旗標。</li>
+      <li>符合上限為 1,000 筆，達到上限會明說並標示清單為部分結果。</li>
+      <li>未參與的群組與符合空字串的群組分開標示，不會混為一談。</li>
+    </ul>
+  </section>
+
+  <p id="announce" class="visually-hidden" aria-live="polite"></p>
+</main>
+</body>
+</html>

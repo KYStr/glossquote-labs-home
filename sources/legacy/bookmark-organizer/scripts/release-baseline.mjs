@@ -1,0 +1,21 @@
+// Reviewed M1 public inventory. Updating this pin requires a separately reviewed product task.
+// Historical M1 manifest SHA-256: 0964cc92266f8171a70879fdab953ce02d1850d3ebea914a8e7b1d7bae38e522.
+export const M1_SOURCES = Object.freeze([
+  { path: 'css/app.css', bytes: 9277, sha256: '07cc799eae63baf9f9b55830b749e94cb97648b11d7e07de20b6e2b63af2fc38' },
+  { path: 'en/index.html', bytes: 8023, sha256: '9ec4dfa9c133e43b9feb30783d940a4fcb0fe697e4079055e4545ffe95691b5a' },
+  { path: 'index.html', bytes: 7835, sha256: 'ea2356d2a9d0f94e959c1d3d9f36bbfb6a051401d857bf26a745b8b28f39e6ac' },
+  { path: 'js/app.js', bytes: 9233, sha256: '02df2292837086a2bc3b88a012caa90ec612bbb50c7a3c64c7eb4ea46057213a' },
+  { path: 'js/copy.js', bytes: 6858, sha256: '5b843f21d4a96442944305652214c48a064ddc58d85bdc6e28b9fd04486ca279' },
+  { path: 'js/core/entities.js', bytes: 1087, sha256: '2477fd2c1e65d5303a813a9d5a1db7ddfca81519d55631def1ec77a7d7ffb0f9' },
+  { path: 'js/core/errors.js', bytes: 894, sha256: '7f26f974fe53efdca699f35ac59f1028012b244dbbc391c3001e232a127aeb55' },
+  { path: 'js/core/export-html.js', bytes: 1283, sha256: '468d54c47bcf96ca2b8b09d0dcaf2fb83a256fa960a0c44830183c034590ac5b' },
+  { path: 'js/core/export-json.js', bytes: 1222, sha256: 'c613773d158446f97945c7ea3d21bbdea5273e109d44fac1069261773a610d44' },
+  { path: 'js/core/organizer.js', bytes: 4422, sha256: '8c89be9ac7b4fc8e9de346c38843181ffc9fd2d7116a3734bbb287d903a2db57' },
+  { path: 'js/core/parser.js', bytes: 5239, sha256: 'e42201401f8b286d13247941b45711599a536fa77a592cdd12519f37177083be' },
+  { path: 'js/core/session.js', bytes: 4324, sha256: 'de9e6a3d371068f18c2eb4af3931f598c31326bd7f3de1f7caedce6588a76d6b' },
+  { path: 'js/core/tokenizer.js', bytes: 2707, sha256: '162a30ae0353cef32c4be5af69edba94bf7d7adbf328a42cd521ac577bbcf787' },
+  { path: 'js/core/urls.js', bytes: 592, sha256: '62580058bc5e79529ec645d2fc7a454d097af49a08458ae66ed4651b00f59db7' },
+  { path: 'js/core/utf8.js', bytes: 584, sha256: '5f0cf85eece60c1065cf7113dab09818b6f31d5c0a7a1acb204abd50c9863689' },
+  { path: 'js/parse-worker.js', bytes: 574, sha256: '34644109e5c398eabad9d51c287df4e45b0a232c3d9fdc366c4671c4ef3ffe3c' },
+  { path: 'js/ui.js', bytes: 6877, sha256: '72d8450866308cfb53ec9f2ce55c2a2237532b7cba5d1a296db8a8b1ff0f1de6' }
+].map(Object.freeze));

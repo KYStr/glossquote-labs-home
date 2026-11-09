@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Typing Speed Test | GlossQuote Tools</title>
+<meta name="description" content="A local 30 or 60 second typing test: English scored in WPM, Chinese in CPM, by fixed published formulas with positional comparison. Nothing is uploaded or stored.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site">
+    <a data-home-link href="https://glossquote.com/en/index.html">GlossQuote home</a>
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Typing Speed Test</h1>
+  <p class="intro">Choose a duration and a passage language, then type the passage character by character. The timer starts at the first committed character; the input locks at expiry or at completion and the score is computed by the fixed formulas below. Everything runs on your device: typed text is never uploaded or stored, and reloading discards the attempt.</p>
+  <p class="warning">This test is scored for physical keyboards; touch keyboards are not a scored environment. Please take it on a desktop or laptop.</p>
+  <p class="note">Scoring at a glance: Net WPM = correct characters ÷ 5 ÷ minutes; Chinese passages score net CPM (correct characters ÷ minutes) instead. Full rules at the foot of the page.</p>
+
+  <section class="card">
+    <fieldset class="field">
+      <legend>Duration</legend>
+      <label><input id="duration-30" type="radio" name="duration" checked> 30 seconds</label>
+      <label><input id="duration-60" type="radio" name="duration"> 60 seconds</label>
+    </fieldset>
+    <fieldset class="field">
+      <legend>Passage language</legend>
+      <label><input id="plang-en" type="radio" name="plang" checked> English</label>
+      <label><input id="plang-zh" type="radio" name="plang"> Traditional Chinese</label>
+    </fieldset>
+    <div class="field">
+      <span class="field-label">Passage</span>
+      <div id="passage-view" class="passage mono" aria-label="Passage to type"></div>
+      <p id="passage-name" class="note"></p>
+    </div>
+    <div class="field">
+      <label for="typing-input">Type here (the timer starts at the first character)</label>
+      <input id="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" class="mono">
+      <p id="paste-note" class="note"></p>
+    </div>
+    <div class="field">
+      <span id="time-left" class="status-line"></span>
+      <div class="progress"><div id="progress-bar" class="progress-fill"></div></div>
+      <button type="button" id="new-passage">New passage</button>
+    </div>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section id="results" class="card" hidden aria-label="Test results">
+    <h2>Results</h2>
+    <p id="no-result" class="note" hidden></p>
+    <dl class="metrics">
+      <div><dt id="metric-gross-label">Gross WPM</dt><dd id="metric-gross">–</dd></div>
+      <div><dt id="metric-net-label">Net WPM</dt><dd id="metric-net">–</dd></div>
+      <div><dt>Accuracy</dt><dd id="metric-accuracy">–</dd></div>
+      <div><dt>Elapsed (s)</dt><dd id="metric-elapsed">–</dd></div>
+    </dl>
+    <div id="review-view" class="passage mono" aria-label="Per-character review"></div>
+    <h3 id="mistakes-heading">Mistyped units</h3>
+    <ul id="mistake-list"></ul>
+    <div class="field">
+      <button type="button" id="retry-same">Retry same passage</button>
+      <button type="button" id="retry-new">Retry new passage</button>
+    </div>
+  </section>
+
+  <details class="card">
+    <summary>The full scoring rules</summary>
+    <ul>
+      <li>Comparison is strictly positional: position i is correct if and only if the typed character at i equals the passage character at i (compared as Unicode code points). A missed character makes every later position wrong until you backspace and fix the string.</li>
+      <li>The timer starts at the first committed character; IME composition in progress is not scored and not displayed — only committed characters count.</li>
+      <li>At expiry the full chosen duration is used; at completion the actual elapsed time, to one decimal, is used.</li>
+      <li>English: gross WPM = total characters ÷ 5 ÷ minutes; net WPM = correct characters ÷ 5 ÷ minutes. Chinese: gross/net CPM = total / correct characters ÷ minutes, and the headline says CPM only.</li>
+      <li>Speeds round to the nearest integer, halves away from zero; accuracy = correct ÷ total, shown to one decimal.</li>
+      <li>Paste is refused and characters beyond the passage length are refused. The attempt exists in memory only; reload or navigation discards it.</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

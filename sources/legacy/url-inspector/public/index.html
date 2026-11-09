@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="在瀏覽器檢視網址與重複參數，選擇修改或移除追蹤參數，再複製新網址。未修改部分保留原始編碼，不會開啟輸入連結。">
+  <title>網址參數檢視與整理｜本機 URL 工具 — GlossQuote</title>
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">前往網址工作區</a>
+  <header class="topbar"><a class="brand" href="https://glossquote.com/index.html">GlossQuote</a><nav aria-label="工具首頁"><a href="https://glossquote.com/index.html">工具首頁</a><div class="language-switch"><a href="/en/index.html" lang="en" aria-describedby="language-hint">English</a><p id="language-hint" class="language-hint">切換語言會清除目前內容。</p></div></nav></header>
+  <main id="main">
+    <div class="intro"><h1>網址參數檢視與整理</h1><p class="muted">看清每個參數，保留想留下的部分。</p></div>
+    <section aria-labelledby="source-label">
+      <label id="source-label" for="source">來源網址</label>
+      <textarea id="source" rows="3" spellcheck="false" autocomplete="off" aria-describedby="source-hint source-error"></textarea>
+      <p id="source-hint" class="hint">貼入含 http:// 或 https:// 的網址。最多 65,536 個 UTF-16 碼元、256 列參數；勿貼入憑證。</p>
+      <p class="notice">僅在此瀏覽器處理；不會開啟輸入網址。</p>
+      <p id="source-error" class="error" role="alert"></p>
+      <div class="actions"><button id="inspect" type="button" class="primary" disabled>檢視網址</button><button id="clear" type="button" disabled>清除</button><button id="example" type="button" disabled>載入範例</button></div>
+    </section>
+    <noscript><p class="error">請啟用 JavaScript 使用此工具。輸入不會傳送至伺服器。</p></noscript>
+    <details id="inspection" hidden><summary>原始來源與瀏覽器解析值</summary><p class="raw-label">原始來源（僅修剪兩端 ASCII 空白）</p><pre id="raw-source"></pre><p class="hint">解析值可能正規化主機、預設連接埠或路徑。這不是連結安全檢查；新網址以原始字串為基礎。</p><dl id="parsed" data-protocol="協定" data-hostname="主機（ASCII）" data-port="連接埠" data-pathname="路徑" data-hash="片段（解析值）"></dl></details>
+    <section id="workspace" class="workspace" aria-labelledby="workspace-title" hidden>
+      <div class="section-heading"><h2 id="workspace-title" tabindex="-1">參數</h2><span id="row-count" class="hint"></span></div>
+      <p id="empty-rows" class="empty">沒有參數。仍可產生原網址，或新增參數。</p>
+      <ol id="rows" class="parameters"></ol>
+      <div class="actions"><button id="add" type="button" disabled>新增參數</button><button id="tracking" type="button" disabled>選取常見追蹤參數</button></div>
+      <p class="hint">只選取 utm_source、utm_medium、utm_campaign、utm_term、utm_content、gclid、fbclid、msclkid（名稱不分 ASCII 大小寫）。不保證移除所有追蹤。</p>
+      <p class="notice">修改參數可能使簽名或驗證連結失效。按產生後才會套用改動。</p>
+      <div class="actions"><button id="generate" type="button" disabled>產生新網址</button></div>
+    </section>
+    <p id="draft-note" class="hint"></p>
+    <section class="output" aria-labelledby="result-label">
+      <h2><label id="result-label" for="result">新網址</label></h2>
+      <textarea id="result" rows="3" readonly spellcheck="false" aria-describedby="changed output-hint"></textarea>
+      <p id="changed" class="hint"></p>
+      <div class="actions"><button id="copy" type="button" data-label="複製網址" disabled>複製網址</button><button id="download" type="button" disabled>下載 TXT</button></div>
+      <p id="output-hint" class="hint">結果是純文字，不會自動開啟。TXT 包含原樣網址及一個結尾換行。</p>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <section class="help" aria-labelledby="help-title"><h2 id="help-title">使用方式</h2><p>貼入完整網址後，檢視重複的參數、原始編碼與解析值。只修改要改的列，或勾選移除；其餘片段與順序會保留。產生後再自行複製或下載。</p><ol><li>貼入網址，按「檢視網址」。</li><li>編輯名稱或值、勾選移除，或新增參數。</li><li>按「產生新網址」，檢查結果後複製或下載。</li></ol><p class="hint">只接受 HTTP/HTTPS，不接受登入資訊或相對網址。無法解碼的列仍可保留或移除。修改後的列使用表單 query 編碼，空白為 +。</p><details><summary>會打開或縮短網址嗎？</summary><p>不會，只有字串處理。工具不造訪、預取或展開輸入連結。</p></details><details><summary>為什麼 + 會顯示成空白？</summary><p>query 的表單解碼規則將 + 視為空白；%2B 才表示加號。只解碼一次。</p></details><details><summary>刪除追蹤參數就安全了嗎？</summary><p>不保證。這裡沒有安全掃描，修改也可能使簽名或驗證連結失效。</p></details><details><summary>會改變重複參數或其他編碼嗎？</summary><p>保留原順序與未改片段；只重新編碼編輯或新增的列。把編輯恢復原值會恢复原始片段。</p></details><details><summary>資料與隱私</summary><p>工作內容只存在此頁記憶體，不寫入網站儲存空間或網址。只有按下複製或下載才輸出。切換語言或離頁會清除工具內容；清除不會抹掉已複製或下載的檔案。載入網站仍會連線取得靜態資產。</p></details></section>
+  </main>
+  <footer>Gloss Tools by GlossQuote · 本機網址工具</footer>
+</body>
+</html>

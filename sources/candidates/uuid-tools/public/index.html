@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UUID 產生器與檢查器 | GlossQuote 工具</title>
+<meta name="description" content="在本機產生 RFC 9562 的 v4 / v7 UUID（可選大小寫與連字號、整批複製或下載），並檢查貼上的 UUID：格式、版本、變體與 v1 / v7 內嵌時間。不連網、不儲存。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>UUID 產生器與檢查器</h1>
+  <p class="intro">依 RFC 9562 在本機產生版本 4 與版本 7 的 UUID，或把任何 UUID 貼進檢查器，看它的格式、版本、變體，以及（v1 / v7）它編碼的時間。所有亂數都來自這台裝置的加密亂數來源；不連網、不儲存，重新整理就全部消失。</p>
+
+  <section class="card" aria-labelledby="generator-heading">
+    <h2 id="generator-heading">產生器</h2>
+    <div class="field">
+      <label for="version-select">版本</label>
+      <select id="version-select">
+        <option value="4" selected>版本 4（隨機）</option>
+        <option value="7">版本 7（Unix 時間）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="count-input">數量（1–1000）</label>
+      <input id="count-input" type="number" min="1" max="1000" step="1" value="1">
+      <p id="count-error" class="error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label><input id="opt-uppercase" type="checkbox"> 大寫字母</label>
+      <label><input id="opt-hyphens" type="checkbox" checked> 含連字號（8-4-4-4-12）</label>
+    </div>
+    <div class="field">
+      <button type="button" id="generate-button">產生</button>
+      <button type="button" id="copy-all" disabled>複製全部</button>
+      <button type="button" id="download-button" disabled>下載 .txt</button>
+    </div>
+    <p id="batch-label" class="status-line" role="status"></p>
+    <ol id="results-list" class="results" aria-label="產生的 UUID"></ol>
+    <p class="warning">UUID 是識別碼，不是密碼或權杖，不應用來保護任何東西。點任一筆結果，會把它載入下方檢查器驗證。</p>
+    <p id="announce" class="visually-hidden" aria-live="polite"></p>
+  </section>
+
+  <section class="card" aria-labelledby="inspector-heading">
+    <h2 id="inspector-heading">檢查器</h2>
+    <div class="field">
+      <label for="inspect-input">貼上一個 UUID</label>
+      <input id="inspect-input" type="text" autocomplete="off" spellcheck="false" placeholder="01941f29-7c00-7abc-8123-456789abcdef">
+    </div>
+    <div id="inspect-report" class="report" role="region" aria-label="檢查報告"></div>
+  </section>
+
+  <details class="card">
+    <summary>運作方式與限制</summary>
+    <ul>
+      <li>只產生 v4 與 v7：v1 會內嵌裝置識別資訊與可猜測的時間；v3 / v5 是名稱雜湊，屬於雜湊工具的範圍；v6 是舊系統的重排 v1；v8 由各家自訂。檢查器仍可辨識全部版本。</li>
+      <li>同一毫秒內產生的 v7 會共享相同的時間前綴，只差在隨機位元；本工具不保證同一批內的排序。</li>
+      <li>檢查採嚴格規則：只接受 36 字元含連字號形式或 32 字元純十六進位形式；{ } 大括號與 urn:uuid: 前綴不支援，會被拒絕。</li>
+      <li>檢查結果只說「格式正確」：一個格式正確的 UUID 可能是任何人偽造的，本工具不驗證真實性或身分。</li>
+      <li>v6 的時間欄位有重排，本工具辨識版本但不解碼它的時間。</li>
+      <li>產生的批次與檢查的值只存在於記憶體，不進網址、不寫入任何儲存。</li>
+    </ul>
+  </details>
+</main>
+</body>
+</html>

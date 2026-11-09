@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Organize travel items, packed status, and measured weights. Unknown weights stay unknown; preview a local JSON backup before replacing a list.">
+  <title>Packing List &amp; Weight Planner | GlossQuote Tools</title>
+  <link rel="stylesheet" href="/styles/app.css">
+  <script type="module" src="/js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#list-title">Skip to list</a>
+  <header class="topbar"><span class="brand">Gloss Tools <span>by GlossQuote</span></span><nav aria-label="Language"><a href="/index.html" lang="zh-Hant">繁體中文</a><span aria-current="page">English</span></nav></header>
+  <main>
+    <div class="page-intro"><h1>Packing list and weight planner</h1><p>List what you plan to bring, mark packed items, and enter measured weights when you know them.</p></div>
+    <p class="privacy-notice" id="memory-notice"><strong>Data stays in this tab.</strong> Reloading, leaving, or closing the tab clears the list. Download a JSON backup to keep it. Your input is not uploaded.</p>
+    <noscript><p>Enable JavaScript to organize your list in this tab.</p></noscript>
+    <section class="list-section" aria-labelledby="list-title">
+      <div class="list-toolbar"><h2 id="list-title" tabindex="-1">Items to bring</h2><div class="filters" role="group" aria-label="Filter list"><button type="button" id="filter-all" aria-pressed="true">All</button><button type="button" id="filter-unpacked" aria-pressed="false">Unpacked</button></div></div>
+      <p id="example-notice" class="example-notice" hidden>Weekend travel example (sample data).</p>
+      <div id="rows" class="rows"></div>
+      <p id="empty-message" class="empty-message">No items yet. Add your first item to start a list.</p>
+      <div class="add-bar"><button type="button" id="add-item" class="primary">＋ Add item</button><p id="row-limit" class="help">Up to 100 rows. Checking a row marks all its pieces as packed.</p></div>
+    </section>
+    <section class="summary-section" aria-labelledby="summary-title">
+      <div><h2 id="summary-title">Packing progress and weight</h2><div id="summary"></div></div>
+      <div class="limit-field"><label for="limit">My weight limit (g, optional)</label><input id="limit" type="text" inputmode="numeric" autocomplete="off" aria-describedby="limit-help limit-error"><p id="limit-help" class="help">Set your own limit, or leave it blank to skip comparison. Range: 1–999,999,999 g. The result is not airline approval.</p><p id="limit-error" class="field-error" hidden></p></div>
+    </section>
+    <section class="backup-section" aria-labelledby="backup-title">
+      <h2 id="backup-title">Save or load a list</h2><p class="help">Download a UTF-8 JSON backup. Your browser chooses where to save it. Imports are previewed before replacement. Backups must be at most 128 KiB.</p>
+      <div class="backup-actions"><button type="button" id="download">Download backup</button><label class="file-label">Import JSON<input id="import-file" type="file" accept=".json,application/json" aria-label="Import JSON"></label><button type="button" id="load-example">Load weekend example</button><button type="button" id="reset" class="quiet danger">Clear list</button></div>
+      <div id="import-panel" class="import-panel" hidden><h3 id="import-heading"></h3><p id="import-message"></p><div id="import-details"></div><div class="import-actions"><button type="button" id="confirm-import" class="primary" hidden>Replace current list with backup</button><button type="button" id="cancel-import">Cancel import</button></div></div>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <details class="help-section"><summary>About blank weights and backups</summary><h3>Does a blank weight count as zero?</h3><p>No. Blank means unknown; 0 g is a known zero. With unknown weights, only a known subtotal is shown. If it already exceeds your limit, only a minimum excess is known.</p><h3>Does this apply airline baggage rules?</h3><p>No. You set the optional limit. The result is not boarding advice.</p><h3>Will a refresh keep my list?</h3><p>No. Download a JSON backup first. There is no automatic storage, and the tool does not upload your list. Switching languages leaves this page and clears the list.</p></details>
+  </main>
+  <footer>Gloss Tools by GlossQuote · Local preview</footer>
+  <dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-body"><h2 id="dialog-title"></h2><p id="dialog-body"></p><div class="dialog-actions"><button type="button" id="dialog-cancel" autofocus>Cancel</button><button type="button" id="dialog-confirm"></button></div></dialog>
+</body>
+</html>

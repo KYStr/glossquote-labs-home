@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cut Planner — Plan cuts from fixed-length stock</title>
+<meta name="description" content="Plan a cut list from fixed-length stock, end trim and kerf with a repeatable FFD heuristic. The result is not a minimum-stock guarantee."><meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://cuts.glossquote.com/en/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://cuts.glossquote.com/index.html"><link rel="alternate" hreflang="en" href="https://cuts.glossquote.com/en/index.html"><link rel="alternate" hreflang="x-default" href="https://cuts.glossquote.com/index.html">
+<link rel="stylesheet" href="/css/app.css"><script type="module" src="/js/boot.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#workspace">Skip to workspace</a>
+<header class="topbar"><a class="brand" href="https://glossquote.com/en/index.html">Gloss Tools by GlossQuote</a><nav aria-label="Navigation"><a href="https://glossquote.com/en/index.html">All tools</a><a id="language-link" href="/index.html" lang="zh-Hant" aria-describedby="language-help">繁體中文</a></nav></header>
+<main>
+<div class="intro"><h1>Cut Planner</h1><p>Enter stock length, trim per end, kerf and required pieces to see a cut order and remaining length for each stick.</p><p class="help" id="language-help">Switching language clears current work.</p></div>
+<div class="model-notice"><p><strong>This planner uses the FFD heuristic. It does not guarantee the fewest stock sticks or an optimal plan.</strong></p><p>This model counts kerf only between adjacent finished pieces on the same stick. It excludes the saw kerf from end-trim cuts and does not deduct a final kerf between the last piece and the remaining stock. Remaining length is not guaranteed reusable; verify it on site.</p><p>All lengths are in millimetres (mm).</p></div>
+<noscript><p class="error-summary">JavaScript is disabled, so calculation is unavailable. The form stays disabled and will not submit your dimensions.</p></noscript><p id="init-error" class="error-summary" hidden>The page could not initialize. The workspace remains disabled. Reload the page to try again.</p>
+<div id="workspace" class="workspace">
+<section class="input-area" aria-labelledby="stock-heading"><form id="cut-form" novalidate autocomplete="off"><fieldset id="work-fields" disabled>
+<h2 id="stock-heading">Stock settings</h2><div class="settings-fields"><div class="field"><label for="stock-length">Stock length (mm)</label><input id="stock-length" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="" aria-describedby="stock-length-help stock-length-error"><small id="stock-length-help">0.01–100000 mm</small><span class="field-error" id="stock-length-error"></span></div>
+<div class="field"><label for="end-trim">End trim per end (mm)</label><input id="end-trim" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="0" aria-describedby="end-trim-help end-trim-error"><small id="end-trim-help">0–10000 mm</small><span class="field-error" id="end-trim-error"></span></div>
+<div class="field"><label for="kerf">Kerf between adjacent pieces (mm)</label><input id="kerf" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="0" aria-describedby="kerf-help kerf-error"><small id="kerf-help">0–1000 mm · Between adjacent pieces only; no kerf before the first piece.</small><span class="field-error" id="kerf-error"></span></div></div>
+<section class="demands" aria-labelledby="demands-heading"><h2 id="demands-heading">Required pieces</h2><p id="row-count" class="help"></p><p class="help format-help">Use ASCII digits and a decimal point, with up to two decimal places for lengths and whole numbers for quantities. Up to 40 rows and 200 pieces in total; names use 1–60 characters.</p><div id="rows"></div><button type="button" class="add-row" id="add-row" disabled>Add required row</button></section>
+<div class="actions"><button type="submit" id="calculate" class="primary" disabled>Build cut plan</button><button type="button" id="clear" disabled>Clear</button></div>
+<p id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden></p>
+</fieldset></form></section>
+<section class="output-area" aria-labelledby="results-heading"><h2 id="results-heading">Cut list</h2><p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Enter stock settings and required pieces to begin.</p>
+<div id="empty-result" class="empty-result"><h3>Check each stick and its remainder</h3><p>The list identifies each piece by its source row and piece number, with separate totals for pieces, trim, kerf and remaining usable length.</p><p class="help">FFD = sort longest first, then place each piece in the first stick that fits.</p></div>
+<div id="result-content" hidden><div id="plan"></div><div class="report-actions"><button type="button" id="copy" disabled>Copy plain-text cut list</button><button type="button" id="download" disabled>Download .txt cut list</button></div><p class="help">Clipboard access depends on the browser. Downloads use glossquote-cut-plan.txt; each link lasts 30 seconds, with at most 8 active links.</p></div>
+<details id="report-box" class="report-box" hidden><summary>View plain-text cut list</summary><label for="report-text">Current validated plain-text report</label><textarea id="report-text" readonly spellcheck="false" autocomplete="off"></textarea><button type="button" id="select-report" disabled>Select report text</button></details>
+</section></div>
+<section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">Check before cutting</h2><details><summary>Does this planner guarantee the fewest stock sticks?</summary><p>No. It uses a fixed FFD heuristic to produce a repeatable estimate; it does not guarantee a minimum or optimal plan.</p></details>
+<details><summary>How is kerf counted?</summary><p>Only once between adjacent pieces on the same stick. No kerf is deducted before the first piece, between the last piece and remaining stock, or for the saw cuts that remove end trim.</p></details>
+<details><summary>Does remaining length include end trim, and can I reuse it?</summary><p>No. It is the unallocated usable length after pieces and between-piece kerf; end trim is listed separately. Reuse is not guaranteed, so check the remainder on site.</p></details>
+<details><summary>Does the planner account for defects, clamping or the real cutting method?</summary><p>No. Those shop conditions are outside this model and need to be checked separately.</p></details></section>
+<p class="privacy">This version does not save data. Inputs and results are processed in this page, and editing discards the previous result. Switching language, clearing or leaving the page clears your work; drafts are not restored after leaving. Initial loading still downloads site files. You can calculate offline once the required assets are loaded; offline reload is not guaranteed.</p>
+</main><footer><a href="https://glossquote.com/en/index.html">All tools</a> · Gloss Tools by GlossQuote</footer>
+<dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description"><h2 id="confirm-title"></h2><p id="confirm-description"></p><div class="actions"><button type="button" id="confirm-cancel" disabled>Keep current work</button><button type="button" id="confirm-accept" class="primary" disabled>Clear work</button></div></dialog>
+</body></html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR 碼產生器 | GlossQuote 工具</title>
+<meta name="description" content="在本機離線產生 QR 碼：文字或 Wi-Fi 連線資訊，自選容錯等級、留白與顏色，下載 PNG 或 SVG，內容不離開你的裝置。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14532d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="js/app.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="site-nav" aria-label="主要導覽">
+    <a data-home-link href="https://glossquote.com/index.html">GlossQuote 首頁</a>
+    <a href="en/index.html" lang="en">English</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>QR 碼產生器</h1>
+  <p class="intro">把文字、網址或 Wi-Fi 連線資訊變成 QR 碼，全部在你的瀏覽器本機運算，不上傳、不儲存。提醒：QR 碼等於一份公開的印刷副本，任何看得到它的人都能讀出內容，密碼類資訊請勿公開張貼。</p>
+
+  <section class="card" aria-label="內容">
+    <div class="tabs" role="tablist" aria-label="內容類型">
+      <button type="button" id="mode-text-tab" role="tab" aria-selected="true">文字</button>
+      <button type="button" id="mode-wifi-tab" role="tab" aria-selected="false">Wi-Fi</button>
+    </div>
+    <div id="panel-text">
+      <label for="input-text">內容文字</label>
+      <textarea id="input-text" rows="4" placeholder="在這裡輸入文字或網址…" autocomplete="off"></textarea>
+    </div>
+    <div id="panel-wifi" hidden>
+      <label for="wifi-ssid">網路名稱 (SSID)</label>
+      <input id="wifi-ssid" type="text" autocomplete="off">
+      <label for="wifi-security">安全性</label>
+      <select id="wifi-security">
+        <option value="WPA" selected>WPA / WPA2</option>
+        <option value="WEP">WEP</option>
+        <option value="nopass">無密碼</option>
+      </select>
+      <label for="wifi-password">密碼</label>
+      <input id="wifi-password" type="password" autocomplete="off">
+      <label class="checkline" for="wifi-hidden"><input id="wifi-hidden" type="checkbox"> 隱藏網路 (SSID 不廣播)</label>
+    </div>
+  </section>
+
+  <section class="card" aria-label="樣式與輸出設定">
+    <fieldset>
+      <legend>容錯等級</legend>
+      <div class="radios">
+        <label for="ec-l"><input type="radio" id="ec-l" name="ec-level" value="L"> L（復原約 7%）</label>
+        <label for="ec-m"><input type="radio" id="ec-m" name="ec-level" value="M" checked> M（復原約 15%）</label>
+        <label for="ec-q"><input type="radio" id="ec-q" name="ec-level" value="Q"> Q（復原約 25%）</label>
+        <label for="ec-h"><input type="radio" id="ec-h" name="ec-level" value="H"> H（復原約 30%）</label>
+      </div>
+    </fieldset>
+    <div class="grid">
+      <div>
+        <label for="margin">邊界留白（模組）<span id="margin-value">4</span></label>
+        <input id="margin" type="range" min="0" max="8" step="1" value="4">
+      </div>
+      <div>
+        <label for="png-size">PNG 尺寸（px）</label>
+        <input id="png-size" type="number" min="256" max="4096" step="1" value="1024">
+      </div>
+      <div>
+        <label for="fg-color">前景色</label>
+        <input id="fg-color" type="color" value="#000000">
+      </div>
+      <div>
+        <label for="bg-color">背景色</label>
+        <input id="bg-color" type="color" value="#ffffff">
+      </div>
+    </div>
+    <p id="contrast-warning" class="warning" hidden>對比不足或前景比背景亮，掃描器可能讀不到這個 QR 碼，建議改用深色前景、淺色背景。</p>
+  </section>
+
+  <section class="card" aria-label="預覽與下載">
+    <div class="preview">
+      <canvas id="preview-canvas" width="232" height="232" hidden></canvas>
+      <span id="preview-alt" class="visually-hidden"></span>
+      <p id="state-message" aria-live="polite">輸入內容後，這裡會即時出現 QR 碼。</p>
+    </div>
+    <dl class="readout">
+      <div><dt>位元組</dt><dd id="readout-bytes">0</dd></div>
+      <div><dt>版本</dt><dd id="readout-version">–</dd></div>
+      <div><dt>剩餘位元組</dt><dd id="readout-remaining">–</dd></div>
+    </dl>
+    <div class="actions">
+      <button type="button" id="download-png" disabled>下載 PNG</button>
+      <button type="button" id="download-svg" disabled>下載 SVG</button>
+      <button type="button" id="copy-payload" disabled>複製內容</button>
+      <button type="button" id="clear-button">清除</button>
+    </div>
+    <p id="contrast-warning-2" class="warning" hidden>目前顏色對比不足，下載的 QR 碼可能無法被掃描。</p>
+    <p><span id="copy-status" aria-live="polite"></span></p>
+  </section>
+
+  <footer class="site-footer">
+    <p>所有運算都在本機瀏覽器完成：不連網、不儲存、不追蹤。離開或重新整理後，輸入內容即消失。</p>
+  </footer>
+</main>
+</body>
+</html>

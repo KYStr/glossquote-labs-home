@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Simple Quote Builder | Gloss Tools</title>
+  <meta name="description" content="Enter parties, line items, quantities, prices, a fixed discount, and an explicit rate. Preview and download a static HTML quote and editable JSON. No tax advice or invoice claims.">
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to quote workspace</a>
+  <header class="topbar">
+    <a class="brand" href="https://glossquote.com/en/index.html" rel="noreferrer">Gloss Tools <span>by GlossQuote</span></a>
+    <span class="product-name">Simple quote builder</span>
+    <a href="../index.html" lang="zh-Hant" aria-label="切換為繁體中文；會清除此頁草稿">繁體中文</a>
+  </header>
+  <main>
+    <div class="intro">
+      <div><h1>Turn line items into a clear quote</h1><p>Enter the amounts and rate you choose, review the quote, then download it for your client.</p></div>
+      <p class="draft-badge" id="draft-state" role="status" aria-live="polite">Blank draft</p>
+    </div>
+    <p class="data-notice">Your draft stays in this page. Downloads start only when you choose them; closing the page clears the draft.<br>Download JSON to save and restore your draft. Save it before switching languages, too.</p>
+    <p class="notice" id="js-required">Enable JavaScript to edit and calculate. This candidate does not save quotes online.</p>
+    <nav class="panel-switch" aria-label="Quote workspace view">
+      <button id="tab-edit" type="button" aria-pressed="true" aria-controls="edit-panel">Edit quote</button>
+      <button id="tab-preview" type="button" aria-pressed="false" aria-controls="preview-panel">Preview quote</button>
+    </nav>
+    <div id="workspace" class="workspace" data-panel="edit" tabindex="-1">
+      <section id="edit-panel" class="editor" aria-labelledby="editor-heading">
+        <div class="section-heading"><h2 id="editor-heading" tabindex="-1">Quote draft</h2><p id="item-count">Items: 1 / 50</p></div>
+        <form id="quote-form" novalidate autocomplete="off">
+          <div id="errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+          <div class="field-pair parties-input">
+            <div class="field"><label for="from">From</label><input id="from" name="from" type="text" autocomplete="off" aria-describedby="from-help from-error"><small id="from-help">Optional; up to 120 characters, no line breaks.</small><span id="from-error" class="field-error" hidden></span></div>
+            <div class="field"><label for="to">Client</label><input id="to" name="to" type="text" autocomplete="off" aria-describedby="to-help to-error"><small id="to-help">Optional; up to 120 characters, no line breaks.</small><span id="to-error" class="field-error" hidden></span></div>
+          </div>
+          <div class="field"><label for="currency">Currency label</label><input id="currency" name="currency" type="text" value="TWD" autocomplete="off" spellcheck="false" aria-describedby="currency-help currency-error"><small id="currency-help">1–8 uppercase ASCII letters or digits; a display label, no conversion.</small><span id="currency-error" class="field-error" hidden></span></div>
+          <div class="items-heading"><h3>Items</h3><span>Up to 3 decimal places for quantity and 2 for price.</span></div>
+          <div id="item-list" tabindex="-1"></div>
+          <button id="add-item" type="button">＋ Add item</button>
+          <p id="item-limit" class="notice" hidden></p>
+          <div class="field-pair adjustments">
+            <div class="field"><label for="discount">Fixed discount</label><input id="discount" name="discount" type="text" inputmode="decimal" value="0" class="number-input" aria-describedby="discount-help discount-error"><small id="discount-help">0 to subtotal; a fixed amount, up to 2 decimal places.</small><span id="discount-error" class="field-error" hidden></span></div>
+            <div class="field"><label for="taxRate">Custom rate (%)</label><input id="taxRate" name="taxRate" type="text" inputmode="decimal" value="0" class="number-input" aria-describedby="taxRate-help taxRate-error"><small id="taxRate-help">0–100, up to 2 decimal places; no applicability check.</small><span id="taxRate-error" class="field-error" hidden></span></div>
+          </div>
+          <div class="field"><label for="note">Notes</label><textarea id="note" name="note" rows="4" aria-describedby="note-help note-error"></textarea><small id="note-help">Up to 2000 characters; line breaks allowed. Do not enter secrets or payment details.</small><span id="note-error" class="field-error" hidden></span></div>
+          <button id="create-preview" class="primary" type="submit">Create preview</button>
+        </form>
+        <div class="draft-tools">
+          <h3>Restore or clear a draft</h3>
+          <div class="field"><label for="import-file">Import JSON</label><input id="import-file" type="file" accept=".json,application/json" aria-describedby="import-help"><small id="import-help">One UTF-8 JSON file, up to 512 KiB. Confirm after reading to replace the entire draft.</small></div>
+          <section id="import-panel" class="notice" aria-label="JSON import status" aria-busy="false" hidden>
+            <p id="import-message" role="status" aria-live="polite"></p>
+            <div class="actions"><button id="cancel-import" type="button">Cancel import</button><button id="confirm-import" type="button" hidden>Confirm replacement</button></div>
+          </section>
+          <button id="clear-draft" class="quiet" type="button">Clear draft</button>
+          <section id="clear-panel" class="notice" aria-labelledby="clear-title" hidden>
+            <h4 id="clear-title">Clear this draft and its outputs?</h4><p>This removes the draft, preview, and download links. Downloaded files are unaffected.</p>
+            <div class="actions"><button id="cancel-clear" type="button">Keep draft</button><button id="confirm-clear" class="danger" type="button">Confirm clear</button></div>
+          </section>
+          <p id="action-status" class="small" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <section id="preview-panel" class="preview" aria-labelledby="preview-heading">
+        <div class="section-heading"><h2 id="preview-heading" tabindex="-1">Quote preview</h2><p id="preview-state">Blank draft</p></div>
+        <article id="quote-canvas" class="quote-paper" aria-label="Current quote contents"></article>
+        <div id="downloads" class="download-bar" hidden><a id="download-html" class="button primary" download="quote.html">Download HTML</a><a id="download-json" class="button" download="quote.json">Download JSON</a><p>HTML is for your client. Keep JSON for later edits. Combined limit: 512 KiB.</p></div>
+        <p id="download-note" class="small" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+    <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">Before sharing</h2>
+      <details><summary>Does this verify my tax rate?</summary><p>No. You enter the rate; the tool only calculates from that value and does not determine whether it applies.</p></details>
+      <details><summary>Is the download an invoice?</summary><p>No. The HTML and JSON are quote data you entered. They do not provide an invoice, signature, or legal validity check.</p></details>
+      <details><summary>Can I download the old quote after editing?</summary><p>No. Editing invalidates the preview and its download links. Create a new preview before downloading again.</p></details>
+    </section>
+  </main>
+  <footer class="page-footer"><a href="https://glossquote.com/en/index.html" rel="noreferrer">Back to Gloss Tools</a><span>Local candidate · Drafts are not saved automatically</span></footer>
+</body>
+</html>

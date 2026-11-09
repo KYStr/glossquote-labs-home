@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Personalize Text from a CSV List | Preview Every Message</title>
+  <meta name="description" content="Add a CSV list and a {{column}} template, review each generated message, and download text or JSON. Nothing is sent.">
+  <link rel="stylesheet" href="../styles/app.css">
+  <script type="module" src="../js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <header class="topbar">
+    <a class="family" href="https://glossquote.com/en/index.html">Gloss Tools <span>by GlossQuote</span></a>
+    <span class="product-name">Personalized text batch</span>
+    <nav aria-label="Language and data"><a href="../index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a><button id="reset" type="button" class="quiet">Clear all data</button></nav>
+  </header>
+  <div class="work-shell">
+    <nav class="step-nav" aria-label="Workflow steps">
+      <a href="#source-section">1. Add your list</a>
+      <a href="#template-section">2. Write the template</a>
+      <a href="#review-section">3. Check and generate</a>
+      <a href="#preview-section">Review each message</a>
+      <p>Changing language clears this page’s data.</p>
+    </nav>
+    <main id="workspace" tabindex="-1">
+      <div class="page-heading"><h1>Turn one template into reviewed messages</h1><p>Fill a message template from your list, then review each result before copying or downloading. You decide how to send it.</p></div>
+      <noscript><p class="notice warning">Enable JavaScript to read your list and generate messages locally in this page.</p></noscript>
+      <section id="source-section" aria-labelledby="source-heading">
+        <div class="section-heading"><h2 id="source-heading">1. Add your list</h2><button type="button" id="sample">Load synthetic example</button></div>
+        <p class="help">The example replaces the list and template.</p>
+        <label for="csv">Paste a CSV list</label>
+        <p id="source-help" class="help">The first row contains unique, nonempty column names. UTF-8 CSV: up to 1 MiB, 1,000 rows and 30 columns.</p>
+        <textarea id="csv" rows="5" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="source-help source-status validation-error" placeholder="Name,ID
+Alex,001"></textarea>
+        <div class="file-field"><label for="csv-file">Or choose a CSV file</label><input type="file" id="csv-file" accept=".csv,text/csv" aria-describedby="file-help source-status validation-error"><p id="file-help" class="help">Only your selected file is read. It replaces pasted text after validation. Previous results are discarded when reading starts.</p></div>
+        <p id="source-status" class="source-status"></p>
+        <button id="reuse-paste" type="button" hidden>Load kept pasted text</button>
+      </section>
+      <section id="template-section" aria-labelledby="template-heading">
+        <h2 id="template-heading">2. Write the template</h2>
+        <div class="label-row"><label for="template">Message template</label><span id="template-count" class="count">0 / 32,768</span></div>
+        <p id="template-help" class="help">Use {{exact column name}}. Spaces and case must match. Values are inserted once as plain text; conditions are not supported.</p>
+        <textarea id="template" rows="8" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="template-help template-count validation-error" placeholder="Hello {{Name}}, your event ID is {{ID}}."></textarea>
+        <details class="field-inspector"><summary>Available fields and syntax</summary><p class="help">Column spaces are preserved below. Copy the full marker into your template.</p><ul id="fields" class="field-list"><li>Add your list to see its available fields here.</li></ul></details>
+      </section>
+      <section id="review-section" aria-labelledby="review-heading">
+        <h2 id="review-heading">3. Check and generate</h2>
+        <div class="check-field"><input id="allow-blank" type="checkbox" aria-describedby="allow-help blank-warning"><label for="allow-blank">Allow blank values</label></div>
+        <p id="allow-help" class="help">By default, any missing value blocks the whole batch. When enabled, used blank cells become empty text. Only an empty string is blank; spaces are preserved.</p>
+        <p id="literal-warning" class="notice warning" hidden>There are no placeholders. Every row will receive identical text.</p>
+        <p id="blank-warning" class="notice warning" hidden></p>
+        <p id="validation-error" class="notice warning" hidden></p>
+        <div id="unknown-fields" class="notice warning" hidden></div>
+        <div id="missing" class="missing-summary"></div>
+        <p id="stale-notice" class="notice warning" hidden>The template, list or blank option changed. Previous previews were discarded. Generate again to review.</p>
+        <div class="action-bar"><button id="generate" type="button" class="primary" disabled>Generate previews</button><button id="cancel" type="button" hidden>Cancel generation / reading</button></div>
+        <p id="status" class="notice" role="status" aria-live="polite" aria-atomic="true">Choose a CSV list, or start by writing your template.</p>
+      </section>
+      <section id="preview-section" class="preview-section" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Review each message</h2>
+        <p id="preview-empty" class="empty-state">After generation, the first message appears here. Review each row, then copy or download the results.</p>
+        <div id="preview-content" hidden>
+          <div class="preview-toolbar"><p id="row-label" aria-live="polite"></p><div class="row-navigation"><button id="previous" type="button" disabled>Previous row</button><button id="next" type="button" disabled>Next row</button></div></div>
+          <div class="jump-control"><label for="row-number">Go to data row</label><input id="row-number" type="number" inputmode="numeric" min="1" max="1" step="1" disabled><button id="jump" type="button" disabled>Go</button></div>
+          <pre id="preview" tabindex="0" aria-labelledby="preview-heading row-label"></pre>
+          <p id="blank-record" class="notice warning" hidden></p>
+          <div class="action-bar"><button id="copy" type="button" disabled>Copy this message</button><a id="download-txt" class="button" hidden>Download all TXT</a><a id="download-json" class="button" hidden>Download all JSON</a></div>
+          <p id="copy-status" role="status" aria-live="polite"></p>
+          <div id="copy-fallback" hidden><label for="copy-text">Current message for manual copying</label><textarea id="copy-text" rows="6" readonly spellcheck="false" aria-describedby="copy-status"></textarea><button id="select-text" type="button">Select this message</button></div>
+          <p id="export-size" class="help"></p>
+          <p class="help">Filenames are personalized-text.txt and personalized-text.json. TXT separates messages by row number; JSON includes the template, column names and blank-field details. Save and handle these files yourself.</p>
+        </div>
+      </section>
+      <aside class="privacy" aria-labelledby="privacy-heading"><h2 id="privacy-heading">Data stays in this page</h2><p>Your list, template and results stay in page memory, with no upload or saved history. Clearing, changing language or leaving releases this page’s references. It does not remove downloaded files or securely erase memory.</p></aside>
+      <details class="format-help"><summary>Supported format and limits</summary><p>UTF-8 CSV only. Commas, newlines and double quotes inside cells must follow CSV quoting rules. Record separators must consistently use CRLF, LF or CR. Templates are limited to 32,768 UTF-16 code units; complete TXT and JSON files together are limited to 8 MiB.</p></details>
+      <section class="faq" aria-labelledby="faq-heading"><h2 id="faq-heading">Common questions</h2><details><summary>Does the template support conditions?</summary><p>No. It performs one literal substitution for each {{column}} field.</p></details>
+<details><summary>Will messages be sent automatically?</summary><p>No. You review, copy or download the text yourself.</p></details>
+<details><summary>What happens to blank cells?</summary><p>Generation is blocked by default and the missing rows are listed. You may explicitly allow blanks to become empty text.</p></details></section>
+      <footer><span>Gloss Tools by GlossQuote · Local preview candidate</span><a href="https://glossquote.com/en/index.html">All Gloss tools</a></footer>
+    </main>
+  </div>
+</body>
+</html>
