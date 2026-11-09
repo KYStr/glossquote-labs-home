@@ -68,7 +68,7 @@
 
 相同面額回 `DUPLICATE` 並指第二列面額。空白件數要求填寫。零件為合法資料。
 
-工作界線為 8×10,001×100 次候選更新上限，兩代至多 10,001 個狀態。每個狀態的留盤向量最多 8 項。同源 `src/worker.mjs` 在初始化載入，輸入為已驗證的結構化快照。搜尋以至多 4,096 個候選步驟為批次。批間透過 MessageChannel 排下一個工作項以讀取消，UI 以 runId 忽略所有過時訊息。每頁保留一個 worker，取消保留已載入的腳本。先收到取消再收到結算時，取消優先保護 UI。
+工作界線為 8×10,001×100 次候選更新上限，每代至多 10,001 個狀態，兩代合計至多 20,002 個狀態。每個狀態的留盤向量最多 8 項。同源 `src/worker.mjs` 在初始化載入，輸入為已驗證的結構化快照。搜尋以至多 4,096 個候選步驟為批次。批間透過 MessageChannel 排下一個工作項以讀取消，UI 以 runId 忽略所有過時訊息。每頁保留一個 worker，取消保留已載入的腳本。先收到取消再收到結算時，取消優先保護 UI。
 
 結果中任何自訂短名以 `textContent` 建立。動態圖僅用驗證後的尺寸與內建元素。載入只請求同源靜態資產。其後無互動網路請求。輸入、結果、錯誤狀態只留頁面記憶體，不寫 URL、日誌、cookie、Local/Session Storage、IndexedDB、CacheStorage 或 service worker。範例內嵌固定假資料。採本機系統字型與共用設計權杖。CSP 用 HTTP 標頭限定 `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; worker-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'`，回應另帶 `X-Content-Type-Options: nosniff`。
 
@@ -88,7 +88,7 @@
 | 面向 | 必驗項 |
 | --- | --- |
 | `functionality` | 重現全部固定案例及各面額件數及盤內金額守恆，提供完整可讀結果。 |
-| `boundaries` | 精確驗證輸入界線、重算與取消，核對上限 8×10,001×100 次候選更新上限，兩代至多 10,001 個狀態。每個狀態的留盤向量最多 8 項。 |
+| `boundaries` | 精確驗證輸入界線、重算與取消，核對上限 8×10,001×100 次候選更新上限，每代至多 10,001 個狀態，兩代合計至多 20,002 個狀態。每個狀態的留盤向量最多 8 項。 |
 | `privacy` | 檢查實際 Network 與 Storage，確認工作資料僅留頁面記憶體。 |
 | `security` | 拒絕非契約資料，固定錯誤路徑，所有使用者文字以文字節點呈現。 |
 | `usability` | 依操作案例完成「算出留盤與移出」，從結果直接取得下一步。 |
