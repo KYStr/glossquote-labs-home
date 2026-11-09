@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>停車費計算機｜Gloss Tools</title>
+<meta name="description" content="輸入入場與出場時間和停車場費率，按日曆日逐日試算停車費：免費寬限、首段與後續段計費、每日上限與遺失票卡定額。">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../">Gloss Tools</a>
+  <nav class="topbar-nav" aria-label="語言">
+    <a href="en/" hreflang="en">English</a>
+    <span class="nav-note">切換語言或離開頁面會失去目前草稿。</span>
+  </nav>
+</header>
+<main id="main-region" aria-busy="false">
+  <h1>停車費計算機</h1>
+  <p class="intro">輸入入場與出場時間和停車場費率，按日曆日逐日試算停車費：免費寬限、首段與後續段計費、每日上限與遺失票卡定額。所有時間以 Asia/Taipei 計算。試算結果僅供核對，不是收費依據；資料只保留在目前頁面草稿。</p>
+
+  <form id="calc-form" novalidate>
+    <div class="layout">
+      <section class="panel inputs" aria-label="輸入">
+        <div class="field">
+          <label for="f-entry">入場時間</label>
+          <input id="f-entry" name="entry" type="datetime-local" step="60" autocomplete="off" aria-describedby="err-entry">
+          <p class="field-error" id="err-entry" role="alert" hidden></p>
+        </div>
+        <div class="field">
+          <label for="f-exit">出場時間</label>
+          <input id="f-exit" name="exit" type="datetime-local" step="60" autocomplete="off" aria-describedby="err-exit">
+          <p class="field-error" id="err-exit" role="alert" hidden></p>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="f-graceMinutes">免費寬限（分鐘）</label>
+            <input id="f-graceMinutes" name="graceMinutes" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-graceMinutes">
+            <p class="field-error" id="err-graceMinutes" role="alert" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-firstPeriodMinutes">首段長度（分鐘）</label>
+            <input id="f-firstPeriodMinutes" name="firstPeriodMinutes" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-firstPeriodMinutes">
+            <p class="field-error" id="err-firstPeriodMinutes" role="alert" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-firstPrice">首段價格（元）</label>
+            <input id="f-firstPrice" name="firstPrice" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-firstPrice">
+            <p class="field-error" id="err-firstPrice" role="alert" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-nextPeriodMinutes">後續每段長度（分鐘）</label>
+            <input id="f-nextPeriodMinutes" name="nextPeriodMinutes" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-nextPeriodMinutes">
+            <p class="field-error" id="err-nextPeriodMinutes" role="alert" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-nextPrice">後續每段價格（元）</label>
+            <input id="f-nextPrice" name="nextPrice" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-nextPrice">
+            <p class="field-error" id="err-nextPrice" role="alert" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-dailyCap">每日上限（元）</label>
+            <input id="f-dailyCap" name="dailyCap" type="text" inputmode="numeric" autocomplete="off" aria-describedby="cap-help err-dailyCap">
+            <p class="field-help" id="cap-help">填 0 表示無上限。每日上限按 Asia/Taipei 日曆日計算。</p>
+            <p class="field-error" id="err-dailyCap" role="alert" hidden></p>
+          </div>
+        </div>
+        <div class="field switch-field">
+          <input id="f-lostTicket" name="lostTicket" type="checkbox" aria-describedby="err-lostTicket">
+          <label for="f-lostTicket">遺失票卡</label>
+          <p class="field-error" id="err-lostTicket" role="alert" hidden></p>
+        </div>
+        <div class="field">
+          <label for="f-lostTicketFee">遺失票卡費用（元）</label>
+          <input id="f-lostTicketFee" name="lostTicketFee" type="text" inputmode="numeric" autocomplete="off" aria-describedby="err-lostTicketFee">
+          <p class="field-error" id="err-lostTicketFee" role="alert" hidden></p>
+        </div>
+        <div class="actions">
+          <button class="primary" id="btn-run" type="submit">計算停車費</button>
+          <button id="btn-cancel" type="button" hidden>取消</button>
+          <button id="btn-example" type="button">載入範例</button>
+          <button id="btn-reset" type="button">重設</button>
+        </div>
+        <p class="status" id="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel result-panel" id="result" aria-label="逐日明細與總額" hidden>
+        <h2>逐日明細與總額</h2>
+        <div id="result-summary"></div>
+        <div class="table-wrap" id="days-wrap" role="region" aria-label="逐日明細表" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">日期</th>
+                <th scope="col">當日分鐘</th>
+                <th scope="col">首段</th>
+                <th scope="col">後續段</th>
+                <th scope="col">原價（元）</th>
+                <th scope="col">封頂</th>
+                <th scope="col">當日費用（元）</th>
+              </tr>
+            </thead>
+            <tbody id="days-body"></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button id="btn-download" type="button" hidden>下載報告</button>
+        </div>
+      </section>
+    </div>
+  </form>
+
+  <section class="faq" aria-label="常見問題">
+    <h2>常見問題</h2>
+    <h3>每日上限是按日曆日還是 24 小時？</h3>
+    <p>按 Asia/Taipei 日曆日，每個日曆日獨立起算並封頂。</p>
+    <h3>免費寬限超過了怎麼算？</h3>
+    <p>總停車時間在寬限內免費，超過就自入場起全額計費，不扣寬限。</p>
+  </section>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
