@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./index.html">
+    <link rel="alternate" hreflang="zh-Hant" href="./index.html">
+    <link rel="alternate" hreflang="en" href="./en/index.html">
+    <link rel="alternate" hreflang="x-default" href="./index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>鞋碼換算：用腳長對照 US、UK、EU、JP｜GlossQuote-Labs</title>
+    <meta name="description" content="以腳長（Mondopoint 公釐）為基準，從同一份 ISO/TS 19407 基礎對照表讀出男鞋、女鞋、童鞋的 US、UK、EU、JP 鞋碼。超出表格範圍會明說，不推測；資料來源公開標示，各品牌版型仍有差異。">
+    <link rel="stylesheet" href="./styles/tokens.css">
+    <link rel="stylesheet" href="./styles/app.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../">GlossQuote-Labs</a>
+      <span class="location">鞋碼換算</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="語言">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="./index.html" aria-current="page">繁體中文</a>
+          <a lang="en" hreflang="en" href="./en/index.html">English</a>
+        </nav>
+        <p class="language-note">前往其他頁面會清除目前輸入。</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">鞋碼換算</h1>
+        <p class="intro">先選類別（男鞋、女鞋、童鞋），再輸入腳長，或挑一個你已知的鞋碼；所有系統的鞋碼都從同一份對照表的同一列讀出。腳長落在兩列之間時，依 ISO 慣例進位到下一列，結果會顯示該列的腳長，讓你核對進了多少。</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          此瀏覽器無法啟動換算工具。請在支援 JavaScript 模組的瀏覽器開啟。下方的對照表來源說明仍可閱讀。
+        </p>
+
+        <form id="tool-form">
+          <fieldset class="choice-group">
+            <legend>類別</legend>
+            <div class="segmented">
+              <label><input type="radio" name="category" value="men" checked> 男鞋</label>
+              <label><input type="radio" name="category" value="women"> 女鞋</label>
+              <label><input type="radio" name="category" value="kids"> 童鞋</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="choice-group">
+            <legend>輸入方式</legend>
+            <div class="segmented">
+              <label><input type="radio" name="mode" value="foot" checked> 用腳長</label>
+              <label><input type="radio" name="mode" value="label"> 用已知鞋碼</label>
+            </div>
+          </fieldset>
+
+          <div id="foot-panel" class="panel">
+            <label class="field-label" for="foot-cm">腳長（公分）</label>
+            <input id="foot-cm" name="foot-cm" type="text" inputmode="decimal" autocomplete="off" value="27.0" aria-describedby="foot-error">
+            <p id="foot-error" class="field-error" hidden></p>
+            <p class="field-hint">站立量測腳跟到最長腳趾的距離；左右腳不同時以較大的為準。可輸入 10.0–35.0 公分。</p>
+          </div>
+
+          <div id="label-panel" class="panel" hidden>
+            <div class="label-grid">
+              <div>
+                <label class="field-label" for="label-us">美國 US</label>
+                <select id="label-us" name="label-us"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-uk">英國 UK</label>
+                <select id="label-uk" name="label-uk"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-eur">歐洲 EU</label>
+                <select id="label-eur" name="label-eur"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-jp">日本 JP（公分）</label>
+                <select id="label-jp" name="label-jp"></select>
+              </div>
+            </div>
+            <p class="field-hint">任選一個系統的鞋碼，其他系統會從同一列讀出。</p>
+          </div>
+        </form>
+
+        <section class="results" aria-live="polite" aria-labelledby="result-heading">
+          <h2 id="result-heading">對照結果</h2>
+          <p id="result-category" class="result-category">男鞋</p>
+          <dl id="result-table" class="result-table">
+            <div><dt>腳長</dt><dd id="res-foot">27.0 公分（270 mm）</dd></div>
+            <div><dt>美國 US</dt><dd id="res-us">10</dd></div>
+            <div><dt>英國 UK</dt><dd id="res-uk">9</dd></div>
+            <div><dt>歐洲 EU</dt><dd id="res-eur">42.5</dd></div>
+            <div><dt>日本 JP</dt><dd id="res-jp">27.0</dd></div>
+          </dl>
+          <p id="missing-note" class="missing-note" hidden>來源對照表在這一格沒有給值（該系統的級距與此 Mondopoint 列沒有交會），所以顯示為 —；本工具不推測缺值。</p>
+          <p id="out-of-range" class="out-of-range" hidden></p>
+          <p id="empty-state" class="empty-state" hidden>修正上面的輸入後，這裡會顯示對照結果。</p>
+        </section>
+
+        <section class="provenance" aria-labelledby="provenance-heading">
+          <h2 id="provenance-heading">關於這份對照表</h2>
+          <p>本工具的對照表整理自 Wikipedia「Shoe size」條目所收錄、以 ISO/TS 19407 為基礎的換算表（成人表 22 列、童鞋表 16 列），以資料檔形式隨附來源、列數與 SHA-256 驗證；頁面上的每個答案都來自同一列，不用公式推算。</p>
+          <p>鞋碼並未完全標準化：各品牌有自己的對照表，版型與楦頭也因品牌而異。換算結果只是試穿的起點，不能取代實際試穿；本工具不推薦購買尺寸，也不收錄任何單一品牌的對照表。</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

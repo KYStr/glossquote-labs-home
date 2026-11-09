@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="./index.html">
+    <link rel="alternate" hreflang="zh-Hant" href="../index.html">
+    <link rel="alternate" hreflang="en" href="./index.html">
+    <link rel="alternate" hreflang="x-default" href="../index.html">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Shoe Size Converter: US, UK, EU and JP from Foot Length｜GlossQuote-Labs</title>
+    <meta name="description" content="Convert men's, women's and kids' shoe sizes between US, UK, EU and JP from one ISO/TS 19407-based table keyed by foot length (Mondopoint). Out-of-table lengths are reported, never guessed; the table's source is named on the page and brands still vary.">
+    <link rel="stylesheet" href="../styles/tokens.css">
+    <link rel="stylesheet" href="../styles/app.css">
+    <script type="module" src="../js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../en/">GlossQuote-Labs</a>
+      <span class="location">Shoe Size Converter</span>
+      <div class="language-switcher">
+        <nav class="language-links" aria-label="Language">
+          <a lang="zh-Hant" hreflang="zh-Hant" href="../index.html">繁體中文</a>
+          <a lang="en" hreflang="en" href="./index.html" aria-current="page">English</a>
+        </nav>
+        <p class="language-note">Switching pages clears the current input.</p>
+      </div>
+    </header>
+    <main class="task-canvas">
+      <section class="tool-section" aria-labelledby="page-title">
+        <h1 id="page-title">Shoe Size Converter</h1>
+        <p class="intro">Pick a category (men, women, kids), then enter a foot length or choose a size you already know; every system's label is read from a single row of one table. A foot length between rows rounds UP to the next row, following the ISO convention, and the result shows that row's foot length so you can see the step taken.</p>
+
+        <p id="unsupported-note" class="unsupported-note" role="note">
+          This browser cannot start the converter. Please open it in a browser that supports JavaScript modules. The notes about the table's source below remain readable.
+        </p>
+
+        <form id="tool-form">
+          <fieldset class="choice-group">
+            <legend>Category</legend>
+            <div class="segmented">
+              <label><input type="radio" name="category" value="men" checked> Men</label>
+              <label><input type="radio" name="category" value="women"> Women</label>
+              <label><input type="radio" name="category" value="kids"> Kids</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="choice-group">
+            <legend>Convert from</legend>
+            <div class="segmented">
+              <label><input type="radio" name="mode" value="foot" checked> Foot length</label>
+              <label><input type="radio" name="mode" value="label"> A known size</label>
+            </div>
+          </fieldset>
+
+          <div id="foot-panel" class="panel">
+            <label class="field-label" for="foot-cm">Foot length (cm)</label>
+            <input id="foot-cm" name="foot-cm" type="text" inputmode="decimal" autocomplete="off" value="27.0" aria-describedby="foot-error">
+            <p id="foot-error" class="field-error" hidden></p>
+            <p class="field-hint">Measure standing, heel to longest toe; if the feet differ, use the larger one. Accepts 10.0–35.0 cm.</p>
+          </div>
+
+          <div id="label-panel" class="panel" hidden>
+            <div class="label-grid">
+              <div>
+                <label class="field-label" for="label-us">US size</label>
+                <select id="label-us" name="label-us"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-uk">UK size</label>
+                <select id="label-uk" name="label-uk"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-eur">EU size</label>
+                <select id="label-eur" name="label-eur"></select>
+              </div>
+              <div>
+                <label class="field-label" for="label-jp">JP size (cm)</label>
+                <select id="label-jp" name="label-jp"></select>
+              </div>
+            </div>
+            <p class="field-hint">Choose a size in any one system; the others are read from the same row.</p>
+          </div>
+        </form>
+
+        <section class="results" aria-live="polite" aria-labelledby="result-heading">
+          <h2 id="result-heading">Converted sizes</h2>
+          <p id="result-category" class="result-category">Men</p>
+          <dl id="result-table" class="result-table">
+            <div><dt>Foot length</dt><dd id="res-foot">27.0 cm (270 mm)</dd></div>
+            <div><dt>US</dt><dd id="res-us">10</dd></div>
+            <div><dt>UK</dt><dd id="res-uk">9</dd></div>
+            <div><dt>EU</dt><dd id="res-eur">42.5</dd></div>
+            <div><dt>JP</dt><dd id="res-jp">27.0</dd></div>
+          </dl>
+          <p id="missing-note" class="missing-note" hidden>The source table assigns no label in this system at this Mondopoint step (its increments do not meet this row), so it is shown as — rather than guessed.</p>
+          <p id="out-of-range" class="out-of-range" hidden></p>
+          <p id="empty-state" class="empty-state" hidden>Fix the input above and the converted sizes will appear here.</p>
+        </section>
+
+        <section class="provenance" aria-labelledby="provenance-heading">
+          <h2 id="provenance-heading">About this table</h2>
+          <p>The tables here are transcribed from the ISO/TS 19407-based conversion tables in the Wikipedia article "Shoe size" (22 adult rows, 16 kids rows) and ship as a data file with its source, row counts and SHA-256 recorded; every answer on this page is read from a single row of that table, never computed from a formula.</p>
+          <p>Shoe sizing is not fully standardised: brands publish their own charts and their lasts differ. Treat a converted label as a starting point for trying shoes on, never as a promise of fit. This tool converts labels; it does not recommend a size to buy, and it carries no individual brand's chart.</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
