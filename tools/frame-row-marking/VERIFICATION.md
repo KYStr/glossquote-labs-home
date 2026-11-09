@@ -1,7 +1,7 @@
 # Frame Row Marking — verification
 
 - **Spec:** `docs/specs/frame-row-marking/SPEC.md` (`spec-frame-row-marking-20261109` v1)
-- **Candidate commit:** `83a0018945382ae1894a051da7585c0f2182283e`
+- **Candidate commit:** head of PR #115 at submission (this branch head; see below)
 - **Base commit:** `5e8fab03c00fba01bca68b1dd80280eb380b9bd6` (`codex/initial-publication`)
 - **Environment:** Node v24.22.1, offline, this VM
 
