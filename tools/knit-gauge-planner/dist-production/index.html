@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>試織花樣針數表｜Gloss Tools</title>
+<meta name="description" content="用實測試片密度、邊針和圖樣倍數找最接近目標尺寸的可行針行。">
+<link rel="canonical" href="https://glossquote.com/tools/knit-gauge-planner/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://glossquote.com/tools/knit-gauge-planner/index.html">
+<link rel="alternate" hreflang="en" href="https://glossquote.com/tools/knit-gauge-planner/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://glossquote.com/tools/knit-gauge-planner/index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="https://glossquote.com/tools/knit-gauge-planner/en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>試織花樣針數表</h1>
+  <p class="intro">先輸入試片的針數、行數與量到的寬高，再輸入目標寬高、每側邊針與圖樣重複；按下「找出可行針數與行數」，就看到目標兩側最近的可行整針與整行。</p>
+
+  <form id="gauge-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>試片</legend>
+          <p class="help">在同一塊矩形試片上數針數與行數，並量它的寬與高。</p>
+          <div class="fields">
+            <div class="field">
+              <label for="field-swatchStitches">試片針數（針）</label>
+              <input type="text" id="field-swatchStitches" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–1000 針</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchWidthMm">試片寬（mm）</label>
+              <input type="text" id="field-swatchWidthMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–5000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchRows">試片行數（行）</label>
+              <input type="text" id="field-swatchRows" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–1000 行</p>
+            </div>
+            <div class="field">
+              <label for="field-swatchHeightMm">試片高（mm）</label>
+              <input type="text" id="field-swatchHeightMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–5000 mm</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>目標與圖樣</legend>
+          <p class="help">目標是想做出的成品寬高。圖樣沒有限制時，重複填 1。</p>
+          <div class="fields">
+            <div class="field">
+              <label for="field-targetWidthMm">目標寬（mm）</label>
+              <input type="text" id="field-targetWidthMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–10000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-targetHeightMm">目標高（mm）</label>
+              <input type="text" id="field-targetHeightMm" inputmode="numeric" maxlength="12" autocomplete="off">
+              <p class="hint">1–10000 mm</p>
+            </div>
+            <div class="field">
+              <label for="field-edgeEach">每側邊針（針）</label>
+              <input type="text" id="field-edgeEach" inputmode="numeric" maxlength="12" autocomplete="off" value="0">
+              <p class="hint">0–200 針，預設 0</p>
+            </div>
+            <div class="field">
+              <label for="field-repeatStitches">橫向針重複（針）</label>
+              <input type="text" id="field-repeatStitches" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+              <p class="hint">1–200，預設 1</p>
+            </div>
+            <div class="field">
+              <label for="field-repeatRows">縱向行重複（行）</label>
+              <input type="text" id="field-repeatRows" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+              <p class="hint">1–200，預設 1</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="find" class="primary">找出可行針數與行數</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（每針約 5 mm，兩側各 2 針、橫向重複 6）；載入後仍需按「找出可行針數與行數」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="可行針數與行數"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
