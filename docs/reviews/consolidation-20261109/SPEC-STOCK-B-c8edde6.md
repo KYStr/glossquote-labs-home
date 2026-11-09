@@ -40,3 +40,14 @@
 舊候選 `000dc6304187dfa62d3cb9e873730a352e7ea621` 的 cash-float-tray 把兩代動態規劃狀態寫成共 10,001。反例為 target=10,000、面額 100 與 1 各 99 件。第一代有 0、100、…、9,900 共 100 個和，第二代覆蓋 0…9,999 共 10,000 個和。並存 10,100 超過原說明。
 
 修訂版改為每代至多 10,001、合計至多 20,002，且 boundaries 也同步。按固定 Git tree 比較，修訂只變更 cash-float-tray 的 SPEC、AUTHOR-CHECK 和 B manifest。兩代的容量反例現在落在界內，原字面 fixtures 和另 19 件原樣。未發現其餘阻止文件 ready 的問題。
+
+## 重跑非作者檢查
+
+將 [檢查入口](verify-stock-b.mjs) 和 [獨立算例模組](stock-b-literal-checks.mjs) 保存在同一資料夾。以 Node 24 執行，傳入任意含下列三個固定物件的本機 Git repo，無須私有工作目錄或作者檢查器。資料從各 commit 的檔案讀取，結果為 stdout JSON。
+
+```sh
+git -C <public-repo> fetch --no-tags origin c8edde6a8d2a83d69a5ef863057184d0ee5022d0 a5e7356dae36d2aac3db068352a916d76c7594c3 381bccfbdfa841867de6f652faebc581ca117388
+node verify-stock-b.mjs <public-repo>
+```
+
+預期 documents=81、fixtures=160、links=200、independentLiteralChecks 為 20 筆、product=NOT_RUN。r818 固定 registry 的 130 筆既有規格與 r807 對應陣列完全相同，A 組固定 manifest 只用於新範圍交叉比對。
