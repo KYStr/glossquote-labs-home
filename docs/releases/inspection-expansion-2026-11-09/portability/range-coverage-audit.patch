@@ -1,0 +1,26 @@
+diff --git a/tools/range-coverage-audit/scripts/build.mjs b/tools/range-coverage-audit/scripts/build.mjs
+index 58caec8..4953b3f 100644
+--- a/tools/range-coverage-audit/scripts/build.mjs
++++ b/tools/range-coverage-audit/scripts/build.mjs
+@@ -32,7 +32,7 @@ async function listFiles(dir, base = dir) {
+   for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
+     const full = path.join(dir, entry.name);
+     if (entry.isDirectory()) files.push(...(await listFiles(full, base)));
+-    else if (entry.isFile()) files.push(path.relative(base, full));
++    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
+   }
+   return files.sort();
+ }
+diff --git a/tools/range-coverage-audit/scripts/check-generated.mjs b/tools/range-coverage-audit/scripts/check-generated.mjs
+index 33b27e5..4f8b279 100644
+--- a/tools/range-coverage-audit/scripts/check-generated.mjs
++++ b/tools/range-coverage-audit/scripts/check-generated.mjs
+@@ -25,7 +25,7 @@ async function listFiles(base, current = base) {
+   for (const entry of entries) {
+     const full = path.join(current, entry.name);
+     if (entry.isDirectory()) files.push(...(await listFiles(base, full)));
+-    else if (entry.isFile()) files.push(path.relative(base, full));
++    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
+   }
+   return files.sort();
+ }

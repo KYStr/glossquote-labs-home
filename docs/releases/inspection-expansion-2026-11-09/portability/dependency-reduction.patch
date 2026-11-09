@@ -1,0 +1,25 @@
+diff --git a/tools/dependency-reduction/scripts/check.mjs b/tools/dependency-reduction/scripts/check.mjs
+index 4d86213..3a08f61 100644
+--- a/tools/dependency-reduction/scripts/check.mjs
++++ b/tools/dependency-reduction/scripts/check.mjs
+@@ -37,9 +37,10 @@ check(
+ );
+ 
+ const publicFiles = await listFiles(path.join(root, 'public'));
++const corePrefix = path.join('js', 'core') + path.sep;
+ check(publicFiles.includes('index.html'), 'public/index.html missing');
+ check(publicFiles.includes(path.join('en', 'index.html')), 'public/en/index.html missing');
+-check(publicFiles.some((f) => f.startsWith('js/core/')), 'public/js/core/ missing');
++check(publicFiles.some((f) => f.startsWith(corePrefix)), 'public/js/core/ missing');
+ check(publicFiles.includes(path.join('js', 'app.js')), 'public/js/app.js missing');
+ 
+ const forbidden = [
+@@ -62,7 +63,7 @@ const remote = [/https?:\/\//, /src\s*=\s*["']\/\//, /@import\s+["']https?:/];
+ for (const file of publicFiles) {
+   const full = path.join(root, 'public', file);
+   const text = await readFile(full, 'utf8');
+-  const isCore = file.startsWith('js/core/');
++  const isCore = file.startsWith(corePrefix);
+   for (const pattern of forbidden) {
+     check(!pattern.test(text), `${file}: forbidden pattern ${pattern}`);
+   }

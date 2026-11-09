@@ -1,0 +1,139 @@
+diff --git a/tools/log-gap-audit/dist-preview/en/index.html b/tools/log-gap-audit/dist-preview/en/index.html
+index 2d5e4a5..0c2cb0d 100644
+--- a/tools/log-gap-audit/dist-preview/en/index.html
++++ b/tools/log-gap-audit/dist-preview/en/index.html
+@@ -27,7 +27,7 @@
+ <p>The threshold defaults to 1000 ms; a time gap is listed only when the time delta is strictly greater than the threshold. SEQ_GAP is the integer gap between two numbers.</p>
+ </details>
+ 
+-<form id="auditForm" action="none" onsubmit="return false;">
++<form id="auditForm">
+ <div class="field">
+ <label for="records">Sequence and elapsed milliseconds</label>
+ <p class="hint" id="recordsHint">One row per record: sequence, one Tab, elapsed-ms. Paste test data or load it from a file.</p>
+diff --git a/tools/log-gap-audit/dist-preview/index.html b/tools/log-gap-audit/dist-preview/index.html
+index cdc9c2f..6e6f514 100644
+--- a/tools/log-gap-audit/dist-preview/index.html
++++ b/tools/log-gap-audit/dist-preview/index.html
+@@ -27,7 +27,7 @@
+ <p>門檻預設 1000 ms；時間差嚴格大於門檻才列為時間缺口。SEQ_GAP 是兩數之間的整數缺口。</p>
+ </details>
+ 
+-<form id="auditForm" action="none" onsubmit="return false;">
++<form id="auditForm">
+ <div class="field">
+ <label for="records">序號與相對毫秒</label>
+ <p class="hint" id="recordsHint">每列：序號、一個 Tab、毫秒。貼上測試資料或從檔案載入。</p>
+diff --git a/tools/log-gap-audit/dist-preview/js/app.js b/tools/log-gap-audit/dist-preview/js/app.js
+index 90940da..7cc8061 100644
+--- a/tools/log-gap-audit/dist-preview/js/app.js
++++ b/tools/log-gap-audit/dist-preview/js/app.js
+@@ -95,6 +95,9 @@ const S = STRINGS[lang];
+ const PAGE_SIZE = 25;
+ 
+ const $ = (id) => document.getElementById(id);
++const auditForm = $('auditForm');
++auditForm.addEventListener('submit', (event) => event.preventDefault());
++
+ const mainEl = $('main');
+ const recordsEl = $('records');
+ const thresholdEl = $('threshold');
+diff --git a/tools/log-gap-audit/public/en/index.html b/tools/log-gap-audit/public/en/index.html
+index 2d5e4a5..0c2cb0d 100644
+--- a/tools/log-gap-audit/public/en/index.html
++++ b/tools/log-gap-audit/public/en/index.html
+@@ -27,7 +27,7 @@
+ <p>The threshold defaults to 1000 ms; a time gap is listed only when the time delta is strictly greater than the threshold. SEQ_GAP is the integer gap between two numbers.</p>
+ </details>
+ 
+-<form id="auditForm" action="none" onsubmit="return false;">
++<form id="auditForm">
+ <div class="field">
+ <label for="records">Sequence and elapsed milliseconds</label>
+ <p class="hint" id="recordsHint">One row per record: sequence, one Tab, elapsed-ms. Paste test data or load it from a file.</p>
+diff --git a/tools/log-gap-audit/public/index.html b/tools/log-gap-audit/public/index.html
+index cdc9c2f..6e6f514 100644
+--- a/tools/log-gap-audit/public/index.html
++++ b/tools/log-gap-audit/public/index.html
+@@ -27,7 +27,7 @@
+ <p>門檻預設 1000 ms；時間差嚴格大於門檻才列為時間缺口。SEQ_GAP 是兩數之間的整數缺口。</p>
+ </details>
+ 
+-<form id="auditForm" action="none" onsubmit="return false;">
++<form id="auditForm">
+ <div class="field">
+ <label for="records">序號與相對毫秒</label>
+ <p class="hint" id="recordsHint">每列：序號、一個 Tab、毫秒。貼上測試資料或從檔案載入。</p>
+diff --git a/tools/log-gap-audit/public/js/app.js b/tools/log-gap-audit/public/js/app.js
+index 90940da..7cc8061 100644
+--- a/tools/log-gap-audit/public/js/app.js
++++ b/tools/log-gap-audit/public/js/app.js
+@@ -95,6 +95,9 @@ const S = STRINGS[lang];
+ const PAGE_SIZE = 25;
+ 
+ const $ = (id) => document.getElementById(id);
++const auditForm = $('auditForm');
++auditForm.addEventListener('submit', (event) => event.preventDefault());
++
+ const mainEl = $('main');
+ const recordsEl = $('records');
+ const thresholdEl = $('threshold');
+diff --git a/tools/log-gap-audit/scripts/check-generated.mjs b/tools/log-gap-audit/scripts/check-generated.mjs
+index 6e0cb0b..f053254 100644
+--- a/tools/log-gap-audit/scripts/check-generated.mjs
++++ b/tools/log-gap-audit/scripts/check-generated.mjs
+@@ -23,7 +23,7 @@ async function listFiles(dir, base = dir) {
+   for (const entry of entries) {
+     const full = path.join(dir, entry.name);
+     if (entry.isDirectory()) files.push(...(await listFiles(full, base)));
+-    else if (entry.isFile()) files.push(path.relative(base, full));
++    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
+   }
+   return files.sort();
+ }
+diff --git a/tools/log-gap-audit/test/pages.test.mjs b/tools/log-gap-audit/test/pages.test.mjs
+index 4d04705..a075900 100644
+--- a/tools/log-gap-audit/test/pages.test.mjs
++++ b/tools/log-gap-audit/test/pages.test.mjs
+@@ -64,6 +64,41 @@ test('app.js carries both locales and the worker wiring', async () => {
+   assert.ok(!/localStorage|sessionStorage/.test(app), 'no persistent storage');
+ });
+ 
++test('both pages keep native submission blocked and bind the CSP-compatible submit handler', async (t) => {
++  class Element extends EventTarget {
++    dataset = {};
++    setAttribute() {}
++    removeAttribute() {}
++  }
++
++  for (const [page, lang] of [['public/index.html', 'zh-Hant'], ['public/en/index.html', 'en']]) {
++    await t.test(lang, async (subtest) => {
++      const html = await read(page);
++      const elements = new Map([...html.matchAll(/\bid="([^"]+)"/g)]
++        .map(([, id]) => [id, new Element()]));
++      globalThis.document = {
++        documentElement: { lang },
++        getElementById: (id) => elements.get(id),
++      };
++      globalThis.window = new EventTarget();
++      subtest.after(() => {
++        delete globalThis.document;
++        delete globalThis.window;
++      });
++      await import(new URL(`../public/js/app.js?form-test=${lang}`, import.meta.url));
++
++      const submit = new Event('submit', { cancelable: true });
++      assert.equal(elements.get('auditForm').dispatchEvent(submit), false);
++      assert.equal(submit.defaultPrevented, true);
++      const form = html.match(/<form id="auditForm"[^>]*>[\s\S]*?<\/form>/)?.[0];
++      assert.ok(form);
++      assert.doesNotMatch(form, /\s(?:onsubmit|action|name)\s*=/i);
++      assert.match(form, /<button type="button" id="findBtn"/);
++      assert.ok(html.includes("form-action 'none'"));
++    });
++  }
++});
++
+ test('package.json contract', async () => {
+   const pkg = JSON.parse(await read('package.json'));
+   assert.equal(pkg.type, 'module');

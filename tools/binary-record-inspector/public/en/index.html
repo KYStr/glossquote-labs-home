@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary Record Inspector | Gloss Tools</title>
+<meta name="description" content="Read integer fields from a pasted hex record using explicit offsets, byte order and signedness.">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../en/">Gloss Tools</a>
+  <span class="topbar-title">Binary Record Inspector</span>
+  <a class="lang-link" href="../index.html" lang="zh-Hant">繁體中文</a>
+</header>
+<p class="draft-note">Switching language or leaving the page discards the draft.</p>
+<main class="canvas">
+  <h1>Binary Record Inspector</h1>
+  <p class="lede">Paste a test fixture hex dump and a field table to compare both byte orders and signed readings of the same bytes. Everything runs locally; nothing is uploaded or stored.</p>
+  <form id="inspector-form" novalidate>
+    <div class="field">
+      <label for="hex-input">Hex bytes</label>
+      <p class="help" id="hex-help">Separate tokens with a space, tab, or newline; each token is an even number of hex digits. No 0x prefix or addresses; at most 4,096 bytes.</p>
+      <textarea id="hex-input" rows="6" aria-describedby="hex-help" spellcheck="false" autocomplete="off"></textarea>
+      <p class="file-row">
+        <label for="file-input">Or load a file</label>
+        <input type="file" id="file-input" accept=".bin,.dat,application/octet-stream">
+        <span id="file-error" class="field-error" role="alert"></span>
+      </p>
+    </div>
+    <div class="field">
+      <label for="layout-input">Field layout</label>
+      <p class="help" id="layout-help">One row per field: “label ⇥ offset ⇥ type”, tab-separated; at most 64 rows. Types: u8, i8, u16le, u16be, i16le, i16be, u32le, u32be, i32le, i32be, u64le, u64be, i64le, i64be.</p>
+      <textarea id="layout-input" rows="6" aria-describedby="layout-help" spellcheck="false" autocomplete="off"></textarea>
+    </div>
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">Read fields</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="reset-button">Reset</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+    </div>
+    <p id="example-notice" class="notice" hidden>Example loaded. Press “Read fields” to run it.</p>
+    <p id="status" class="status" role="status" aria-live="polite" aria-busy="false" data-state="empty">Enter input or load the example.</p>
+    <div id="error-box" class="error-box" role="alert" hidden></div>
+  </form>
+  <section id="results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">Source bytes and integer values</h2>
+    <p id="summary" class="summary"></p>
+    <div class="table-wrap" role="region" aria-labelledby="results-heading" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Label</th>
+            <th scope="col">Offset</th>
+            <th scope="col">Type</th>
+            <th scope="col">Bytes</th>
+            <th scope="col">Value</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination" hidden>
+      <button type="button" id="prev-page">Previous page</button>
+      <span id="page-info" aria-live="polite"></span>
+      <button type="button" id="next-page">Next page</button>
+    </div>
+    <button type="button" id="download-button" class="primary">Download report</button>
+  </section>
+  <details class="details">
+    <summary>Format notes and FAQ</summary>
+    <h3>Types</h3>
+    <table>
+      <thead>
+        <tr><th scope="col">Type</th><th scope="col">Width</th><th scope="col">Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">u8</td><td>1 byte</td><td>Unsigned 8-bit</td></tr>
+        <tr><td class="mono">i8</td><td>1 byte</td><td>Signed 8-bit</td></tr>
+        <tr><td class="mono">u16le / u16be</td><td>2 bytes</td><td>Unsigned 16-bit, little / big endian</td></tr>
+        <tr><td class="mono">i16le / i16be</td><td>2 bytes</td><td>Signed 16-bit, little / big endian</td></tr>
+        <tr><td class="mono">u32le / u32be</td><td>4 bytes</td><td>Unsigned 32-bit, little / big endian</td></tr>
+        <tr><td class="mono">i32le / i32be</td><td>4 bytes</td><td>Signed 32-bit, little / big endian</td></tr>
+        <tr><td class="mono">u64le / u64be</td><td>8 bytes</td><td>Unsigned 64-bit, little / big endian</td></tr>
+        <tr><td class="mono">i64le / i64be</td><td>8 bytes</td><td>Signed 64-bit, little / big endian</td></tr>
+      </tbody>
+    </table>
+    <h3>Limits</h3>
+    <ul>
+      <li>Hex bytes: at most 4,096 bytes; field layout: at most 64 rows.</li>
+      <li>Labels start with a letter, are at most 24 characters, and must be unique.</li>
+      <li>Offsets start at 0; a field must not run past the end of the bytes.</li>
+      <li>Two fields may share bytes; reading never edits the source.</li>
+      <li>The downloaded report always uses the fixed name binary-record-inspector-report.json.</li>
+    </ul>
+    <dl>
+      <dt>Where does an offset start?</dt>
+      <dd>The first byte is at offset zero.</dd>
+      <dt>Can two fields overlap?</dt>
+      <dd>Each field reads its requested bytes without editing them.</dd>
+    </dl>
+  </details>
+</main>
+<footer>
+  <p>This tool only computes in your browser; input is never uploaded or stored, and is discarded when you leave the page.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

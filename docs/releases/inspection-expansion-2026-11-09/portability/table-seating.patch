@@ -1,0 +1,80 @@
+diff --git a/tools/table-seating/BUILD-MANIFEST.json b/tools/table-seating/BUILD-MANIFEST.json
+index 105889f..9cc407d 100644
+--- a/tools/table-seating/BUILD-MANIFEST.json
++++ b/tools/table-seating/BUILD-MANIFEST.json
+@@ -3,8 +3,8 @@
+   "files": [
+     {
+       "path": "en/index.html",
+-      "bytes": 3005,
+-      "sha256": "5513c7b9800cc399fb3c72936eab2933964d5f988e4bdfc103377f96d28495a4"
++      "bytes": 3001,
++      "sha256": "3d89fb9659965a21a34875448ae9bcd473d66a479bd813f048967c33a7672eba"
+     },
+     {
+       "path": "index.html",
+diff --git a/tools/table-seating/dist/en/index.html b/tools/table-seating/dist/en/index.html
+index c301a82..f3dfff6 100644
+--- a/tools/table-seating/dist/en/index.html
++++ b/tools/table-seating/dist/en/index.html
+@@ -6,10 +6,10 @@
+ <title>Party Table Seating | Gloss Tools</title>
+ <meta name="description" content="Assign intact parties to tables with seat limits, step-free access and fixed placements.">
+ <meta name="robots" content="noindex, nofollow">
+-<link rel="canonical" href="./en/index.html">
+-<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+-<link rel="alternate" hreflang="en" href="./en/index.html">
+-<link rel="alternate" hreflang="x-default" href="./index.html">
++<link rel="canonical" href="./index.html">
++<link rel="alternate" hreflang="zh-Hant" href="../index.html">
++<link rel="alternate" hreflang="en" href="./index.html">
++<link rel="alternate" hreflang="x-default" href="../index.html">
+ <link rel="stylesheet" href="../styles/app.css">
+ </head>
+ <body>
+diff --git a/tools/table-seating/public/en/index.html b/tools/table-seating/public/en/index.html
+index c301a82..f3dfff6 100644
+--- a/tools/table-seating/public/en/index.html
++++ b/tools/table-seating/public/en/index.html
+@@ -6,10 +6,10 @@
+ <title>Party Table Seating | Gloss Tools</title>
+ <meta name="description" content="Assign intact parties to tables with seat limits, step-free access and fixed placements.">
+ <meta name="robots" content="noindex, nofollow">
+-<link rel="canonical" href="./en/index.html">
+-<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+-<link rel="alternate" hreflang="en" href="./en/index.html">
+-<link rel="alternate" hreflang="x-default" href="./index.html">
++<link rel="canonical" href="./index.html">
++<link rel="alternate" hreflang="zh-Hant" href="../index.html">
++<link rel="alternate" hreflang="en" href="./index.html">
++<link rel="alternate" hreflang="x-default" href="../index.html">
+ <link rel="stylesheet" href="../styles/app.css">
+ </head>
+ <body>
+diff --git a/tools/table-seating/test/page-links.test.mjs b/tools/table-seating/test/page-links.test.mjs
+new file mode 100644
+index 0000000..f08903b
+--- /dev/null
++++ b/tools/table-seating/test/page-links.test.mjs
+@@ -0,0 +1,21 @@
++import assert from 'node:assert/strict';
++import { readFile } from 'node:fs/promises';
++import test from 'node:test';
++
++test('canonical and alternate links resolve to the intended language pages', async () => {
++  const zh = new URL('../public/index.html', import.meta.url);
++  const en = new URL('../public/en/index.html', import.meta.url);
++
++  for (const page of [zh, en]) {
++    const html = await readFile(page, 'utf8');
++    const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)">/g)];
++    assert.deepEqual(canonicals.map(([, href]) => new URL(href, page).href), [page.href]);
++    const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)];
++    assert.equal(alternates.length, 3);
++    assert.deepEqual(Object.fromEntries(alternates.map(([, lang, href]) => [lang, new URL(href, page).href])), {
++      'zh-Hant': zh.href,
++      en: en.href,
++      'x-default': zh.href,
++    });
++  }
++});

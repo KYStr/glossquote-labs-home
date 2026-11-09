@@ -1,0 +1,22 @@
+diff --git a/tools/knit-gauge-planner/scripts/build.mjs b/tools/knit-gauge-planner/scripts/build.mjs
+index deaac26..79786a7 100644
+--- a/tools/knit-gauge-planner/scripts/build.mjs
++++ b/tools/knit-gauge-planner/scripts/build.mjs
+@@ -11,7 +11,7 @@
+ 
+ import { createHash } from "node:crypto";
+ import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+-import { dirname, join, relative, resolve } from "node:path";
++import { dirname, join, relative, resolve, sep } from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
+ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+@@ -96,7 +96,7 @@ if (mode === "preview") {
+ 
+ let manifest = "";
+ for (const file of await listFiles(distDir)) {
+-  const rel = relative(distDir, file).split("/").join("/");
++  const rel = relative(distDir, file).split(sep).join("/");
+   const hash = createHash("sha256").update(await readFile(file)).digest("hex");
+   manifest += `${hash}  ${rel}\n`;
+ }

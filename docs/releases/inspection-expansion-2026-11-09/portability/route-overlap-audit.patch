@@ -1,0 +1,39 @@
+diff --git a/tools/route-overlap-audit/scripts/check.mjs b/tools/route-overlap-audit/scripts/check.mjs
+index b44d08b..d47aa9e 100644
+--- a/tools/route-overlap-audit/scripts/check.mjs
++++ b/tools/route-overlap-audit/scripts/check.mjs
+@@ -10,7 +10,7 @@
+ 
+ import { readFile, readdir } from 'node:fs/promises';
+ import path from 'node:path';
+-import { fileURLToPath } from 'node:url';
++import { fileURLToPath, pathToFileURL } from 'node:url';
+ 
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ const failures = [];
+@@ -68,7 +68,7 @@ for (const file of jsFiles) {
+   }
+ }
+ 
+-const { MESSAGES } = await import(path.join(root, 'public', 'js', 'messages.mjs'));
++const { MESSAGES } = await import(pathToFileURL(path.join(root, 'public', 'js', 'messages.mjs')).href);
+ const zhKeys = Object.keys(MESSAGES.zh).sort();
+ const enKeys = Object.keys(MESSAGES.en).sort();
+ check(JSON.stringify(zhKeys) === JSON.stringify(enKeys), 'messages.mjs: zh and en keys must match exactly');
+diff --git a/tools/route-overlap-audit/test/build.test.mjs b/tools/route-overlap-audit/test/build.test.mjs
+index c526eed..398d492 100644
+--- a/tools/route-overlap-audit/test/build.test.mjs
++++ b/tools/route-overlap-audit/test/build.test.mjs
+@@ -11,10 +11,11 @@ import { createHash } from 'node:crypto';
+ import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+ import { tmpdir } from 'node:os';
+ import path from 'node:path';
++import { fileURLToPath } from 'node:url';
+ import { promisify } from 'node:util';
+ 
+ const execFileAsync = promisify(execFile);
+-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
++const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ 
+ async function listFiles(dir, base = dir) {
+   const entries = await readdir(dir, { withFileTypes: true });

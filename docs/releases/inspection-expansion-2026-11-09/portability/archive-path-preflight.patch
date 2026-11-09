@@ -1,0 +1,27 @@
+diff --git a/tools/archive-path-preflight/scripts/check-generated.mjs b/tools/archive-path-preflight/scripts/check-generated.mjs
+index 320332d..86e914d 100644
+--- a/tools/archive-path-preflight/scripts/check-generated.mjs
++++ b/tools/archive-path-preflight/scripts/check-generated.mjs
+@@ -30,7 +30,7 @@ async function listFiles(dir, base = dir) {
+   for (const entry of entries) {
+     const full = path.join(dir, entry.name);
+     if (entry.isDirectory()) files.push(...(await listFiles(full, base)));
+-    else if (entry.isFile()) files.push(path.relative(base, full));
++    else if (entry.isFile()) files.push(path.relative(base, full).split(path.sep).join('/'));
+   }
+   return files;
+ }
+diff --git a/tools/archive-path-preflight/test/build.test.mjs b/tools/archive-path-preflight/test/build.test.mjs
+index e802605..7690b41 100644
+--- a/tools/archive-path-preflight/test/build.test.mjs
++++ b/tools/archive-path-preflight/test/build.test.mjs
+@@ -26,7 +26,8 @@ async function treeHashes(dir, base = dir) {
+     const full = path.join(dir, entry.name);
+     if (entry.isDirectory()) out.push(...(await treeHashes(full, base)));
+     else if (entry.isFile()) {
+-      out.push(`${sha256(await readFile(full))}  ${path.relative(base, full)}`);
++      const relativePath = path.relative(base, full).split(path.sep).join('/');
++      out.push(`${sha256(await readFile(full))}  ${relativePath}`);
+     }
+   }
+   return out.sort();
