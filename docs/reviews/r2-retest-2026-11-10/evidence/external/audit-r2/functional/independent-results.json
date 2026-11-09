@@ -1,0 +1,661 @@
+{
+  "recordedAtUTC": "2026-11-09T16:20:34.849Z",
+  "node": "v24.22.1",
+  "scope": "New independent repair-focused cases only",
+  "sourceRoot": "/workspace/scratch/545a152861f5/audit-r2/work/functional",
+  "baselineCoreSha256": "728f2b9ac7a5ac2eff0cbdaee42b7ae854e27ae34968521e91be1cc0f3c20452",
+  "fixedCoreSha256": "d855cbc33f9dcaddb1d7ae5a1c2ee6239f8c3fddc30289cdef56cd8fe5f6c1f4",
+  "denominatorNote": "16 new cases in this r2 run only. Baseline observations are paired diagnostics within these cases, not additional test cases. Existing author tests are reported elsewhere.",
+  "limitations": [
+    "Pure core and HTML transformations only; no browser, speech audio, native navigation or device acceptance.",
+    "No 140-tool full acceptance is claimed."
+  ],
+  "cases": [
+    {
+      "id": "TTS-R2-N01",
+      "tool": "text-to-speech-reader",
+      "title": "Fullwidth space separates uppercase sentence",
+      "origin": "new-independent-r2-case",
+      "input": "First.　Second.",
+      "expected": {
+        "sentences": [
+          "First.",
+          "Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First.　Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.　Second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": false,
+      "actual": {
+        "sentences": [
+          "First.",
+          "Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N02",
+      "tool": "text-to-speech-reader",
+      "title": "NBSP separates uppercase sentence",
+      "origin": "new-independent-r2-case",
+      "input": "First. Second.",
+      "expected": {
+        "sentences": [
+          "First.",
+          "Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First. Second."
+        ],
+        "chunks": [
+          {
+            "text": "First. Second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": false,
+      "actual": {
+        "sentences": [
+          "First.",
+          "Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N03",
+      "tool": "text-to-speech-reader",
+      "title": "Narrow NBSP separates a digit starter",
+      "origin": "new-independent-r2-case",
+      "input": "A! 3 cats.",
+      "expected": {
+        "sentences": [
+          "A!",
+          "3 cats."
+        ],
+        "chunks": [
+          {
+            "text": "A!",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "3 cats.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "A! 3 cats."
+        ],
+        "chunks": [
+          {
+            "text": "A! 3 cats.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": false,
+      "actual": {
+        "sentences": [
+          "A!",
+          "3 cats."
+        ],
+        "chunks": [
+          {
+            "text": "A!",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "3 cats.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N04",
+      "tool": "text-to-speech-reader",
+      "title": "Em space separates an opening curly quote",
+      "origin": "new-independent-r2-case",
+      "input": "A? “B.”",
+      "expected": {
+        "sentences": [
+          "A?",
+          "“B.”"
+        ],
+        "chunks": [
+          {
+            "text": "A?",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "“B.”",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "A? “B.”"
+        ],
+        "chunks": [
+          {
+            "text": "A? “B.”",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": false,
+      "actual": {
+        "sentences": [
+          "A?",
+          "“B.”"
+        ],
+        "chunks": [
+          {
+            "text": "A?",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "“B.”",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N05",
+      "tool": "text-to-speech-reader",
+      "title": "Fullwidth space before lowercase is preserved",
+      "origin": "new-independent-r2-case",
+      "input": "First.　second.",
+      "expected": {
+        "sentences": [
+          "First.　second."
+        ],
+        "chunks": [
+          {
+            "text": "First.　second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First.　second."
+        ],
+        "chunks": [
+          {
+            "text": "First.　second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": true,
+      "actual": {
+        "sentences": [
+          "First.　second."
+        ],
+        "chunks": [
+          {
+            "text": "First.　second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N06",
+      "tool": "text-to-speech-reader",
+      "title": "NBSP before lowercase is preserved",
+      "origin": "new-independent-r2-case",
+      "input": "First. second.",
+      "expected": {
+        "sentences": [
+          "First. second."
+        ],
+        "chunks": [
+          {
+            "text": "First. second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First. second."
+        ],
+        "chunks": [
+          {
+            "text": "First. second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": true,
+      "actual": {
+        "sentences": [
+          "First. second."
+        ],
+        "chunks": [
+          {
+            "text": "First. second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N07",
+      "tool": "text-to-speech-reader",
+      "title": "Abbreviation and decimal survive mixed Unicode separators",
+      "origin": "new-independent-r2-case",
+      "input": "Dr.　Lee paid 3.14. Next.",
+      "expected": {
+        "sentences": [
+          "Dr.　Lee paid 3.14.",
+          "Next."
+        ],
+        "chunks": [
+          {
+            "text": "Dr.　Lee paid 3.14.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Next.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "Dr.　Lee paid 3.14. Next."
+        ],
+        "chunks": [
+          {
+            "text": "Dr.　Lee paid 3.14. Next.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": false,
+      "actual": {
+        "sentences": [
+          "Dr.　Lee paid 3.14.",
+          "Next."
+        ],
+        "chunks": [
+          {
+            "text": "Dr.　Lee paid 3.14.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "Next.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N08",
+      "tool": "text-to-speech-reader",
+      "title": "CRLF, CR and LF remain unconditional boundaries",
+      "origin": "new-independent-r2-case",
+      "input": "First.\r\nsecond.\rThird.\n",
+      "expected": {
+        "sentences": [
+          "First.",
+          "second.",
+          "Third."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          },
+          {
+            "text": "Third.",
+            "sentenceIndex": 2,
+            "ordinal": 2
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First.",
+          "second.",
+          "Third."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          },
+          {
+            "text": "Third.",
+            "sentenceIndex": 2,
+            "ordinal": 2
+          }
+        ]
+      },
+      "baselineMatchesContract": true,
+      "actual": {
+        "sentences": [
+          "First.",
+          "second.",
+          "Third."
+        ],
+        "chunks": [
+          {
+            "text": "First.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          },
+          {
+            "text": "second.",
+            "sentenceIndex": 1,
+            "ordinal": 1
+          },
+          {
+            "text": "Third.",
+            "sentenceIndex": 2,
+            "ordinal": 2
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N09",
+      "tool": "text-to-speech-reader",
+      "title": "Zero-width space is not Unicode White_Space",
+      "origin": "new-independent-r2-case",
+      "input": "First.​Second.",
+      "expected": {
+        "sentences": [
+          "First.​Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.​Second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineActual": {
+        "sentences": [
+          "First.​Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.​Second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "baselineMatchesContract": true,
+      "actual": {
+        "sentences": [
+          "First.​Second."
+        ],
+        "chunks": [
+          {
+            "text": "First.​Second.",
+            "sentenceIndex": 0,
+            "ordinal": 0
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "TTS-R2-N10",
+      "tool": "text-to-speech-reader",
+      "title": "Unicode-whitespace-only input remains rejected",
+      "origin": "new-independent-r2-case",
+      "input": "　  ",
+      "expected": "EMPTY_TEXT",
+      "baselineActual": "EMPTY_TEXT",
+      "baselineMatchesContract": true,
+      "actual": "EMPTY_TEXT",
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N01",
+      "tool": "fluid-typography",
+      "title": "Exact two-link delta, original control/head/body and package bytes preserved",
+      "origin": "new-independent-r2-case",
+      "input": "index.html",
+      "expected": {
+        "exactExpected": true,
+        "headIdentical": true,
+        "nonNoticeBodyIdentical": true,
+        "originalControlCount": 1,
+        "noticeAnchorCounts": [
+          2,
+          2
+        ],
+        "idempotent": true,
+        "packageBytesMatch": true
+      },
+      "beforeSha256": "501900c50515da9785f3755798a9309bf82588437cd6c19e0a849ade4ef2186d",
+      "afterSha256": "0ecbce08b3f16f562138469b2f1c5b9b07655e143934858fad462da49d0287f5",
+      "packageSha256": "0ecbce08b3f16f562138469b2f1c5b9b07655e143934858fad462da49d0287f5",
+      "baselineNoticeAnchorCounts": [
+        3,
+        3
+      ],
+      "actual": {
+        "exactExpected": true,
+        "headIdentical": true,
+        "nonNoticeBodyIdentical": true,
+        "originalControlCount": 1,
+        "noticeAnchorCounts": [
+          2,
+          2
+        ],
+        "idempotent": true,
+        "packageBytesMatch": true
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N02",
+      "tool": "fluid-typography",
+      "title": "Exact two-link delta, original control/head/body and package bytes preserved",
+      "origin": "new-independent-r2-case",
+      "input": "en/index.html",
+      "expected": {
+        "exactExpected": true,
+        "headIdentical": true,
+        "nonNoticeBodyIdentical": true,
+        "originalControlCount": 1,
+        "noticeAnchorCounts": [
+          2,
+          2
+        ],
+        "idempotent": true,
+        "packageBytesMatch": true
+      },
+      "beforeSha256": "bb38ab274d8c62f7a0dae540c98a0d35e3bed8a20f3e0056ceed8e41d0e2d3d6",
+      "afterSha256": "6d8c7402f6d493dee1b056e4dbe3cf15373c02ce55f9f81f07af3a03bc0b7faf",
+      "packageSha256": "6d8c7402f6d493dee1b056e4dbe3cf15373c02ce55f9f81f07af3a03bc0b7faf",
+      "baselineNoticeAnchorCounts": [
+        3,
+        3
+      ],
+      "actual": {
+        "exactExpected": true,
+        "headIdentical": true,
+        "nonNoticeBodyIdentical": true,
+        "originalControlCount": 1,
+        "noticeAnchorCounts": [
+          2,
+          2
+        ],
+        "idempotent": true,
+        "packageBytesMatch": true
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N03",
+      "tool": "fluid-typography",
+      "title": "Benign notice copy change survives without extra deletions",
+      "origin": "new-independent-r2-case",
+      "input": "Add a short plain-text status note",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N04",
+      "tool": "fluid-typography",
+      "title": "Ambiguous dual canonical metadata is refused",
+      "origin": "new-independent-r2-case",
+      "input": "Add the other locale canonical URL",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N05",
+      "tool": "fluid-typography",
+      "title": "Unexpected notice navigation is refused",
+      "origin": "new-independent-r2-case",
+      "input": "Add a third nonlanguage anchor",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "id": "FLUID-R2-N06",
+      "tool": "fluid-typography",
+      "title": "An identical link outside notices prevents broad deletion",
+      "origin": "new-independent-r2-case",
+      "input": "Repeat an exact language-link token in the main body",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "cases": 16,
+    "pass": 16,
+    "fail": 0,
+    "byTool": {
+      "text-to-speech-reader": {
+        "cases": 10,
+        "pass": 10
+      },
+      "fluid-typography": {
+        "cases": 6,
+        "pass": 6
+      }
+    }
+  }
+}
