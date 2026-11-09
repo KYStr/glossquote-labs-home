@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG 色彩對比檢查器 | GlossQuote Labs</title>
+<meta name="description" content="用 WCAG 2.1 公式檢查前景與背景色的對比值：支援透明度合成、AA/AAA 判定（以未四捨五入的值判斷），不合格時給出最小修正建議。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="zh-Hant" href="./">
+<link rel="alternate" hreflang="en" href="../en/">
+<link rel="alternate" hreflang="x-default" href="./">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<header>
+  <p><a href="../../">← GlossQuote Labs 首頁</a> · <a href="../en/" hreflang="en">English</a></p>
+  <h1>WCAG 色彩對比檢查器</h1>
+  <p>輸入前景色與背景色，立刻得到 WCAG 2.1 對比值與 AA / AAA 判定；含透明度的顏色會依固定順序先合成再計算。不合格時，工具會找一個只改前景色的最小修正。</p>
+  <p class="note">本工具檢查的是「一組顏色」，不是整個頁面；符合 WCAG 還牽涉對比以外的許多要求。</p>
+</header>
+<main>
+  <section aria-labelledby="input-heading">
+    <h2 id="input-heading">顏色輸入</h2>
+    <div class="field">
+      <label for="fg-input">前景色（文字）</label>
+      <input id="fg-input" type="text" value="#777777" autocomplete="off" spellcheck="false" aria-describedby="fg-error">
+      <input id="fg-picker" type="color" value="#777777" aria-label="前景色選色器（不透明色）">
+      <p class="error" id="fg-error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="bg-input">背景色</label>
+      <input id="bg-input" type="text" value="#FFFFFF" autocomplete="off" spellcheck="false" aria-describedby="bg-error">
+      <input id="bg-picker" type="color" value="#ffffff" aria-label="背景色選色器（不透明色）">
+      <p class="error" id="bg-error" role="alert"></p>
+    </div>
+    <p><button id="swap" type="button">交換前景與背景</button></p>
+    <p class="hint">接受格式：#RGB、#RRGGBB、#RRGGBBAA（# 可省略）、rgb(r, g, b)、rgba(r, g, b, a)；通道為 0–255 整數，透明度 0–1。交換會以原始輸入重新合成，含透明度時對比值可能不同。</p>
+  </section>
+
+  <section id="results" aria-labelledby="result-heading">
+    <h2 id="result-heading">結果</h2>
+    <p id="stale-note" class="stale" hidden></p>
+    <p class="ratio-line">對比值 <strong id="ratio-value">—</strong></p>
+    <p class="note">通過與否一律以未四捨五入的對比值判斷；顯示的兩位小數只是顯示。例如顯示 4.50 的組合，未四捨五入的值若低於 4.5，仍判定未通過。</p>
+    <p id="effective-line" class="note" hidden></p>
+    <table>
+      <thead><tr><th scope="col">等級</th><th scope="col">門檻</th><th scope="col">結果</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">AA 一般文字</th><td>4.5:1</td><td data-verdict="aaNormal">—</td></tr>
+        <tr><th scope="row">AA 大型文字</th><td>3.0:1</td><td data-verdict="aaLarge">—</td></tr>
+        <tr><th scope="row">AAA 一般文字</th><td>7.0:1</td><td data-verdict="aaaNormal">—</td></tr>
+        <tr><th scope="row">AAA 大型文字</th><td>4.5:1</td><td data-verdict="aaaLarge">—</td></tr>
+        <tr><th scope="row">非文字（圖示、控制邊框、圖表標記）</th><td>3.0:1</td><td data-verdict="nonText">—</td></tr>
+      </tbody>
+    </table>
+    <p class="note">大型文字指至少 24px，或至少 18.66px（14pt）的粗體字。非文字列對應 WCAG 1.4.11。</p>
+  </section>
+
+  <section aria-labelledby="preview-heading">
+    <h2 id="preview-heading">預覽</h2>
+    <p id="preview-normal" class="preview">這是 16px 的一般文字預覽，用來感受正文在這組顏色下的可讀性。</p>
+    <p id="preview-large" class="preview preview-large">24px 大型文字預覽</p>
+    <p class="preview"><span id="preview-glyph" class="glyph" aria-hidden="true">★</span> <span id="preview-border" class="border-swatch">邊框樣本</span></p>
+  </section>
+
+  <section aria-labelledby="suggest-heading">
+    <h2 id="suggest-heading">修正建議（只調整前景色）</h2>
+    <div class="field">
+      <label for="target">目標等級</label>
+      <select id="target">
+        <option value="aaNormal" selected>AA 一般文字（4.5:1）</option>
+        <option value="aaLarge">AA 大型文字（3.0:1）</option>
+        <option value="aaaNormal">AAA 一般文字（7.0:1）</option>
+        <option value="aaaLarge">AAA 大型文字（4.5:1）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="direction">混合方向</label>
+      <select id="direction">
+        <option value="black" selected>朝黑色</option>
+        <option value="white">朝白色</option>
+      </select>
+    </div>
+    <p id="suggest-text" aria-live="polite"></p>
+    <p><button id="apply-suggestion" type="button" disabled>套用建議顏色到前景</button></p>
+  </section>
+</main>
+<footer>
+  <p>公式：WCAG 2.1 相對亮度與對比。含透明度時先把背景合成到白底上，再把前景合成到背景上（sRGB 空間），亮度以未四捨五入的合成值計算。所有計算都在你的瀏覽器本機完成，不傳送、不儲存。</p>
+</footer>
+<noscript><p>本工具需要 JavaScript 才能計算對比值。</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

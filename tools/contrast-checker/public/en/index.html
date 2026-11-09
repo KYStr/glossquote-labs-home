@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG Colour Contrast Checker | GlossQuote Labs</title>
+<meta name="description" content="Check a foreground/background pair with the WCAG 2.1 contrast formula: pinned alpha compositing, AA/AAA verdicts judged on the unrounded ratio, and a minimal foreground correction when a pair fails.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="../en/">
+<link rel="alternate" hreflang="zh-Hant" href="../">
+<link rel="alternate" hreflang="en" href="../en/">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<header>
+  <p><a href="../../en/">← GlossQuote Labs home</a> · <a href="../" hreflang="zh-Hant">繁體中文</a></p>
+  <h1>WCAG Colour Contrast Checker</h1>
+  <p>Enter a foreground and a background colour to get the WCAG 2.1 contrast ratio and AA / AAA verdicts. Colours with alpha are composited in a pinned order before the calculation, and when a pair fails the tool searches for the smallest foreground-only correction.</p>
+  <p class="note">This tool checks a pair of colours, not a whole page; WCAG conformance involves much more than contrast.</p>
+</header>
+<main>
+  <section aria-labelledby="input-heading">
+    <h2 id="input-heading">Colour input</h2>
+    <div class="field">
+      <label for="fg-input">Foreground (text)</label>
+      <input id="fg-input" type="text" value="#777777" autocomplete="off" spellcheck="false" aria-describedby="fg-error">
+      <input id="fg-picker" type="color" value="#777777" aria-label="Foreground colour picker (opaque colours)">
+      <p class="error" id="fg-error" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="bg-input">Background</label>
+      <input id="bg-input" type="text" value="#FFFFFF" autocomplete="off" spellcheck="false" aria-describedby="bg-error">
+      <input id="bg-picker" type="color" value="#ffffff" aria-label="Background colour picker (opaque colours)">
+      <p class="error" id="bg-error" role="alert"></p>
+    </div>
+    <p><button id="swap" type="button">Swap foreground and background</button></p>
+    <p class="hint">Accepted formats: #RGB, #RRGGBB, #RRGGBBAA (# optional), rgb(r, g, b), rgba(r, g, b, a); channels are integers 0–255 and alpha is 0–1. Swapping recomputes compositing from the raw inputs, so with alpha involved the ratio can change.</p>
+  </section>
+
+  <section id="results" aria-labelledby="result-heading">
+    <h2 id="result-heading">Results</h2>
+    <p id="stale-note" class="stale" hidden></p>
+    <p class="ratio-line">Contrast ratio <strong id="ratio-value">—</strong></p>
+    <p class="note">Every verdict compares the unrounded ratio against the threshold; the two decimals shown are display only. A pair displaying 4.50 still fails if its unrounded ratio is below 4.5.</p>
+    <p id="effective-line" class="note" hidden></p>
+    <table>
+      <thead><tr><th scope="col">Level</th><th scope="col">Threshold</th><th scope="col">Result</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">AA normal text</th><td>4.5:1</td><td data-verdict="aaNormal">—</td></tr>
+        <tr><th scope="row">AA large text</th><td>3.0:1</td><td data-verdict="aaLarge">—</td></tr>
+        <tr><th scope="row">AAA normal text</th><td>7.0:1</td><td data-verdict="aaaNormal">—</td></tr>
+        <tr><th scope="row">AAA large text</th><td>4.5:1</td><td data-verdict="aaaLarge">—</td></tr>
+        <tr><th scope="row">Non-text (icons, control borders, chart marks)</th><td>3.0:1</td><td data-verdict="nonText">—</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Large text means at least 24 px, or at least 18.66 px (14 pt) when bold. The non-text row follows WCAG 1.4.11.</p>
+  </section>
+
+  <section aria-labelledby="preview-heading">
+    <h2 id="preview-heading">Preview</h2>
+    <p id="preview-normal" class="preview">This is a 16 px normal-text preview, so you can feel how body text reads in this pair.</p>
+    <p id="preview-large" class="preview preview-large">24 px large-text preview</p>
+    <p class="preview"><span id="preview-glyph" class="glyph" aria-hidden="true">★</span> <span id="preview-border" class="border-swatch">Border sample</span></p>
+  </section>
+
+  <section aria-labelledby="suggest-heading">
+    <h2 id="suggest-heading">Correction suggestion (foreground only)</h2>
+    <div class="field">
+      <label for="target">Target level</label>
+      <select id="target">
+        <option value="aaNormal" selected>AA normal text (4.5:1)</option>
+        <option value="aaLarge">AA large text (3.0:1)</option>
+        <option value="aaaNormal">AAA normal text (7.0:1)</option>
+        <option value="aaaLarge">AAA large text (4.5:1)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="direction">Blend direction</label>
+      <select id="direction">
+        <option value="black" selected>Toward black</option>
+        <option value="white">Toward white</option>
+      </select>
+    </div>
+    <p id="suggest-text" aria-live="polite"></p>
+    <p><button id="apply-suggestion" type="button" disabled>Apply the suggested colour to the foreground</button></p>
+  </section>
+</main>
+<footer>
+  <p>Formula: WCAG 2.1 relative luminance and contrast. With alpha, the background is composited over white first and the foreground over that result (in sRGB space); luminance uses the unrounded composite values. Everything is computed locally in your browser — nothing is sent or stored.</p>
+</footer>
+<noscript><p>This tool needs JavaScript to compute contrast ratios.</p></noscript>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
