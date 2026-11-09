@@ -63,6 +63,8 @@ node scripts/workspace.mjs show <slug-or-task-id>
 
 既有工具若還在獨立 repo／保留快照：原 owner 在同一 claim 下做中央承接 PR，記錄舊 repo/commit/path → 新目錄；先證明複製 bytes 相同，才在後續 commit 修改。接受前原已發布來源不變。共享首頁、registry、發布配置等由主統籌序列整合，不可兩邊同時改。
 
+開始介面前讀 [工具設計基線](TOOL-DESIGN-BASELINE.md)，取得共用權杖、Product App 結構與可及性要求。
+
 先做一個可驗收 milestone；錯誤與取消、dirty狀態、資料格式與語言完整度一起完成。保存 checkpoint 時寫：固定 source、已跑命令與exit code、實際問題、未驗項、下一步、恢復條件。不得在 log 放使用者真實資料、檔案內容、token 或機器帳號路徑。
 
 ## 6. 測試不能干擾使用者
