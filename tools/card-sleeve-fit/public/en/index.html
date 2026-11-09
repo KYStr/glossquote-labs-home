@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Sleeve Stock Fit | Gloss Tools</title>
+<meta name="description" content="Match measured card sizes to existing sleeve stock and find the maximum coverage.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header>
+  <p class="topbar"><a href="https://glossquote.com/en/index.html">← Back to the GlossQuote Labs home page</a> · <a href="../index.html" hreflang="zh-Hant">繁體中文</a> <span class="reset-note">Leaving this page clears your input</span></p>
+  <h1>Card Sleeve Stock Fit</h1>
+  <p>Enter the measured outer size of each card group, the inner size and remaining stock of each sleeve, and find the maximum number of cards you can sleeve, which sleeve each group should take and how many, and how many are still short. Width stays with width and height with height; both axes use the same acceptable gap range. The calculation happens only on this page; nothing is uploaded or stored.</p>
+</header>
+<main>
+  <div class="layout">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Card groups, sleeve stock and gaps</h2>
+      <form id="sleeve-form" autocomplete="off" novalidate>
+        <div class="gap-row">
+          <div class="field">
+            <label for="min-gap">Minimum gap (mm)</label>
+            <input id="min-gap" name="min-gap" type="text" inputmode="decimal" maxlength="12" value="0" aria-describedby="min-gap-hint min-gap-error">
+            <p class="hint" id="min-gap-hint">Sleeve inner size minus card outer size, at least this much on each axis. Default 0.</p>
+            <p class="error" id="min-gap-error"></p>
+          </div>
+          <div class="field">
+            <label for="max-gap">Maximum gap (mm)</label>
+            <input id="max-gap" name="max-gap" type="text" inputmode="decimal" maxlength="12" value="2" aria-describedby="max-gap-hint max-gap-error">
+            <p class="hint" id="max-gap-hint">At most this much on each axis, so sleeves are not too loose. Default 2.</p>
+            <p class="error" id="max-gap-error"></p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Card groups (1–8 rows)</legend>
+          <ol class="rows" id="card-rows"></ol>
+          <p><button type="button" id="add-card">+ Add a card group row</button></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Sleeves (1–8 rows)</legend>
+          <ol class="rows" id="sleeve-rows"></ol>
+          <p><button type="button" id="add-sleeve">+ Add a sleeve row</button></p>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submit">Allocate available sleeves</button>
+          <button type="button" id="cancel" hidden>Cancel</button>
+          <button type="button" id="load-example">Load example</button>
+          <button type="button" id="clear-draft">Clear draft</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Allocation by group and sleeve stock</h2>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="result" hidden>
+        <div class="summary">
+          <dl>
+            <dt>Covered</dt><dd id="sum-covered"></dd>
+            <dt>Total cards</dt><dd id="sum-total"></dd>
+            <dt>Uncovered</dt><dd id="sum-missing"></dd>
+          </dl>
+        </div>
+        <p id="result-note" class="note" hidden></p>
+        <h3>Allocation per group</h3>
+        <div class="result-table-wrap">
+          <table id="card-result-table">
+            <thead><tr><th>Group</th><th>Size</th><th>Count</th><th>Allocation</th><th>Short</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3>Sleeve stock left</h3>
+        <div class="result-table-wrap">
+          <table id="sleeve-result-table">
+            <thead><tr><th>Sleeve</th><th>Size</th><th>Stock</th><th>Left</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer>
+  <p>Sizes are in millimetres; enter an integer or one decimal place (for example 63.5). Input and results stay in this page's memory only and are never written to the URL, logs or any storage.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
