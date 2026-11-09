@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Heart Rate Zones Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate maximum heart rate with the Tanaka formula and get five heart-rate zones plus Karvonen reserve zones from your age and resting heart rate. Estimates vary by person; not medical advice.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Heart Rate Zones Calculator</h1>
+  <p class="lede">Enter your age to get both the Fox and Tanaka maximum heart-rate estimates; the zones are calculated from Tanaka as five % of maximum bands. Add a resting heart rate for a second table of Karvonen reserve zones. A measured maximum heart rate overrides the formula estimates, and age may then be left blank. Both tables give whole-bpm limits you can copy straight into your watch or training app.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Your details</h2>
+      <form id="zones-form" novalidate>
+        <div class="field">
+          <label for="field-age">Age</label>
+          <p class="help" id="help-age">10 to 100, whole number. Required unless a measured maximum heart rate is entered.</p>
+          <input id="field-age" name="age" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-age">
+          <p class="field-error" id="error-age" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-measuredMaxHr">Measured maximum heart rate (optional)</label>
+          <p class="help" id="help-measuredMaxHr">100 to 230 bpm, whole number. Takes precedence over the formula estimates.</p>
+          <input id="field-measuredMaxHr" name="measuredMaxHr" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-measuredMaxHr">
+          <p class="field-error" id="error-measuredMaxHr" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-restingHr">Resting heart rate (optional)</label>
+          <p class="help" id="help-restingHr">30 to 120 bpm, whole number, below the maximum heart rate. Needed for the Karvonen reserve zones.</p>
+          <input id="field-restingHr" name="restingHr" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-restingHr">
+          <p class="field-error" id="error-restingHr" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your age or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate heart rate zones</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Maximum heart rate summary</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>Heart rate zones (% of maximum)</h3>
+      <div class="table-scroll" role="region" aria-label="Heart rate zones table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Zone</th><th scope="col">Band</th><th scope="col">Heart rate (bpm)</th><th scope="col">Use</th></tr>
+          </thead>
+          <tbody id="zone-rows"></tbody>
+        </table>
+      </div>
+      <div id="karvonen-block" hidden>
+        <h3>Heart rate reserve zones (Karvonen)</h3>
+        <p id="karvonen-meta"></p>
+        <div class="table-scroll" role="region" aria-label="Reserve zones table" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Zone</th><th scope="col">Band</th><th scope="col">Heart rate (bpm)</th><th scope="col">Use</th></tr>
+            </thead>
+            <tbody id="karvonen-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <p id="karvonen-missing" hidden></p>
+      <p class="disclaimer">Maximum heart rate here is a formula estimate; your actual value may differ. Results are for exercise reference only and are not medical advice. If you have a cardiovascular condition or feel unwell, consult a doctor first.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and where the formulas come from</summary>
+    <p>The Fox formula is 220 − age. The Tanaka formula is 208 − 0.7 × age, from Tanaka, Monahan &amp; Seals (2001), “Age-predicted maximal heart rate revisited”, Journal of the American College of Cardiology 37(1). The Tanaka value is first rounded to a whole maximum heart rate, then split into five continuous zones with the shared-boundary +1 rule: each zone starts one bpm above the previous zone's end, and zone 5 always ends at the used maximum.</p>
+    <p>The Karvonen method multiplies the heart rate reserve (used maximum − resting heart rate) by each band percentage and adds the resting heart rate back; boundaries are rounded the same way and use the same shared-boundary +1 rule. All arithmetic is integer tenths arithmetic with no floating point. This tool has no download or copy button; the results are plain selectable text on the page.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why two maximum heart-rate formulas?</dt>
+      <dd>The Fox formula (220 − age) is older and less accurate; the Tanaka formula (208 − 0.7 × age) comes from newer research. This tool calculates zones with Tanaka and shows Fox for comparison only.</dd>
+      <dt>What if I have a measured maximum heart rate?</dt>
+      <dd>Enter it as the measured maximum heart rate; it takes precedence over the formula estimates, both zone tables are calculated from it, and age may be left blank.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
