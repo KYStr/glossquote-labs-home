@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="description" content="Convert oven temperatures between Celsius, Fahrenheit and Gas Mark, with conventional and fan-assisted settings and the full Gas Mark chart.">
+<title>Oven Temperature Converter | Gloss Tools</title>
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <nav>
+    <a href="../../en/">Home</a>
+    <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+  </nav>
+  <p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+</header>
+<main>
+  <h1>Oven Temperature Converter</h1>
+  <p class="lede">Convert oven temperatures between Celsius, Fahrenheit and Gas Mark, with conventional and fan-assisted settings and the full Gas Mark chart.</p>
+
+  <div class="layout">
+    <form class="panel" id="converter-form" novalidate>
+      <div class="field">
+        <label for="value-input">Temperature and unit</label>
+        <input type="text" id="value-input" value="180" inputmode="decimal" autocomplete="off" aria-describedby="value-help">
+        <p class="help" id="value-help">Enter one temperature, for example 180, 350 or 4.</p>
+      </div>
+      <div class="field">
+        <label for="unit-select">Unit</label>
+        <select id="unit-select">
+          <option value="celsius" selected>Celsius °C</option>
+          <option value="fahrenheit">Fahrenheit °F</option>
+          <option value="gas">Gas Mark</option>
+        </select>
+      </div>
+      <fieldset class="field">
+        <legend>This setting is for</legend>
+        <div class="radio-row">
+          <label><input type="radio" name="basis" id="basis-conventional" value="conventional" checked> Conventional oven</label>
+          <label><input type="radio" name="basis" id="basis-fan" value="fan"> Fan oven</label>
+        </div>
+        <p class="note" id="basis-note" hidden>Gas Mark has no fan setting; with Gas Mark the basis is fixed to conventional.</p>
+      </fieldset>
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">Convert temperature</button>
+        <button type="button" id="example-button">Load example</button>
+        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="cancel-button" hidden>Cancel</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <span id="status-text">Enter a temperature, choose its unit, then choose Convert temperature.</span>
+      </div>
+      <div class="error-box" id="error-box" role="alert" hidden>
+        <span id="error-text"></span>
+      </div>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <div>
+      <section class="panel" id="result-section" hidden>
+        <h2>Conventional and fan settings</h2>
+        <p class="result-summary" id="result-summary"></p>
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>Conventional oven</h3>
+            <dl>
+              <dt>Celsius</dt><dd id="conv-celsius"></dd>
+              <dt>Fahrenheit</dt><dd id="conv-fahrenheit"></dd>
+              <dt>Gas Mark</dt><dd id="conv-gas"></dd>
+            </dl>
+          </div>
+          <div class="result-card">
+            <h3>Fan oven</h3>
+            <dl>
+              <dt>Celsius</dt><dd id="fan-celsius"></dd>
+              <dt>Fahrenheit</dt><dd id="fan-fahrenheit"></dd>
+              <dt>Gas Mark</dt><dd id="fan-gas"></dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Gas Mark reference chart</h2>
+        <table class="chart" id="chart-table">
+          <thead>
+            <tr><th scope="col">Gas Mark</th><th scope="col">Celsius °C</th><th scope="col">Fahrenheit °F</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>¼</td><td>110</td><td>225</td></tr>
+            <tr><td>½</td><td>120</td><td>250</td></tr>
+            <tr><td>1</td><td>140</td><td>275</td></tr>
+            <tr><td>2</td><td>150</td><td>300</td></tr>
+            <tr><td>3</td><td>170</td><td>325</td></tr>
+            <tr><td>4</td><td>180</td><td>350</td></tr>
+            <tr><td>5</td><td>190</td><td>375</td></tr>
+            <tr><td>6</td><td>200</td><td>400</td></tr>
+            <tr><td>7</td><td>220</td><td>425</td></tr>
+            <tr><td>8</td><td>230</td><td>450</td></tr>
+            <tr><td>9</td><td>240</td><td>475</td></tr>
+            <tr><td>10</td><td>260</td><td>500</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>Frequently asked questions</h2>
+        <details>
+          <summary>Why lower the temperature for a fan oven?</summary>
+          <p>Moving air heats more efficiently, so the convention is 20 °C lower (25 °F for Fahrenheit recipes); this tool applies the adjustment for the entered unit before converting.</p>
+        </details>
+        <details>
+          <summary>What if the temperature is outside the chart?</summary>
+          <p>Below Gas Mark ¼ (110 °C) or above Gas Mark 10 (260 °C), Celsius and Fahrenheit still convert by formula and the Gas Mark is shown as out of range.</p>
+        </details>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>
+  <p>Conversion happens on this device; nothing is sent or stored. The Gas Mark chart is the widely published standard chart; the fan adjustment is a baking convention — follow your recipe and oven manual for final settings.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
