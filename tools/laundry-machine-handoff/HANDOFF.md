@@ -5,9 +5,10 @@
 - Spec: `spec-laundry-machine-handoff-20261109` v1, `docs/specs/laundry-machine-handoff/` in `KYStr/glossquote-labs-home` (SPEC.md, BRIEF.md, fixtures.json, AUTHOR-CHECK.md), read at base commit `fb55ef262642744147d01db9b2fcbc82cc8b76e1` (`codex/initial-publication`).
 - Registry task: `labs-prod-laundry-machine-handoff-20261109`
 - Claim: `muse-main-claim-laundry-machine-handoff-20261109T083325Z-w6` (parent actor; workMayStart verified by the parent).
-- Candidate: this branch's head commit (`9e964be1925382254c492cf0c4356384de8feed0`,
-  PR https://github.com/KYStr/glossquote-labs-home/pull/132; see
-  VERIFICATION.md for the SHA and PR).
+- Candidate: this branch's head commit (tool commit
+  `9e964be1925382254c492cf0c4356384de8feed0`, PR
+  https://github.com/KYStr/glossquote-labs-home/pull/132; see
+  VERIFICATION.md).
 
 ## Allowed scope
 
