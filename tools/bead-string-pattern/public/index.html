@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>串珠花樣用量與順序｜Gloss Tools</title>
+<meta name="description" content="展開串珠重複或鏡像花樣，算出每色所需和第一個缺料珠位。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>串珠花樣用量與順序</h1>
+  <p class="intro">先輸入手上的顏色與顆數，再選出花樣段、重複數與直複或交替鏡像；按下「展開串珠順序」，就得到逐珠順序、各色用量與第一個缺料珠位。</p>
+
+  <form id="bead-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>顏色庫存</legend>
+          <p class="help">最多 12 色。每色都要有短名與顆數；顆數 0–1000。短名 1–24 字，開頭為字母或數字。</p>
+          <div id="colors-body" class="rows"></div>
+          <button type="button" id="add-color" class="secondary">新增一色</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>花樣段</legend>
+          <p class="help">最多 16 珠。每個珠位從已輸入的顏色中選一個；同色可重複出現。</p>
+          <div id="motif-body" class="rows"></div>
+          <button type="button" id="add-bead" class="secondary">新增一珠</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>重複與端珠</legend>
+          <div class="field">
+            <label for="repeats">重複組數（組）</label>
+            <input type="text" id="repeats" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+            <p class="help">1–32 組。</p>
+          </div>
+          <fieldset class="choice-group">
+            <legend>展開方式</legend>
+            <label class="choice"><input type="radio" name="mode" value="repeat" checked> 直複：每組都按原順序</label>
+            <label class="choice"><input type="radio" name="mode" value="alternate"> 交替鏡像：偶數組倒序</label>
+          </fieldset>
+          <div class="field">
+            <label for="head">前端珠</label>
+            <select id="head"></select>
+          </div>
+          <div class="field">
+            <label for="tail">後端珠</label>
+            <select id="tail"></select>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="arrange" class="primary">展開串珠順序</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（R、G、B 鏡像兩組，前後各加 K 一珠）；載入後仍需按「展開串珠順序」才會計算。</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="展開結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

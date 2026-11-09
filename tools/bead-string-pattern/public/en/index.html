@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bead String Pattern | Gloss Tools</title>
+<meta name="description" content="Expand a bead motif into a full string and find the positions where your colors run short.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="../../en/">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching languages leaves this page; the draft you are editing will not be kept.</span></p>
+</header>
+<main>
+  <h1>Bead String Pattern</h1>
+  <p class="intro">Enter the colors you have and how many beads of each, pick a motif, the number of repeats and straight or mirrored alternation; choose “Lay out the bead order” to get the bead-by-bead order, the usage per color and the first position that runs short.</p>
+
+  <form id="bead-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Color stock</legend>
+          <p class="help">Up to 12 colors. Each color needs a short name and a bead count; count 0–1000. Short names are 1–24 characters, starting with a letter or digit.</p>
+          <div id="colors-body" class="rows"></div>
+          <button type="button" id="add-color" class="secondary">Add a color</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Motif</legend>
+          <p class="help">Up to 16 beads. Pick a color from the stock for each position; the same color may repeat.</p>
+          <div id="motif-body" class="rows"></div>
+          <button type="button" id="add-bead" class="secondary">Add a bead</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Repeats and end beads</legend>
+          <div class="field">
+            <label for="repeats">Repeat groups</label>
+            <input type="text" id="repeats" inputmode="numeric" maxlength="12" autocomplete="off" value="1">
+            <p class="help">1–32 groups.</p>
+          </div>
+          <fieldset class="choice-group">
+            <legend>Layout</legend>
+            <label class="choice"><input type="radio" name="mode" value="repeat" checked> Repeat: every group in the same order</label>
+            <label class="choice"><input type="radio" name="mode" value="alternate"> Alternate: even groups reversed</label>
+          </fieldset>
+          <div class="field">
+            <label for="head">Head bead</label>
+            <select id="head"></select>
+          </div>
+          <div class="field">
+            <label for="tail">Tail bead</label>
+            <select id="tail"></select>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="arrange" class="primary">Lay out the bead order</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (R, G, B mirrored over two groups, with a K bead at each end); after loading, choose “Lay out the bead order” to calculate.</p>
+        <p id="worker-fallback" class="notice-inline" hidden></p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Bead order result"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
