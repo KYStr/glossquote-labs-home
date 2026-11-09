@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frame Row Marking | Gloss Tools</title>
+<meta name="description" content="Lay out a row of frames with equal gaps and measure each hook from one wall origin.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://glossquote.com/tools/frame-row-marking/en/index.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://glossquote.com/tools/frame-row-marking/index.html">
+<link rel="alternate" hreflang="en" href="https://glossquote.com/tools/frame-row-marking/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://glossquote.com/tools/frame-row-marking/index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="https://glossquote.com/en/index.html">Gloss Tools</a>
+  <a class="lang-link" href="../index.html" lang="zh-Hant">繁體中文</a>
+</header>
+<main class="canvas">
+  <h1>Frame Row Marking</h1>
+  <p class="intro">Hang a row of frames on a measured wall: enter the usable width, each frame’s size and its back hook offset, and get the equal-gap layout plus every hook reading from one wall origin, ready to mark with a tape measure.</p>
+  <p class="note">Data stays on this page; nothing is uploaded or stored. Leaving the page clears the draft.</p>
+  <p id="boot-note" class="boot-note">Loading… If this message stays, please reload the page.</p>
+
+  <form id="mark-form" novalidate>
+    <div id="error-summary" class="error-summary" hidden>
+      <h2></h2>
+      <ul id="error-list"></ul>
+    </div>
+
+    <section class="panel" aria-labelledby="wall-heading">
+      <h2 id="wall-heading">Wall</h2>
+      <div class="field">
+        <label for="f-span">Usable wall width (mm)</label>
+        <input id="f-span" type="text" inputmode="numeric" autocomplete="off" maxlength="12" required>
+        <p class="hint">Whole number, 1–20000 mm. The origin sits at the left end of the wall.</p>
+        <p class="field-error" id="f-span-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="f-gap">Minimum gap (mm)</label>
+        <input id="f-gap" type="text" inputmode="numeric" autocomplete="off" maxlength="12" value="0" required>
+        <p class="hint">Whole number, 0–2000 mm. The same minimum applies to both ends and between frames.</p>
+        <p class="field-error" id="f-gap-error" hidden></p>
+      </div>
+      <fieldset class="choice-group">
+        <legend>Alignment</legend>
+        <label class="choice"><input type="radio" name="align" id="f-align-top" value="top" checked> Top alignment</label>
+        <label class="choice"><input type="radio" name="align" id="f-align-center" value="center"> Center alignment</label>
+        <p class="hint">With center alignment, Y is measured down from the top edge of the tallest frame.</p>
+      </fieldset>
+    </section>
+
+    <section class="panel" aria-labelledby="frames-heading">
+      <h2 id="frames-heading">Frames</h2>
+      <p class="hint">Enter left to right. One hook per frame; the hook offset is seen from the front of the frame, and a hook may sit on the frame edge. 2–12 frames.</p>
+      <div id="frames-list"></div>
+      <button type="button" id="add-frame-btn" class="btn btn-secondary">Add a frame</button>
+    </section>
+
+    <div class="action-bar">
+      <button type="submit" id="submit-btn" class="btn btn-primary">Mark frame hooks</button>
+      <button type="button" id="cancel-btn" class="btn btn-secondary" hidden>Cancel</button>
+      <button type="button" id="example-btn" class="btn btn-secondary">Load example</button>
+      <button type="button" id="clear-btn" class="btn btn-quiet">Clear draft</button>
+    </div>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <section id="results" class="panel results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">Results</h2>
+    <p id="gap-line" class="gap-line"></p>
+    <p id="deficit" class="deficit" hidden></p>
+    <div id="diagram" class="diagram" hidden>
+      <p class="diagram-label">Wall layout diagram</p>
+      <div id="wall" class="wall"></div>
+    </div>
+    <div class="table-wrap" id="marks-table-wrap">
+      <table>
+        <caption>Hook coordinates (mm, from one wall origin)</caption>
+        <thead>
+          <tr><th scope="col">Frame</th><th scope="col">Left edge X</th><th scope="col">Top edge Y</th><th scope="col">Hook X</th><th scope="col">Hook Y</th></tr>
+        </thead>
+        <tbody id="marks-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<template id="frame-row-template">
+  <fieldset class="frame-row">
+    <legend></legend>
+    <div class="frame-grid">
+      <div class="field">
+        <label data-label-for="name"></label>
+        <input data-field="name" type="text" autocomplete="off" maxlength="128">
+        <p class="field-error" data-error-for="name" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="wMm"></label>
+        <input data-field="wMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="wMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hMm"></label>
+        <input data-field="hMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hookLeftMm"></label>
+        <input data-field="hookLeftMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hookLeftMm" hidden></p>
+      </div>
+      <div class="field">
+        <label data-label-for="hookTopMm"></label>
+        <input data-field="hookTopMm" type="text" inputmode="numeric" autocomplete="off" maxlength="12">
+        <p class="field-error" data-error-for="hookTopMm" hidden></p>
+      </div>
+    </div>
+    <div class="row-actions">
+      <button type="button" data-action="up" class="btn btn-small">Move up</button>
+      <button type="button" data-action="down" class="btn btn-small">Move down</button>
+      <button type="button" data-action="remove" class="btn btn-small">Remove</button>
+    </div>
+  </fieldset>
+</template>
+
+<noscript><p class="boot-note">This tool needs JavaScript to calculate.</p></noscript>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
