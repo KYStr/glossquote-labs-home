@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<title>兩兩覆蓋測試矩陣｜Gloss Tools</title>
+<meta name="description" content="測試工程師有幾個有限選項，需先挑一份能覆蓋任兩維選項配對的測試清單。成功是每個配對都有一個具體案例，且知道這份清單不證明更高階組合已測。">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <nav class="lang" aria-label="語言">
+    <span aria-current="page">繁體中文</span> · <a href="./en/index.html" lang="en">English</a>
+  </nav>
+  <p class="draft-note">切換語言或離開頁面會失去草稿。</p>
+</header>
+<main>
+  <h1>兩兩覆蓋測試矩陣</h1>
+  <p class="lede">測試工程師有幾個有限選項，需先挑一份能覆蓋任兩維選項配對的測試清單。成功是每個配對都有一個具體案例，且知道這份清單不證明更高階組合已測。</p>
+  <section class="work" id="work" aria-label="建立兩兩覆蓋表">
+    <div class="input-col">
+      <label for="dimensions">測試維度與值</label>
+      <p class="hint" id="dimensions-hint">每行格式 name:a|b，一行一個維度；2–5 個維度，每維 2–6 個值。</p>
+      <textarea id="dimensions" rows="8" aria-describedby="dimensions-hint dimensions-error" spellcheck="false"></textarea>
+      <p class="error" id="dimensions-error" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" id="run" class="primary">建立兩兩覆蓋表</button>
+        <button type="button" id="load-example">載入範例</button>
+        <button type="button" id="cancel" hidden>取消</button>
+        <button type="button" id="reset">重設</button>
+      </div>
+      <details>
+        <summary>格式與限制</summary>
+        <ul>
+          <li>每行 <code>name:a|b</code>：維度名稱以英文字母開頭，可含英數、<code>-</code>、<code>_</code>，最多 24 字元；值以英數開頭，同樣最多 24 字元。</li>
+          <li>輸入最多 1,024 字元；行內不得有空白；維度名稱與同維的值不可重複。</li>
+          <li>全部維度值數乘積最多 2,048，超過不會列舉。</li>
+          <li>結果以確定性 greedy 依新增覆蓋挑選案例，不保證案例最少；下載為 JSON 報告。</li>
+          <li>全部計算都在本機進行，不上傳、不儲存。</li>
+        </ul>
+      </details>
+    </div>
+    <div class="result-col">
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <section id="results" hidden aria-label="案例和新增配對數">
+        <h2>案例和新增配對數</h2>
+        <p id="summary"></p>
+        <p class="note">此為依新增覆蓋挑選的可重現案例集合，不保證案例最少，也沒有執行測試。</p>
+        <div class="table-wrap" id="table-wrap" tabindex="0" role="region" aria-label="案例表格">
+          <table>
+            <thead id="cases-head"></thead>
+            <tbody id="cases-body"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager" hidden>
+          <button type="button" id="prev-page">上一頁</button>
+          <span id="page-label" aria-live="polite"></span>
+          <button type="button" id="next-page">下一頁</button>
+        </div>
+        <button type="button" id="download" class="primary">下載報告</button>
+      </section>
+    </div>
+  </section>
+  <section class="faq" aria-label="常見問題">
+    <h2>常見問題</h2>
+    <details>
+      <summary>這是最少案例的證明嗎？</summary>
+      <p>它是依新增覆蓋挑選的可重現案例集合。</p>
+    </details>
+    <details>
+      <summary>這代表每個組合都會測嗎？</summary>
+      <p>每兩維的所有配對都會出現，完整的多維組合可能未列入。</p>
+    </details>
+  </section>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
