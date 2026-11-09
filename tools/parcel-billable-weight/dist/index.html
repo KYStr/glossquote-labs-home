@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>包裹計費重核對｜Gloss Tools</title>
+<meta name="description" content="用包裹外尺寸、實重與自訂服務條件核對材積重、進位與超界。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="./index.html">
+<link rel="alternate" hreflang="en" href="./en/index.html">
+<link rel="alternate" hreflang="x-default" href="./index.html">
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/index.html">← Gloss Tools 首頁</a>
+  <p class="lang-switch"><a href="./en/index.html" lang="en">English</a> <span class="lang-note">切換語言會離開本頁，正在編輯的草稿不會保留。</span></p>
+</header>
+<main>
+  <h1>包裹計費重核對</h1>
+  <p class="intro">先量好每件包裹的三邊（毫米）與實重（克），再填各服務的材積除數、克級距、最低計費重與選填上限，按下「核對各服務計費重」，就得到每件、每服務的材積重、計費重與超界原因。</p>
+
+  <form id="parcel-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>包裹外量測</legend>
+          <p class="help">1–12 件。每件一個短名（1–24 字，首字為字母或數字），三邊各 1–3000 毫米（任意順序填，工具會識別最長邊），實重 1–100000 克。</p>
+          <div id="parcels-body" class="rows"></div>
+          <button type="button" id="add-parcel" class="secondary">新增一件包裹</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>服務規則</legend>
+          <p class="help">1–4 組自填服務規則。材積除數與克級距各 1–100000，最低計費重 0–100000 克（預設 0），三個上限留空表示不限。</p>
+          <div id="services-body" class="rows"></div>
+          <button type="button" id="add-service" class="secondary">新增一組服務</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="update" class="primary">核對各服務計費重</button>
+          <button type="button" id="cancel" class="secondary" hidden>取消</button>
+          <button type="button" id="clear-draft" class="secondary">清除草稿</button>
+          <button type="button" id="load-sample" class="secondary">載入範例</button>
+        </div>
+        <p class="sample-note">範例是固定的假資料（兩件包裹、A 與 B 兩組服務；B 的最長邊上限 299 毫米會拒絕 P 件）；載入後仍需按「核對各服務計費重」才會計算。</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="核對結果"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
