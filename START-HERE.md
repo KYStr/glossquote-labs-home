@@ -19,5 +19,6 @@
 | 當 reviewer 或發布整合者 | [審查與發布說明](docs/REVIEW-AND-RELEASE.md) |
 | 補預案／判斷庫存 | [預案品質與補庫](docs/SPECIFICATION-STOCK.md) |
 | 本輪做了哪些整理 | [來源整合報告](docs/consolidation/2026-11-09/REPORT.md) |
+| 雲端另送的新候選與承接缺口 | [收尾候選盤點](docs/consolidation/2026-11-09/CLOUD-CANDIDATES.md) |
 
 `sources/`、`archives/` 是保留證據，不代表已驗收。複製了程式碼也不等於正式站已更新。不要遞迴執行所有快照的測試或安裝相依套件。
