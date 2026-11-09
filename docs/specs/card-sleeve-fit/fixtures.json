@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-card-sleeve-fit-20261109",
+  "cases": [
+    {
+      "id": "card-sleeve-fit.reassign",
+      "kind": "solve",
+      "input": {
+        "minGap": 0,
+        "maxGap": 20,
+        "cards": [
+          {
+            "name": "A",
+            "w": 630,
+            "h": 880,
+            "qty": 1
+          },
+          {
+            "name": "B",
+            "w": 620,
+            "h": 880,
+            "qty": 1
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S1",
+            "w": 630,
+            "h": 880,
+            "stock": 1
+          },
+          {
+            "name": "S2",
+            "w": 650,
+            "h": 880,
+            "stock": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "covered": 2,
+          "cardRows": [
+            {
+              "name": "A",
+              "missing": 0,
+              "use": [
+                {
+                  "sleeve": "S2",
+                  "qty": 1
+                }
+              ]
+            },
+            {
+              "name": "B",
+              "missing": 0,
+              "use": [
+                {
+                  "sleeve": "S1",
+                  "qty": 1
+                }
+              ]
+            }
+          ],
+          "sleeveRows": [
+            {
+              "name": "S1",
+              "remaining": 0
+            },
+            {
+              "name": "S2",
+              "remaining": 0
+            }
+          ]
+        }
+      },
+      "derivation": "A 可用兩套而 B 只能 S1，增廣路重分 A 取得兩張覆蓋。"
+    },
+    {
+      "id": "card-sleeve-fit.short-stock",
+      "kind": "solve",
+      "input": {
+        "minGap": 5,
+        "maxGap": 25,
+        "cards": [
+          {
+            "name": "A",
+            "w": 635,
+            "h": 880,
+            "qty": 3
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S1",
+            "w": 640,
+            "h": 905,
+            "stock": 2
+          },
+          {
+            "name": "S2",
+            "w": 630,
+            "h": 900,
+            "stock": 10
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "covered": 2,
+          "cardRows": [
+            {
+              "name": "A",
+              "missing": 1,
+              "use": [
+                {
+                  "sleeve": "S1",
+                  "qty": 2
+                }
+              ]
+            }
+          ],
+          "sleeveRows": [
+            {
+              "name": "S1",
+              "remaining": 0
+            },
+            {
+              "name": "S2",
+              "remaining": 10
+            }
+          ]
+        }
+      },
+      "derivation": "S1 剛好命中 5、25 兩界。S2 內寬太小，餘十張。"
+    },
+    {
+      "id": "card-sleeve-fit.exact-fit",
+      "kind": "solve",
+      "input": {
+        "minGap": 0,
+        "maxGap": 0,
+        "cards": [
+          {
+            "name": "A",
+            "w": 635,
+            "h": 880,
+            "qty": 1
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S",
+            "w": 635,
+            "h": 880,
+            "stock": 2
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "covered": 1,
+          "cardRows": [
+            {
+              "name": "A",
+              "missing": 0,
+              "use": [
+                {
+                  "sleeve": "S",
+                  "qty": 1
+                }
+              ]
+            }
+          ],
+          "sleeveRows": [
+            {
+              "name": "S",
+              "remaining": 1
+            }
+          ]
+        }
+      },
+      "derivation": "兩軸皆零餘隙，閉區間包含 0。"
+    },
+    {
+      "id": "card-sleeve-fit.empty-stock",
+      "kind": "solve",
+      "input": {
+        "minGap": 0,
+        "maxGap": 20,
+        "cards": [
+          {
+            "name": "A",
+            "w": 635,
+            "h": 880,
+            "qty": 2
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S",
+            "w": 640,
+            "h": 890,
+            "stock": 0
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "covered": 0,
+          "cardRows": [
+            {
+              "name": "A",
+              "missing": 2,
+              "use": []
+            }
+          ],
+          "sleeveRows": [
+            {
+              "name": "S",
+              "remaining": 0
+            }
+          ]
+        }
+      },
+      "derivation": "尺寸相容但終點容量零，沒有正流量。"
+    },
+    {
+      "id": "card-sleeve-fit.gap-order",
+      "kind": "solve",
+      "input": {
+        "minGap": 25,
+        "maxGap": 10,
+        "cards": [
+          {
+            "name": "A",
+            "w": 635,
+            "h": 880,
+            "qty": 1
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S",
+            "w": 640,
+            "h": 890,
+            "stock": 1
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "ORDER",
+          "path": "/maxGap"
+        }
+      },
+      "derivation": "最大餘隙不能小於最小。"
+    },
+    {
+      "id": "card-sleeve-fit.duplicate-sleeve",
+      "kind": "solve",
+      "input": {
+        "minGap": 0,
+        "maxGap": 20,
+        "cards": [
+          {
+            "name": "A",
+            "w": 635,
+            "h": 880,
+            "qty": 1
+          }
+        ],
+        "sleeves": [
+          {
+            "name": "S",
+            "w": 640,
+            "h": 890,
+            "stock": 1
+          },
+          {
+            "name": "S",
+            "w": 645,
+            "h": 890,
+            "stock": 2
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "DUPLICATE",
+          "path": "/sleeves/1/name"
+        }
+      },
+      "derivation": "結果按唯一套名辨識實體牌套。"
+    },
+    {
+      "id": "card-sleeve-fit.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "minGap": 0,
+            "maxGap": 20,
+            "cards": [
+              {
+                "name": "A",
+                "w": 630,
+                "h": 880,
+                "qty": 1
+              },
+              {
+                "name": "B",
+                "w": 620,
+                "h": 880,
+                "qty": 1
+              }
+            ],
+            "sleeves": [
+              {
+                "name": "S1",
+                "w": 630,
+                "h": 880,
+                "stock": 1
+              },
+              {
+                "name": "S2",
+                "w": 650,
+                "h": 880,
+                "stock": 1
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "minGap": 5,
+            "maxGap": 25,
+            "cards": [
+              {
+                "name": "A",
+                "w": 635,
+                "h": 880,
+                "qty": 3
+              }
+            ],
+            "sleeves": [
+              {
+                "name": "S1",
+                "w": 640,
+                "h": 905,
+                "stock": 2
+              },
+              {
+                "name": "S2",
+                "w": 630,
+                "h": 900,
+                "stock": 10
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "card-sleeve-fit.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "minGap": 0,
+            "maxGap": 20,
+            "cards": [
+              {
+                "name": "A",
+                "w": 630,
+                "h": 880,
+                "qty": 1
+              },
+              {
+                "name": "B",
+                "w": 620,
+                "h": 880,
+                "qty": 1
+              }
+            ],
+            "sleeves": [
+              {
+                "name": "S1",
+                "w": 630,
+                "h": 880,
+                "stock": 1
+              },
+              {
+                "name": "S2",
+                "w": 650,
+                "h": 880,
+                "stock": 1
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "minGap": 5,
+            "maxGap": 25,
+            "cards": [
+              {
+                "name": "A",
+                "w": 635,
+                "h": 880,
+                "qty": 3
+              }
+            ],
+            "sleeves": [
+              {
+                "name": "S1",
+                "w": 640,
+                "h": 905,
+                "stock": 2
+              },
+              {
+                "name": "S2",
+                "w": 630,
+                "h": 900,
+                "stock": 10
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "covered": 2,
+          "cardRows": [
+            {
+              "name": "A",
+              "missing": 1,
+              "use": [
+                {
+                  "sleeve": "S1",
+                  "qty": 2
+                }
+              ]
+            }
+          ],
+          "sleeveRows": [
+            {
+              "name": "S1",
+              "remaining": 0
+            },
+            {
+              "name": "S2",
+              "remaining": 10
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-pickup-window-route-20261109",
+  "cases": [
+    {
+      "id": "pickup-window-route.only-order",
+      "kind": "solve",
+      "input": {
+        "start": 480,
+        "deadline": 600,
+        "stops": [
+          {
+            "name": "A",
+            "open": 500,
+            "close": 540,
+            "service": 10
+          },
+          {
+            "name": "B",
+            "open": 480,
+            "close": 520,
+            "service": 5
+          }
+        ],
+        "travel": [
+          [
+            0,
+            20,
+            10
+          ],
+          [
+            15,
+            0,
+            15
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "returnAt": 530,
+          "visits": [
+            {
+              "name": "B",
+              "arrive": 490,
+              "serveStart": 490,
+              "leave": 495
+            },
+            {
+              "name": "A",
+              "arrive": 505,
+              "serveStart": 505,
+              "leave": 515
+            }
+          ]
+        }
+      },
+      "derivation": "A 先時 B 到 525 超窗。B 先依序 490、505 到達，515+15 回站。"
+    },
+    {
+      "id": "pickup-window-route.wait-and-tie",
+      "kind": "solve",
+      "input": {
+        "start": 0,
+        "deadline": 60,
+        "stops": [
+          {
+            "name": "A",
+            "open": 20,
+            "close": 40,
+            "service": 5
+          },
+          {
+            "name": "B",
+            "open": 0,
+            "close": 60,
+            "service": 5
+          }
+        ],
+        "travel": [
+          [
+            0,
+            5,
+            10
+          ],
+          [
+            8,
+            0,
+            3
+          ],
+          [
+            5,
+            10,
+            0
+          ]
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "returnAt": 38,
+          "visits": [
+            {
+              "name": "A",
+              "arrive": 5,
+              "serveStart": 20,
+              "leave": 25
+            },
+            {
+              "name": "B",
+              "arrive": 28,
+              "serveStart": 28,
+              "leave": 33
+            }
+          ]
+        }
+      },
+      "derivation": "A→B 返回 33+5=38。B→A 返回 30+8=38，平手保留 A 先。"
+    },
+    {
+      "id": "pickup-window-route.exact-return",
+      "kind": "solve",
+      "input": {
+        "start": 60,
+        "deadline": 90,
+        "stops": [
+          {
+            "name": "A",
+            "open": 70,
+            "close": 80,
+            "service": 10
+          }
+        ],
+        "travel": [
+          [
+            0,
+            10
+          ],
+          [
+            10,
+            0
+          ]
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "returnAt": 90,
+          "visits": [
+            {
+              "name": "A",
+              "arrive": 70,
+              "serveStart": 70,
+              "leave": 80
+            }
+          ]
+        }
+      },
+      "derivation": "服務完恰在關閉時間，返回恰在期限，均含等號。"
+    },
+    {
+      "id": "pickup-window-route.missing-return",
+      "kind": "solve",
+      "input": {
+        "start": 60,
+        "deadline": 90,
+        "stops": [
+          {
+            "name": "A",
+            "open": 70,
+            "close": 80,
+            "service": 10
+          }
+        ],
+        "travel": [
+          [
+            0,
+            10
+          ],
+          [
+            null,
+            0
+          ]
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": false,
+          "returnAt": null,
+          "visits": []
+        }
+      },
+      "derivation": "出發處到 A 可走，但 A 回程缺邊。"
+    },
+    {
+      "id": "pickup-window-route.zero-leg",
+      "kind": "solve",
+      "input": {
+        "start": 0,
+        "deadline": 10,
+        "stops": [
+          {
+            "name": "A",
+            "open": 0,
+            "close": 5,
+            "service": 5
+          }
+        ],
+        "travel": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "returnAt": 5,
+          "visits": [
+            {
+              "name": "A",
+              "arrive": 0,
+              "serveStart": 0,
+              "leave": 5
+            }
+          ]
+        }
+      },
+      "derivation": "非對角的 0 分表示同處可直達，與 null 不同。"
+    },
+    {
+      "id": "pickup-window-route.diagonal",
+      "kind": "solve",
+      "input": {
+        "start": 0,
+        "deadline": 10,
+        "stops": [
+          {
+            "name": "A",
+            "open": 0,
+            "close": 5,
+            "service": 5
+          }
+        ],
+        "travel": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "DIAGONAL",
+          "path": "/travel/1/1"
+        }
+      },
+      "derivation": "站到自己固定零，非零對角是欄位設定錯誤。"
+    },
+    {
+      "id": "pickup-window-route.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "start": 480,
+            "deadline": 600,
+            "stops": [
+              {
+                "name": "A",
+                "open": 500,
+                "close": 540,
+                "service": 10
+              },
+              {
+                "name": "B",
+                "open": 480,
+                "close": 520,
+                "service": 5
+              }
+            ],
+            "travel": [
+              [
+                0,
+                20,
+                10
+              ],
+              [
+                15,
+                0,
+                15
+              ],
+              [
+                20,
+                10,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "start": 0,
+            "deadline": 60,
+            "stops": [
+              {
+                "name": "A",
+                "open": 20,
+                "close": 40,
+                "service": 5
+              },
+              {
+                "name": "B",
+                "open": 0,
+                "close": 60,
+                "service": 5
+              }
+            ],
+            "travel": [
+              [
+                0,
+                5,
+                10
+              ],
+              [
+                8,
+                0,
+                3
+              ],
+              [
+                5,
+                10,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "pickup-window-route.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "start": 480,
+            "deadline": 600,
+            "stops": [
+              {
+                "name": "A",
+                "open": 500,
+                "close": 540,
+                "service": 10
+              },
+              {
+                "name": "B",
+                "open": 480,
+                "close": 520,
+                "service": 5
+              }
+            ],
+            "travel": [
+              [
+                0,
+                20,
+                10
+              ],
+              [
+                15,
+                0,
+                15
+              ],
+              [
+                20,
+                10,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "start": 0,
+            "deadline": 60,
+            "stops": [
+              {
+                "name": "A",
+                "open": 20,
+                "close": 40,
+                "service": 5
+              },
+              {
+                "name": "B",
+                "open": 0,
+                "close": 60,
+                "service": 5
+              }
+            ],
+            "travel": [
+              [
+                0,
+                5,
+                10
+              ],
+              [
+                8,
+                0,
+                3
+              ],
+              [
+                5,
+                10,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "found": true,
+          "returnAt": 38,
+          "visits": [
+            {
+              "name": "A",
+              "arrive": 5,
+              "serveStart": 20,
+              "leave": 25
+            },
+            {
+              "name": "B",
+              "arrive": 28,
+              "serveStart": 28,
+              "leave": 33
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

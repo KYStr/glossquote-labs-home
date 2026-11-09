@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-table-seating-20261109",
+  "cases": [
+    {
+      "id": "table-seating.backtrack",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T1",
+            "seats": 4,
+            "stepFree": true
+          },
+          {
+            "name": "T2",
+            "seats": 4,
+            "stepFree": false
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 3,
+            "stepFree": false,
+            "pin": null
+          },
+          {
+            "name": "B",
+            "size": 2,
+            "stepFree": true,
+            "pin": null
+          },
+          {
+            "name": "C",
+            "size": 1,
+            "stepFree": false,
+            "pin": "T2"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "tables": [
+            {
+              "name": "T1",
+              "parties": [
+                "B"
+              ],
+              "remaining": 2
+            },
+            {
+              "name": "T2",
+              "parties": [
+                "A",
+                "C"
+              ],
+              "remaining": 0
+            }
+          ]
+        }
+      },
+      "derivation": "A 在 T1 會使 B 沒空位。回退 A 到 T2，B 用 T1，C 鎖在 T2。"
+    },
+    {
+      "id": "table-seating.pinned",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T1",
+            "seats": 2,
+            "stepFree": false
+          },
+          {
+            "name": "T2",
+            "seats": 3,
+            "stepFree": true
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 2,
+            "stepFree": false,
+            "pin": "T2"
+          },
+          {
+            "name": "B",
+            "size": 1,
+            "stepFree": false,
+            "pin": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "tables": [
+            {
+              "name": "T1",
+              "parties": [
+                "B"
+              ],
+              "remaining": 1
+            },
+            {
+              "name": "T2",
+              "parties": [
+                "A"
+              ],
+              "remaining": 1
+            }
+          ]
+        }
+      },
+      "derivation": "A 固定第二桌。B 按桌輸入序使用 T1。"
+    },
+    {
+      "id": "table-seating.one-table",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T",
+            "seats": 20,
+            "stepFree": true
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 20,
+            "stepFree": true,
+            "pin": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "tables": [
+            {
+              "name": "T",
+              "parties": [
+                "A"
+              ],
+              "remaining": 0
+            }
+          ]
+        }
+      },
+      "derivation": "一桌 20 座恰好容納整群 20。"
+    },
+    {
+      "id": "table-seating.fragmented",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T1",
+            "seats": 2,
+            "stepFree": true
+          },
+          {
+            "name": "T2",
+            "seats": 2,
+            "stepFree": true
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 3,
+            "stepFree": false,
+            "pin": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": false,
+          "tables": null
+        }
+      },
+      "derivation": "合計有四座，但任一桌皆不足三座。"
+    },
+    {
+      "id": "table-seating.locked-conflict",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T1",
+            "seats": 4,
+            "stepFree": false
+          },
+          {
+            "name": "T2",
+            "seats": 4,
+            "stepFree": true
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 1,
+            "stepFree": true,
+            "pin": "T1"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": false,
+          "tables": null
+        }
+      },
+      "derivation": "T1 有空位但無階條件未滿。T2 被指定限制排除。"
+    },
+    {
+      "id": "table-seating.unknown-table",
+      "kind": "solve",
+      "input": {
+        "tables": [
+          {
+            "name": "T1",
+            "seats": 4,
+            "stepFree": true
+          }
+        ],
+        "parties": [
+          {
+            "name": "A",
+            "size": 1,
+            "stepFree": false,
+            "pin": "T0"
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "REF",
+          "path": "/parties/0/pin"
+        }
+      },
+      "derivation": "T0 不在桌清單內，先修正參照。"
+    },
+    {
+      "id": "table-seating.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "tables": [
+              {
+                "name": "T1",
+                "seats": 4,
+                "stepFree": true
+              },
+              {
+                "name": "T2",
+                "seats": 4,
+                "stepFree": false
+              }
+            ],
+            "parties": [
+              {
+                "name": "A",
+                "size": 3,
+                "stepFree": false,
+                "pin": null
+              },
+              {
+                "name": "B",
+                "size": 2,
+                "stepFree": true,
+                "pin": null
+              },
+              {
+                "name": "C",
+                "size": 1,
+                "stepFree": false,
+                "pin": "T2"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "tables": [
+              {
+                "name": "T1",
+                "seats": 2,
+                "stepFree": false
+              },
+              {
+                "name": "T2",
+                "seats": 3,
+                "stepFree": true
+              }
+            ],
+            "parties": [
+              {
+                "name": "A",
+                "size": 2,
+                "stepFree": false,
+                "pin": "T2"
+              },
+              {
+                "name": "B",
+                "size": 1,
+                "stepFree": false,
+                "pin": null
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "table-seating.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "tables": [
+              {
+                "name": "T1",
+                "seats": 4,
+                "stepFree": true
+              },
+              {
+                "name": "T2",
+                "seats": 4,
+                "stepFree": false
+              }
+            ],
+            "parties": [
+              {
+                "name": "A",
+                "size": 3,
+                "stepFree": false,
+                "pin": null
+              },
+              {
+                "name": "B",
+                "size": 2,
+                "stepFree": true,
+                "pin": null
+              },
+              {
+                "name": "C",
+                "size": 1,
+                "stepFree": false,
+                "pin": "T2"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "tables": [
+              {
+                "name": "T1",
+                "seats": 2,
+                "stepFree": false
+              },
+              {
+                "name": "T2",
+                "seats": 3,
+                "stepFree": true
+              }
+            ],
+            "parties": [
+              {
+                "name": "A",
+                "size": 2,
+                "stepFree": false,
+                "pin": "T2"
+              },
+              {
+                "name": "B",
+                "size": 1,
+                "stepFree": false,
+                "pin": null
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "found": true,
+          "tables": [
+            {
+              "name": "T1",
+              "parties": [
+                "B"
+              ],
+              "remaining": 1
+            },
+            {
+              "name": "T2",
+              "parties": [
+                "A"
+              ],
+              "remaining": 1
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

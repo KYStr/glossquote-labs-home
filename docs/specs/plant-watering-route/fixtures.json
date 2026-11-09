@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-plant-watering-route-20261109",
+  "cases": [
+    {
+      "id": "plant-watering-route.farthest",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 1000,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 350,
+            "tapBefore": false
+          },
+          {
+            "name": "B",
+            "amountMl": 300,
+            "tapBefore": true
+          },
+          {
+            "name": "C",
+            "amountMl": 300,
+            "tapBefore": true
+          },
+          {
+            "name": "D",
+            "amountMl": 500,
+            "tapBefore": false
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "plants": [
+            {
+              "name": "A",
+              "leftMl": 650
+            },
+            {
+              "name": "B",
+              "leftMl": 350
+            },
+            {
+              "name": "C",
+              "leftMl": 700
+            },
+            {
+              "name": "D",
+              "leftMl": 200
+            }
+          ],
+          "refills": [
+            {
+              "before": "C",
+              "addMl": 650
+            }
+          ],
+          "blockedAt": null,
+          "missingMl": 0
+        }
+      },
+      "derivation": "最遠可達 tap 為 C，A+B 用 650。滿壺繼續用 800。"
+    },
+    {
+      "id": "plant-watering-route.exact-refill",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 500,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 500,
+            "tapBefore": true
+          },
+          {
+            "name": "B",
+            "amountMl": 500,
+            "tapBefore": true
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "plants": [
+            {
+              "name": "A",
+              "leftMl": 0
+            },
+            {
+              "name": "B",
+              "leftMl": 0
+            }
+          ],
+          "refills": [
+            {
+              "before": "B",
+              "addMl": 500
+            }
+          ],
+          "blockedAt": null,
+          "missingMl": 0
+        }
+      },
+      "derivation": "走到 B 前恰空壺，仍能原地補滿。A 前出發已滿。"
+    },
+    {
+      "id": "plant-watering-route.no-refill",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 600,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 200,
+            "tapBefore": false
+          },
+          {
+            "name": "B",
+            "amountMl": 400,
+            "tapBefore": true
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "plants": [
+            {
+              "name": "A",
+              "leftMl": 400
+            },
+            {
+              "name": "B",
+              "leftMl": 0
+            }
+          ],
+          "refills": [],
+          "blockedAt": null,
+          "missingMl": 0
+        }
+      },
+      "derivation": "全程合計等於壺量，沿途水龍頭不用停。"
+    },
+    {
+      "id": "plant-watering-route.no-tap",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 500,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 300,
+            "tapBefore": false
+          },
+          {
+            "name": "B",
+            "amountMl": 300,
+            "tapBefore": false
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "plants": [
+            {
+              "name": "A",
+              "leftMl": 200
+            }
+          ],
+          "refills": [],
+          "blockedAt": "B",
+          "missingMl": 100
+        }
+      },
+      "derivation": "第二盆需 300，壺剩 200 且無可達補水點。"
+    },
+    {
+      "id": "plant-watering-route.one-too-large",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 400,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 401,
+            "tapBefore": true
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "plants": [],
+          "refills": [],
+          "blockedAt": "A",
+          "missingMl": 1
+        }
+      },
+      "derivation": "滿壺仍少 1 ml，第一盆不能拆次。"
+    },
+    {
+      "id": "plant-watering-route.zero-amount",
+      "kind": "solve",
+      "input": {
+        "capacityMl": 400,
+        "plants": [
+          {
+            "name": "A",
+            "amountMl": 0,
+            "tapBefore": true
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "RANGE",
+          "path": "/plants/0/amountMl"
+        }
+      },
+      "derivation": "只有正用量盆栽列加入路線。"
+    },
+    {
+      "id": "plant-watering-route.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "capacityMl": 1000,
+            "plants": [
+              {
+                "name": "A",
+                "amountMl": 350,
+                "tapBefore": false
+              },
+              {
+                "name": "B",
+                "amountMl": 300,
+                "tapBefore": true
+              },
+              {
+                "name": "C",
+                "amountMl": 300,
+                "tapBefore": true
+              },
+              {
+                "name": "D",
+                "amountMl": 500,
+                "tapBefore": false
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "capacityMl": 500,
+            "plants": [
+              {
+                "name": "A",
+                "amountMl": 500,
+                "tapBefore": true
+              },
+              {
+                "name": "B",
+                "amountMl": 500,
+                "tapBefore": true
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "plant-watering-route.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "capacityMl": 1000,
+            "plants": [
+              {
+                "name": "A",
+                "amountMl": 350,
+                "tapBefore": false
+              },
+              {
+                "name": "B",
+                "amountMl": 300,
+                "tapBefore": true
+              },
+              {
+                "name": "C",
+                "amountMl": 300,
+                "tapBefore": true
+              },
+              {
+                "name": "D",
+                "amountMl": 500,
+                "tapBefore": false
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "capacityMl": 500,
+            "plants": [
+              {
+                "name": "A",
+                "amountMl": 500,
+                "tapBefore": true
+              },
+              {
+                "name": "B",
+                "amountMl": 500,
+                "tapBefore": true
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "plants": [
+            {
+              "name": "A",
+              "leftMl": 0
+            },
+            {
+              "name": "B",
+              "leftMl": 0
+            }
+          ],
+          "refills": [
+            {
+              "before": "B",
+              "addMl": 500
+            }
+          ],
+          "blockedAt": null,
+          "missingMl": 0
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-court-queue-rotation-20261109",
+  "cases": [
+    {
+      "id": "court-queue-rotation.cap",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "initialQueue": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "maxConsecutive": 2,
+        "events": [
+          {
+            "type": "start"
+          },
+          {
+            "type": "finish",
+            "winner": "A"
+          },
+          {
+            "type": "start"
+          },
+          {
+            "type": "finish",
+            "winner": "A"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "played": 2,
+          "queue": [
+            "D",
+            "B",
+            "A",
+            "C"
+          ],
+          "holder": null,
+          "active": null,
+          "next": [
+            "D",
+            "B"
+          ]
+        }
+      },
+      "derivation": "A 第一場留場，第二場達上限後與 C 依上場順序排尾。"
+    },
+    {
+      "id": "court-queue-rotation.late-arrival",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B",
+          "C"
+        ],
+        "initialQueue": [
+          "A",
+          "C"
+        ],
+        "maxConsecutive": 2,
+        "events": [
+          {
+            "type": "start"
+          },
+          {
+            "type": "join",
+            "team": "B"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "played": 0,
+          "queue": [
+            "B"
+          ],
+          "holder": null,
+          "active": [
+            {
+              "team": "A",
+              "streak": 1
+            },
+            {
+              "team": "C",
+              "streak": 1
+            }
+          ],
+          "next": null
+        }
+      },
+      "derivation": "A、C 正在場，晚到 B 排尾，當下無下一對預覽。"
+    },
+    {
+      "id": "court-queue-rotation.limit-one",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B"
+        ],
+        "initialQueue": [
+          "A",
+          "B"
+        ],
+        "maxConsecutive": 1,
+        "events": [
+          {
+            "type": "start"
+          },
+          {
+            "type": "finish",
+            "winner": "B"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "played": 1,
+          "queue": [
+            "A",
+            "B"
+          ],
+          "holder": null,
+          "active": null,
+          "next": [
+            "A",
+            "B"
+          ]
+        }
+      },
+      "derivation": "上限 1，勝者 B 也須回尾，順序按場上 A、B。"
+    },
+    {
+      "id": "court-queue-rotation.holder-leaves",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B"
+        ],
+        "initialQueue": [
+          "A",
+          "B"
+        ],
+        "maxConsecutive": 2,
+        "events": [
+          {
+            "type": "start"
+          },
+          {
+            "type": "finish",
+            "winner": "B"
+          },
+          {
+            "type": "leave",
+            "team": "B"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "played": 1,
+          "queue": [
+            "A"
+          ],
+          "holder": null,
+          "active": null,
+          "next": null
+        }
+      },
+      "derivation": "B 可在場間離開。剩 A，湊不出兩隊。"
+    },
+    {
+      "id": "court-queue-rotation.one-waiting",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B"
+        ],
+        "initialQueue": [
+          "A"
+        ],
+        "maxConsecutive": 2,
+        "events": [
+          {
+            "type": "start"
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "NEED_TEAMS",
+          "path": "/events/0"
+        }
+      },
+      "derivation": "開打需要兩隊，候場一隊不足。"
+    },
+    {
+      "id": "court-queue-rotation.unplayed-winner",
+      "kind": "solve",
+      "input": {
+        "teams": [
+          "A",
+          "B",
+          "C"
+        ],
+        "initialQueue": [
+          "A",
+          "B",
+          "C"
+        ],
+        "maxConsecutive": 2,
+        "events": [
+          {
+            "type": "start"
+          },
+          {
+            "type": "finish",
+            "winner": "C"
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "WINNER",
+          "path": "/events/1/winner"
+        }
+      },
+      "derivation": "C 雖是已知隊，未出現在 A、B 這場。"
+    },
+    {
+      "id": "court-queue-rotation.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "teams": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "initialQueue": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "maxConsecutive": 2,
+            "events": [
+              {
+                "type": "start"
+              },
+              {
+                "type": "finish",
+                "winner": "A"
+              },
+              {
+                "type": "start"
+              },
+              {
+                "type": "finish",
+                "winner": "A"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "teams": [
+              "A",
+              "B",
+              "C"
+            ],
+            "initialQueue": [
+              "A",
+              "C"
+            ],
+            "maxConsecutive": 2,
+            "events": [
+              {
+                "type": "start"
+              },
+              {
+                "type": "join",
+                "team": "B"
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "court-queue-rotation.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "teams": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "initialQueue": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "maxConsecutive": 2,
+            "events": [
+              {
+                "type": "start"
+              },
+              {
+                "type": "finish",
+                "winner": "A"
+              },
+              {
+                "type": "start"
+              },
+              {
+                "type": "finish",
+                "winner": "A"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "teams": [
+              "A",
+              "B",
+              "C"
+            ],
+            "initialQueue": [
+              "A",
+              "C"
+            ],
+            "maxConsecutive": 2,
+            "events": [
+              {
+                "type": "start"
+              },
+              {
+                "type": "join",
+                "team": "B"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "played": 0,
+          "queue": [
+            "B"
+          ],
+          "holder": null,
+          "active": [
+            {
+              "team": "A",
+              "streak": 1
+            },
+            {
+              "team": "C",
+              "streak": 1
+            }
+          ],
+          "next": null
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

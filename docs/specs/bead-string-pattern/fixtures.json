@@ -1,0 +1,558 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-bead-string-pattern-20261109",
+  "cases": [
+    {
+      "id": "bead-string-pattern.mirrored",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "R",
+            "stock": 2
+          },
+          {
+            "name": "G",
+            "stock": 1
+          },
+          {
+            "name": "B",
+            "stock": 2
+          },
+          {
+            "name": "K",
+            "stock": 2
+          }
+        ],
+        "motif": [
+          "R",
+          "G",
+          "B"
+        ],
+        "repeats": 2,
+        "mode": "alternate",
+        "head": "K",
+        "tail": "K"
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "positions": [
+            {
+              "index": 1,
+              "name": "K",
+              "available": true
+            },
+            {
+              "index": 2,
+              "name": "R",
+              "available": true
+            },
+            {
+              "index": 3,
+              "name": "G",
+              "available": true
+            },
+            {
+              "index": 4,
+              "name": "B",
+              "available": true
+            },
+            {
+              "index": 5,
+              "name": "B",
+              "available": true
+            },
+            {
+              "index": 6,
+              "name": "G",
+              "available": false
+            },
+            {
+              "index": 7,
+              "name": "R",
+              "available": true
+            },
+            {
+              "index": 8,
+              "name": "K",
+              "available": true
+            }
+          ],
+          "colors": [
+            {
+              "name": "R",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 0
+            },
+            {
+              "name": "G",
+              "needed": 2,
+              "missing": 1,
+              "remaining": 0
+            },
+            {
+              "name": "B",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 0
+            },
+            {
+              "name": "K",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 0
+            }
+          ],
+          "firstMissing": 6
+        }
+      },
+      "derivation": "第二組完整倒序 B/G/R，G 第一次用在 3、第二次在 6 缺料。"
+    },
+    {
+      "id": "bead-string-pattern.straight",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "A",
+            "stock": 3
+          },
+          {
+            "name": "B",
+            "stock": 2
+          },
+          {
+            "name": "C",
+            "stock": 2
+          }
+        ],
+        "motif": [
+          "A",
+          "B"
+        ],
+        "repeats": 2,
+        "mode": "repeat",
+        "head": null,
+        "tail": null
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "positions": [
+            {
+              "index": 1,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 2,
+              "name": "B",
+              "available": true
+            },
+            {
+              "index": 3,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 4,
+              "name": "B",
+              "available": true
+            }
+          ],
+          "colors": [
+            {
+              "name": "A",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 1
+            },
+            {
+              "name": "B",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 0
+            },
+            {
+              "name": "C",
+              "needed": 0,
+              "missing": 0,
+              "remaining": 2
+            }
+          ],
+          "firstMissing": null
+        }
+      },
+      "derivation": "直複 ABAB，C 完全未用仍列餘二。"
+    },
+    {
+      "id": "bead-string-pattern.single-bead",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "A",
+            "stock": 2
+          }
+        ],
+        "motif": [
+          "A"
+        ],
+        "repeats": 3,
+        "mode": "alternate",
+        "head": null,
+        "tail": null
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "positions": [
+            {
+              "index": 1,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 2,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 3,
+              "name": "A",
+              "available": false
+            }
+          ],
+          "colors": [
+            {
+              "name": "A",
+              "needed": 3,
+              "missing": 1,
+              "remaining": 0
+            }
+          ],
+          "firstMissing": 3
+        }
+      },
+      "derivation": "單珠倒序仍是一珠，三組共有三顆。"
+    },
+    {
+      "id": "bead-string-pattern.empty-stock",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "A",
+            "stock": 0
+          }
+        ],
+        "motif": [
+          "A"
+        ],
+        "repeats": 1,
+        "mode": "repeat",
+        "head": "A",
+        "tail": "A"
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "positions": [
+            {
+              "index": 1,
+              "name": "A",
+              "available": false
+            },
+            {
+              "index": 2,
+              "name": "A",
+              "available": false
+            },
+            {
+              "index": 3,
+              "name": "A",
+              "available": false
+            }
+          ],
+          "colors": [
+            {
+              "name": "A",
+              "needed": 3,
+              "missing": 3,
+              "remaining": 0
+            }
+          ],
+          "firstMissing": 1
+        }
+      },
+      "derivation": "兩端加花樣合 3，原庫存 0。"
+    },
+    {
+      "id": "bead-string-pattern.unknown-end",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "A",
+            "stock": 2
+          }
+        ],
+        "motif": [
+          "A"
+        ],
+        "repeats": 1,
+        "mode": "repeat",
+        "head": null,
+        "tail": "B"
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "REF",
+          "path": "/tail"
+        }
+      },
+      "derivation": "後端珠 B 需先列在顏色庫存。"
+    },
+    {
+      "id": "bead-string-pattern.zero-groups",
+      "kind": "solve",
+      "input": {
+        "colors": [
+          {
+            "name": "A",
+            "stock": 2
+          }
+        ],
+        "motif": [
+          "A"
+        ],
+        "repeats": 0,
+        "mode": "repeat",
+        "head": null,
+        "tail": null
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "RANGE",
+          "path": "/repeats"
+        }
+      },
+      "derivation": "規格要求至少一組花樣。"
+    },
+    {
+      "id": "bead-string-pattern.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "colors": [
+              {
+                "name": "R",
+                "stock": 2
+              },
+              {
+                "name": "G",
+                "stock": 1
+              },
+              {
+                "name": "B",
+                "stock": 2
+              },
+              {
+                "name": "K",
+                "stock": 2
+              }
+            ],
+            "motif": [
+              "R",
+              "G",
+              "B"
+            ],
+            "repeats": 2,
+            "mode": "alternate",
+            "head": "K",
+            "tail": "K"
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "colors": [
+              {
+                "name": "A",
+                "stock": 3
+              },
+              {
+                "name": "B",
+                "stock": 2
+              },
+              {
+                "name": "C",
+                "stock": 2
+              }
+            ],
+            "motif": [
+              "A",
+              "B"
+            ],
+            "repeats": 2,
+            "mode": "repeat",
+            "head": null,
+            "tail": null
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "bead-string-pattern.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "colors": [
+              {
+                "name": "R",
+                "stock": 2
+              },
+              {
+                "name": "G",
+                "stock": 1
+              },
+              {
+                "name": "B",
+                "stock": 2
+              },
+              {
+                "name": "K",
+                "stock": 2
+              }
+            ],
+            "motif": [
+              "R",
+              "G",
+              "B"
+            ],
+            "repeats": 2,
+            "mode": "alternate",
+            "head": "K",
+            "tail": "K"
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "colors": [
+              {
+                "name": "A",
+                "stock": 3
+              },
+              {
+                "name": "B",
+                "stock": 2
+              },
+              {
+                "name": "C",
+                "stock": 2
+              }
+            ],
+            "motif": [
+              "A",
+              "B"
+            ],
+            "repeats": 2,
+            "mode": "repeat",
+            "head": null,
+            "tail": null
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "positions": [
+            {
+              "index": 1,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 2,
+              "name": "B",
+              "available": true
+            },
+            {
+              "index": 3,
+              "name": "A",
+              "available": true
+            },
+            {
+              "index": 4,
+              "name": "B",
+              "available": true
+            }
+          ],
+          "colors": [
+            {
+              "name": "A",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 1
+            },
+            {
+              "name": "B",
+              "needed": 2,
+              "missing": 0,
+              "remaining": 0
+            },
+            {
+              "name": "C",
+              "needed": 0,
+              "missing": 0,
+              "remaining": 2
+            }
+          ],
+          "firstMissing": null
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

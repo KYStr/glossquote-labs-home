@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-bicycle-gear-table-20261109",
+  "cases": [
+    {
+      "id": "bicycle-gear-table.group-ratios",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 2100,
+        "cadence": 80,
+        "front": [
+          40,
+          20
+        ],
+        "rear": [
+          10,
+          20
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                1,
+                1
+              ],
+              "combos": [
+                [
+                  20,
+                  20
+                ]
+              ],
+              "rollTenthsMm": 21000,
+              "speedTenthsKmh": 101
+            },
+            {
+              "ratio": [
+                2,
+                1
+              ],
+              "combos": [
+                [
+                  40,
+                  20
+                ],
+                [
+                  20,
+                  10
+                ]
+              ],
+              "rollTenthsMm": 42000,
+              "speedTenthsKmh": 202
+            },
+            {
+              "ratio": [
+                4,
+                1
+              ],
+              "combos": [
+                [
+                  40,
+                  10
+                ]
+              ],
+              "rollTenthsMm": 84000,
+              "speedTenthsKmh": 403
+            }
+          ]
+        }
+      },
+      "derivation": "輪周乘 1/2/4 倍的速度各為 10.08、20.16、40.32 km/h，按組合輸入序列同組。"
+    },
+    {
+      "id": "bicycle-gear-table.two-cogs",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 2000,
+        "cadence": 60,
+        "front": [
+          30
+        ],
+        "rear": [
+          20,
+          30
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                1,
+                1
+              ],
+              "combos": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "rollTenthsMm": 20000,
+              "speedTenthsKmh": 72
+            },
+            {
+              "ratio": [
+                3,
+                2
+              ],
+              "combos": [
+                [
+                  30,
+                  20
+                ]
+              ],
+              "rollTenthsMm": 30000,
+              "speedTenthsKmh": 108
+            }
+          ]
+        }
+      },
+      "derivation": "後齒較大之比在前，1.5 倍每圈 3000 mm。"
+    },
+    {
+      "id": "bicycle-gear-table.zero-rpm",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 2000,
+        "cadence": 0,
+        "front": [
+          21
+        ],
+        "rear": [
+          14
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                3,
+                2
+              ],
+              "combos": [
+                [
+                  21,
+                  14
+                ]
+              ],
+              "rollTenthsMm": 30000,
+              "speedTenthsKmh": 0
+            }
+          ]
+        }
+      },
+      "derivation": "每圈量與踏頻無關，零 rpm 的速度為零。"
+    },
+    {
+      "id": "bicycle-gear-table.half-up",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 1250,
+        "cadence": 10,
+        "front": [
+          1
+        ],
+        "rear": [
+          1
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                1,
+                1
+              ],
+              "combos": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "rollTenthsMm": 12500,
+              "speedTenthsKmh": 8
+            }
+          ]
+        }
+      },
+      "derivation": "1250×10×60/1000000=0.75，顯示 0.8 km/h。"
+    },
+    {
+      "id": "bicycle-gear-table.sub-unity",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 1000,
+        "cadence": 50,
+        "front": [
+          1
+        ],
+        "rear": [
+          3
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                1,
+                3
+              ],
+              "combos": [
+                [
+                  1,
+                  3
+                ]
+              ],
+              "rollTenthsMm": 3333,
+              "speedTenthsKmh": 10
+            }
+          ]
+        }
+      },
+      "derivation": "每圈 1000/3 mm，50 rpm 時精確 1 km/h。"
+    },
+    {
+      "id": "bicycle-gear-table.duplicate-tooth",
+      "kind": "solve",
+      "input": {
+        "wheelMm": 2100,
+        "cadence": 80,
+        "front": [
+          40,
+          40
+        ],
+        "rear": [
+          10,
+          20
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "DUPLICATE",
+          "path": "/front/1"
+        }
+      },
+      "derivation": "同側重複齒數會重複產生同一物理組合。"
+    },
+    {
+      "id": "bicycle-gear-table.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "wheelMm": 2100,
+            "cadence": 80,
+            "front": [
+              40,
+              20
+            ],
+            "rear": [
+              10,
+              20
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "wheelMm": 2000,
+            "cadence": 60,
+            "front": [
+              30
+            ],
+            "rear": [
+              20,
+              30
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "bicycle-gear-table.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "wheelMm": 2100,
+            "cadence": 80,
+            "front": [
+              40,
+              20
+            ],
+            "rear": [
+              10,
+              20
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "wheelMm": 2000,
+            "cadence": 60,
+            "front": [
+              30
+            ],
+            "rear": [
+              20,
+              30
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "groups": [
+            {
+              "ratio": [
+                1,
+                1
+              ],
+              "combos": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "rollTenthsMm": 20000,
+              "speedTenthsKmh": 72
+            },
+            {
+              "ratio": [
+                3,
+                2
+              ],
+              "combos": [
+                [
+                  30,
+                  20
+                ]
+              ],
+              "rollTenthsMm": 30000,
+              "speedTenthsKmh": 108
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

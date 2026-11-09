@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-event-ticket-ranges-20261109",
+  "cases": [
+    {
+      "id": "event-ticket-ranges.mixed",
+      "kind": "solve",
+      "input": {
+        "digits": 4,
+        "issued": {
+          "first": "0001",
+          "last": "0010"
+        },
+        "bundles": [
+          {
+            "name": "A",
+            "first": "0001",
+            "last": "0004"
+          },
+          {
+            "name": "B",
+            "first": "0004",
+            "last": "0006"
+          },
+          {
+            "name": "C",
+            "first": "0008",
+            "last": "0011"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "uniqueCovered": 9,
+          "missingCount": 1,
+          "duplicateCopies": 1,
+          "outsideCopies": 1,
+          "missing": [
+            {
+              "first": "0007",
+              "last": "0007"
+            }
+          ],
+          "overlaps": [
+            {
+              "first": "0004",
+              "last": "0004",
+              "bundles": [
+                "A",
+                "B"
+              ]
+            }
+          ],
+          "outside": [
+            {
+              "bundle": "C",
+              "first": "0011",
+              "last": "0011"
+            }
+          ]
+        }
+      },
+      "derivation": "1–6、8–10 共 9 號，4 重疊，7 缺，11 超段。"
+    },
+    {
+      "id": "event-ticket-ranges.two-edges",
+      "kind": "solve",
+      "input": {
+        "digits": 2,
+        "issued": {
+          "first": "10",
+          "last": "14"
+        },
+        "bundles": [
+          {
+            "name": "A",
+            "first": "08",
+            "last": "11"
+          },
+          {
+            "name": "B",
+            "first": "12",
+            "last": "16"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "uniqueCovered": 5,
+          "missingCount": 0,
+          "duplicateCopies": 0,
+          "outsideCopies": 4,
+          "missing": [],
+          "overlaps": [],
+          "outside": [
+            {
+              "bundle": "A",
+              "first": "08",
+              "last": "09"
+            },
+            {
+              "bundle": "B",
+              "first": "15",
+              "last": "16"
+            }
+          ]
+        }
+      },
+      "derivation": "11 和 12 相接全覆蓋，兩邊各超出 2 張。"
+    },
+    {
+      "id": "event-ticket-ranges.upper-edge",
+      "kind": "solve",
+      "input": {
+        "digits": 9,
+        "issued": {
+          "first": "999999999",
+          "last": "999999999"
+        },
+        "bundles": [
+          {
+            "name": "A",
+            "first": "999999999",
+            "last": "999999999"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "uniqueCovered": 1,
+          "missingCount": 0,
+          "duplicateCopies": 0,
+          "outsideCopies": 0,
+          "missing": [],
+          "overlaps": [],
+          "outside": []
+        }
+      },
+      "derivation": "最後的加一端點仍在安全整數內，結果保留九位。"
+    },
+    {
+      "id": "event-ticket-ranges.empty-bundles",
+      "kind": "solve",
+      "input": {
+        "digits": 2,
+        "issued": {
+          "first": "00",
+          "last": "99"
+        },
+        "bundles": []
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "uniqueCovered": 0,
+          "missingCount": 100,
+          "duplicateCopies": 0,
+          "outsideCopies": 0,
+          "missing": [
+            {
+              "first": "00",
+              "last": "99"
+            }
+          ],
+          "overlaps": [],
+          "outside": []
+        }
+      },
+      "derivation": "一個完整 100 張號段都缺失，無需列個別號碼。"
+    },
+    {
+      "id": "event-ticket-ranges.wrong-width",
+      "kind": "solve",
+      "input": {
+        "digits": 2,
+        "issued": {
+          "first": "0",
+          "last": "99"
+        },
+        "bundles": []
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "SYNTAX",
+          "path": "/issued/first"
+        }
+      },
+      "derivation": "輸入第一票少一位，需照印刷補為 00。"
+    },
+    {
+      "id": "event-ticket-ranges.backwards",
+      "kind": "solve",
+      "input": {
+        "digits": 2,
+        "issued": {
+          "first": "00",
+          "last": "99"
+        },
+        "bundles": [
+          {
+            "name": "A",
+            "first": "42",
+            "last": "41"
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "ORDER",
+          "path": "/bundles/0/last"
+        }
+      },
+      "derivation": "同一疊的末號小於起號。"
+    },
+    {
+      "id": "event-ticket-ranges.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "digits": 4,
+            "issued": {
+              "first": "0001",
+              "last": "0010"
+            },
+            "bundles": [
+              {
+                "name": "A",
+                "first": "0001",
+                "last": "0004"
+              },
+              {
+                "name": "B",
+                "first": "0004",
+                "last": "0006"
+              },
+              {
+                "name": "C",
+                "first": "0008",
+                "last": "0011"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "digits": 2,
+            "issued": {
+              "first": "10",
+              "last": "14"
+            },
+            "bundles": [
+              {
+                "name": "A",
+                "first": "08",
+                "last": "11"
+              },
+              {
+                "name": "B",
+                "first": "12",
+                "last": "16"
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "event-ticket-ranges.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "digits": 4,
+            "issued": {
+              "first": "0001",
+              "last": "0010"
+            },
+            "bundles": [
+              {
+                "name": "A",
+                "first": "0001",
+                "last": "0004"
+              },
+              {
+                "name": "B",
+                "first": "0004",
+                "last": "0006"
+              },
+              {
+                "name": "C",
+                "first": "0008",
+                "last": "0011"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "digits": 2,
+            "issued": {
+              "first": "10",
+              "last": "14"
+            },
+            "bundles": [
+              {
+                "name": "A",
+                "first": "08",
+                "last": "11"
+              },
+              {
+                "name": "B",
+                "first": "12",
+                "last": "16"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "uniqueCovered": 5,
+          "missingCount": 0,
+          "duplicateCopies": 0,
+          "outsideCopies": 4,
+          "missing": [],
+          "overlaps": [],
+          "outside": [
+            {
+              "bundle": "A",
+              "first": "08",
+              "last": "09"
+            },
+            {
+              "bundle": "B",
+              "first": "15",
+              "last": "16"
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}

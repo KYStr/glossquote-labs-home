@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-gift-exchange-match-20261109",
+  "cases": [
+    {
+      "id": "gift-exchange-match.three",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "A",
+          "B",
+          "C"
+        ],
+        "blocked": []
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "assignments": [
+            {
+              "from": "A",
+              "to": "B"
+            },
+            {
+              "from": "B",
+              "to": "C"
+            },
+            {
+              "from": "C",
+              "to": "A"
+            }
+          ]
+        }
+      },
+      "derivation": "A 先配 B。若 B 配 A，最後 C 只能自送，所以 B 配 C。"
+    },
+    {
+      "id": "gift-exchange-match.directed",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "A",
+          "B",
+          "C"
+        ],
+        "blocked": [
+          {
+            "from": "A",
+            "to": "B"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "assignments": [
+            {
+              "from": "A",
+              "to": "C"
+            },
+            {
+              "from": "B",
+              "to": "A"
+            },
+            {
+              "from": "C",
+              "to": "B"
+            }
+          ]
+        }
+      },
+      "derivation": "A 禁 B 後只有 C。剩下 B→A、C→B 可完整配對。"
+    },
+    {
+      "id": "gift-exchange-match.reciprocal",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "blocked": []
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": true,
+          "assignments": [
+            {
+              "from": "A",
+              "to": "B"
+            },
+            {
+              "from": "B",
+              "to": "A"
+            },
+            {
+              "from": "C",
+              "to": "D"
+            },
+            {
+              "from": "D",
+              "to": "C"
+            }
+          ]
+        }
+      },
+      "derivation": "兩組互送符合規則，依輸入序先選 B 與 A。"
+    },
+    {
+      "id": "gift-exchange-match.no-matching",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "A",
+          "B",
+          "C"
+        ],
+        "blocked": [
+          {
+            "from": "A",
+            "to": "B"
+          },
+          {
+            "from": "B",
+            "to": "A"
+          }
+        ]
+      },
+      "expected": {
+        "status": "ok",
+        "result": {
+          "found": false,
+          "assignments": []
+        }
+      },
+      "derivation": "A 和 B 都只能送 C，兩人不能同時使用 C。"
+    },
+    {
+      "id": "gift-exchange-match.nfc-duplicate",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "Café",
+          "Café",
+          "B"
+        ],
+        "blocked": []
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "DUPLICATE",
+          "path": "/names/1"
+        }
+      },
+      "derivation": "正規化後前兩個短名相同。"
+    },
+    {
+      "id": "gift-exchange-match.self-rule",
+      "kind": "solve",
+      "input": {
+        "names": [
+          "A",
+          "B",
+          "C"
+        ],
+        "blocked": [
+          {
+            "from": "A",
+            "to": "A"
+          }
+        ]
+      },
+      "expected": {
+        "status": "error",
+        "error": {
+          "code": "SELF_RULE",
+          "path": "/blocked/0/to"
+        }
+      },
+      "derivation": "自送已隱含禁止，拒絕重複類型的顯式自送條件。"
+    },
+    {
+      "id": "gift-exchange-match.dirty-after-edit",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "names": [
+              "A",
+              "B",
+              "C"
+            ],
+            "blocked": []
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "names": [
+              "A",
+              "B",
+              "C"
+            ],
+            "blocked": [
+              {
+                "from": "A",
+                "to": "B"
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "phase": "dirty",
+        "result": null
+      },
+      "derivation": "第一次結算可顯示，替換草稿後立刻失效。新草稿要重新執行才產生自己的結果。"
+    },
+    {
+      "id": "gift-exchange-match.cancel-then-late",
+      "kind": "flow",
+      "input": [
+        {
+          "type": "edit",
+          "draft": {
+            "names": [
+              "A",
+              "B",
+              "C"
+            ],
+            "blocked": []
+          }
+        },
+        {
+          "type": "run",
+          "runId": 1
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "edit",
+          "draft": {
+            "names": [
+              "A",
+              "B",
+              "C"
+            ],
+            "blocked": [
+              {
+                "from": "A",
+                "to": "B"
+              }
+            ]
+          }
+        },
+        {
+          "type": "run",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 2
+        },
+        {
+          "type": "settle",
+          "runId": 1
+        }
+      ],
+      "expected": {
+        "phase": "ready",
+        "result": {
+          "found": true,
+          "assignments": [
+            {
+              "from": "A",
+              "to": "C"
+            },
+            {
+              "from": "B",
+              "to": "A"
+            },
+            {
+              "from": "C",
+              "to": "B"
+            }
+          ]
+        }
+      },
+      "derivation": "取消令第一個 runId 失效。第二次完成後抵達的第一次回覆丟棄，保留第二個字面結果。"
+    }
+  ]
+}
