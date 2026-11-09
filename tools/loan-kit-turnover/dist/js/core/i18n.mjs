@@ -1,0 +1,186 @@
+// Bilingual UI strings for Loan Kit Turnover Check. Pure data; no DOM
+// access. The app picks the table by the page language.
+
+// formatMinute(minutes, lang): minutes since midnight as "HH:MM".
+// Exactly 1440 renders as "24:00"; above 1440 renders with the next-day
+// marker ("隔日 HH:MM" / "next day HH:MM"), per SPEC.md inputsOutputs.
+export function formatMinute(minutes, lang) {
+  const total = minutes % 1440;
+  const hh = String(Math.floor(total / 60)).padStart(2, "0");
+  const mm = String(total % 60).padStart(2, "0");
+  if (minutes === 1440) return "24:00";
+  if (minutes > 1440) {
+    return lang === "zh-Hant" ? `隔日 ${hh}:${mm}` : `next day ${hh}:${mm}`;
+  }
+  return `${hh}:${mm}`;
+}
+
+export const STRINGS = {
+  "zh-Hant": {
+    intro:
+      "先輸入道具代號、可借件數與每次歸還後的整備分鐘，再填每筆借用的領取與歸還時間，按下「找出道具短缺」，就得到各道具的占用尖峰、最多需增備件數與每段短缺區間。",
+    kitsLegend: "道具",
+    kitsHelp: "1–12 種道具。代號 1–24 字，首字為字母或數字，重名不允許；可借件數 0–1000 件，整備分鐘 0–120 分。",
+    kitNameLabel: "道具代號",
+    countLabel: "可借件數",
+    turnMinLabel: "整備分鐘",
+    addKit: "新增一種道具",
+    removeRow: "移除",
+    loansLegend: "借用",
+    loansHelp:
+      "0–60 筆借用。借用代號唯一，道具須為上方已填的代號；領取與歸還用 HH:MM（同日 00:00 起算，24:00 只作歸還端點），數量 1–1000 件。",
+    loanNameLabel: "借用代號",
+    kitLabel: "道具",
+    startLabel: "領取",
+    endLabel: "歸還",
+    qtyLabel: "數量",
+    addLoan: "新增一筆借用",
+    submit: "找出道具短缺",
+    working: "計算中",
+    cancel: "取消",
+    clearDraft: "清除草稿",
+    loadSample: "載入範例",
+    sampleNote:
+      "範例是固定的假資料（4 件道具 K，A 借 2 件 00:10–00:30，B 借 3 件 00:30–00:50，整備 10 分；00:30–00:40 缺 1 件）；載入後仍需按「找出道具短缺」才會計算。",
+    leaveNote: "切換語言會離開本頁，正在編輯的草稿不會保留。",
+    statusEmpty: "尚未輸入。請填寫道具與借用。",
+    statusDirty: "草稿已變更，尚未重新計算。",
+    statusBusy: "計算中…",
+    statusReady: "已算出各道具的尖峰與短缺。",
+    statusError: "輸入有誤，請依下方提示修正，草稿已保留。",
+    resultHeading: "道具尖峰與短缺",
+    firstShortageHeading: "第一段短缺",
+    firstShortageNone: "沒有短缺：所有時段的需求都在可借件數內。",
+    kitHeader: "道具",
+    peakHeader: "尖峰需求",
+    countHeader: "可借件數",
+    minExtraHeader: "最多需增備",
+    shortageHeader: "短缺區間",
+    noShortage: "無短缺",
+    shortageRange: "短缺時段",
+    demandHeader: "需求",
+    extraHeader: "缺",
+    loansHeader: "同時占用的借用",
+    shortageDetail: "{from}–{to} · 需求 {demand} 件 · 缺 {extra} 件",
+    nextStepShortage: "下一步：增加備件，或調整借用時間、數量後重新計算。",
+    nextStepOk: "下一步：若要預留餘裕，可把可借件數調高再重新計算。",
+    unitPieces: "件",
+    unitMinutes: "分",
+    errorFix: "如何修正",
+    errorGoto: "前往該欄位",
+    codeLabel: "代碼",
+    pathLabel: "位置",
+    errors: {
+      SIZE: "輸入超過 65,536 位元組上限。",
+      SHAPE: "輸入的欄位組合不正確（多了或少了欄位）。",
+      TYPE: "這個欄位的型別不正確。",
+      RANGE: "這個欄位的值超出允許範圍或格式不正確。",
+      DUPLICATE: "這個短名已經用過了，請換一個不重複的名稱。",
+      REF: "借用指定的道具不存在，請先在道具清單填好該代號。",
+      ORDER: "歸還時間必須嚴格晚於領取時間。",
+      ENUM: "請選擇一個有效的選項。",
+      SYNTAX: "請用正確格式輸入：整數不要有空白、前導零、小數或全形數字；時間用 HH:MM。",
+    },
+    errorFixes: {
+      SIZE: "減少借用筆數或縮短名稱後再試。",
+      SHAPE: "請用頁面上的欄位填寫，不要自行增減欄位。",
+      TYPE: "請依欄位要求的型別重新輸入。",
+      RANGE: "請把值改到允許範圍內，或檢查名稱的字元與長度。",
+      DUPLICATE: "請把重複的短名改成另一個名稱。",
+      REF: "把道具代號改成清單裡已有的代號，或先新增該道具。",
+      ORDER: "把歸還時間改到領取時間之後。",
+      ENUM: "請選擇一個有效的選項。",
+      SYNTAX: "例如時間輸入 09:30、24:00（只作歸還），整數輸入 10，不要輸入 10.0、+10 或 １０。",
+    },
+    initFailed: "頁面初始化失敗。",
+    reload: "重新載入",
+    homeLink: "← Gloss Tools 首頁",
+    englishLink: "English",
+  },
+  en: {
+    intro:
+      "Enter each kit's code, how many are available, and the turnaround minutes after each return, then add the pickup and return times for every loan. Press “Check kit shortages” to see each kit's peak demand, how many extra kits are needed at most, and every shortage interval.",
+    kitsLegend: "Kits",
+    kitsHelp:
+      "1–12 kits. A code is 1–24 characters, starting with a letter or digit; duplicates are not allowed. Available count 0–1000, turnaround 0–120 minutes.",
+    kitNameLabel: "Kit code",
+    countLabel: "Available",
+    turnMinLabel: "Turnaround (min)",
+    addKit: "Add a kit",
+    removeRow: "Remove",
+    loansLegend: "Loans",
+    loansHelp:
+      "0–60 loans. Loan codes are unique and the kit must be one already listed above; pickup and return use HH:MM (same day from 00:00, 24:00 only as a return endpoint), quantity 1–1000.",
+    loanNameLabel: "Loan code",
+    kitLabel: "Kit",
+    startLabel: "Pickup",
+    endLabel: "Return",
+    qtyLabel: "Quantity",
+    addLoan: "Add a loan",
+    submit: "Check kit shortages",
+    working: "Working",
+    cancel: "Cancel",
+    clearDraft: "Clear draft",
+    loadSample: "Load sample",
+    sampleNote:
+      "The sample is fixed placeholder data (kit K with 4 available, A borrows 2 from 00:10–00:30, B borrows 3 from 00:30–00:50, 10-minute turnaround; short by 1 during 00:30–00:40); press “Check kit shortages” to compute it.",
+    leaveNote: "Switching language leaves this page; the draft you are editing is not kept.",
+    statusEmpty: "Nothing entered yet. Fill in the kits and loans.",
+    statusDirty: "Draft changed; not computed yet.",
+    statusBusy: "Working…",
+    statusReady: "Peaks and shortages computed for each kit.",
+    statusError: "There is a problem with the input. Fix it using the notes below; your draft is kept.",
+    resultHeading: "Kit peaks and shortages",
+    firstShortageHeading: "First shortage",
+    firstShortageNone: "No shortage: demand stays within the available count at all times.",
+    kitHeader: "Kit",
+    peakHeader: "Peak demand",
+    countHeader: "Available",
+    minExtraHeader: "Extra kits needed",
+    shortageHeader: "Shortage intervals",
+    noShortage: "No shortage",
+    shortageRange: "Shortage interval",
+    demandHeader: "Demand",
+    extraHeader: "Short",
+    loansHeader: "Loans using kits then",
+    shortageDetail: "{from}–{to} · demand {demand} · short {extra}",
+    nextStepShortage: "Next step: add spare kits, or adjust loan times or quantities and compute again.",
+    nextStepOk: "Next step: to keep a margin, raise the available count and compute again.",
+    unitPieces: "units",
+    unitMinutes: "min",
+    errorFix: "How to fix",
+    errorGoto: "Go to that field",
+    codeLabel: "Code",
+    pathLabel: "Location",
+    errors: {
+      SIZE: "The input is over the 65,536-byte limit.",
+      SHAPE: "The set of fields is wrong (an extra or missing field).",
+      TYPE: "This field has the wrong type.",
+      RANGE: "This field is out of range or in the wrong format.",
+      DUPLICATE: "This short name is already used; pick a different one.",
+      REF: "The loan names a kit that does not exist; add that kit code to the kit list first.",
+      ORDER: "The return time must be strictly later than the pickup time.",
+      ENUM: "Choose a valid option.",
+      SYNTAX: "Use the required format: integers with no spaces, leading zeros, decimals or full-width digits; times as HH:MM.",
+    },
+    errorFixes: {
+      SIZE: "Use fewer loans or shorter names and try again.",
+      SHAPE: "Fill in the fields shown on the page; do not add or remove fields.",
+      TYPE: "Re-enter the field with the required type.",
+      RANGE: "Change the value into the allowed range, or check the name's characters and length.",
+      DUPLICATE: "Rename the duplicated short name.",
+      REF: "Change the kit code to one already in the list, or add that kit first.",
+      ORDER: "Move the return time to after the pickup time.",
+      ENUM: "Choose a valid option.",
+      SYNTAX: "For example enter times as 09:30 or 24:00 (return only), and integers as 10 — not 10.0, +10 or full-width digits.",
+    },
+    initFailed: "The page failed to start.",
+    reload: "Reload",
+    homeLink: "← Gloss Tools home",
+    englishLink: "English",
+  },
+};
+
+export function stringsFor(lang) {
+  return STRINGS[lang] === undefined ? STRINGS.en : STRINGS[lang];
+}

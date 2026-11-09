@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan Kit Turnover Check | Gloss Tools</title>
+<meta name="description" content="Check when shared event kits run short, including the time needed to turn them around.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="./index.html">
+<link rel="alternate" hreflang="zh-Hant" href="../index.html">
+<link rel="alternate" hreflang="en" href="./index.html">
+<link rel="alternate" hreflang="x-default" href="../index.html">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="home-link" href="https://glossquote.com/en/index.html">← Gloss Tools home</a>
+  <p class="lang-switch"><a href="../index.html" lang="zh-Hant">繁體中文</a> <span class="lang-note">Switching language leaves this page; the draft you are editing is not kept.</span></p>
+</header>
+<main>
+  <h1>Loan Kit Turnover Check</h1>
+  <p class="intro">Enter each kit's code, how many are available, and the turnaround minutes after each return, then add the pickup and return times for every loan. Press “Check kit shortages” to see each kit's peak demand, how many extra kits are needed at most, and every shortage interval.</p>
+
+  <form id="turnover-form" novalidate>
+    <div class="workspace">
+      <div class="inputs">
+        <fieldset>
+          <legend>Kits</legend>
+          <p class="help">1–12 kits. A code is 1–24 characters, starting with a letter or digit; duplicates are not allowed. Available count 0–1000, turnaround 0–120 minutes.</p>
+          <div id="kits-body" class="rows"></div>
+          <button type="button" id="add-kit" class="secondary">Add a kit</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Loans</legend>
+          <p class="help">0–60 loans. Loan codes are unique and the kit must be one already listed above; pickup and return use HH:MM (same day from 00:00, 24:00 only as a return endpoint), quantity 1–1000.</p>
+          <div id="loans-body" class="rows"></div>
+          <button type="button" id="add-loan" class="secondary">Add a loan</button>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="check" class="primary">Check kit shortages</button>
+          <button type="button" id="cancel" class="secondary" hidden>Cancel</button>
+          <button type="button" id="clear-draft" class="secondary">Clear draft</button>
+          <button type="button" id="load-sample" class="secondary">Load sample</button>
+        </div>
+        <p class="sample-note">The sample is fixed placeholder data (kit K with 4 available, A borrows 2 from 00:10–00:30, B borrows 3 from 00:30–00:50, 10-minute turnaround; short by 1 during 00:30–00:40); press “Check kit shortages” to compute it.</p>
+      </div>
+
+      <div class="output">
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="error-list" class="error-list" hidden></div>
+        <section id="results" aria-label="Kit peaks and shortages"></section>
+      </div>
+    </div>
+  </form>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
