@@ -1,0 +1,248 @@
+{
+  "recordedAtUTC": "2026-11-09T17:05:30.309Z",
+  "node": "v24.22.1",
+  "scope": "Three new targeted gaps beyond the prior15 replay; no broad matrix",
+  "limits": [
+    "Synthetic salary/day-kind inputs verify the explicit arithmetic/rounding/schema contract only, not legal wage levels or holiday eligibility.",
+    "No browser, actual Worker or native file download is performed."
+  ],
+  "cases": [
+    {
+      "id": "R5-NEW-01",
+      "tool": "overtime-pay-calculator",
+      "origin": "new-independent-r5-gap-case",
+      "title": "Mixed-category exact half ties round each day before totals",
+      "input": {
+        "monthlySalary": "90",
+        "month": "2026-01",
+        "entries": [
+          {
+            "date": "2026-01-03",
+            "kind": "weekday",
+            "hours": "1"
+          },
+          {
+            "date": "2026-01-01",
+            "kind": "restDay",
+            "hours": "1"
+          },
+          {
+            "date": "2026-01-04",
+            "kind": "holiday",
+            "hours": "0.5"
+          },
+          {
+            "date": "2026-01-02",
+            "kind": "weekday",
+            "hours": "1"
+          },
+          {
+            "date": "2026-01-05",
+            "kind": "restDay",
+            "hours": "1"
+          },
+          {
+            "date": "2026-01-06",
+            "kind": "holiday",
+            "hours": "0"
+          }
+        ]
+      },
+      "oracle": "Synthetic monthly salary90: each weekday/rest1h is90/240*4/3=0.5, rounded to1 per day; four days contribute4. A positive eligible holiday contributes90/30=3; zero holiday contributes0. Sum7; rounding after global aggregation would incorrectly give5. This tests the documented estimate rule, not lawful real wages.",
+      "expected": {
+        "days": [
+          1,
+          1,
+          3,
+          1,
+          1,
+          0
+        ],
+        "total": 7,
+        "categories": {
+          "weekday": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "restDay": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "holiday": {
+            "hours": 0.5,
+            "payTwd": 3
+          }
+        },
+        "counted": 4
+      },
+      "actual": {
+        "days": [
+          1,
+          1,
+          3,
+          1,
+          1,
+          0
+        ],
+        "total": 7,
+        "categories": {
+          "weekday": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "restDay": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "holiday": {
+            "hours": 0.5,
+            "payTwd": 3
+          }
+        },
+        "counted": 4
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "R5-NEW-02",
+      "tool": "overtime-pay-calculator",
+      "origin": "new-independent-r5-gap-case",
+      "title": "Mixed-category permutation preserves totals, report row order and immutable input",
+      "input": {
+        "sameSyntheticDraft": true,
+        "permutation": [
+          5,
+          2,
+          0,
+          4,
+          1,
+          3
+        ]
+      },
+      "oracle": "Same hand-calculated daily amounts, independently permuted. Aggregation is order-invariant; displayed/report rows preserve input order. Frozen input must remain untouched.",
+      "expected": {
+        "total": 7,
+        "categories": {
+          "weekday": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "restDay": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "holiday": {
+            "hours": 0.5,
+            "payTwd": 3
+          }
+        },
+        "counted": 4,
+        "dates": [
+          "2026-01-06",
+          "2026-01-04",
+          "2026-01-03",
+          "2026-01-05",
+          "2026-01-01",
+          "2026-01-02"
+        ],
+        "pays": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          1
+        ],
+        "reportDates": [
+          "2026-01-06",
+          "2026-01-04",
+          "2026-01-03",
+          "2026-01-05",
+          "2026-01-01",
+          "2026-01-02"
+        ],
+        "inputUnchanged": true
+      },
+      "actual": {
+        "total": 7,
+        "categories": {
+          "weekday": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "restDay": {
+            "hours": 2,
+            "payTwd": 2
+          },
+          "holiday": {
+            "hours": 0.5,
+            "payTwd": 3
+          }
+        },
+        "counted": 4,
+        "dates": [
+          "2026-01-06",
+          "2026-01-04",
+          "2026-01-03",
+          "2026-01-05",
+          "2026-01-01",
+          "2026-01-02"
+        ],
+        "pays": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          1
+        ],
+        "reportDates": [
+          "2026-01-06",
+          "2026-01-04",
+          "2026-01-03",
+          "2026-01-05",
+          "2026-01-01",
+          "2026-01-02"
+        ],
+        "inputUnchanged": true
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "R5-NEW-03",
+      "tool": "overtime-pay-calculator",
+      "origin": "new-independent-r5-gap-case",
+      "title": "Structural row accessor is rejected before earlier invalid salary content",
+      "input": {
+        "monthlySalary": "",
+        "month": "2026-01",
+        "entries": [
+          "valid ordinary row",
+          "hours getter on row1"
+        ]
+      },
+      "oracle": "The updated contract validates all own-data structure before salary/month/row content; an invalid early scalar must not bypass zero-read schema validation of a later row.",
+      "expected": {
+        "ok": false,
+        "code": "SCHEMA",
+        "field": "hours",
+        "row": 1,
+        "getterReads": 0
+      },
+      "actual": {
+        "ok": false,
+        "code": "SCHEMA",
+        "field": "hours",
+        "row": 1,
+        "getterReads": 0
+      },
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "pass": 3,
+    "fail": 0,
+    "errors": 0
+  }
+}
