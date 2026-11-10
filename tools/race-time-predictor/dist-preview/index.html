@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>完賽時間預測｜Gloss Tools</title>
+<meta name="description" content="輸入一場比賽的距離與完賽時間，用 Riegel 公式預測 5K、10K、半馬與全馬的完賽時間與每公里配速。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>完賽時間預測</h1>
+  <p class="lede">輸入一場比賽的距離與完賽時間，用 Riegel 公式預測 5K、10K、半馬與全馬的完賽時間與每公里配速。預測只是估算，不是保證成績。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">已知成績</h2>
+      <form id="race-form" novalidate>
+        <div class="field">
+          <label for="field-knownPreset">已知成績距離</label>
+          <p class="help" id="help-knownPreset">選擇已知成績的距離；選「自訂」時在下一欄填公尺數。</p>
+          <select id="field-knownPreset" name="knownPreset" aria-describedby="help-knownPreset">
+            <option value="5k">5K</option>
+            <option value="10k" selected>10K</option>
+            <option value="half">半馬</option>
+            <option value="marathon">全馬</option>
+            <option value="custom">自訂</option>
+          </select>
+          <p class="field-error" id="error-knownPreset" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-knownCustomM">自訂距離（公尺）</label>
+          <p class="help" id="help-knownCustomM">僅選「自訂」時啟用。400–42,195 公尺，最多兩位小數。</p>
+          <input id="field-knownCustomM" name="knownCustomM" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-knownCustomM" disabled>
+          <p class="field-error" id="error-knownCustomM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-knownTime">完賽時間</label>
+          <p class="help" id="help-knownTime">格式為 分:秒 或 時:分:秒，例如 40:00 或 3:30:00；分段以外的每段必須在 59 以內，總秒數 10–359,999。</p>
+          <input id="field-knownTime" name="knownTime" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-knownTime">
+          <p class="field-error" id="error-knownTime" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetCustomM">自訂目標距離（公尺，選填）</label>
+          <p class="help" id="help-targetCustomM">選填。想多看一個目標距離（例如 30K）時填公尺數，400–42,195；自訂列恆列在最後。</p>
+          <input id="field-targetCustomM" name="targetCustomM" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetCustomM">
+          <p class="field-error" id="error-targetCustomM" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未預測。請輸入一場比賽的距離與完賽時間，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">預測完賽時間</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">各距離預測時間與配速</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="各距離預測時間與配速" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">距離</th><th scope="col">公尺</th><th scope="col">預測時間</th><th scope="col">每公里配速</th></tr>
+          </thead>
+          <tbody id="prediction-rows"></tbody>
+        </table>
+      </div>
+      <p class="disclaimer" id="disclaimer">預測以 Riegel 公式估算，假設各距離的訓練與體能狀態相當；實際成績會受路線、天氣、補給與臨場狀況影響，本工具僅供參考。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>計算固定使用 Riegel 公式：預測時間 T2 = T1 × (D2/D1)^1.06，其中 T1、D1 是已知成績的時間與距離，D2 是目標距離，指數 1.06 為本工具釘版常數。預測秒數由未捨入的原始值四捨五入到整秒一次；每公里配速同樣由未捨入的原始秒數除以公里數、四捨五入到 0.1 秒，不由預測秒數反推。已知距離本身也列在預測表中，其預測值與輸入完全相同。</p>
+    <p>距離一律以公尺輸入與顯示，配速一律為每公里。時間顯示一小時以上為 時:分:秒，否則為 分:秒；配速顯示再四捨五入到整秒、以 分:秒 呈現。輸入只接受 ASCII 數字、一個小數點與時間冒號：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 race-time-predictor-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>Riegel 公式是什麼？</dt>
+      <dd>預測時間 T2 = T1 × (D2/D1)^1.06，指數 1.06 為本工具釘版常數。</dd>
+      <dt>預測準確嗎？</dt>
+      <dd>僅為估算，假設各距離的訓練與體能狀態相當；距離比越大越不穩定。</dd>
+      <dt>可以預測超過全馬的距離嗎？</dt>
+      <dd>本工具的自訂距離上限為 42,195 公尺，不提供超馬預測。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
