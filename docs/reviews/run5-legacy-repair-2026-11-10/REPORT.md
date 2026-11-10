@@ -42,4 +42,4 @@
 
 每款在 tools/<slug> 下使用 Node 24，依序執行 node --test、node scripts/check.mjs、node scripts/build.mjs --mode preview、node scripts/check-generated.mjs --mode preview。沒有 npm 安裝需求。主代理固定案例可執行 node docs/reviews/run5-legacy-repair-2026-11-10/primary-cases.mjs。
 
-來源索引見 [SOURCE-INDEX.json](SOURCE-INDEX.json)，主代理結果見 [PRIMARY-CHECKS.json](PRIMARY-CHECKS.json)，科學證據在各受影響規格的 PROVENANCE-RECHECK.md。主代理的檢查日為2026-11-10。原始 VERIFICATION.md 是歷史證據，當前判定以此報告及固定候選的新審查為準。
+來源索引見 [SOURCE-INDEX.json](SOURCE-INDEX.json)，主代理結果見 [PRIMARY-RESULTS.json](PRIMARY-RESULTS.json)，科學證據在各受影響規格的 PROVENANCE-RECHECK.md。主代理的檢查日為2026-11-10。原始 VERIFICATION.md 是歷史證據，當前判定以此報告及固定候選的新審查為準。

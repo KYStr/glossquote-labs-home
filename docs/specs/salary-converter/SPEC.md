@@ -2,7 +2,7 @@
 
 **DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-salary-converter-20261109` · 2026-11-09 · v1
 
-[個別任務簡報](BRIEF.md) · [字面案例](fixtures.json) · [作者檢查](AUTHOR-CHECK.md) · [預案品質與補庫說明](../../SPECIFICATION-STOCK.md)
+[個別任務簡報](BRIEF.md) · [字面案例](fixtures.json) · [作者檢查](AUTHOR-CHECK.md) · [預案品質與補庫說明](https://github.com/KYStr/glossquote-labs-home/blob/8fa06a997da219be3b81341e46b778374d8c7141/docs/SPECIFICATION-STOCK.md)
 
 ## goal
 
@@ -21,8 +21,8 @@ MVP：單次換算。四種基準（月薪／日薪／時薪／年薪）擇一�
 
 已比對本 repo `docs/specs/` 既有 101 份預案，最相近者的實質差異如下。
 
-- 以出席者時薪估一場會議的人事成本。此處是個人薪資金額在四種計薪基準間的換算，不涉多人、不涉會議時間。[meeting-cost-calculator](../meeting-cost-calculator/SPEC.md)
-- 一般分數與有理數運算練習。此處是固定薪資慣例與整數元捨入的成品工具，不開放任意運算式。[rational-arithmetic](../rational-arithmetic/SPEC.md)
+- 以出席者時薪估一場會議的人事成本。此處是個人薪資金額在四種計薪基準間的換算，不涉多人、不涉會議時間。[meeting-cost-calculator](https://github.com/KYStr/glossquote-labs-home/blob/8fa06a997da219be3b81341e46b778374d8c7141/docs/specs/meeting-cost-calculator/SPEC.md)
+- 一般分數與有理數運算練習。此處是固定薪資慣例與整數元捨入的成品工具，不開放任意運算式。[rational-arithmetic](https://github.com/KYStr/glossquote-labs-home/blob/8fa06a997da219be3b81341e46b778374d8c7141/docs/specs/rational-arithmetic/SPEC.md)
 
 判定規則由本文定義，無線上資料或外部服務依賴。240 與 30 為揭露的慣例常數，不是法規引用。
 

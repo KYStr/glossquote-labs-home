@@ -68,7 +68,7 @@ per the fixed SPEC:
   `scripts/check-generated.mjs` (rebuild-and-compare SHA-256 trees),
   `scripts/serve.mjs` (`--host/--port/--dir` loopback server; GET/HEAD
   only, correct MIME, 404s, traversal/symlink refusal, no directory
-  listing; the SPEC-pinned CSP including `worker-src 'blob:'`, nosniff,
+  listing; the SPEC-pinned CSP including `worker-src blob:`, nosniff,
   no-referrer, X-Robots-Tag noindex, Permissions-Policy denying
   camera/microphone/geolocation).
 - `test/` — the SPEC fixtures copied byte-identically to
@@ -97,7 +97,7 @@ per the fixed SPEC:
   "fake Worker" controller fixtures) — with identical
   generation/cancellation semantics and identical fixture checkpoints.
   The page creates no Worker; the SPEC-pinned CSP (including
-  `worker-src 'blob:'`) is still served verbatim.
+  `worker-src blob:`) is still served verbatim.
 
 ## Spec errata candidates
 
@@ -129,3 +129,5 @@ VERIFICATION.md for the author-side evidence and the explicit NOT_RUN
 list. The two errata candidates above are for the bulk spec review to
 rule on; neither blocks this candidate, which implements the SPEC's
 normative rules as written.
+
+2026-11-10 maintenance: the current preview header uses the corrected Blob scheme token above. The original VERIFICATION is historical; current checks are in REPAIR-VERIFICATION.md.
