@@ -122,11 +122,23 @@ let submitted = false;
 function createWorker() {
   const blob = new Blob([WORKER_SOURCE], { type: "text/javascript" });
   const url = URL.createObjectURL(blob);
-  const worker = new Worker(url, { type: "module" });
-  const originalTerminate = worker.terminate.bind(worker);
-  worker.terminate = () => {
-    originalTerminate();
+  let worker;
+  try {
+    worker = new Worker(url, { type: "module" });
+  } catch (error) {
     URL.revokeObjectURL(url);
+    throw error;
+  }
+  const originalTerminate = worker.terminate.bind(worker);
+  let terminated = false;
+  worker.terminate = () => {
+    if (terminated) return;
+    terminated = true;
+    try {
+      originalTerminate();
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   };
   return worker;
 }
