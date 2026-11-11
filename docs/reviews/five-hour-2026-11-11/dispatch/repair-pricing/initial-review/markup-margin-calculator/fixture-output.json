@@ -1,0 +1,1412 @@
+{
+  "fixtureSha256": "ee49cb9fcc1bfe988b9e11ef097e62ddf27e5001c025e45e1b87769e0274c15a",
+  "summary": {
+    "pass": 35,
+    "total": 35
+  },
+  "cases": [
+    {
+      "id": "report-basic",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "100.00"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 8000,
+          "marginHundredths": 2000,
+          "markupHundredths": 2500,
+          "mode": "report",
+          "priceCents": 10000,
+          "profitCents": 2000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 8000,
+          "priceCents": 10000,
+          "profitCents": 2000,
+          "markupHundredths": 2500,
+          "marginHundredths": 2000,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-repeating-markup",
+      "kind": "core",
+      "input": {
+        "cost": "30.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "40.00"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 3000,
+          "marginHundredths": 2500,
+          "markupHundredths": 3333,
+          "mode": "report",
+          "priceCents": 4000,
+          "profitCents": 1000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 3000,
+          "priceCents": 4000,
+          "profitCents": 1000,
+          "markupHundredths": 3333,
+          "marginHundredths": 2500,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-repeating-margin",
+      "kind": "core",
+      "input": {
+        "cost": "70.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "90.00"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 7000,
+          "marginHundredths": 2222,
+          "markupHundredths": 2857,
+          "mode": "report",
+          "priceCents": 9000,
+          "profitCents": 2000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 7000,
+          "priceCents": 9000,
+          "profitCents": 2000,
+          "markupHundredths": 2857,
+          "marginHundredths": 2222,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-below-cost",
+      "kind": "core",
+      "input": {
+        "cost": "100.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "79.99"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": true,
+          "costCents": 10000,
+          "marginHundredths": -2502,
+          "markupHundredths": -2001,
+          "mode": "report",
+          "priceCents": 7999,
+          "profitCents": -2001
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 10000,
+          "priceCents": 7999,
+          "profitCents": -2001,
+          "markupHundredths": -2001,
+          "marginHundredths": -2502,
+          "belowCost": true
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-free-price",
+      "kind": "core",
+      "input": {
+        "cost": "50.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "0"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": true,
+          "costCents": 5000,
+          "marginHundredths": null,
+          "markupHundredths": -10000,
+          "mode": "report",
+          "priceCents": 0,
+          "profitCents": -5000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 5000,
+          "priceCents": 0,
+          "profitCents": -5000,
+          "markupHundredths": -10000,
+          "marginHundredths": null,
+          "belowCost": true
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-zero-profit",
+      "kind": "core",
+      "input": {
+        "cost": "25.50",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "25.50"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 2550,
+          "marginHundredths": 0,
+          "markupHundredths": 0,
+          "mode": "report",
+          "priceCents": 2550,
+          "profitCents": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 2550,
+          "priceCents": 2550,
+          "profitCents": 0,
+          "markupHundredths": 0,
+          "marginHundredths": 0,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-half-tie",
+      "kind": "core",
+      "input": {
+        "cost": "160.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "160.04"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 16000,
+          "marginHundredths": 2,
+          "markupHundredths": 3,
+          "mode": "report",
+          "priceCents": 16004,
+          "profitCents": 4
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 16000,
+          "priceCents": 16004,
+          "profitCents": 4,
+          "markupHundredths": 3,
+          "marginHundredths": 2,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "report-extreme-ratio",
+      "kind": "core",
+      "input": {
+        "cost": "0.01",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "999999.99"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "belowCost": false,
+          "costCents": 1,
+          "marginHundredths": 10000,
+          "markupHundredths": 999999980000,
+          "mode": "report",
+          "priceCents": 99999999,
+          "profitCents": 99999998
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 1,
+          "priceCents": 99999999,
+          "profitCents": 99999998,
+          "markupHundredths": 999999980000,
+          "marginHundredths": 10000,
+          "belowCost": false
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-basic",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": null,
+        "markupPercent": "25",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 8000,
+          "marginHundredths": 2000,
+          "markupPercentMilli": 25000,
+          "mode": "solve-markup",
+          "priceCents": 10000,
+          "profitCents": 2000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 8000,
+          "priceCents": 10000,
+          "profitCents": 2000,
+          "marginHundredths": 2000,
+          "markupPercentMilli": 25000
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-repeating",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": null,
+        "markupPercent": "33.333",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 1000,
+          "marginHundredths": 2498,
+          "markupPercentMilli": 33333,
+          "mode": "solve-markup",
+          "priceCents": 1333,
+          "profitCents": 333
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 1000,
+          "priceCents": 1333,
+          "profitCents": 333,
+          "marginHundredths": 2498,
+          "markupPercentMilli": 33333
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-zero",
+      "kind": "core",
+      "input": {
+        "cost": "45.00",
+        "marginPercent": null,
+        "markupPercent": "0",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 4500,
+          "marginHundredths": 0,
+          "markupPercentMilli": 0,
+          "mode": "solve-markup",
+          "priceCents": 4500,
+          "profitCents": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 4500,
+          "priceCents": 4500,
+          "profitCents": 0,
+          "marginHundredths": 0,
+          "markupPercentMilli": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-tie",
+      "kind": "core",
+      "input": {
+        "cost": "0.02",
+        "marginPercent": null,
+        "markupPercent": "25",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 2,
+          "marginHundredths": 3333,
+          "markupPercentMilli": 25000,
+          "mode": "solve-markup",
+          "priceCents": 3,
+          "profitCents": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 2,
+          "priceCents": 3,
+          "profitCents": 1,
+          "marginHundredths": 3333,
+          "markupPercentMilli": 25000
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-large",
+      "kind": "core",
+      "input": {
+        "cost": "123456.78",
+        "marginPercent": null,
+        "markupPercent": "7.5",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 12345678,
+          "marginHundredths": 698,
+          "markupPercentMilli": 7500,
+          "mode": "solve-markup",
+          "priceCents": 13271604,
+          "profitCents": 925926
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 12345678,
+          "priceCents": 13271604,
+          "profitCents": 925926,
+          "marginHundredths": 698,
+          "markupPercentMilli": 7500
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-basic",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": "20",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 8000,
+          "marginPercentMilli": 20000,
+          "markupHundredths": 2500,
+          "mode": "solve-margin",
+          "priceCents": 10000,
+          "profitCents": 2000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 8000,
+          "priceCents": 10000,
+          "profitCents": 2000,
+          "markupHundredths": 2500,
+          "marginPercentMilli": 20000
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-half",
+      "kind": "core",
+      "input": {
+        "cost": "50.00",
+        "marginPercent": "50",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 5000,
+          "marginPercentMilli": 50000,
+          "markupHundredths": 10000,
+          "mode": "solve-margin",
+          "priceCents": 10000,
+          "profitCents": 5000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 5000,
+          "priceCents": 10000,
+          "profitCents": 5000,
+          "markupHundredths": 10000,
+          "marginPercentMilli": 50000
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-repeating",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": "33.333",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 1000,
+          "marginPercentMilli": 33333,
+          "markupHundredths": 5000,
+          "mode": "solve-margin",
+          "priceCents": 1500,
+          "profitCents": 500
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 1000,
+          "priceCents": 1500,
+          "profitCents": 500,
+          "markupHundredths": 5000,
+          "marginPercentMilli": 33333
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-zero",
+      "kind": "core",
+      "input": {
+        "cost": "45.00",
+        "marginPercent": "0",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 4500,
+          "marginPercentMilli": 0,
+          "markupHundredths": 0,
+          "mode": "solve-margin",
+          "priceCents": 4500,
+          "profitCents": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 4500,
+          "priceCents": 4500,
+          "profitCents": 0,
+          "markupHundredths": 0,
+          "marginPercentMilli": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-high",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": "99.9",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "costCents": 1000,
+          "marginPercentMilli": 99900,
+          "markupHundredths": 9990000,
+          "mode": "solve-margin",
+          "priceCents": 1000000,
+          "profitCents": 999000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 1000,
+          "priceCents": 1000000,
+          "profitCents": 999000,
+          "markupHundredths": 9990000,
+          "marginPercentMilli": 99900
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-hundred",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": "100",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "NO_SOLUTION",
+          "field": "marginPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NO_SOLUTION",
+          "field": "marginPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-over-hundred",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": "150.5",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "NO_SOLUTION",
+          "field": "marginPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NO_SOLUTION",
+          "field": "marginPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-markup-price-over-cap",
+      "kind": "core",
+      "input": {
+        "cost": "999999.99",
+        "marginPercent": null,
+        "markupPercent": "1",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "markupPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "markupPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-margin-price-over-cap",
+      "kind": "core",
+      "input": {
+        "cost": "999999.99",
+        "marginPercent": "99.999",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "marginPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "marginPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "cost-zero",
+      "kind": "core",
+      "input": {
+        "cost": "0",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "10.00"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "cost",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "cost",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "cost-over-range",
+      "kind": "core",
+      "input": {
+        "cost": "9999999.99",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "10.00"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "cost",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "cost",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "cost-format",
+      "kind": "core",
+      "input": {
+        "cost": "10.005",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "20.00"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "cost",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "cost",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "percent-format",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": null,
+        "markupPercent": "33.3333",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "markupPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "markupPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "percent-range",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": null,
+        "markupPercent": "999999.99",
+        "mode": "solve-markup",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "markupPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "markupPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "percent-empty",
+      "kind": "core",
+      "input": {
+        "cost": "10.00",
+        "marginPercent": "",
+        "markupPercent": null,
+        "mode": "solve-margin",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "marginPercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "marginPercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "price-input-limit",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "12345678901"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "price",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "price",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "mode-enum",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "REPORT",
+        "price": "100.00"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "schema-extra-field",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "currency": "TWD",
+        "marginPercent": null,
+        "markupPercent": null,
+        "mode": "report",
+        "price": "100.00"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "schema-mode-mismatch",
+      "kind": "core",
+      "input": {
+        "cost": "80.00",
+        "marginPercent": null,
+        "markupPercent": "25",
+        "mode": "report",
+        "price": null
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "cost": "0",
+          "marginPercent": null,
+          "markupPercent": null,
+          "mode": "report",
+          "price": "100.00"
+        },
+        "initial": {
+          "cost": "80.00",
+          "marginPercent": null,
+          "markupPercent": null,
+          "mode": "report",
+          "price": "100.00"
+        }
+      },
+      "fixtureExpected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "cost": "80.00",
+          "marginPercent": null,
+          "markupPercent": null,
+          "mode": "report",
+          "price": "100.00"
+        },
+        "lateResult": {
+          "belowCost": false,
+          "costCents": 8000,
+          "marginHundredths": 2000,
+          "markupHundredths": 2500,
+          "mode": "report",
+          "priceCents": 10000,
+          "profitCents": 2000
+        }
+      },
+      "fixtureExpected": {
+        "afterCancel": {
+          "draft": {
+            "cost": "80.00",
+            "marginPercent": null,
+            "markupPercent": null,
+            "mode": "report",
+            "price": "100.00"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "cost": "80.00",
+            "marginPercent": null,
+            "markupPercent": null,
+            "mode": "report",
+            "price": "100.00"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "cost": "80.00",
+            "marginPercent": null,
+            "markupPercent": null,
+            "mode": "report",
+            "price": "100.00"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "report",
+            "cost": "80.00",
+            "price": "100.00",
+            "markupPercent": null,
+            "marginPercent": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "cost": "0",
+          "marginPercent": null,
+          "markupPercent": null,
+          "mode": "report",
+          "price": "100.00"
+        },
+        "olderDraft": {
+          "cost": "80.00",
+          "marginPercent": null,
+          "markupPercent": null,
+          "mode": "report",
+          "price": "100.00"
+        },
+        "olderLateResult": {
+          "belowCost": false,
+          "costCents": 8000,
+          "marginHundredths": 2000,
+          "markupHundredths": 2500,
+          "mode": "report",
+          "priceCents": 10000,
+          "profitCents": 2000
+        }
+      },
+      "fixtureExpected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cost",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    }
+  ],
+  "probes": [
+    {
+      "id": "MM-01",
+      "input": {
+        "mode": "solve-markup",
+        "cost": "0.01",
+        "price": null,
+        "markupPercent": "25",
+        "marginPercent": null
+      },
+      "result": {
+        "ok": true,
+        "result": {
+          "mode": "solve-markup",
+          "costCents": 1,
+          "priceCents": 1,
+          "profitCents": 0,
+          "marginHundredths": 0,
+          "markupPercentMilli": 25000
+        }
+      },
+      "achievedTargetMetricPercent": "0",
+      "minimumCentsForAtLeastTarget": 2
+    },
+    {
+      "id": "MM-01",
+      "input": {
+        "mode": "solve-margin",
+        "cost": "0.01",
+        "price": null,
+        "markupPercent": null,
+        "marginPercent": "25"
+      },
+      "result": {
+        "ok": true,
+        "result": {
+          "mode": "solve-margin",
+          "costCents": 1,
+          "priceCents": 1,
+          "profitCents": 0,
+          "markupHundredths": 0,
+          "marginPercentMilli": 25000
+        }
+      },
+      "achievedTargetMetricPercent": "0",
+      "minimumCentsForAtLeastTarget": 2
+    },
+    {
+      "id": "MM-02",
+      "input": {
+        "mode": "report",
+        "cost": "50.00",
+        "price": "0",
+        "markupPercent": null,
+        "marginPercent": null
+      },
+      "result": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 5000,
+          "priceCents": 0,
+          "profitCents": -5000,
+          "markupHundredths": -10000,
+          "marginHundredths": null,
+          "belowCost": true
+        }
+      },
+      "exactIdentityDenominator": 0
+    },
+    {
+      "id": "description-high",
+      "input": {
+        "mode": "solve-margin",
+        "cost": "10.00",
+        "price": null,
+        "markupPercent": null,
+        "marginPercent": "99.9"
+      },
+      "priceCents": 1000000,
+      "multipleOfCost": 1000
+    },
+    {
+      "id": "negative-tie",
+      "input": {
+        "mode": "report",
+        "cost": "160.00",
+        "price": "159.96",
+        "markupPercent": null,
+        "marginPercent": null
+      },
+      "result": {
+        "ok": true,
+        "result": {
+          "mode": "report",
+          "costCents": 16000,
+          "priceCents": 15996,
+          "profitCents": -4,
+          "markupHundredths": -3,
+          "marginHundredths": -3,
+          "belowCost": true
+        }
+      },
+      "rawMarkupHundredths": "-5/2"
+    }
+  ],
+  "referenceTable": [
+    {
+      "marginPercent": 0,
+      "markupHundredths": 0
+    },
+    {
+      "marginPercent": 10,
+      "markupHundredths": 1111
+    },
+    {
+      "marginPercent": 20,
+      "markupHundredths": 2500
+    },
+    {
+      "marginPercent": 25,
+      "markupHundredths": 3333
+    },
+    {
+      "marginPercent": 30,
+      "markupHundredths": 4286
+    },
+    {
+      "marginPercent": 40,
+      "markupHundredths": 6667
+    },
+    {
+      "marginPercent": 50,
+      "markupHundredths": 10000
+    },
+    {
+      "marginPercent": 60,
+      "markupHundredths": 15000
+    },
+    {
+      "marginPercent": 70,
+      "markupHundredths": 23333
+    },
+    {
+      "marginPercent": 75,
+      "markupHundredths": 30000
+    },
+    {
+      "marginPercent": 80,
+      "markupHundredths": 40000
+    },
+    {
+      "marginPercent": 90,
+      "markupHundredths": 90000
+    },
+    {
+      "marginPercent": 95,
+      "markupHundredths": 190000
+    }
+  ],
+  "reportSample": {
+    "name": "markup-margin-report.json",
+    "text": "{\"belowCost\":false,\"costCents\":8000,\"marginHundredths\":2000,\"markupHundredths\":2500,\"mode\":\"report\",\"priceCents\":10000,\"profitCents\":2000}\n",
+    "bytes": 139,
+    "sha256": "e74303c1903777d7f443eb1edca9129f67216e24ca4e114a12a5dd778fb16804"
+  }
+}

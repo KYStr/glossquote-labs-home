@@ -1,0 +1,477 @@
+{
+  "observedAt": "2026-11-11T06:14:44.180Z",
+  "node": "v24.14.0",
+  "sourceCommits": [
+    "8fbd9ac4d98865480444ce11c4b772389a54ea3c",
+    "3fd8379427b1318ba65c1169f0256befc47ca93a"
+  ],
+  "records": [
+    {
+      "slug": "wallpaper-calculator",
+      "commands": [
+        {
+          "command": [
+            "node",
+            "--test"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "ae754403dbdfd44f6afcaea10fc3205e197538d09206f52c6187b71a94f7dbcc"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check.mjs"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "bd6910eb211e1805f87b21fe9fb809b83895ea272c1b8b080d7fd9d3da647871"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check-generated.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "4ae8c0d4606aeaf49d85cfb7acb72c73fe5cdfd4d861bc677b49c0a88c4b9040"
+        }
+      ]
+    },
+    {
+      "slug": "ping-area-converter",
+      "commands": [
+        {
+          "command": [
+            "node",
+            "--test"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "a291c26774bccdbc0ab4c8edcaf7563f93af7f4e5a4a53cc77689c710f27a537"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check.mjs"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "d0b84909e027b54630223d588fb03d6b5b445382f63c04b9facdb4f11d22dde5"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check-generated.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "4ae8c0d4606aeaf49d85cfb7acb72c73fe5cdfd4d861bc677b49c0a88c4b9040"
+        }
+      ]
+    },
+    {
+      "slug": "cooking-measurement-converter",
+      "commands": [
+        {
+          "command": [
+            "node",
+            "--test"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "365175b3d0d28e37a51bdce3d3447b77441ec2535f190db7e3cbd99b0edface4"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check.mjs"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "6563033c80280e2b5f5580366ba2c111a625376094aa8b61276cbf2c84c97a15"
+        },
+        {
+          "command": [
+            "node",
+            "scripts/check-generated.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "error": null,
+          "stdoutSha256": "4ae8c0d4606aeaf49d85cfb7acb72c73fe5cdfd4d861bc677b49c0a88c4b9040"
+        }
+      ]
+    }
+  ],
+  "regressionCases": [
+    {
+      "slug": "wallpaper-calculator",
+      "id": "openings-list-deduction",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.1"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 240,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "3.69",
+          "netWallAreaM2": "26.31"
+        }
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 240,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "3.69",
+          "netWallAreaM2": "26.31"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "wallpaper-calculator",
+      "id": "partial-height-opening-full-strips",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "1.59",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 159,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "1.91",
+          "netWallAreaM2": "6.04"
+        }
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 159,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "1.91",
+          "netWallAreaM2": "6.04"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "wallpaper-calculator",
+      "id": "opening-height-exceeds-wall",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 1
+        }
+      },
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "wallpaper-calculator",
+      "id": "opening-height-equals-wall",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.5"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 90,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "2.25",
+          "netWallAreaM2": "5.70"
+        }
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 90,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "2.25",
+          "netWallAreaM2": "5.70"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "wallpaper-calculator",
+      "id": "first-opening-height-before-aggregate-and-roll",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "2.5",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "1"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "4"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 2
+        }
+      },
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 2
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "wallpaper-calculator",
+      "id": "opening-width-format-before-height-cross-check",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.255",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "widthM",
+          "row": 2
+        }
+      },
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "widthM",
+          "row": 2
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "slug": "ping-area-converter",
+      "id": "hundred-ping-precision",
+      "input": {
+        "amount": "100",
+        "unit": "ping"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "ping": 100,
+          "m2": 330.58,
+          "ft2": 3558.32,
+          "tatami": 204.1
+        }
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "ping": 100,
+          "m2": 330.58,
+          "ft2": 3558.32,
+          "tatami": 204.1
+        }
+      },
+      "status": "PASS"
+    }
+  ],
+  "scope": "Primary actual offline product tests, static and generated checks, and seven previously fixed independent regression vectors. No real browser or deployment.",
+  "status": "PASS_OFFLINE_REQUIRED_BROWSER_NOT_RUN"
+}

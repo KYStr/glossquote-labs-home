@@ -1,0 +1,7 @@
+# Narrow scope amendment: failed Worker construction cleanup
+
+Primary independently reproduced the construction-failure path in fixed candidate 4f259d919e56c2f098035d2ae9d4431dc7b50af6: createWorker creates one Blob URL, new Worker throws synchronously, and zero URL revocations occur. The corresponding normal construction/termination control creates and revokes one URL. This is an offline injected-platform test, not measured browser memory or network evidence.
+
+Under the existing actual owner/claim and PR323, also allow the smallest app.js createWorker lifecycle repair, meaningful isolated regression tests, required regenerated artifacts and updated evidence. Ensure the newly created URL is released on constructor failure, propagate the original failure to the controller, retain retryable draft behavior, and preserve normal success/termination cleanup. Make cleanup idempotent; do not change source content, numerical model, fixtures, report bytes, dependencies or other products. This supersedes only the earlier app-change restriction for this exact function.
+
+Do not repeat unaffected numerical tests merely as new counts. Verify changed cleanup path, success and retry controls, necessary existing suite/generated checks; distinguish all simulated evidence from browser/device NOT_RUN. Original nine-aspect gates, no-UI/credential/system-change rules, publication-only authorization and 07:22 UTC save / 07:37 UTC hard stop remain unchanged.
