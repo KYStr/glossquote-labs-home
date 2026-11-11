@@ -86,16 +86,30 @@ test("both pages expose the same element ids", () => {
 test("the pinned FAQ text appears verbatim", () => {
   const zh = htmlByName.zh;
   assert.ok(zh.includes("這裡的 1 杯是幾毫升？"));
-  assert.ok(zh.includes("釘版 240 ml（FDA 家用量測定義）；美國習慣單位的精確值是 236.588 ml，本工具不採用。"));
+  assert.ok(zh.includes("工具以 FDA 營養標示的家用量測定義換算，1 杯為 240 mL。美國習慣杯約為 236.588 mL。"));
   assert.ok(zh.includes("為什麼 1 杯水不是 240 公克？"));
-  assert.ok(zh.includes("密度表全表同源 King Arthur 食材重量表，水在該表為 227 g／杯；純體積換算（杯↔毫升）不查表。"));
+  assert.ok(zh.includes("把水的體積換算成重量時，工具採食材重量表的 227 g／杯估值。純體積換算時，1 杯等於 240 mL。"));
   assert.ok(zh.includes("沒有我要的食材怎麼辦？"));
   assert.ok(zh.includes("重量與體積互換只能用表內 12 種食材；只換體積時選「不指定」即可，不需食材。"));
   const en = htmlByName.en;
   assert.ok(en.includes("How many millilitres is a cup here?"));
-  assert.ok(en.includes("A pinned 240 ml (the FDA household measure); the exact US customary cup is 236.588 ml and is not used."));
+  assert.ok(en.includes("This tool uses the FDA household measure for nutrition labelling: 240 mL per cup. A US customary cup is about 236.588 mL."));
   assert.ok(en.includes("Why isn't a cup of water 240 grams?"));
-  assert.ok(en.includes("The density table follows one source, King Arthur's ingredient weight chart, which lists water at 227 g per cup; pure volume conversions never use the table."));
+  assert.ok(en.includes("For volume-to-weight conversions, the tool uses the ingredient chart’s estimate of 227 g per cup of water. For volume-only conversions, 1 cup equals 240 mL."));
   assert.ok(en.includes("What if my ingredient is not listed?"));
   assert.ok(en.includes('Weight-to-volume conversion only works for the 12 table ingredients; for volume-only conversions choose "None".'));
+});
+
+test("both locales link the same publisher references and explain the ingredient model", () => {
+  const publisherLinks = [
+    "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+    "https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1",
+  ];
+  for (const [name, html] of Object.entries(htmlByName)) {
+    const outbound = [...html.matchAll(/<a href="(https:\/\/[^"]+)" rel="noreferrer">([^<]+)<\/a>/g)];
+    assert.deepEqual(outbound.map((match) => match[1]), publisherLinks, name);
+    assert.ok(html.includes("336 g") && html.includes("89 g") && html.includes("1.4%"), name);
+  }
+  assert.match(htmlByName.zh, /教材 <a [^>]+>Easy As Pie<\/a> 第 1 頁的無鹽奶油值，1 杯為 227 g/);
+  assert.match(htmlByName.en, /page 1 of King Arthur Baking’s <a [^>]+>Easy As Pie<\/a> gives 227 g per cup of unsalted butter/);
 });

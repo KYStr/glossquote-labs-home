@@ -2,17 +2,15 @@
 // No DOM, network, or storage access. Implements the fixed contract in
 // docs/specs/cooking-measurement-converter/SPEC.md
 // (spec-cooking-measurement-converter-20261109, fixed at candidate commit
-// 213af9991a1a2d0a07f9acfe3e173d57184d9dec):
+// 4bc6d4e300d315597a4b1ea5feb86f6f2d6fc1c0):
 //
-// - Volume basis (pinned, FDA household measures, exact integers):
-//   1 cup = 240 ml, 1 tbsp = 15 ml, 1 tsp = 5 ml. The exact US customary
-//   values (236.588 / 14.787 / 4.929 ml) are deliberately NOT used.
-// - Weight<->volume goes only through the one pinned density table below
-//   (grams per cup, King Arthur Baking Ingredient Weight Chart, checked
-//   2026-11-09; dry goods spooned & levelled, brown sugar packed). Honey
-//   is 336 (the chart's 21 g/tbsp x 16), not the 340 of secondary tables;
-//   water and milk stay at the chart's 227 even though 240 ml of water
-//   weighs about 240 g — one source for the whole table wins.
+// - Volume basis (FDA household measures for nutrition labelling):
+//   1 cup = 240 mL, 1 tbsp = 15 mL, 1 tsp = 5 mL.
+// - Volume and weight conversions use the fixed ingredient weights per cup.
+//   The King Arthur Baking chart supplies water and fresh milk (227 g each),
+//   honey (21 g per tbsp times 16 = 336 g), and old-fashioned or quick-cooking
+//   oats (89 g). Page 1 of Easy As Pie supplies unsalted butter (227 g).
+//   The model applies these US per-cup estimates to the tool's 240 mL cup.
 // - The whole pipeline is exact BigInt rational arithmetic. The displayed
 //   value is rounded half-up to 2 decimals exactly once, and the cup
 //   fraction is computed from the UNROUNDED exact value.
@@ -27,9 +25,8 @@ export const UNITS = ["ml", "tsp", "tbsp", "cup", "g"];
 // Millilitres per volume unit, as exact BigInts (the pinned basis).
 export const ML_PER_UNIT = { ml: 1n, tsp: 5n, tbsp: 15n, cup: 240n };
 
-// The pinned density table: grams per cup, one source (King Arthur
-// Baking Ingredient Weight Chart). Order is the SPEC table order and is
-// also the order of the ingredient select and the printed table.
+// Fixed estimates in grams per cup. SPEC order also defines the
+// ingredient selector and the printed table.
 export const DENSITY = [
   { id: "water", zh: "水", en: "Water", gramsPerCup: 227 },
   { id: "all-purpose-flour", zh: "中筋麵粉", en: "All-Purpose Flour", gramsPerCup: 120 },

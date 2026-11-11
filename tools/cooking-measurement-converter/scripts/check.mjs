@@ -214,9 +214,25 @@ const scannedFiles = [
   resolve(PROJECT_ROOT, "scripts/check-generated.mjs"),
   resolve(PROJECT_ROOT, "scripts/serve.mjs"),
 ];
+// Only the two pinned citation anchors in each locale page are navigation.
+// The rest of the HTML and all executable sources keep the full token scan.
+const citationLinks = [
+  "<a href=\"https://www.kingarthurbaking.com/learn/ingredient-weight-chart\" rel=\"noreferrer\">Ingredient Weight Chart</a>",
+  "<a href=\"https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1\" rel=\"noreferrer\">Easy As Pie</a>",
+];
+const localizedPages = new Set([
+  resolve(PROJECT_ROOT, "public/index.html"),
+  resolve(PROJECT_ROOT, "public/en/index.html"),
+]);
 for (const file of scannedFiles) {
   if (!SCANNED_EXTENSIONS.has(extname(file).toLowerCase())) continue;
-  const text = await readFile(file, "utf8");
+  let text = await readFile(file, "utf8");
+  if (localizedPages.has(file)) {
+    for (const link of citationLinks) {
+      if (text.split(link).length !== 2) fail("Expected one exact publisher citation in " + file);
+      text = text.replace(link, "");
+    }
+  }
   for (const token of forbiddenTokens) {
     if (text.includes(token)) fail(`${file}: forbidden token present`);
   }
@@ -308,11 +324,11 @@ if (!en.includes("Convert between cups, tablespoons, teaspoons, millilitres and 
 }
 if (!en.includes('href="../../en/"')) fail("en: same-language home link must be ../../en/");
 const PINNED_FAQ = [
-  "這裡的 1 杯是幾毫升？", "釘版 240 ml（FDA 家用量測定義）；美國習慣單位的精確值是 236.588 ml，本工具不採用。",
-  "為什麼 1 杯水不是 240 公克？", "密度表全表同源 King Arthur 食材重量表，水在該表為 227 g／杯；純體積換算（杯↔毫升）不查表。",
+  "這裡的 1 杯是幾毫升？", "工具以 FDA 營養標示的家用量測定義換算，1 杯為 240 mL。美國習慣杯約為 236.588 mL。",
+  "為什麼 1 杯水不是 240 公克？", "把水的體積換算成重量時，工具採食材重量表的 227 g／杯估值。純體積換算時，1 杯等於 240 mL。",
   "沒有我要的食材怎麼辦？", "重量與體積互換只能用表內 12 種食材；只換體積時選「不指定」即可，不需食材。",
-  "How many millilitres is a cup here?", "A pinned 240 ml (the FDA household measure); the exact US customary cup is 236.588 ml and is not used.",
-  "Why isn't a cup of water 240 grams?", "The density table follows one source, King Arthur's ingredient weight chart, which lists water at 227 g per cup; pure volume conversions never use the table.",
+  "How many millilitres is a cup here?", "This tool uses the FDA household measure for nutrition labelling: 240 mL per cup. A US customary cup is about 236.588 mL.",
+  "Why isn't a cup of water 240 grams?", "For volume-to-weight conversions, the tool uses the ingredient chart’s estimate of 227 g per cup of water. For volume-only conversions, 1 cup equals 240 mL.",
   "What if my ingredient is not listed?", "Weight-to-volume conversion only works for the 12 table ingredients; for volume-only conversions choose \"None\".",
 ];
 for (const text of PINNED_FAQ) {
