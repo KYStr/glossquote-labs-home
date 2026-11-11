@@ -72,3 +72,5 @@
 
 The user explicitly removed the requirement to wait for original author chats. For repairs coordinated by the primary, use a new implementation subagent with requested model `gpt-6.1-sol` and reasoning `medium`; the primary independently inspects the diff and verifies the result, then publishes it to this shared GitHub repository. Do not ask the user to relay repair prompts or wait for an unavailable original author. Historical source/ownership records remain evidence: use a separately recorded maintenance task and current claim rather than forging an original owner's acknowledgement, claim or review. The latest explicit task direction overrides the older original-author-only preference. Independent candidate review, required release gates, no-cost hosting, no credential/settings drift and the no-desktop-interference constraints continue to apply. Requested tool parameters are not a claim of separately observed backend model identity.
 
+Run5 規格維護限核心固定的四十個既有 ID。依 [協作命令](docs/COORDINATION-COMMANDS.md#run5-規格維護映射) 登記新映射任務，保留原作者與原任務，讓未參與製作的 reviewer 檢查固定候選的八節。只有固定 primary 可套用已獨審接受的映射。規格回到 draft，由獨立 reviewer 對套用後版本確認 readiness；後續產品沿用規格的九個必要產品面向。
+

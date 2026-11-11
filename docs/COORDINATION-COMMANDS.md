@@ -244,7 +244,8 @@ aspects 要列全，score 是數字；每項均至少 90 且有證據才可 acce
 | register-spec | spec: {id,title,document,source,acceptanceCriteria:[{id,label}]} | 只建立 draft；同一 repo/path 的 spec 不可換 ID 重複計庫存。 |
 | revise-spec | specId、document、source、acceptanceCriteria、evidence | 原作者、尚未被任何 task 引用才可修改；回到 draft，需重審。 |
 | mark-spec-ready | specId、sections、evidence | 不同 reviewer；sections 的 goal/scope/userFlow/inputsOutputs/implementation/acceptance/tests/handoff 均實核 true；reserved 則變 consumed，不增庫存。 |
-| register-task | task: {id,title,workType,source,brief,acceptanceCriteria}；production 另需 specId | workType 為 spec/production/review/maintenance；optional allowedExecutors。production 預設只有 local-codex，criteria 與 spec 完全一致。 |
+| register-task | task: {id,title,workType,source,brief,acceptanceCriteria}；production 另需 specId | workType 為 spec/production/review/maintenance；optional allowedExecutors。production 預設只有 local-codex，criteria 與 spec 完全一致。僅本輪規格映射 maintenance 可加 specRevisionTargets。 |
+| apply-spec-maintenance | taskId、specId | 固定 primary 對已獨審接受的映射套用一份未派工 run5 規格；完成後為 draft。 |
 | adopt-existing | taskId、checkpoint、evidence、evidenceRef；optional pendingId | 僅初次盤點期，原 actor 匯入舊責任，先 blocked；不偽裝新開工。 |
 | claim | taskId | 兩端盤點完整、允許環境、沒有 owner；唯一 CAS 承接，製作同時消耗 spec。 |
 | start / resume | taskId、claimId、evidence | 原 owner，兩端盤點有效；沒有待接 handoff，製作 spec 已完整。 |
@@ -290,3 +291,26 @@ node scripts/coordination.mjs apply-batch < commands.json
 ```
 
 `commands.json` 是 1–20 個完整既有 command 的陣列，不新增 registry action/schema。每個 command 使用不同 operationId，同一實際 actor；第一筆 expectedRevision 為最新 R，其後為 R+1、R+2…；claim 的 operationId 即其子件 claimId。補領批次完成後該 actor 尚未交付製作必須恰為 5 件。成功回傳 `receipts[]`，每件保留 owner、taskStatus、原 operationRevision、currentRevision、blobSha 與 `actualExecutionClaimed:false`；預領回執不代表已啟動五件。若是已成功批次的精確重送，原 hashes 全吻合會讀回不重寫。此工具不建立產品 commit、不啟動 agent、不合併 PR 或部署。
+## Run5 規格維護映射
+
+1. 保留既有規格作者、原任務與所有維護候選。先依各自原 claim 將真正修訂文件的維護任務固定 PR、提交並獨立驗收。登記新的映射 maintenance 前，固定同一候選 commit 中的 `SPEC.md`、原用途的來源檔與一份映射 JSON。規格文件若有進一步修改，須先將修訂納入有實際作者與獨立驗收的來源維護候選。
+2. 新映射 maintenance 的任務 rubric 固定為八節 `goal`、`scope`、`userFlow`、`inputsOutputs`、`implementation`、`acceptance`、`tests`、`handoff`。在 `register-task.task.specRevisionTargets` 逐項填入下列欄位。每一項使用相同 `mappingRef`；映射任務不填 `specId`。核心依登記冊繼承原作者、規格製作者與來源維護的實際 contributors。新 owner 在 claim 時加入。
+
+| Target 欄位 | 值 |
+| --- | --- |
+| `specId`、`expectedAuthorId` | 固定四十個 run5 ID 之一及當前原作者。 |
+| `expectedDocument`、`expectedSource`、`expectedCriteriaHash` | 當前完整固定 refs，以及 `fingerprint(spec.acceptanceCriteria)`。此函式以鍵排序後的 canonical JSON 計算 SHA-256。 |
+| `document`、`source` | 新候選 commit 的完整 refs。維持同 repo/path，文件位於 `docs/specs/<slug>/SPEC.md`。 |
+| `acceptanceCriteria` | 從固定 SPEC 逐項對應的九個 `{id,label}`。IDs 為 `functionality`、`boundaries`、`privacy`、`security`、`usability`、`accessibility`、`localization-seo`、`toolchain-provenance`、`compatibility`。 |
+| `mappingRef` | 固定映射 JSON 的 repo/commit/path。 |
+| `sourceMaintenanceTaskIds` | 已接受的原來源維護任務 IDs。空陣列僅適用於與舊固定 SPEC bytes 完全相同的規格。 |
+
+若來源維護任務的 `source` 指到已登記維護候選的同一 repo/commit，核心沿固定引用追溯所有相符候選，以及各層既有映射紀錄列出的來源任務。即使 SPEC 與提交證據檔路徑不同，仍會納入該層提交者、owner、contributors 與審查證據。同一 commit 有多筆時全部核對。發現循環或未接受的已知候選會拒絕新映射；已登記映射若在驗收或套用前出現新的已知祖先 maker，須以完整來源重登並獨審。缺少 registry 候選引用的外部來源由獨立 reviewer 核對。
+
+映射 JSON 的根物件只有 `targets` 陣列，內容與登記的 targets 依序相同。每項省略 `mappingRef`，並把新 `document`、`source` 各寫為 `{repository,path,bytes,sha256}`。舊 refs 的 commit 保留，候選內檔案的 commit 由外層登記引用固定。GitHub adapter 先讀固定 JSON 和 Git blob bytes，驗證每項 SPEC 與列明的已接受來源候選同路徑檔案完全相同。空來源清單時與舊固定文件核對。來源檔須與舊固定來源或列明的已接受候選同路徑檔案相同。
+
+3. 經 claim/readback/start 後，owner 用同一固定 commit 交驗。獨立 reviewer 必須逐一檢查所有預宣告規格的八節，以及九項產品 criteria 與 SPEC 內容的對應，再對八節逐項給分及附證據。每項須至少 90，必要檢查均已完成。改動固定 commit 時，保留舊任務，另用新 taskId 宣告新 targets 並重新獨審。
+4. 固定 primary 本人以當前 ACK、revision、operationId、observedAt、actor 及 `action: "apply-spec-maintenance"`、映射 `taskId`、目標 `specId` 套用。每份規格均須完全匹配登記舊狀態，未被任何任務引用且 `consumedBy` 為 null。請走會讀取固定映射內容、來源 bytes 及同一開啟 PR head 的 adapter，再做一次 CAS 與精確讀回。支援既有單次及批次格式。操作記錄完整舊規格狀態、新 refs 和 criteria、來源維護任務、映射 claim、固定候選和獨立驗收證據引用。完整提交與驗收保留在映射任務，歷史條目記其摘要和 canonical SHA-256。
+5. 規格回到 draft。原作者及所有歷任 makers 均排除於 readiness reviewer。由實際獨立 reviewer 對套用後固定版本執行 `mark-spec-ready`，另附精確 `document` ref 與 `evidenceRef`，八節全數確認後才計入庫存。這四十個 ID 的新 readiness、製作登記及 claim 均要求九項產品 criteria。舊快照仍可讀取。
+
+維護規格的當前庫存與新製作登記、claim 依最新已套用映射重新檢查。新發現的來源候選尚未接受、來源形成循環、映射缺少目前已知 maker，或映射及 readiness 的 reviewer 涉入製作時，原紀錄仍可查閱，該規格的現行製作資格失效。未派工規格可用新固定映射重走獨立驗收、套用回 draft 與 readiness。已登記製作的凍結與既有 claim 保留。
