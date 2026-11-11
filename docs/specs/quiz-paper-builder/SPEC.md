@@ -223,6 +223,14 @@ epoch、run 為正安全整數。epoch 起始 1，每次 reset／pagehide／pers
 | `lease-expired` | `leaseId` 為本地 adapter handle，已回收或過期訊息無效。釋放後清下載上限 notice |
 | `reset`、`pagehide`、`pageshow`、`language` | 前二無 payload；pageshow 含 `persisted:boolean`，language 含 `locale` 和 `confirmed:boolean`。已接受換語或 persisted 回返以預設值空頁 |
 
+Snapshot 另有 `composition` 欄，初始為 null。DOM adapter 將原生 compositionstart 映射成 `{type:"composition-start",id,field,index}`。field 為 `source`（貼上欄）、`title`、`seed` 或 `quota`。index 只在 quota 為有效的零基索引，其餘為 null。id 為 adapter 從 1 單調分配的正安全整數，清除也不重用。已有組字、無效欄位或 id 已使用的 start 忽略。
+
+有效 start 把 composition 設為 `{id,field,index}`，同步終止 active Worker、清 timeout、active 歸 null，清 preview、成品 bytes、兩種下載權及所有成品 URL／計時器、notice 與 error。來源、bank、設定與 epoch 保留，phase 依序為有 bank→dirty-settings、有來源→dirty-source、其餘→empty。run 不重用，舊結果無效。組字中忽略 read、generate、download 及組字欄的中間 input；其他來源／設定編輯若有效變動，先清 composition 再按原語義處理。
+
+DOM adapter 將 compositionend 映射成 `{type:"composition-end",id,value:string}`，值取欄位完整原值。id 相符才清 composition 並按正常 source／title／seed／quota 事件提交原值。未改值時保留 dirty phase，舊預覽維持失效。來源實際改變才清舊 bank 及配額。尾端同值 input 依原規則忽略。重設、已接受換語、pagehide、persisted pageshow 清 composition；遲到的 end 忽略。seed 保留原字串及原驗證規則。
+
+組字事件的 fixture effects 沿用 `revoke` 與 `terminate`。因 busy 期間無成品，單一有效 start 最多出現其中一種。Worker 的靜態 URL 與 timer 清理仍依 adapterCounts 核對。
+
 無效使用者事件包括未識別型別、未知 role、錯誤索引，直接忽略。Worker 或應用程式不捕捉全域操作輸入，只處理自己的 DOM。單語 UI 字串取固定字典，錯誤與資源例外不紀錄使用者內容。
 
 ### 5.3 生命週期與平台

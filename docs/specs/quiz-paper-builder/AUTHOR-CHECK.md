@@ -318,17 +318,19 @@ assert.deepEqual((await pick(parseFixture(b.digestTie.source), b.digestTie.setti
 function checkTrace(trace) {
   const empty = (locale, epoch) => ({ phase: 'empty', locale, epoch, hasSource: false, bank: null,
     settings: { title: locale === 'en' ? 'Practice quiz' : '練習題', seed: 'lesson-1', quotas: [] }, active: null,
-    preview: null, downloads: { student: false, answer: false }, downloadCount: 0, notice: null, error: null });
+    preview: null, downloads: { student: false, answer: false }, downloadCount: 0, notice: null, error: null, composition: null });
   let current = empty(trace.initial.locale, 1);
   assert.deepEqual(current, trace.initial);
   let serial = 0;
+  let compositionSerial = 0;
   let leaseSerial = 0;
   let posted = false;
   let output;
+  let source;
   const leases = new Set();
   const counts = { starts: 0, posts: 0, terminates: 0, staticRevokes: 0, downloads: 0, outputRevokes: 0, navigations: 0 };
   for (const [index, step] of trace.steps.entries()) {
-    const e = step.event;
+    let e = step.event;
     let next = structuredClone(current);
     let effect = null;
     function terminate() {
@@ -359,17 +361,47 @@ function checkTrace(trace) {
     function clear(locale) {
       terminate();
       clearOutput();
+      source = undefined;
       next = empty(locale, current.epoch + 1);
     }
-    if (e.type === 'source' || e.type === 'sample') {
+    if (e.type === 'composition-end') {
+      const active = current.composition;
+      e = active?.id === e.id
+        ? { type: active.field, index: active.index, value: e.value, committed: true }
+        : { type: 'ignored' };
+      if (e.committed) next.composition = null;
+    }
+    const validField = e.field === 'quota'
+      ? Number.isInteger(e.index) && e.index >= 0 && e.index < current.settings.quotas.length
+      : ['source', 'title', 'seed'].includes(e.field) && e.index === null;
+    if (e.type === 'composition-start' && !current.composition && validField && Number.isSafeInteger(e.id) && e.id > compositionSerial) {
+      compositionSerial = e.id;
       terminate(); clearOutput();
-      if (e.sourceRef) assert(f.sources[e.sourceRef]);
-      next.hasSource = true; next.bank = null; next.settings.quotas = []; next.phase = 'dirty-source'; next.error = null;
+      if (current.active) effect = { kind: 'terminate', run: current.active.run };
+      next.error = null;
+      next.phase = next.bank ? 'dirty-settings' : next.hasSource ? 'dirty-source' : 'empty';
+      next.composition = { id: e.id, field: e.field, index: e.index };
+    } else if (current.composition && !e.committed && (['read', 'generate', 'download'].includes(e.type)
+      || (e.type === current.composition.field && (e.type !== 'quota' || e.index === current.composition.index)))) {
+      // Intermediate DOM input is invisible to the committed model.
+    } else if (e.type === 'source' || e.type === 'sample') {
+      const incoming = e.committed ? (e.value === '' ? undefined : { kind: 'paste', text: e.value })
+        : f.sources[e.sourceRef ?? 'sample'];
+      if (JSON.stringify(source) !== JSON.stringify(incoming)) {
+        terminate(); clearOutput();
+        source = incoming;
+        next.composition = null; next.hasSource = Boolean(source);
+        next.bank = null; next.settings.quotas = []; next.phase = source ? 'dirty-source' : 'empty'; next.error = null;
+      }
     } else if (e.type === 'title' || e.type === 'seed' || e.type === 'quota') {
-      terminate(); clearOutput();
-      if (e.type === 'quota') next.settings.quotas[e.index] = e.value;
-      else next.settings[e.type] = e.value;
-      next.error = null; next.phase = next.bank ? 'dirty-settings' : next.hasSource ? 'dirty-source' : 'empty';
+      const previous = e.type === 'quota' ? current.settings.quotas[e.index] : current.settings[e.type];
+      if (previous !== e.value) {
+        terminate(); clearOutput();
+        next.composition = null;
+        if (e.type === 'quota') next.settings.quotas[e.index] = e.value;
+        else next.settings[e.type] = e.value;
+        next.error = null; next.phase = next.bank ? 'dirty-settings' : next.hasSource ? 'dirty-source' : 'empty';
+      }
     } else if (e.type === 'read' && !current.active && !current.bank) {
       clearOutput(); next.error = null; next.bank = null; next.settings.quotas = [];
       if (current.hasSource && e.adapterCreateFails) {
@@ -440,7 +472,7 @@ console.log(JSON.stringify({ ok: true, docs: names.length, sections: sections.le
 
 ## 檢查範圍與狀態
 
-作者於 2026-11-11 台北時間使用 Node `v24.14.0` 執行上述離線命令，exit 0。核對四檔、八個文件面向、九個產品驗收 ID、11 條相對連結、7 個成功案例、40 個精確錯誤案例、8 組邊界、9 份完整 HTML、3 條控制器 trace 共 68 步。樣式的 SHA-256 Base64 為 `zN91wbzdYDm8DL79bfTqhVG92Io1YZZzU1hGzSI5yoY=`。
+作者於 2026-11-11 台北時間使用 Node `v24.14.0` 執行上述離線命令，exit 0。核對四檔、八個文件面向、九個產品驗收 ID、11 條相對連結、7 個成功案例、40 個精確錯誤案例、8 組邊界、9 份完整 HTML、3 條控制器 trace 共 85 步。組字案例包含未改值撤銷下載、終止忙碌 Worker、拒絕晚到結果及重設後的晚到 compositionend。樣式的 SHA-256 Base64 為 `zN91wbzdYDm8DL79bfTqhVG92Io1YZZzU1hGzSI5yoY=`。
 
 固定 `lesson-1` 的繁中學員檔為 1,674 bytes，SHA-256 `22153b192067e9968d8baaf74efb8218e0e4b7ef0b50b46807dea79a419b26f4`。G01 正解改為 B 時仍使用這一完整學員檔，講師首列更新為 B／中央山脈。倒序 CSV 與單 BOM、混合分隔、合法引用表頭的案例共用原本兩檔。
 
