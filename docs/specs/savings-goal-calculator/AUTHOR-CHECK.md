@@ -1,47 +1,30 @@
-# 儲蓄目標計算 — 作者檢查
+# 儲蓄尾款與達標月份｜文件核對
 
-作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`（Run 5 規格撰寫）。作者文件核對，待非作者 readiness；本文不是獨立審查。
+本提案為既有複利工具升級。原規格作者為 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`。本輪修訂與驗算由維護者 `local-codex:01a1c8a3-8c54-7810-a0e1-bc3a2ffbfe01` 執行，待非作者獨立審查。 [原作者檢查](https://github.com/KYStr/glossquote-labs-home/blob/9828c5d10ff75720333491cfc21f190b7cd7ed16/docs/specs/savings-goal-calculator/AUTHOR-CHECK.md) · [維護裁決](https://github.com/KYStr/glossquote-labs-home/blob/418aee70f60a04cbe19e339597c91a056bcad0c4/docs/reviews/five-hour-2026-11-11/dispatch/repair-savings/TASK.md)
 
-- 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+## SG-01 既有工具範圍
 
-## 不重複比對
+固定 #44 規格與 #80 候選已有每月需存與首次達標月兩種反算。既有模型每月將利息捨入到整分，並以 600 個月為達標搜尋上限。本提案補充精確計息下的尾款、實際計畫期末餘額與 1,200 個月界內最早達標月。兩個模型的差異可以改變可達性。初始 1 分、目標 2 分、月存 0、年率 12% 時，逐月捨入把每月的 0.01 分利息捨為零，餘額維持 1 分。精確模型第 69 月約為 1.98689 分，第 70 月約為 2.00676 分，因此第 70 月達標。原 owner、原 PR 及既有產品整合責任保留。 [#44 固定規格](https://github.com/KYStr/glossquote-labs-home/blob/5a9acc11b5b23200c3d4cda32adaafbbd389532e/docs/specs/compound-interest-calculator/SPEC.md) · [#80 固定介面](https://github.com/KYStr/glossquote-labs-home/blob/e42ebf56853ad8e46964ea8fc1ebf9623c6c2bb1/tools/compound-interest-calculator/public/en/index.html#L33-L34)
 
-- 已讀 compound-interest-calculator 的 BRIEF 與 SPEC 原文。該規格確實含目標模式（months-to-target、required contribution），但其答案是對「逐月把利息進位到分」的模擬做執行期搜尋／二元搜尋，產品主體是正向成長模擬＋每月明細表＋有效年利率＋CSV。本規格依 Run 5 概念 #23 定位為專用反向求解器：不模擬、不出明細表，兩答案皆由閉式年金公式以精確有理數算出。模型差異造成的幾分錢歧異已在 SPEC scope 與 FAQ 明示揭露，不宣稱兩者一致；若獨評認為重疊過高，應退回本規格而非默默改名。
-- mortgage 類規格為負債攤還（資產側相反）；分帳／單價類無時間維度。`docs/specs/` 無其他 savings-goal 規格。
+## SG-02 目標、尾款與餘額
 
-## Fixture 推導（雙方法）
+獨立驗算沿用初審的 Python 標準庫 `Fraction` 逐月遞推，使用整數分與 `q = 1 + bp/120000`。達標月前先計息，再加每月存款。若正尾款為 T 分，則 `beforeTail + T−1 < FV ≤ beforeTail + T`。零尾款對應 `beforeTail ≥ FV`。期末餘額為 `halfUp(beforeTail + T)`。初始額和存款總額均為整數分，因此顯示利息等於精確累計利息的 halfUp 值，非負且與顯示餘額相加關係一致。
 
-方法一（主推導）：依 SPEC 釘版規則以 Python `fractions.Fraction` 精確有理數實作（金額整數分、i = bp/120000、q^n 精確冪、進位／halfUp 以整數算術執行），產出全部 14 個成功／狀態案例。
-方法二（獨立複核）：另寫 Decimal 60 位逐月模擬 B ← B×(1+i) + PMT（不做任何中間捨入），逐案斷言：模式 A 以顯示月存代入期末餘額 ≥ 目標、月存減 0.01 後 < 目標（進位最小性）；模式 B B(k−1) < 目標 ≤ B(k)（首次跨越）；零利率案與整數加法一致。兩方法 14/14 全數一致，斷言全過。
+| 原案例 | 原期末 / 利息 | 修訂期末 / 利息 | 推導 |
+| --- | --- | --- | --- |
+| `months-with-interest` | 20000.00 / 2547.12 | 20000.01 / 2547.13 | 第 41 月餘額約 19748.3835。第 42 月尾款前約 19847.1254，尾款進位為 152.88，實際計畫餘額約 20000.0054。 |
+| `months-growth-only-crossing` | 11000.00 / 1000.00 | 11046.22 / 1046.22 | 第 9 月約 10936.8527，乘 1.01 得第 10 月約 11046.2213。尾款為 0.00，利息仍計入期末。 |
 
-手算錨點（紙筆可複核）：
+原七個模式 B 字面結果均補上正規化的 `targetAmount`，包含 already-funded 及兩種 unreachable。其他原案例的輸入、預期與用途維持原樣。新增 `months-one-cent-tail`，初始 50 分、目標 51 分、年率 12%、月存 1 分。首月尾款前精確為 50.5 分，尾款 1 分，實際餘額 51.5 分顯示 0.52。少存一分時精確餘額低於目標，即使其顯示值四捨五入為 0.51。
 
-- `payment-basic-zero-rate`：(100000 − 10000) ÷ 12 = 90000 ÷ 12 = 7500 整除。
-- `payment-zero-rate-ceiling`：1000 ÷ 3 = 333.333…，進位到分 333.34，333.34 × 3 = 1000.02。
-- `payment-one-month-timing`：PMT = FV × i ÷ (q − 1)，而 q − 1 = i，故 PMT = FV = 1000.00；若為月初存款答案會是 1000 ÷ 1.01 = 990.10，本案專門鑑別存入時點釘版。
-- `months-exact-zero-rate`：(12000 − 2000) ÷ 500 = 20 恰整數，進位不得變 21。
-- `months-ceiling-boundary`：333 × 30 = 9990 < 10000（恰差 10），333 × 31 = 10323，k = 31，尾款 10.00。
-- `months-growth-only-crossing`：1.01^9 = 1.0936852727 → 10936.85 < 11000；1.01^10 = 1.1046221254 → 11046.22 ≥ 11000；k = 10；尾款精確值 11000 − 10936.8527 × 1.01 < 0，截為 0.00。
-- `months-unreachable-horizon`：(100000 − 0) ÷ 1 = 100000 個月 > 1200，精確整數判定。
+## SG-03 上限和首次達標
 
-關鍵精確值（方法一原始分數的小數展開，供獨評抽查）：
+先限索引 0–1200，再精確比較 B(1200)。若仍低於目標，直接回 beyond-horizon。對正利率且界內達標的情形，用整數二分找最小 k。區間維持 `B(lo−1) < FV ≤ B(hi)`，每次至少縮半，1,200 個整數候選最多需 11 次中點比較。零利率以整數進位除法求解，在相同的 B(1200) 檢查之後執行。
 
-- `payment-with-interest`：PMT* = 7245.978673… → 進位 7245.98；期末精確 100000.016361… → halfUp 100000.02；利息顯示 3048.26。
-- `payment-long-horizon`：PMT* = 1201.549563… → 1201.55；期末精確 1000000.363319… → 1000000.36。
-- `payment-already-funded`：60000 × 1.0025^24 = 63705.4227… → 63705.42。
-- `payment-growth-sufficient`：10000 × 1.01^12 = 11268.2503… ≥ 11000 → growth-sufficient，期末 11268.25。
-- `months-with-interest`：對數估計 ln(400/325) ÷ ln(1.005) = 41.63… → 42；精確校正 B(41) = 19748.3835… < 20000 ≤ B(42) = 20147.1254…，估計值無需移動；尾款精確 152.874584… → 進位 152.88。
+- 零利率每月存 1、初始 0，目標 1200 在第 1200 月剛好達標。目標 1201 在第 1200 月尚差 1，回 beyond-horizon。
+- 正利率超期反例採初始 0.01、目標 999999999.99、年率 0.01%、月存 0。精確第 1200 月餘額約 1.01005 分，界內無解。閉式驗算只查第 1200 月就回傳。
+- 受限閉式驗算以同一組字面輸入核對獨立逐月遞推的首次達標月、超期時的精確餘額，以及索引守衛。−1 與 1201 均在乘冪前拒絕。
 
-## 釘版決策與理由（請獨評特別看）
+## 文件驗證範圍
 
-- 付款進位到分（非整元）：進位到分保證「少存 1 分即不達標」的最小性可驗證；整元進位在 360 個月下經年金因子放大可多存數十元，無必要。餘額類用 halfUp，因其為資訊值非付款指令。
-- 模式 B 的 finalBalance 定義為 targetAmount：照計畫於最後一月存入「精確」尾款時餘額恰等於目標；totalDeposits 改用「顯示（進位後）尾款」，totalInterest 由顯示恆等式反推，三個顯示值恆滿足 finalBalance = initialAmount + totalDeposits + totalInterest，代價是顯示利息可能比精確利息少不到 1 分，已在 FAQ 揭露。
-- totalInterest 永不為負：模式 A 精確利息 = PV(q^n − 1) + PMT × ((q^n − 1)/i − n) ≥ 0（因 (q^n − 1)/i = 1 + q + … + q^(n−1) ≥ n），halfUp 誤差 < 0.5 分且結果為整數分，故顯示值 ≥ 0；模式 B 精確利息 = B(k−1) × q − PV − PMT(k−1)（達標月含該月利息的總利息）≥ 0，尾款進位損失 < 1 分，同理顯示值 ≥ 0。
-- 模式 B 求解上限 1200 個月：超過以 unreachable/beyond-horizon 回傳而非輸出天文數字月數；與模式 A 輸入上限 600 個月有意不同（B 是求解結果上限，留較寬）。
-- 零利率分支以解析後 bp == 0（整數）判定，模式 A 用 (FV − PV)/n、模式 B 用整數進位除法，全程不除以 i、不用 epsilon。
-- 非作用中模式欄位只驗容量：沿用 Run 5 既有規格（race-time-predictor）的釘版先例，使單一草稿物件可兩模式共用。
-- 揭露句與四種狀態句皆雙語釘版原文，見 SPEC inputsOutputs 第 7、8 點。
-
-- 18 筆字面核心案例、3 筆 controller 案例。`payment-basic-zero-rate` 核對點為「零利率模式 A 基本除法」。
-
-- 產品交驗、Chrome/Edge、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN，分數 null。未固定候選或未獨評前不計 ready。
+23 個核心案例及 3 個合成 controller 案例共 26/26 通過本輪文件驗算。含息尾款案例另按固定鍵序、UTF-8 及末尾 LF 核對字面 JSON 報告。瀏覽器、原生下載、正式 HTTPS/SEO、Network/Storage、部署與九項產品面向均為 NOT_RUN，分數 null。維護三面向、原預案八節及產品九面向各有各的審查。REG-01 由另案處理。 [規格](SPEC.md) · [簡報](BRIEF.md) · [字面案例](fixtures.json)
