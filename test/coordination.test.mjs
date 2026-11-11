@@ -429,6 +429,9 @@ const mappingPR = 'https://github.com/KYStr/glossquote-labs-home/pull/99';
 const mappingRef = {...proof, commit: 'e'.repeat(40), path: 'docs/reviews/spec-mapping.json'};
 const mappingCandidate = {...mappingRef, path: 'docs/reviews/mapping-check.md'};
 const originCandidate = {...proof, commit: 'd'.repeat(40), path: 'docs/reviews/source-repair.md'};
+const ancestorMaker = {id: 'local-codex:fixture-ancestor-maker', executor: 'local-codex'};
+const ancestorTask = 'fixture-ancestor-repair';
+const ancestorCandidate = {...proof, commit: '2'.repeat(40), path: 'docs/reviews/ancestor/HANDOFF.md'};
 const sections = ['goal', 'scope', 'userFlow', 'inputsOutputs', 'implementation', 'acceptance', 'tests', 'handoff'];
 const eightSections = Object.fromEntries(sections.map(id => [id, true]));
 const documentRubric = sections.map(id => ({id, label: 'Independently checked section ' + id}));
@@ -461,9 +464,17 @@ function claimAndStart(registry, actor, taskId) {
   return {registry, claimId};
 }
 
-function mappingInputs(status = 'draft') {
+function submitAncestorRepair(registry) {
+  return apply(registry, ancestorMaker, 'submit', {
+    taskId: ancestorTask, claimId: taskRow(registry, ancestorTask).owner.claimId, candidate: ancestorCandidate,
+    pullRequest: 'https://github.com/KYStr/glossquote-labs-home/pull/97',
+    evidence: 'Pinned earlier maintenance.', evidenceRef: {...proof, path: 'docs/reviews/ancestor/checks.md'}
+  });
+}
+
+function mappingInputs(status = 'draft', withAncestor = false) {
   let registry = reconciled();
-  for (const actor of [primary, mappingMaker, originalMaker]) registry = acknowledge(registry, actor);
+  for (const actor of [primary, mappingMaker, originalMaker, ancestorMaker]) registry = acknowledge(registry, actor);
   for (const specId of [ageSpec, billSpec]) {
     const document = {...proof, path: 'docs/specs/' + specId.slice(5, -9) + '/SPEC.md'};
     registry = apply(registry, author, 'register-spec', {spec: {
@@ -481,9 +492,24 @@ function mappingInputs(status = 'draft') {
     brief: {...proof, path: 'docs/specs/age-calculator/BRIEF.md'}, acceptanceCriteria: documentRubric
   }});
   registry = apply(registry, originalMaker, 'claim', {taskId: 'fixture-original-authoring'});
+  let repairSource = {...proof, path: 'docs/reviews/source-start.md'};
+  if (withAncestor) {
+    const oldDocument = registry.specs[0].document;
+    registry = apply(registry, ancestorMaker, 'register-task', {task: {
+      id: ancestorTask, title: 'Earlier accepted maintenance', workType: 'maintenance',
+      source: withAncestor === 'cycle' ? {...originCandidate, path: oldDocument.path} : oldDocument,
+      brief: {...proof, path: 'docs/reviews/ancestor/TASK.md'}, acceptanceCriteria: criteria
+    }});
+    registry = claimAndStart(registry, ancestorMaker, ancestorTask).registry;
+    if (withAncestor !== 'unsubmitted') registry = submitAncestorRepair(registry);
+    if (withAncestor === true || withAncestor === 'cycle') {
+      registry = applyOperation(registry, maintenanceReview(registry, ancestorTask, ancestorCandidate)).registry;
+    }
+    repairSource = {...ancestorCandidate, path: oldDocument.path};
+  }
   registry = apply(registry, author, 'register-task', {task: {
     id: originTask, title: 'Accepted source maintenance', workType: 'maintenance',
-    source: {...proof, path: 'docs/reviews/source-start.md'}, brief: {...proof, path: 'docs/reviews/source-brief.md'},
+    source: repairSource, brief: {...proof, path: 'docs/reviews/source-brief.md'},
     acceptanceCriteria: criteria
   }});
   registry = apply(registry, local, 'claim', {taskId: originTask});
@@ -509,8 +535,8 @@ function mappingInputs(status = 'draft') {
   return {registry, targets, task};
 }
 
-function mappingFixture(status) {
-  const {registry: before, task, targets} = mappingInputs(status);
+function mappingFixture(status, withAncestor) {
+  const {registry: before, task, targets} = mappingInputs(status, withAncestor);
   const registered = apply(before, mappingMaker, 'register-task', {task});
   const started = claimAndStart(registered, mappingMaker, task.id);
   const submit = {taskId: task.id, claimId: started.claimId, candidate: mappingCandidate,
@@ -785,6 +811,11 @@ function adapterFixture(registry, targets) {
     {...proof, path: 'docs/reviews/independent-review.md'}, {...proof, path: 'docs/reviews/mapping-brief.md'}
   ];
   for (const ref of auxiliary) save(ref, 'Independent fixture file ' + ref.path);
+  for (const task of registry.tasks.filter(row => row.workType === 'maintenance' && row.status === 'accepted')) {
+    for (const ref of [task.source, task.brief, task.submission.candidate, task.submission.evidenceRef, task.acceptance.evidenceRef]) {
+      if (!files.has(fixedFileKey(ref))) save(ref, 'Independent fixture file ' + ref.path);
+    }
+  }
   const oldDocuments = ['old age specification\r\n', 'old and unchanged bill specification\n'];
   const newDocuments = ['repaired age specification\r\n', 'old and unchanged bill specification\n'];
   const sourceBytes = 'Independent fixture file README.md';
@@ -910,5 +941,157 @@ test('adapter also verifies fixed mapping during register, submit, and independe
     changed.save(mappingRef, '{"targets":[]}');
     await assert.rejects(executeOperation(changed.client, cmd), {code: 'INVALID_SPEC_MAPPING'});
     assert.equal(changed.state.writes, 0);
+  }
+});
+
+test('known upstream accepted maintenance excludes its maker from mapping and readiness even when only the latest repair is declared', () => {
+  const {registry, reviewing, registered, targets} = mappingFixture('draft', true);
+  assert.deepEqual(targets[0].sourceMaintenanceTaskIds, [originTask]);
+  const upstream = taskRow(registry, ancestorTask);
+  const latest = taskRow(registry, originTask);
+  assert.equal(latest.source.commit, upstream.submission.candidate.commit);
+  assert.notEqual(latest.source.path, upstream.submission.candidate.path);
+  assert.ok(taskRow(registered, mappingTask).contributors.includes(ancestorMaker.id));
+  assert.throws(() => applyOperation(reviewing, maintenanceReview(reviewing, mappingTask, mappingCandidate, {actor: ancestorMaker})),
+    {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  const before = clone(registry);
+  const applied = applyOperation(registry, maintain(registry)).registry;
+  assert.deepEqual(applied.tasks, before.tasks);
+  assert.ok(applied.specs[0].contributors.includes(ancestorMaker.id));
+  assert.throws(() => applyOperation(applied, markMaintained(applied, ancestorMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.equal(applyOperation(applied, markMaintained(applied)).registry.specs[0].status, 'ready');
+
+  const references = operationReferences(registry, maintain(registry)).map(fixedFileKey);
+  for (const ref of [upstream.source, upstream.brief, upstream.submission.candidate, upstream.submission.evidenceRef, upstream.acceptance.evidenceRef]) {
+    assert.ok(references.includes(fixedFileKey(ref)));
+  }
+  const omitted = clone(registered);
+  const contributors = taskRow(omitted, mappingTask).contributors;
+  contributors.splice(contributors.indexOf(ancestorMaker.id), 1);
+  assert.throws(() => validateRegistry(omitted), {code: 'INVALID_REGISTRY'});
+});
+
+test('a later accepted ancestor leaves historical snapshots valid and requires fresh independent evidence', () => {
+  const {registry, reviewing} = mappingFixture('draft', 'unsubmitted');
+  const acceptAncestor = row => {
+    const submitted = submitAncestorRepair(row);
+    return applyOperation(submitted, maintenanceReview(submitted, ancestorTask, ancestorCandidate)).registry;
+  };
+  const pendingReview = submitAncestorRepair(reviewing);
+  assert.throws(() => applyOperation(pendingReview, maintenanceReview(pendingReview, mappingTask, mappingCandidate)),
+    {code: 'MAINTENANCE_SOURCE_PENDING'});
+  const pendingApply = submitAncestorRepair(registry);
+  assert.throws(() => applyOperation(pendingApply, maintain(pendingApply)), {code: 'MAINTENANCE_SOURCE_PENDING'});
+  const updatedReview = acceptAncestor(reviewing);
+  assert.throws(() => applyOperation(updatedReview, maintenanceReview(updatedReview, mappingTask, mappingCandidate)),
+    {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  const updatedApply = acceptAncestor(registry);
+  assert.doesNotThrow(() => validateRegistry(updatedApply));
+  assert.throws(() => applyOperation(updatedApply, maintain(updatedApply)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  const previouslyApplied = applyOperation(registry, maintain(registry)).registry;
+  const updatedReady = acceptAncestor(previouslyApplied);
+  assert.throws(() => applyOperation(updatedReady, markMaintained(updatedReady, ancestorMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.equal(applyOperation(updatedReady, markMaintained(updatedReady)).registry.specs[0].status, 'ready');
+});
+
+test('adapter blocks upstream self-review before CAS and still requires bytes from an explicitly declared candidate', async () => {
+  const {before, task, targets} = mappingFixture('draft', true);
+  const {client, state} = adapterFixture(before, targets);
+  const execute = (actor, action, extra) => executeOperation(client, command(state.registry, actor, action, extra));
+  await execute(mappingMaker, 'register-task', {task});
+  await execute(mappingMaker, 'claim', {taskId: task.id});
+  const claimId = taskRow(state.registry, task.id).owner.claimId;
+  await execute(mappingMaker, 'start', {taskId: task.id, claimId, evidence: 'Fixed mapping started.'});
+  await execute(mappingMaker, 'submit', {taskId: task.id, claimId, candidate: mappingCandidate,
+    pullRequest: mappingPR, evidence: 'Fixed mapping candidate.', evidenceRef: proof});
+  await assert.rejects(executeOperation(client, maintenanceReview(state.registry, task.id, mappingCandidate, {actor: ancestorMaker})),
+    {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.equal(state.writes, 4);
+  await executeOperation(client, maintenanceReview(state.registry, task.id, mappingCandidate));
+  await executeOperation(client, maintain(state.registry));
+  await assert.rejects(executeOperation(client, markMaintained(state.registry, ancestorMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.equal(state.writes, 6);
+  await executeOperation(client, markMaintained(state.registry));
+  assert.equal(state.writes, 7);
+  assert.equal(state.registry.specs[0].status, 'ready');
+
+  const wrongDirect = adapterFixture(before, targets);
+  wrongDirect.save({...ancestorCandidate, path: targets[0].document.path}, 'repaired age specification\r\n');
+  wrongDirect.save({...originCandidate, path: targets[0].document.path}, 'incorrect direct source');
+  await assert.rejects(executeOperation(wrongDirect.client, command(before, mappingMaker, 'register-task', {task})),
+    {code: 'SPEC_SOURCE_MISMATCH'});
+  assert.equal(wrongDirect.state.writes, 0);
+});
+
+function acceptedRepair(registry, actor, taskId, source, candidate, pullNumber) {
+  registry = apply(registry, actor, 'register-task', {task: {
+    id: taskId, title: taskId, workType: 'maintenance', source, brief: proof, acceptanceCriteria: criteria
+  }});
+  const started = claimAndStart(registry, actor, taskId);
+  registry = apply(started.registry, actor, 'submit', {
+    taskId, claimId: started.claimId, candidate, pullRequest: 'https://github.com/' + REPOSITORY + '/pull/' + pullNumber,
+    evidence: 'Pinned independent fixture candidate.', evidenceRef: proof
+  });
+  return applyOperation(registry, maintenanceReview(registry, taskId, candidate)).registry;
+}
+
+test('all accepted records at the same upstream commit contribute regardless of evidence path', () => {
+  const {registry, task} = mappingInputs('draft', true);
+  const otherMaker = {id: 'local-codex:fixture-second-ancestor-maker', executor: 'local-codex'};
+  const otherCandidate = {...ancestorCandidate, path: 'docs/reviews/other-record/HANDOFF.md'};
+  const withSecond = acceptedRepair(acknowledge(registry, otherMaker), otherMaker, 'fixture-second-ancestor',
+    registry.specs[0].document, otherCandidate, 96);
+  const register = command(withSecond, mappingMaker, 'register-task', {task});
+  const references = operationReferences(withSecond, register).map(fixedFileKey);
+  assert.ok(references.includes(fixedFileKey(ancestorCandidate)));
+  assert.ok(references.includes(fixedFileKey(otherCandidate)));
+  const registered = applyOperation(withSecond, register).registry;
+  const contributors = taskRow(registered, mappingTask).contributors;
+  assert.ok(contributors.includes(ancestorMaker.id));
+  assert.ok(contributors.includes(otherMaker.id));
+});
+
+test('multi-spec mapping ancestry retains declared provenance from every target in the accepted parent', () => {
+  const {registry, task, targets} = mappingInputs('draft', true);
+  const upstream = {...task, specRevisionTargets: [
+    {...targets[0], sourceMaintenanceTaskIds: []},
+    {...targets[1], sourceMaintenanceTaskIds: [ancestorTask]}
+  ]};
+  const registered = apply(registry, mappingMaker, 'register-task', {task: upstream});
+  const started = claimAndStart(registered, mappingMaker, upstream.id);
+  const submitted = apply(started.registry, mappingMaker, 'submit', {
+    taskId: upstream.id, claimId: started.claimId, candidate: mappingCandidate, pullRequest: mappingPR,
+    evidence: 'Pinned mapping spanning both specs.', evidenceRef: proof
+  });
+  const accepted = applyOperation(submitted, maintenanceReview(submitted, upstream.id, mappingCandidate)).registry;
+  const latestId = 'fixture-downstream-repair';
+  const latestCandidate = {...originCandidate, commit: '5'.repeat(40)};
+  const latestSource = {...mappingCandidate, path: targets[0].document.path};
+  const repaired = acceptedRepair(accepted, local2, latestId, latestSource, latestCandidate, 95);
+  const nextRef = {...mappingRef, commit: '6'.repeat(40)};
+  const nextMapping = {...task, id: 'fixture-downstream-mapping', specRevisionTargets: [{
+    ...targets[0], mappingRef: nextRef, document: {...targets[0].document, commit: nextRef.commit},
+    source: {...targets[0].source, commit: nextRef.commit}, sourceMaintenanceTaskIds: [latestId]
+  }]};
+  const register = command(repaired, local, 'register-task', {task: nextMapping});
+  const refs = operationReferences(repaired, register).map(fixedFileKey);
+  assert.ok(refs.includes(fixedFileKey(ancestorCandidate)));
+  assert.ok(refs.includes(fixedFileKey(mappingCandidate)));
+  const contributors = taskRow(applyOperation(repaired, register).registry, nextMapping.id).contributors;
+  assert.ok(contributors.includes(ancestorMaker.id));
+  assert.ok(contributors.includes(mappingMaker.id));
+  assert.ok(contributors.includes(local2.id));
+});
+
+test('a reachable source cycle or a known submitted but unaccepted source stops mapping before adapter CAS', async () => {
+  for (const [mode, code] of [['cycle', 'MAINTENANCE_SOURCE_CYCLE'], ['pending', 'MAINTENANCE_SOURCE_PENDING']]) {
+    const {registry, targets, task} = mappingInputs('draft', mode);
+    const register = command(registry, mappingMaker, 'register-task', {task});
+    assert.doesNotThrow(() => validateRegistry(registry));
+    assert.throws(() => applyOperation(registry, register), {code});
+    const {client, state} = adapterFixture(registry, targets);
+    await assert.rejects(executeOperation(client, register), {code});
+    assert.equal(state.writes, 0);
+    assert.deepEqual(state.registry, registry);
   }
 });

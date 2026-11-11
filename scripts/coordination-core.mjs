@@ -172,12 +172,65 @@ function acceptedMaintenance(registry, taskId) {
   return task;
 }
 
-function sourceMaintenanceTasks(registry, target) {
-  return target.sourceMaintenanceTaskIds.map(taskId => {
+function maintenanceSources(registry, target, mappingTaskId, historicalFilter) {
+  const fixedTask = taskId => {
     const task = acceptedMaintenance(registry, taskId);
     maintenanceRef(task.submission.candidate, 'source maintenance candidate');
     return task;
-  });
+  };
+  const direct = target.sourceMaintenanceTaskIds.map(fixedTask);
+  if (!direct.length) return {direct, lineage: []};
+  const recordedCandidates = new Map();
+  const commitKey = ref => `${ref.repository}/${ref.commit}`;
+  for (const task of registry.tasks) {
+    if (task.workType !== 'maintenance' || task.status === 'released') continue;
+    if (historicalFilter && (task.status !== 'accepted' || !historicalFilter(task.id))) continue;
+    const candidate = task.submission?.candidate ?? task.specRevisionTargets?.[0]?.mappingRef;
+    if (!candidate) continue;
+    const key = commitKey(candidate);
+    if (!recordedCandidates.has(key)) recordedCandidates.set(key, []);
+    recordedCandidates.get(key).push(task);
+  }
+
+  const lineage = new Map();
+  const active = new Set();
+  const stack = direct.map(task => ({task, exit: false})).reverse();
+  while (stack.length) {
+    const {task, exit} = stack.pop();
+    if (exit) { active.delete(task.id); continue; }
+    check(task.id !== mappingTaskId && !active.has(task.id) && !sameCommit(task.source, target.mappingRef),
+      'MAINTENANCE_SOURCE_CYCLE', 'The known maintenance source chain contains a cycle.');
+    if (lineage.has(task.id)) continue;
+    lineage.set(task.id, task);
+    active.add(task.id);
+    stack.push({task, exit: true});
+
+    // The source can be a SPEC while the accepted candidate is a HANDOFF in the same commit.
+    const parents = recordedCandidates.get(commitKey(task.source)) ?? [];
+    check(parents.every(parent => parent.status === 'accepted'), 'MAINTENANCE_SOURCE_PENDING',
+      'A referenced maintenance candidate is awaiting independent acceptance.');
+    const declared = (task.specRevisionTargets ?? []).flatMap(row => row.sourceMaintenanceTaskIds);
+    const parentIds = [...new Set([...parents.map(parent => parent.id), ...declared])];
+    for (const parentId of parentIds.reverse()) {
+      if (historicalFilter && !historicalFilter(parentId)) continue;
+      stack.push({task: fixedTask(parentId), exit: false});
+    }
+  }
+  return {direct, lineage: [...lineage.values()]};
+}
+
+function previouslyAcceptedSources(registry, mappingTask) {
+  // An ancestor accepted later can require a fresh mapping review without invalidating older registry snapshots.
+  const action = mappingTask.status === 'accepted' ? 'review' : 'register-task';
+  const anchor = registry.events.findLast(event => event.action === action && event.taskId === mappingTask.id);
+  if (!anchor) return () => true;
+  const acceptedLater = new Set(registry.events.filter(event => event.action === 'review' && event.revision > anchor.revision)
+    .map(event => event.taskId));
+  return taskId => !acceptedLater.has(taskId);
+}
+
+function mappingSourceMakers(registry, task, include) {
+  return task.specRevisionTargets.flatMap(target => maintenanceSources(registry, target, task.id, include).lineage.flatMap(taskMakers));
 }
 
 function knownSpecMakers(registry, spec) {
@@ -185,10 +238,12 @@ function knownSpecMakers(registry, spec) {
   const specTasks = registry.tasks.filter(task => task.workType === 'spec'
     && (task.specId === spec.id || (task.submission?.candidate && sameFile(task.submission.candidate, spec.document))
       || (task.brief.repository === spec.document.repository && task.brief.path === briefPath)));
-  return [spec.authorId, ...(spec.contributors ?? []), ...specTasks.flatMap(taskMakers)];
+  const maintenanceMakers = (spec.maintenanceHistory ?? []).flatMap(entry =>
+    maintenanceSources(registry, entry.replacement, entry.taskId).lineage.flatMap(taskMakers));
+  return [spec.authorId, ...(spec.contributors ?? []), ...specTasks.flatMap(taskMakers), ...maintenanceMakers];
 }
 
-function validateMappingTask(registry, task) {
+function validateMappingTask(registry, task, include) {
   check(task.workType === 'maintenance' && task.specId === null,
     'SPEC_MAINTENANCE_SCOPE', 'Only a maintenance task without a production spec reference can declare revision targets.');
   exactCriteria(task.acceptanceCriteria, SPEC_SECTIONS);
@@ -204,14 +259,14 @@ function validateMappingTask(registry, task) {
     check(spec && target.expectedAuthorId === spec.authorId, 'SPEC_MAINTENANCE_SCOPE', 'The target must retain its existing specification and author.');
     check(same(target.mappingRef, mappingRef), 'CANDIDATE_MISMATCH', 'A mapping task must declare a single fixed mapping file.');
     check(!target.sourceMaintenanceTaskIds.includes(task.id), 'SPEC_MAINTENANCE_SCOPE', 'A mapping task cannot source its own candidate.');
-    inherited.push(spec.authorId, ...sourceMaintenanceTasks(registry, target).flatMap(taskMakers));
+    inherited.push(spec.authorId);
   }
   if (task.submission) {
     maintenanceRef(task.submission.candidate, 'mapping submission candidate');
     check(sameCommit(task.submission.candidate, mappingRef),
       'CANDIDATE_MISMATCH', 'Submission must use the candidate fixed at mapping registration. A changed commit requires a new task.');
   }
-  return inherited;
+  return [...inherited, ...mappingSourceMakers(registry, task, include)];
 }
 
 function checkTargetState(registry, spec, target) {
@@ -355,7 +410,7 @@ export function validateRegistry(registry) {
     } else check(task.owner === null, 'INVALID_REGISTRY', 'Unclaimed task cannot retain an owner.');
     if (task.status === 'accepted') validateAcceptance(task, task.acceptance);
     if (task.specRevisionTargets !== undefined) {
-      const inherited = validateMappingTask(registry, task);
+      const inherited = validateMappingTask(registry, task, previouslyAcceptedSources(registry, task));
       check([...inherited, ...taskMakers(task)].every(maker => task.contributors.includes(maker)),
         'INVALID_REGISTRY', 'Mapping task contributors must retain every source maker and its recorded owner.');
       for (const maker of task.contributors) id(maker, 'mapping contributor');
@@ -557,7 +612,7 @@ export function applyOperation(input, command) {
         'SPEC_MAINTENANCE_STALE', 'This mapping task was already applied to the specification.');
       checkTargetState(registry, spec, target);
       const makers = taskMakers(task);
-      check(knownSpecMakers(registry, spec).every(maker => makers.includes(maker)),
+      check([...knownSpecMakers(registry, spec), ...mappingSourceMakers(registry, task)].every(maker => makers.includes(maker)),
         'INDEPENDENT_REVIEW_REQUIRED', 'The mapping omitted a recorded specification maker. Register and independently review a fresh mapping.');
       spec.maintenanceHistory ??= [];
       spec.maintenanceHistory.push({
@@ -696,6 +751,8 @@ export function applyOperation(input, command) {
       check(['accepted', 'revision'].includes(command.verdict), 'INVALID', 'Verdict must be accepted or revision.');
       const review = {verdict: command.verdict, reviewerId: command.actor.id, candidate: command.candidate, evidence: command.evidence, evidenceRef: command.evidenceRef, rubricComplete: command.rubricComplete === true, requiredChecksComplete: command.requiredChecksComplete === true, aspects: command.aspects ?? [], reviewedAt: command.observedAt};
       if (command.verdict === 'accepted') validateAcceptance(task, review);
+      if (task.specRevisionTargets) check(mappingSourceMakers(registry, task).every(maker => task.contributors.includes(maker)),
+        'INDEPENDENT_REVIEW_REQUIRED', 'The mapping omitted a known maintenance ancestor. Register and review a fresh mapping.');
       if (command.verdict === 'accepted' && task.specRevisionTargets) {
         for (const target of task.specRevisionTargets) {
           const spec = registry.specs.find(row => row.id === target.specId);
@@ -731,9 +788,9 @@ export function operationReferences(registry, command) {
     add(mapping.mappingRef);
     if (mapping.submission) add(mapping.submission.evidenceRef);
     add(mapping.acceptance?.evidenceRef);
-    for (const {target, sources} of mapping.targets) {
+    for (const {target, lineage} of mapping.targets) {
       for (const ref of [target.expectedDocument, target.expectedSource, target.document, target.source]) add(ref);
-      for (const source of sources) {
+      for (const source of lineage) {
         for (const ref of [source.source, source.brief, source.submission.candidate,
           source.submission.evidenceRef, source.acceptance.evidenceRef]) add(ref);
       }
@@ -750,7 +807,10 @@ export function specMappingVerification(registry, command) {
   if (!task?.specRevisionTargets) return null;
   return {
     mappingRef: task.specRevisionTargets[0].mappingRef,
-    targets: task.specRevisionTargets.map(target => ({target, sources: sourceMaintenanceTasks(registry, target)})),
+    targets: task.specRevisionTargets.map(target => {
+      const {direct, lineage} = maintenanceSources(registry, target, task.id);
+      return {target, sources: direct, lineage};
+    }),
     submission: task.submission,
     acceptance: task.acceptance
   };

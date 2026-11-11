@@ -305,6 +305,8 @@ node scripts/coordination.mjs apply-batch < commands.json
 | `mappingRef` | 固定映射 JSON 的 repo/commit/path。 |
 | `sourceMaintenanceTaskIds` | 已接受的原來源維護任務 IDs。空陣列僅適用於與舊固定 SPEC bytes 完全相同的規格。 |
 
+若來源維護任務的 `source` 指到已登記維護候選的同一 repo/commit，核心沿固定引用追溯所有相符候選，以及各層既有映射紀錄列出的來源任務。即使 SPEC 與提交證據檔路徑不同，仍會納入該層提交者、owner、contributors 與審查證據。同一 commit 有多筆時全部核對。發現循環或未接受的已知候選會拒絕新映射；已登記映射若在驗收或套用前出現新的已知祖先 maker，須以完整來源重登並獨審。缺少 registry 候選引用的外部來源由獨立 reviewer 核對。
+
 映射 JSON 的根物件只有 `targets` 陣列，內容與登記的 targets 依序相同。每項省略 `mappingRef`，並把新 `document`、`source` 各寫為 `{repository,path,bytes,sha256}`。舊 refs 的 commit 保留，候選內檔案的 commit 由外層登記引用固定。GitHub adapter 先讀固定 JSON 和 Git blob bytes，驗證每項 SPEC 與列明的已接受來源候選同路徑檔案完全相同。空來源清單時與舊固定文件核對。來源檔須與舊固定來源或列明的已接受候選同路徑檔案相同。
 
 3. 經 claim/readback/start 後，owner 用同一固定 commit 交驗。獨立 reviewer 必須逐一檢查所有預宣告規格的八節，以及九項產品 criteria 與 SPEC 內容的對應，再對八節逐項給分及附證據。每項須至少 90，必要檢查均已完成。改動固定 commit 時，保留舊任務，另用新 taskId 宣告新 targets 並重新獨審。
