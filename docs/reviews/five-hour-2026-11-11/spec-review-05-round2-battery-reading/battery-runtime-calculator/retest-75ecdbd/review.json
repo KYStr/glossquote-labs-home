@@ -1,0 +1,223 @@
+{
+  "taskId": "labs-five-hour-repair-battery-20261111",
+  "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a",
+  "reviewedAt": "2026-11-11 06:07:24 UTC",
+  "independentOfAuthors": true,
+  "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/318",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "75ecdbdff3c5b3b8e2d5c097df517c6a75466776",
+    "path": "docs/specs/battery-runtime-calculator/SPEC.md"
+  },
+  "directParent": "4ffb54a6d0f763be3f923eec8b9a0baab88cb90c",
+  "original": {
+    "commit": "13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9",
+    "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/253"
+  },
+  "status": "PASS",
+  "recommendation": "accept-after-fixed-submission",
+  "aspects": [
+    {
+      "id": "spec-corrections",
+      "score": 98,
+      "status": "PASS",
+      "evidence": "§scope 第 25 行已排除轉換損耗並限定 DoD 為額定電量比例。與同端額定提示、§inputsOutputs 和雙語 FAQ 一致。AUTHOR-CHECK 只新增 BAT-SCOPE-01 勘誤。BAT-R2-02 是未影響運算的保守下界措辭。"
+    },
+    {
+      "id": "exact-fixtures",
+      "score": 100,
+      "status": "PASS",
+      "evidence": "新舊 fixtures.json 匿名 HTTP bytes 與 Git blob 完全一致，SPEC 的算式、界限、首錯與控制器契約 bytes 相同。可沿用先前固定候選的 40/40 獨立驗算與原 31 筆保留證據。"
+    },
+    {
+      "id": "provenance-and-scope",
+      "score": 100,
+      "status": "PASS",
+      "evidence": "PR #318 新 head 的唯一 parent 為舊 4ffb54a。GitHub 增量 diff 僅兩檔，四檔 raw bytes 校驗 Git blob。r1627 原 owner、維護 owner、claim 與三項 rubric 讀回相同。"
+    }
+  ],
+  "resolutions": [
+    {
+      "id": "BAT-R2-01",
+      "status": "PASS",
+      "evidence": "範圍節改句後，選用 30 Wh 額定輸出與 10 W 負載時只按使用的 DoD 計算。轉換損耗依規格排除，舊句的額外折減指示已消失。"
+    },
+    {
+      "id": "BAT-SCOPE-01",
+      "status": "PASS",
+      "evidence": "作者補記 DoD 及轉換損耗的正確口徑。已核對新增段落與 §scope、輸入、結果及 FAQ 一致。"
+    }
+  ],
+  "blockers": [],
+  "nonBlocking": [
+    {
+      "id": "BAT-R2-02",
+      "evidence": "§inputsOutputs 第 131 行把 10⁻⁶% 稱為最小 DoD。`0.000001` 有 8 個 UTF-16 單位，先回 INPUT_LIMIT。`0.00001` 才是 7 單位合法下限。可修為正確下限，或明說 10⁻⁶% 只是保守下界。現有 10¹⁹ Wh 上界仍有限且保守，現有計算與 RESULT_LIMIT 不受影響。"
+    }
+  ],
+  "scopeSection": {
+    "id": "scope",
+    "score": 98,
+    "status": "PASS",
+    "line": 25,
+    "otherSectionsByteIdentical": true
+  },
+  "arithmetic": {
+    "status": "REUSED_VERIFIED",
+    "verifiedAtCandidate": "4ffb54a6d0f763be3f923eec8b9a0baab88cb90c",
+    "fixtureMatches": 40,
+    "originalCasesUnchanged": 31,
+    "exactFixtureGitBlob": "2de34cd609afe606635be3e835af451432d016c9",
+    "fixtureProof": "../fixture-results.json",
+    "freshFullRerun": "NOT_RUN"
+  },
+  "history": {
+    "oldCandidate": "4ffb54a6d0f763be3f923eec8b9a0baab88cb90c",
+    "oldReviewHead": "6d506a01073ca0d4ab5a38b14ae7b6c639fdee8d",
+    "oldReport": "../REVIEW.md",
+    "oldSpecCorrectionsScore": 84,
+    "oldStatus": "FAIL"
+  },
+  "sourceFiles": {
+    "BRIEF.md": {
+      "path": "docs/specs/battery-runtime-calculator/BRIEF.md",
+      "bytes": 1553,
+      "sha256": "78c55ab71c4b22a76ce539598683ebfbb5eaf75cb9bf7ab4689d7feac4a714e6",
+      "gitBlob": "f28106497cc653a4d0f87364dcf19630f76c808c"
+    },
+    "SPEC.md": {
+      "path": "docs/specs/battery-runtime-calculator/SPEC.md",
+      "bytes": 31075,
+      "sha256": "68efd31981fa899b8ea971ea76aa457c35e7c02ca17f41dc06c5e74c0ddd2e8f",
+      "gitBlob": "3d71e5b4c4d517e3f2ca91c2d724f46af7520035"
+    },
+    "fixtures.json": {
+      "path": "docs/specs/battery-runtime-calculator/fixtures.json",
+      "bytes": 17044,
+      "sha256": "21af4da6215a2c734cec86c3876cf50a1bd14982bee3796a34de5393c40595ea",
+      "gitBlob": "2de34cd609afe606635be3e835af451432d016c9"
+    },
+    "AUTHOR-CHECK.md": {
+      "path": "docs/specs/battery-runtime-calculator/AUTHOR-CHECK.md",
+      "bytes": 5701,
+      "sha256": "7880dd4f56de6782b314ea04262301259b5f67987b859ca2333a798179ea8b7e",
+      "gitBlob": "6cd4ebda18457d804252a444bca0179eccee6935"
+    }
+  },
+  "registry": {
+    "revision": 1627,
+    "branchHead": "e654b0057e2a20affed20bfef16f76b23c11f766",
+    "gitBlob": "902e70d2375ae7f05bf21b72bf209cf1c785c17d",
+    "taskId": "labs-five-hour-repair-battery-20261111",
+    "status": "working",
+    "owner": {
+      "actorId": "local-codex:01a1c8a3-9150-7bd0-aac8-4b7495c2da91",
+      "executor": "local-codex",
+      "claimId": "fh-battery-claim-7c3dca5b-6821-4bad-b870-791e86eb8e64",
+      "claimedAt": "2026-11-11T05:14:31.707Z"
+    },
+    "criteria": [
+      {
+        "id": "spec-corrections",
+        "label": "完整修正 BAT-01 與 BAT-02，固定安全整數界限、首錯、雙語額定口徑與理想模型。"
+      },
+      {
+        "id": "exact-fixtures",
+        "label": "獨立字面驗算原 31 筆、兩個越界反例、安全邊界、時分恆等式與額定資料配對。"
+      },
+      {
+        "id": "provenance-and-scope",
+        "label": "核對固定四檔、原 owner、原 PR 與僅文件的差異、命令及未驗項。"
+      }
+    ],
+    "contributors": [
+      "local-codex:01a1c8a3-9150-7bd0-aac8-4b7495c2da91"
+    ],
+    "submission": null,
+    "original": {
+      "owner": {
+        "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+        "executor": "cloud-dot",
+        "claimId": "muse-r4-battery-runtime-ca-claim-20261109T154030Z-31ba0",
+        "claimedAt": "2026-11-09T15:40:30.178Z"
+      },
+      "source": {
+        "repository": "KYStr/glossquote-labs-home",
+        "commit": "13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9",
+        "path": "docs/specs/battery-runtime-calculator/SPEC.md"
+      },
+      "specStatus": "draft"
+    },
+    "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a"
+  },
+  "scopeEvidence": "scope-evidence.json",
+  "registryReview": "NOT_RUN",
+  "mapping": "NOT_RUN",
+  "readiness": "NOT_RUN",
+  "productChecks": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "plannedEvidence": "從真實輸入執行「計算」，四種模式的畫面和完整報告符合核心 fixtures，使用者取得對應產物。",
+      "line": 152,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "boundaries",
+      "plannedEvidence": "合法端點、安全整數上限前後、第一個錯誤、逢五進位邊界及四筆 controller case 的證據。",
+      "line": 153,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "privacy",
+      "plannedEvidence": "靜態載入後從使用到重設的零工作請求，並核對 storage、URL 和 log。",
+      "line": 154,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "security",
+      "plannedEvidence": "敵意輸入 inert、無動態執行、CSP、固定下載名稱、資源上限和 Worker/Blob dispose。",
+      "line": 155,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "usability",
+      "plannedEvidence": "兩語桌面與行動的主流程、空、繁忙、取消、錯誤、修改和下載可操作。",
+      "line": 156,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "accessibility",
+      "plannedEvidence": "鍵盤、焦點、labels/errors、狀態、WCAG 2.2 AA 目標、320px、實際 200% zoom、觸控及 reduced motion。",
+      "line": 157,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "localization-seo",
+      "plannedEvidence": "兩個獨立 HTML、全部訊息對譯、同語首頁回鏈、候選 noindex。正式 HTTPS/SEO 另驗。",
+      "line": 158,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "toolchain-provenance",
+      "plannedEvidence": "Node 版本、離線命令和 exit、靜態 SHA-256、同一開啟 PR head、重建 bytes、零依賴。",
+      "line": 159,
+      "score": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "compatibility",
+      "plannedEvidence": "真實隔離 Chrome 與 Edge 兩語輸入、錯誤、reset、Worker、Blob 下載和 reflow。",
+      "line": 160,
+      "score": null,
+      "status": "NOT_RUN"
+    }
+  ]
+}
