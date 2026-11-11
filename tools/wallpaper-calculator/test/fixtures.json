@@ -1,0 +1,922 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-wallpaper-calculator-20261109",
+  "slug": "wallpaper-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "basic-perimeter",
+      "kind": "core",
+      "purpose": "周長模式、無圖案重複的基本計算",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "30.00"
+        }
+      }
+    },
+    {
+      "id": "pattern-repeat-roundup",
+      "kind": "core",
+      "purpose": "幅長向上取整到完整圖案重複",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "10",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "32",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1000,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1000,
+              "strips": 19,
+              "stripLengthCm": 288,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 19,
+              "rolls": 7
+            }
+          ],
+          "strips": 19,
+          "stripsWithWaste": 19,
+          "rolls": 7,
+          "grossWallAreaM2": "25.00",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "25.00"
+        }
+      }
+    },
+    {
+      "id": "walls-mode-two-walls",
+      "kind": "core",
+      "purpose": "逐牆模式兩面牆分別計算後加總",
+      "input": {
+        "wallMode": "walls",
+        "walls": [
+          {
+            "widthM": "4",
+            "heightM": "2.5"
+          },
+          {
+            "widthM": "3",
+            "heightM": "2.5"
+          }
+        ],
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 400,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 400,
+              "strips": 8,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 8,
+              "rolls": 3
+            },
+            {
+              "index": 2,
+              "widthCm": 300,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 300,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 14,
+          "stripsWithWaste": 14,
+          "rolls": 5,
+          "grossWallAreaM2": "17.50",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "17.50"
+        }
+      }
+    },
+    {
+      "id": "openings-list-deduction",
+      "kind": "core",
+      "purpose": "開口尺寸清單：面積扣淨面積，完整牆寬用於估算幅數與採購捲數",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.1"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 240,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "3.69",
+          "netWallAreaM2": "26.31"
+        }
+      }
+    },
+    {
+      "id": "openings-area-only",
+      "kind": "core",
+      "purpose": "只給開口面積：不扣幅數與捲數、只扣淨面積",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "area",
+        "wastePercent": "0",
+        "openingsAreaM2": "3.69"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "3.69",
+          "netWallAreaM2": "26.31"
+        }
+      }
+    },
+    {
+      "id": "partial-height-opening-full-strips",
+      "kind": "core",
+      "purpose": "WALL-01：部分高度開口的材料下界反例",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "1.59",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 159,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "1.91",
+          "netWallAreaM2": "6.04"
+        }
+      }
+    },
+    {
+      "id": "opening-height-exceeds-wall",
+      "kind": "core",
+      "purpose": "WALL-02：指出第 1 列開口高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "opening-height-equals-wall",
+      "kind": "core",
+      "purpose": "開口與牆同高合法，採購量依完整牆寬",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.5"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 90,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "2.25",
+          "netWallAreaM2": "5.70"
+        }
+      }
+    },
+    {
+      "id": "first-opening-height-before-aggregate-and-roll",
+      "kind": "core",
+      "purpose": "兩列超高，且總寬超限與捲長不足；優先報第 2 列開口高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "2.5",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "1"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "4"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "opening-width-format-before-height-cross-check",
+      "kind": "core",
+      "purpose": "逐欄格式檢查完成後才檢查開口與牆的高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.255",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "widthM",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "waste-ten-percent",
+      "kind": "core",
+      "purpose": "損耗 10% 先膨脹幅數再換算捲數",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 26,
+              "rolls": 9
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 26,
+          "rolls": 9,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "30.00"
+        }
+      }
+    },
+    {
+      "id": "repeat-exact-multiple",
+      "kind": "core",
+      "purpose": "含修剪裕度的幅長恰好是重複的整數倍",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "5.3",
+        "heightM": "2.4",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "25",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 530,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 530,
+              "strips": 10,
+              "stripLengthCm": 250,
+              "dropsPerRoll": 4,
+              "stripsWithWaste": 10,
+              "rolls": 3
+            }
+          ],
+          "strips": 10,
+          "stripsWithWaste": 10,
+          "rolls": 3,
+          "grossWallAreaM2": "12.72",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "12.72"
+        }
+      }
+    },
+    {
+      "id": "walls-mixed-heights",
+      "kind": "core",
+      "purpose": "逐牆不同高度，各自的幅長與每捲可裁幅數",
+      "input": {
+        "wallMode": "walls",
+        "walls": [
+          {
+            "widthM": "3",
+            "heightM": "2.4"
+          },
+          {
+            "widthM": "2",
+            "heightM": "2.6"
+          }
+        ],
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "32",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 300,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 300,
+              "strips": 6,
+              "stripLengthCm": 256,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            },
+            {
+              "index": 2,
+              "widthCm": 200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 200,
+              "strips": 4,
+              "stripLengthCm": 288,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 4,
+              "rolls": 2
+            }
+          ],
+          "strips": 10,
+          "stripsWithWaste": 10,
+          "rolls": 4,
+          "grossWallAreaM2": "12.40",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "12.40"
+        }
+      }
+    },
+    {
+      "id": "single-strip",
+      "kind": "core",
+      "purpose": "最小房間只需一幅一捲",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "0.5",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 50,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 50,
+              "strips": 1,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 1,
+              "rolls": 1
+            }
+          ],
+          "strips": 1,
+          "stripsWithWaste": 1,
+          "rolls": 1,
+          "grossWallAreaM2": "1.25",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "1.25"
+        }
+      }
+    },
+    {
+      "id": "strip-too-long",
+      "kind": "core",
+      "purpose": "幅長超過捲長，每捲可裁幅數為零",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "3",
+        "rollWidthM": "0.53",
+        "rollLengthM": "3",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "STRIP_TOO_LONG",
+          "field": "rollLengthM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "openings-exceed-wall",
+      "kind": "core",
+      "purpose": "開口寬度總和不小於周長",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "7",
+            "heightM": "2.1"
+          },
+          {
+            "widthM": "6",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENINGS_EXCEED_WALL",
+          "field": "openings",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "walls-list-combination",
+      "kind": "core",
+      "purpose": "逐牆模式不支援開口尺寸清單",
+      "input": {
+        "wallMode": "walls",
+        "walls": [
+          {
+            "widthM": "4",
+            "heightM": "2.5"
+          }
+        ],
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.1"
+          }
+        ],
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "MODE_COMBINATION",
+          "field": "openingsMode",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "decimal-format-height",
+      "kind": "core",
+      "purpose": "公尺只接受最多兩位小數",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "12",
+        "heightM": "2.505",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "heightM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "perimeter-zero",
+      "kind": "core",
+      "purpose": "周長零超出範圍",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "0",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "10.05",
+        "patternRepeatCm": "0",
+        "openingsMode": "none",
+        "wastePercent": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "perimeterM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "wallMode": "perimeter",
+          "perimeterM": "12",
+          "heightM": "2.5",
+          "rollWidthM": "0.53",
+          "rollLengthM": "10.05",
+          "patternRepeatCm": "0",
+          "openingsMode": "none",
+          "wastePercent": "0"
+        },
+        "edit": {
+          "wallMode": "perimeter",
+          "perimeterM": "0",
+          "heightM": "2.5",
+          "rollWidthM": "0.53",
+          "rollLengthM": "10.05",
+          "patternRepeatCm": "0",
+          "openingsMode": "none",
+          "wastePercent": "0"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "perimeterM",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "wallMode": "perimeter",
+          "perimeterM": "12",
+          "heightM": "2.5",
+          "rollWidthM": "0.53",
+          "rollLengthM": "10.05",
+          "patternRepeatCm": "0",
+          "openingsMode": "none",
+          "wastePercent": "0"
+        },
+        "lateResult": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "30.00"
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "wallMode": "perimeter",
+            "perimeterM": "12",
+            "heightM": "2.5",
+            "rollWidthM": "0.53",
+            "rollLengthM": "10.05",
+            "patternRepeatCm": "0",
+            "openingsMode": "none",
+            "wastePercent": "0"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "wallMode": "perimeter",
+            "perimeterM": "12",
+            "heightM": "2.5",
+            "rollWidthM": "0.53",
+            "rollLengthM": "10.05",
+            "patternRepeatCm": "0",
+            "openingsMode": "none",
+            "wastePercent": "0"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "wallMode": "perimeter",
+          "perimeterM": "12",
+          "heightM": "2.5",
+          "rollWidthM": "0.53",
+          "rollLengthM": "10.05",
+          "patternRepeatCm": "0",
+          "openingsMode": "none",
+          "wastePercent": "0"
+        },
+        "newerDraft": {
+          "wallMode": "perimeter",
+          "perimeterM": "0",
+          "heightM": "2.5",
+          "rollWidthM": "0.53",
+          "rollLengthM": "10.05",
+          "patternRepeatCm": "0",
+          "openingsMode": "none",
+          "wastePercent": "0"
+        },
+        "olderLateResult": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 1200,
+              "openingsWidthCm": 0,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 23,
+              "rolls": 8
+            }
+          ],
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
+          "grossWallAreaM2": "30.00",
+          "openingsAreaM2": "0.00",
+          "netWallAreaM2": "30.00"
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "perimeterM",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "perimeterM",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

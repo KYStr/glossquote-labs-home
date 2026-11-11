@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Wallpaper Calculator | Gloss Tools</title>
+<meta name="description" content="Work out how many wallpaper strips you need, how long to cut each strip, and how many rolls to buy, from your room size, roll size and pattern repeat.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Wallpaper Calculator</h1>
+  <p class="lede">Work out how many wallpaper strips you need, how long to cut each strip, and how many rolls to buy, from your room size, roll size and pattern repeat. The estimate counts real strips: strips are set by width, each strip's length is rounded up to whole pattern repeats, and a roll only yields whole drops — never a bare area division.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Wall measurement mode and dimensions</h2>
+      <form id="wallpaper-form" novalidate>
+        <fieldset class="choice-group">
+          <legend>Wall measurement</legend>
+          <label class="choice"><input type="radio" name="wallMode" value="perimeter" checked> Perimeter</label>
+          <label class="choice"><input type="radio" name="wallMode" value="walls"> Wall by wall</label>
+        </fieldset>
+        <div id="perimeter-fields">
+          <div class="field">
+            <label for="field-perimeterM">Room perimeter (m)</label>
+            <p class="help" id="help-perimeterM">The total perimeter of the room's four walls, in metres, at most two decimal places, range 0.01–200.</p>
+            <input id="field-perimeterM" name="perimeterM" type="text" inputmode="decimal" autocomplete="off" value="12" aria-describedby="help-perimeterM">
+            <p class="field-error" id="error-perimeterM" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-heightM">Ceiling height (m)</label>
+            <p class="help" id="help-heightM">Ceiling height, in metres, at most two decimal places, range 0.01–20.</p>
+            <input id="field-heightM" name="heightM" type="text" inputmode="decimal" autocomplete="off" value="2.5" aria-describedby="help-heightM">
+            <p class="field-error" id="error-heightM" role="alert"></p>
+          </div>
+        </div>
+        <div id="walls-fields" hidden>
+          <p class="help">Enter each wall's width and height, up to 12 walls; leftovers are never shared between walls — each wall's rolls are counted on its own.</p>
+          <div id="walls-rows">
+            <div class="data-row" data-kind="wall">
+              <div class="field">
+                <label for="field-wall-1-widthM">Wall 1 width</label>
+                <input id="field-wall-1-widthM" type="text" inputmode="decimal" autocomplete="off" value="4" data-role="widthM">
+                <p class="field-error" id="error-wall-1-widthM" role="alert"></p>
+              </div>
+              <div class="field">
+                <label for="field-wall-1-heightM">Wall 1 height</label>
+                <input id="field-wall-1-heightM" type="text" inputmode="decimal" autocomplete="off" value="2.5" data-role="heightM">
+                <p class="field-error" id="error-wall-1-heightM" role="alert"></p>
+              </div>
+              <button type="button" class="button-secondary remove-row-btn" data-remove-row="wall" disabled>Remove</button>
+            </div>
+          </div>
+          <p class="field-error" id="error-walls" role="alert"></p>
+          <button type="button" id="add-wall-btn" class="button-secondary">Add a wall</button>
+        </div>
+
+        <h2>Roll size and pattern repeat</h2>
+        <div class="field">
+          <label for="field-rollWidthM">Roll width (m)</label>
+          <p class="help" id="help-rollWidthM">The width of one roll, in metres, at most two decimal places, range 0.10–2.</p>
+          <input id="field-rollWidthM" name="rollWidthM" type="text" inputmode="decimal" autocomplete="off" value="0.53" aria-describedby="help-rollWidthM">
+          <p class="field-error" id="error-rollWidthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rollLengthM">Roll length (m)</label>
+          <p class="help" id="help-rollLengthM">The length of one roll, in metres, at most two decimal places, range 1–100. A roll only yields whole drops.</p>
+          <input id="field-rollLengthM" name="rollLengthM" type="text" inputmode="decimal" autocomplete="off" value="10.05" aria-describedby="help-rollLengthM">
+          <p class="field-error" id="error-rollLengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-patternRepeatCm">Pattern repeat (cm, 0 = no matching)</label>
+          <p class="help" id="help-patternRepeatCm">The pattern repeat length, in centimetres, a whole number 0–200. Each strip first gets a fixed 10 cm trim allowance (5 cm at the top and bottom), then rounds up to whole pattern repeats.</p>
+          <input id="field-patternRepeatCm" name="patternRepeatCm" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-patternRepeatCm">
+          <p class="field-error" id="error-patternRepeatCm" role="alert"></p>
+        </div>
+
+        <h2>Doors and windows</h2>
+        <fieldset class="choice-group">
+          <legend>How to enter opening area</legend>
+          <label class="choice"><input type="radio" name="openingsMode" value="none" checked> No deduction</label>
+          <label class="choice"><input type="radio" name="openingsMode" value="area"> Total area only</label>
+          <label class="choice"><input type="radio" name="openingsMode" value="list"> Dimension list</label>
+        </fieldset>
+        <p class="field-error" id="error-openingsMode" role="alert"></p>
+        <p class="help">Door and window areas are used to calculate net wall area. Strip count, cut length and rolls to buy are estimated from the full wall dimensions. The dimension list is available in perimeter mode only.</p>
+        <div id="openings-area-fields" hidden>
+          <div class="field">
+            <label for="field-openingsAreaM2">Total openings area (m²)</label>
+            <p class="help" id="help-openingsAreaM2">The combined area of all door and window openings, in square metres, at most two decimal places, range 0–10000. It only affects the reported net area.</p>
+            <input id="field-openingsAreaM2" name="openingsAreaM2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-openingsAreaM2">
+            <p class="field-error" id="error-openingsAreaM2" role="alert"></p>
+          </div>
+        </div>
+        <div id="openings-list-fields" hidden>
+          <p class="help">Enter each opening's width and height, up to 20 openings. An opening can be as tall as the wall.</p>
+          <div id="openings-rows">
+            <div class="data-row" data-kind="opening">
+              <div class="field">
+                <label for="field-opening-1-widthM">Opening 1 width</label>
+                <input id="field-opening-1-widthM" type="text" inputmode="decimal" autocomplete="off" value="0.9" data-role="widthM">
+                <p class="field-error" id="error-opening-1-widthM" role="alert"></p>
+              </div>
+              <div class="field">
+                <label for="field-opening-1-heightM">Opening 1 height</label>
+                <input id="field-opening-1-heightM" type="text" inputmode="decimal" autocomplete="off" value="2.1" data-role="heightM">
+                <p class="field-error" id="error-opening-1-heightM" role="alert"></p>
+              </div>
+              <button type="button" class="button-secondary remove-row-btn" data-remove-row="opening" disabled>Remove</button>
+            </div>
+          </div>
+          <p class="field-error" id="error-openings" role="alert"></p>
+          <button type="button" id="add-opening-btn" class="button-secondary">Add an opening</button>
+        </div>
+
+        <h2>Waste percent</h2>
+        <div class="field">
+          <label for="field-wastePercent">Waste percent %</label>
+          <p class="help" id="help-wastePercent">A whole number 0–50. Each wall's strip count is inflated by the waste percentage (rounded up) before its rolls are counted.</p>
+          <input id="field-wastePercent" name="wastePercent" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-wastePercent">
+          <p class="field-error" id="error-wastePercent" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your room and roll sizes, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate wallpaper needed</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Rolls to buy</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Per-wall breakdown" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Wall</th><th scope="col">Width (cm)</th><th scope="col">Total opening width (cm)</th><th scope="col">Width used for roll estimate (cm)</th><th scope="col">Strips</th><th scope="col">Strip length (cm)</th><th scope="col">Drops per roll</th><th scope="col">Strips incl. waste</th><th scope="col">Rolls</th></tr>
+          </thead>
+          <tbody id="wall-rows"></tbody>
+        </table>
+      </div>
+      <p id="totals"></p>
+      <p class="help">Door and window areas are used to calculate net wall area. The roll estimate uses the full wall dimensions.</p>
+      <p class="estimate-note">Results are a conservative estimate, not a construction or returns guarantee. Each strip includes a fixed 10 cm trim allowance (5 cm at the top and bottom).</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>The order is fixed: each wall's full width is divided by the roll width and rounded up to get its strip count; each strip's length is the wall height plus a fixed 10 cm trim allowance (5 cm at the top and bottom), rounded up to whole pattern repeats; drops per roll are the roll length divided by the strip length, rounded down; the waste percentage inflates each wall's strip count (rounded up) before that wall's rolls are counted. Leftovers are never shared between walls — per-wall rolls are counted separately and then added.</p>
+    <p>A strip is one full floor-to-ceiling length. Both the dimension list and the total area are used to subtract the opening area from the gross wall area. Areas are calculated in square centimetres and rounded half up to 0.01 m² for display.</p>
+    <p>Inputs accept ASCII digits and one decimal point only: metres allow at most two decimal places, and the pattern repeat and waste percent are whole numbers; commas, spaces, signs and full-width digits are format errors, and the tool never guesses. The downloaded report is always named wallpaper-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why does the roll count stay the same after I enter door or window dimensions?</dt>
+      <dd>The calculator deducts the opening area to show the net wall area. It estimates strips from the full wall width because any savings depend on where the openings sit, how you cut the strips and which offcuts you can reuse.</dd>
+      <dt>Why does each strip get 10 cm extra?</dt>
+      <dd>A fixed 5 cm trim allowance at the top and bottom, then the length is rounded up to whole pattern repeats.</dd>
+      <dt>Where does the waste percentage apply?</dt>
+      <dd>It inflates each wall's strip count (rounded up) before rolls are counted; leftovers are not shared between walls.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

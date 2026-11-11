@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>壁紙用量計算｜Gloss Tools</title>
+<meta name="description" content="依房間周長或逐面牆尺寸、壁紙捲的寬與長、圖案重複長度，計算需要幾幅壁紙、每幅裁多長、共要買幾捲。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>壁紙用量計算</h1>
+  <p class="lede">依房間周長或逐面牆尺寸、壁紙捲的寬與長、圖案重複長度，計算需要幾幅壁紙、每幅裁多長、共要買幾捲。估算採逐幅裁切：幅數由寬度決定、每幅長度對花取整、每捲只能裁出整數幅，不用面積直接相除。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">牆面量法與尺寸</h2>
+      <form id="wallpaper-form" novalidate>
+        <fieldset class="choice-group">
+          <legend>牆面量法</legend>
+          <label class="choice"><input type="radio" name="wallMode" value="perimeter" checked> 周長模式</label>
+          <label class="choice"><input type="radio" name="wallMode" value="walls"> 逐牆模式</label>
+        </fieldset>
+        <div id="perimeter-fields">
+          <div class="field">
+            <label for="field-perimeterM">房間周長（公尺）</label>
+            <p class="help" id="help-perimeterM">房間四面牆的總周長，單位公尺，最多兩位小數，範圍 0.01–200。</p>
+            <input id="field-perimeterM" name="perimeterM" type="text" inputmode="decimal" autocomplete="off" value="12" aria-describedby="help-perimeterM">
+            <p class="field-error" id="error-perimeterM" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-heightM">天花板高（公尺）</label>
+            <p class="help" id="help-heightM">天花板高度，單位公尺，最多兩位小數，範圍 0.01–20。</p>
+            <input id="field-heightM" name="heightM" type="text" inputmode="decimal" autocomplete="off" value="2.5" aria-describedby="help-heightM">
+            <p class="field-error" id="error-heightM" role="alert"></p>
+          </div>
+        </div>
+        <div id="walls-fields" hidden>
+          <p class="help">逐面牆填寬與高，最多 12 面；每面牆的剩料不互相流用，各自計算捲數。</p>
+          <div id="walls-rows">
+            <div class="data-row" data-kind="wall">
+              <div class="field">
+                <label for="field-wall-1-widthM">牆 1 寬</label>
+                <input id="field-wall-1-widthM" type="text" inputmode="decimal" autocomplete="off" value="4" data-role="widthM">
+                <p class="field-error" id="error-wall-1-widthM" role="alert"></p>
+              </div>
+              <div class="field">
+                <label for="field-wall-1-heightM">牆 1 高</label>
+                <input id="field-wall-1-heightM" type="text" inputmode="decimal" autocomplete="off" value="2.5" data-role="heightM">
+                <p class="field-error" id="error-wall-1-heightM" role="alert"></p>
+              </div>
+              <button type="button" class="button-secondary remove-row-btn" data-remove-row="wall" disabled>刪除</button>
+            </div>
+          </div>
+          <p class="field-error" id="error-walls" role="alert"></p>
+          <button type="button" id="add-wall-btn" class="button-secondary">新增一面牆</button>
+        </div>
+
+        <h2>壁紙捲規格與圖案重複</h2>
+        <div class="field">
+          <label for="field-rollWidthM">捲寬（公尺）</label>
+          <p class="help" id="help-rollWidthM">一捲壁紙的寬度，單位公尺，最多兩位小數，範圍 0.10–2。</p>
+          <input id="field-rollWidthM" name="rollWidthM" type="text" inputmode="decimal" autocomplete="off" value="0.53" aria-describedby="help-rollWidthM">
+          <p class="field-error" id="error-rollWidthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rollLengthM">捲長（公尺）</label>
+          <p class="help" id="help-rollLengthM">一捲壁紙的長度，單位公尺，最多兩位小數，範圍 1–100。每捲只能裁出整數幅。</p>
+          <input id="field-rollLengthM" name="rollLengthM" type="text" inputmode="decimal" autocomplete="off" value="10.05" aria-describedby="help-rollLengthM">
+          <p class="field-error" id="error-rollLengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-patternRepeatCm">圖案重複（公分，0 表示不用對花）</label>
+          <p class="help" id="help-patternRepeatCm">圖案重複長度，單位公分，整數 0–200。每幅先加固定 10 公分修剪裕度（上下各 5 公分），再向上取整到完整的圖案重複。</p>
+          <input id="field-patternRepeatCm" name="patternRepeatCm" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-patternRepeatCm">
+          <p class="field-error" id="error-patternRepeatCm" role="alert"></p>
+        </div>
+
+        <h2>門窗開口</h2>
+        <fieldset class="choice-group">
+          <legend>開口面積輸入方式</legend>
+          <label class="choice"><input type="radio" name="openingsMode" value="none" checked> 不扣除</label>
+          <label class="choice"><input type="radio" name="openingsMode" value="area"> 只給總面積</label>
+          <label class="choice"><input type="radio" name="openingsMode" value="list"> 尺寸清單</label>
+        </fieldset>
+        <p class="field-error" id="error-openingsMode" role="alert"></p>
+        <p class="help">門窗面積用於計算淨牆面積。幅數、每幅裁切長度與採購捲數按完整牆面尺寸估算。尺寸清單僅周長模式可用。</p>
+        <div id="openings-area-fields" hidden>
+          <div class="field">
+            <label for="field-openingsAreaM2">開口總面積（平方公尺）</label>
+            <p class="help" id="help-openingsAreaM2">所有門窗開口的總面積，單位平方公尺，最多兩位小數，範圍 0–10000。只影響報告的淨面積。</p>
+            <input id="field-openingsAreaM2" name="openingsAreaM2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-openingsAreaM2">
+            <p class="field-error" id="error-openingsAreaM2" role="alert"></p>
+          </div>
+        </div>
+        <div id="openings-list-fields" hidden>
+          <p class="help">逐個開口填寬與高，最多 20 個。開口高度可等於牆高。</p>
+          <div id="openings-rows">
+            <div class="data-row" data-kind="opening">
+              <div class="field">
+                <label for="field-opening-1-widthM">開口 1 寬</label>
+                <input id="field-opening-1-widthM" type="text" inputmode="decimal" autocomplete="off" value="0.9" data-role="widthM">
+                <p class="field-error" id="error-opening-1-widthM" role="alert"></p>
+              </div>
+              <div class="field">
+                <label for="field-opening-1-heightM">開口 1 高</label>
+                <input id="field-opening-1-heightM" type="text" inputmode="decimal" autocomplete="off" value="2.1" data-role="heightM">
+                <p class="field-error" id="error-opening-1-heightM" role="alert"></p>
+              </div>
+              <button type="button" class="button-secondary remove-row-btn" data-remove-row="opening" disabled>刪除</button>
+            </div>
+          </div>
+          <p class="field-error" id="error-openings" role="alert"></p>
+          <button type="button" id="add-opening-btn" class="button-secondary">新增一個開口</button>
+        </div>
+
+        <h2>損耗百分比</h2>
+        <div class="field">
+          <label for="field-wastePercent">損耗百分比 %</label>
+          <p class="help" id="help-wastePercent">整數 0–50。先把每面牆的幅數按損耗向上取整，再換算捲數。</p>
+          <input id="field-wastePercent" name="wastePercent" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-wastePercent">
+          <p class="field-error" id="error-wastePercent" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入房間與壁紙捲尺寸，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算壁紙用量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">需要幾捲</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="逐牆明細" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">牆</th><th scope="col">寬（cm）</th><th scope="col">開口寬度合計（cm）</th><th scope="col">採購估算寬度（cm）</th><th scope="col">幅數</th><th scope="col">每幅長（cm）</th><th scope="col">每捲可裁</th><th scope="col">含損耗幅數</th><th scope="col">捲數</th></tr>
+          </thead>
+          <tbody id="wall-rows"></tbody>
+        </table>
+      </div>
+      <p id="totals"></p>
+      <p class="help">門窗面積用於計算淨牆面積。採購量按完整牆面尺寸估算。</p>
+      <p class="estimate-note">結果是保守估算，不是施工或退換貨保證。每幅已含固定 10 公分修剪裕度（上下各 5 公分）。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>計算順序固定：先由每面牆的完整寬度除以捲寬、向上取整得到幅數；每幅長度是牆高加固定 10 公分修剪裕度（上下各 5 公分），再向上取整到完整的圖案重複；每捲可裁幅數是捲長除以幅長、向下取整；損耗百分比先膨脹每面牆的幅數（向上取整），再換算該牆的捲數。不同牆的剩料不互相流用，逐牆捲數各自計算後加總。</p>
+    <p>一幅壁紙是從地板到天花板的整條。尺寸清單或總面積都用來從毛牆面積扣除門窗，得到淨牆面積。面積以平方公分精確計算，顯示時四捨五入至 0.01 平方公尺。</p>
+    <p>輸入只接受 ASCII 數字與一個小數點：公尺最多兩位小數，圖案重複與損耗為整數；逗號、空白、正負號與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 wallpaper-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼填了門窗尺寸，捲數還是一樣？</dt>
+      <dd>門窗面積會從毛牆面積扣除，得到淨牆面積。工具按完整牆寬估算幅數，因為門窗的位置、裁切方式和可用餘料會影響實際節省。</dd>
+      <dt>每幅為什麼多留 10 公分？</dt>
+      <dd>上下各 5 公分修剪裕度是固定常數，另再向上取整到完整圖案重複。</dd>
+      <dt>損耗百分比加在哪裡？</dt>
+      <dd>先把每面牆的幅數按損耗向上取整，再換算捲數；不同牆的剩料不互相流用。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
