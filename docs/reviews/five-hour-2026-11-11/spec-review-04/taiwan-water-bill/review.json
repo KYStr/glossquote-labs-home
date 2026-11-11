@@ -1,0 +1,412 @@
+{
+  "title": "台灣水費試算",
+  "reviewedAt": "2026-11-11T03:02:17Z",
+  "productAspectIds": [
+    "functionality",
+    "boundaries",
+    "privacy",
+    "security",
+    "usability",
+    "accessibility",
+    "localization-seo",
+    "toolchain-provenance",
+    "compatibility"
+  ],
+  "sectionAssessments": {
+    "goal": {
+      "score": 96,
+      "evidence": "§goal 說明家戶持帳單用電腦逐項核對與租屋者用手機估算，成果有一期用量、口徑、週期及費用拆解。"
+    },
+    "scope": {
+      "score": 82,
+      "evidence": "§scope 區隔台水與北水及 appliance kWh 自填費率，列出分攤、優惠及調整界線。台水一般用戶範圍仍涵蓋部分回饋費免附徵用戶（WATER-02）。"
+    },
+    "userFlow": {
+      "score": 81,
+      "evidence": "§userFlow 說明兩週期、清除與污水費選填、錯誤及取消。預設週期會立即被欄位容量拒絕，回饋費無法依帳單適用性處理（WATER-01、WATER-02）。"
+    },
+    "inputsOutputs": {
+      "score": 59,
+      "evidence": "§inputsOutputs 有毫元精度、錯序與完整結果。8 字元與 9 字元週期矛盾，且附徵範圍與官方稅額語義須修（WATER-01 至 03）。"
+    },
+    "implementation": {
+      "score": 93,
+      "evidence": "§implementation 純核心、世代管理、固定 Blob Worker、JSON 與離線建置可行。四級價表、26 筆基本費與 24 個跨界驗算相符。"
+    },
+    "acceptance": {
+      "score": 94,
+      "evidence": "§acceptance 九產品面向各有固定 ID 和必要證據，包含價目逐值、兩語真實瀏覽器、下載與隱私。產品目前 NOT_RUN。"
+    },
+    "tests": {
+      "score": 62,
+      "evidence": "照字面上限執行只有 5/22 相符，另外 17 案集中在 cycle 先失敗。僅把 cycle 上限改成 9 作對照時 22/22 相符，尚有官方費用反例須補。"
+    },
+    "handoff": {
+      "score": 97,
+      "evidence": "§handoff 界定固定來源、重審、製作另取 claim 與主統籌發布，並要求抽核台水表與公式。本次已核對 26 筆基本費與兩組完整級距。"
+    }
+  },
+  "blockers": [
+    {
+      "id": "WATER-01",
+      "title": "隔月抄表及預設範例被容量先拒絕",
+      "observed": "`{cycle:'bimonthly',diameterMm:'20',usageM3:'30',sewerRateNt:'',wasteRateNt:''}` 中 `bimonthly` 長 9。每欄最多 8 且先驗容量，得到 `INPUT_LIMIT/cycle`，範例卻要求成功 325 元。`quarterly` 長 9，也先得到 `INPUT_LIMIT`，與 fixture 的 `ENUM` 不符。",
+      "expected": "固定 cycle 專屬容量或列舉的容量例外，讓兩種有效週期通過且明定無效值的首錯。重跑 22 個 fixtures、預設及 24 個級距界線。",
+      "impact": "預設隔月模式無法完成計算，16 個其他案例也與字面契約不符。"
+    },
+    {
+      "id": "WATER-02",
+      "title": "部分台水帳單免附徵，預案一律加入保育費",
+      "observed": "行政院台水代收附表列明少數非取自水質水量保護區的用戶不納入。隔月 20 公厘、30 度且無其他代徵時，預案加入 12 元得到 325 元。相同一般價目且免附徵時，312.90 元水費小計取整為 313 元。台水說明對適用者列未稅用水費的 5%，公告亦說百分比按年度。",
+      "expected": "讓使用者按帳單確認是否附徵，或把工具適用對象明確限為已附徵的一般台水用戶，讓免附徵用戶在輸入時看得到限制。把 5% 記為有查閱日期的台水條件，補相同輸入的附徵及免附徵／不適用驗收例。",
+      "impact": "即使其他資料輸入正確，涵蓋範圍內的免附徵帳單也會被固定高估。",
+      "sources": [
+        {
+          "label": "行政院台水附徵代收項目附表二",
+          "url": "https://www.ey.gov.tw/File/7FDEED4876C964AF?A=C"
+        },
+        {
+          "label": "台水官方水費說明",
+          "url": "https://www.water.gov.tw/ch/Subject/Detail/1288?nodeId=813"
+        },
+        {
+          "label": "水源保育與回饋費收費辦法",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=J0110068"
+        }
+      ]
+    },
+    {
+      "id": "WATER-03",
+      "title": "營業稅取至角被當成官方帳單稅額",
+      "observed": "`monthly-first-tier-top` 的基本費 17.85 元、用水費 73.50 元，含稅小計 91.35 元反算稅 4.35 元。預案取至角成 4.40 元。台水價表第 10 點寫角以下四捨五入，營業稅法第 14 條銷項稅額按整元。台水並指出非營業用戶帳單不另列。",
+      "expected": "若聲稱重現帳單稅額，以官方整元規則處理適用帳單，本例為 4 元。若保留含稅拆解資訊，明示為工具估算及非營業帳單的列示差異，並使結果、FAQ 和 fixture 語義一致。兩種情境均不加進總額。",
+      "impact": "目前的欄名及公式註會使使用者拿推算值當官方分項。這筆差異不影響已含稅的總水費。",
+      "sources": [
+        {
+          "label": "台水費率表第 10 點",
+          "url": "https://www.water.gov.tw/ch/ServerFile/Get/37beec88-3c61-4beb-afd5-db4883b1357b?nodeId=4571"
+        },
+        {
+          "label": "加值型及非加值型營業稅法第 14 條",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0340080&flno=14"
+        }
+      ]
+    }
+  ],
+  "nonblocking": [
+    "補兩個可直接開啟的官方價表及計費說明連結。移除未有維護承諾的「本頁將隨之更新」，保留費率查閱日期與帳單優先。"
+  ],
+  "sources": [
+    {
+      "label": "台水官方收費標準 PDF",
+      "url": "https://www.water.gov.tw/ch/ServerFile/Get/37beec88-3c61-4beb-afd5-db4883b1357b?nodeId=4571",
+      "evidence": "核對單價 7.35、9.45、11.55、12.075，兩套抄表界線與差額，13 種口徑兩欄共 26 值。抽列 13 公厘 17.85/35.70、100 公厘 1909.95/3819.90、400+ 公厘 58119.60/116239.20。"
+    },
+    {
+      "label": "台水抄表計費說明",
+      "url": "https://www.water.gov.tw/ch/Subject/Detail/1288?nodeId=813",
+      "evidence": "背景 HTTP GET 成功，檢視 HTML 第 873–934 行。直接讀到兩種 110 度公式皆 1107.75 元、未稅用水費×5% 及營業稅和代徵取整原文。"
+    },
+    {
+      "label": "行政院台水附徵代收項目附表二",
+      "url": "https://www.ey.gov.tw/File/7FDEED4876C964AF?A=C",
+      "evidence": "證實附徵對象有例外，百分比另依收費辦法。"
+    },
+    {
+      "label": "臺北自來水事業處價目",
+      "url": "https://www.water.gov.taipei/cp.aspx?n=19BB786E67F1CC20",
+      "evidence": "核對北水五段價及每月基本費，確認獨立於本案台水規則。"
+    },
+    {
+      "label": "固定電費規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/8a5612dc53c01de1bcb3d135136ee37154759d50/docs/specs/electricity-cost-calculator/SPEC.md",
+      "evidence": "§1–2 核對只對家電的用電量套自填單價，無台水帳單計費重疊。"
+    }
+  ],
+  "supplementalCommands": [
+    {
+      "command": "node taiwan-water-bill/verify.mjs --cycle-cap-nine",
+      "exitCode": 0,
+      "evidence": "fixture-results-cycle-cap-nine.json",
+      "log": "fixture-run-cycle-cap-nine.txt",
+      "note": "僅放寬 cycle 容量的診斷對照，22/22 相符，適用性與稅額問題仍存在。"
+    },
+    {
+      "command": "curl.exe --fail --silent --show-error --max-time 15 \"https://www.water.gov.tw/ch/Subject/Detail/1288?nodeId=813\"",
+      "exitCode": 0,
+      "note": "直接讀台水說明，擷取相應公開段落。"
+    }
+  ],
+  "scope": "independent specification review",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "participatedInCandidate": false
+  },
+  "registrySnapshot": {
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "inventoryComplete": true,
+    "readyUnconsumed": 2,
+    "branch": "codex/initial-publication",
+    "head": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "baseline": "26525d5f6380915ea95dde879dec769442db0d95"
+  },
+  "taskId": "labs-taiwan-water-bill-spec-20261109",
+  "specId": "spec-taiwan-water-bill-20261109",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "b23afd542d5252c179207f78cb95518925e42923",
+    "path": "docs/specs/taiwan-water-bill/SPEC.md"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/248",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-taiwan-water-bill-claim-20261109T153248Z-91995",
+    "claimedAt": "2026-11-09T15:32:48.600Z"
+  },
+  "contributors": [
+    "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  ],
+  "reviewedFiles": [
+    {
+      "pr": 248,
+      "ref": "b23afd542d5252c179207f78cb95518925e42923",
+      "path": "docs/specs/taiwan-water-bill/AUTHOR-CHECK.md",
+      "blob": "4d983465923a0f216da2d48a8b3f630d0169d75f",
+      "bytes": 5831,
+      "sha256": "1fef68e982ecd749bdbf9ba30a5e12df8866545a22ce1ca1f8580d132c2601b1"
+    },
+    {
+      "pr": 248,
+      "ref": "b23afd542d5252c179207f78cb95518925e42923",
+      "path": "docs/specs/taiwan-water-bill/BRIEF.md",
+      "blob": "f4cb83249903b01436bb9255bb19e75a43487386",
+      "bytes": 2027,
+      "sha256": "e6fb4fe2662484c3e7a9b6dbb8fed00144155e370deb18e87d85141ba5139c2f"
+    },
+    {
+      "pr": 248,
+      "ref": "b23afd542d5252c179207f78cb95518925e42923",
+      "path": "docs/specs/taiwan-water-bill/SPEC.md",
+      "blob": "68a9cd3925d1c3cdd5f1383608ac7b16f353b42d",
+      "bytes": 27337,
+      "sha256": "6498484b681e19084e5211836bf00da5977031b9f62f17dc53d22f7b8d834c70"
+    },
+    {
+      "pr": 248,
+      "ref": "b23afd542d5252c179207f78cb95518925e42923",
+      "path": "docs/specs/taiwan-water-bill/fixtures.json",
+      "blob": "29c7ef68e804d7bd4023f0e411eaee8084465592",
+      "bytes": 21704,
+      "sha256": "121380896d9eb1fc76d1165c2f772b68388f7d0fffaca676074afa46506c94b7"
+    }
+  ],
+  "observedTaskStatus": "reviewing",
+  "observedSpecStatus": "draft",
+  "sections": {
+    "goal": true,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 96,
+      "evidence": "§goal 說明家戶持帳單用電腦逐項核對與租屋者用手機估算，成果有一期用量、口徑、週期及費用拆解。",
+      "status": "PASS"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 82,
+      "evidence": "§scope 區隔台水與北水及 appliance kWh 自填費率，列出分攤、優惠及調整界線。台水一般用戶範圍仍涵蓋部分回饋費免附徵用戶（WATER-02）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 81,
+      "evidence": "§userFlow 說明兩週期、清除與污水費選填、錯誤及取消。預設週期會立即被欄位容量拒絕，回饋費無法依帳單適用性處理（WATER-01、WATER-02）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 59,
+      "evidence": "§inputsOutputs 有毫元精度、錯序與完整結果。8 字元與 9 字元週期矛盾，且附徵範圍與官方稅額語義須修（WATER-01 至 03）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 93,
+      "evidence": "§implementation 純核心、世代管理、固定 Blob Worker、JSON 與離線建置可行。四級價表、26 筆基本費與 24 個跨界驗算相符。",
+      "status": "PASS"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 94,
+      "evidence": "§acceptance 九產品面向各有固定 ID 和必要證據，包含價目逐值、兩語真實瀏覽器、下載與隱私。產品目前 NOT_RUN。",
+      "status": "PASS"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 62,
+      "evidence": "照字面上限執行只有 5/22 相符，另外 17 案集中在 cycle 先失敗。僅把 cycle 上限改成 9 作對照時 22/22 相符，尚有官方費用反例須補。",
+      "status": "FAIL"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 97,
+      "evidence": "§handoff 界定固定來源、重審、製作另取 claim 與主統籌發布，並要求抽核台水表與公式。本次已核對 26 筆基本費與兩組完整級距。",
+      "status": "PASS"
+    }
+  ],
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    }
+  ],
+  "documentStatus": "FAIL",
+  "productionInheritance": {
+    "status": "FAIL",
+    "blockerId": "REG-01",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "requiredProductIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missingIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "extraIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blocksReady": true
+  },
+  "readyRecommendation": false,
+  "recommendedTaskVerdict": "revision",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "commands": [
+    {
+      "command": "node verify-sources.mjs",
+      "exitCode": 0,
+      "evidence": "../source-check.json"
+    },
+    {
+      "command": "node taiwan-water-bill/verify.mjs",
+      "node": "v24.14.0",
+      "exitCode": 1,
+      "fixturesPassed": 5,
+      "fixturesTotal": 22,
+      "evidence": "fixture-results.json",
+      "log": "fixture-run.txt"
+    },
+    {
+      "command": "node taiwan-water-bill/verify.mjs --cycle-cap-nine",
+      "exitCode": 0,
+      "evidence": "fixture-results-cycle-cap-nine.json",
+      "log": "fixture-run-cycle-cap-nine.txt",
+      "note": "僅放寬 cycle 容量的診斷對照，22/22 相符，適用性與稅額問題仍存在。"
+    },
+    {
+      "command": "curl.exe --fail --silent --show-error --max-time 15 \"https://www.water.gov.tw/ch/Subject/Detail/1288?nodeId=813\"",
+      "exitCode": 0,
+      "note": "直接讀台水說明，擷取相應公開段落。"
+    }
+  ]
+}

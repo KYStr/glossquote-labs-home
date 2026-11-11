@@ -1,0 +1,385 @@
+{
+  "title": "通膨計算機",
+  "reviewedAt": "2026-11-11T02:55:27Z",
+  "productAspectIds": [
+    "functionality",
+    "boundaries",
+    "privacy",
+    "security",
+    "usability",
+    "accessibility",
+    "localization-seo",
+    "toolchain-provenance",
+    "compatibility"
+  ],
+  "sectionAssessments": {
+    "goal": {
+      "score": 96,
+      "evidence": "§goal 界定桌面跨年薪資、房租比較與手機估算購買力，成果包含名目與實質方向。"
+    },
+    "scope": {
+      "score": 94,
+      "evidence": "§scope 鎖定兩模式、使用者自填 CPI、無資料集與匯率。獨立讀相近複利與儲蓄目標的固定規格，確認其月存／帳戶模型與本案不同。"
+    },
+    "userFlow": {
+      "score": 86,
+      "evidence": "§userFlow 定義雙草稿、按鈕、錯誤、取消、重設和下載生命週期。以實際主計總處兩份官方指數操作時，欄位和 FAQ 未提示共基期與年數前提（INFL-03）。"
+    },
+    "inputsOutputs": {
+      "score": 67,
+      "evidence": "§inputsOutputs 定義 schema、欄位首錯及報告。合法通縮輸入的有限購買力在 round2 後變 Infinity，和 null 及輸出語義衝突（INFL-01）。"
+    },
+    "implementation": {
+      "score": 76,
+      "evidence": "§implementation 的本地 ESM、快照、Worker 世代及 CSP 可實作。全環境一致的要求與 Math.pow 的近似語義同時存在，半分附近輸出可分歧（INFL-04）。"
+    },
+    "acceptance": {
+      "score": 95,
+      "evidence": "§acceptance 九項逐一固定 ID、證據及門檻。產品狀態仍 NOT_RUN，雙語和正式站 gate 的測法已定義。"
+    },
+    "tests": {
+      "score": 78,
+      "evidence": "24 核心加 3 controller 均與獨立推導一致。§tests 指定的捨入後嚴格遞增與符號性質有合法反例（INFL-02）。"
+    },
+    "handoff": {
+      "score": 97,
+      "evidence": "§handoff 固定四檔案、另取製作 claim、雙語候選、正式放行責任、原 owner 與重審新 head。"
+    }
+  },
+  "blockers": [
+    {
+      "id": "INFL-01",
+      "title": "購買力在捨入階段溢位",
+      "observed": "`{mode:'rate',amount:'10000000',annualRatePercent:'-99.999',years:'60'}`。Node 24 的 factor 為 `1.0000000003930722e-300`，除法得到有限值 `9.999999996069277e306`，`round2` 乘 100 變成 `Infinity`。第 60 列和摘要為 `Infinity`，JSON 序列化後卻為 null。",
+      "expected": "固定 overflow-safe 的捨入或明確的範圍處理。用本例斷言摘要、末列、畫面及報告一致，並覆核既有年數 200 的下溢 null。",
+      "impact": "一般成功結果可能含非有限值，畫面與下載會呈現不同含義。"
+    },
+    {
+      "id": "INFL-02",
+      "title": "規格要求兩個不成立的捨入性質",
+      "observed": "`amount:'1', years:'1'`，依次輸入年率 `'0.001'` 與 `'0.002'`。兩個 `futureValue` 都是 `1`，兩個 `cumulativePercent` 都是 `0`，未捨入的因子均大於 1。",
+      "expected": "把捨入後的名目值定為非遞減，並允許非零的原始累計變化捨入為 0。若保留嚴格遞增或符號等式，明確限於相應的未捨入值與正金額、正年數，補本反例。",
+      "impact": "照文件實作會無法通過照文件寫的性質測試。"
+    },
+    {
+      "id": "INFL-03",
+      "title": "CPI 欄位缺比較基準與期間前提",
+      "observed": "主計總處範例，民國 99 年的 `105.48` 與 103 年的 `103.97` 各自以不同年份為基期。直接輸入得到 `−1.43%`；同基期 `98.60 → 103.97` 為 `+5.45%`。另 `cpi-deflation` 的標籤 2020→2021 與年數 5 同時成立於 schema，程式算 `−1.0275%`，用 1 年才是 `−5.0332%`。",
+      "expected": "繁中與英文 CPI 欄位旁說明同系列、同基期及一致的觀察口徑，說明年數由使用者按所選期別填寫、標籤只作顯示。修正矛盾的 fixture 期別或年數，並用主計總處例子複驗說明及結果。",
+      "impact": "官方數字若混用基期，跨年薪資或房租試算連變化方向都可能反轉。",
+      "sources": [
+        {
+          "label": "主計總處 CPI 換基問答",
+          "url": "https://ws.dgbas.gov.tw/Download.ashx?icon=.pdf&n=ODI2MTYzNDU2SDFBM0ZCSE0ucGRm&u=LzAwMS9VcGxvYWQvNDYzL3JlbGZpbGUvMTEwMjQvMTAzMDk2L2U2ZGIzZTZhLWFmMzktNDhhNS1iYzUxLTI2ZjM1YmUwM2Q5Ny5wZGY%3D"
+        },
+        {
+          "label": "BLS CPI 百分比計算",
+          "url": "https://www.bls.gov/cpi/factsheets/calculating-percent-changes.htm"
+        }
+      ]
+    },
+    {
+      "id": "INFL-04",
+      "title": "跨引擎精確一致與 Math.pow 規格衝突",
+      "observed": "`amount:'0.02', annualRatePercent:'50', years:'2'` 的因子 2.25 與相鄰較小的 binary64 `2.2499999999999996` 分別產生 `0.05` 與 `0.04`。此為一個 ULP 的敏感度探針，未執行替代瀏覽器。ECMAScript 允許一般指數運算為近似值。",
+      "expected": "明定可跨環境重現的運算，或為支援的數值與引擎界定可檢驗的差異政策。加入半分邊界，令產品相容性和確定性契約一致。",
+      "impact": "現有 fixture 迴避半分邊界，無法證明承諾的全域確定性。",
+      "sources": [
+        {
+          "label": "ECMAScript Number::exponentiate",
+          "url": "https://tc39.es/ecma262/#sec-numeric-types-number-exponentiate"
+        }
+      ]
+    }
+  ],
+  "nonblocking": [
+    "§scope 複利參照在首頁基線 commit `26525d5…` 回 404。已從 r1530 `spec-compound-interest-calculator-v1` 找到可讀固定版本，修訂時更新連結。"
+  ],
+  "sources": [
+    {
+      "label": "主計總處 CPI 換基問答",
+      "url": "https://ws.dgbas.gov.tw/Download.ashx?icon=.pdf&n=ODI2MTYzNDU2SDFBM0ZCSE0ucGRm&u=LzAwMS9VcGxvYWQvNDYzL3JlbGZpbGUvMTEwMjQvMTAzMDk2L2U2ZGIzZTZhLWFmMzktNDhhNS1iYzUxLTI2ZjM1YmUwM2Q5Ny5wZGY%3D",
+      "evidence": "比對官方換基範例中的原值、同基期值與變動率。"
+    },
+    {
+      "label": "BLS CPI 百分比計算",
+      "url": "https://www.bls.gov/cpi/factsheets/calculating-percent-changes.htm",
+      "evidence": "核對 CPI 變動公式、相同參考基期及整年期間口徑。"
+    },
+    {
+      "label": "ECMAScript Number::exponentiate",
+      "url": "https://tc39.es/ecma262/#sec-numeric-types-number-exponentiate",
+      "evidence": "核對 `Math.pow` 所委派指數運算的近似語義。"
+    },
+    {
+      "label": "複利工具固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/5a9acc11b5b23200c3d4cda32adaafbbd389532e/docs/specs/compound-interest-calculator/SPEC.md",
+      "evidence": "查 §1–2，逐月累積與反求存款，排除物價調整。"
+    },
+    {
+      "label": "儲蓄目標固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/9828c5d10ff75720333491cfc21f190b7cd7ed16/docs/specs/savings-goal-calculator/SPEC.md",
+      "evidence": "查 goal/scope，求每月存款或達標月數。"
+    }
+  ],
+  "scope": "independent specification review",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "participatedInCandidate": false
+  },
+  "registrySnapshot": {
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "inventoryComplete": true,
+    "readyUnconsumed": 2,
+    "branch": "codex/initial-publication",
+    "head": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "baseline": "26525d5f6380915ea95dde879dec769442db0d95"
+  },
+  "taskId": "labs-inflation-calculator-spec-20261109",
+  "specId": "spec-inflation-calculator-20261109",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "ecbe6325b65bdf3cffb56222e1016388b4984d7b",
+    "path": "docs/specs/inflation-calculator/SPEC.md"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/247",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-inflation-calculat-claim-20261109T153142Z-d4536",
+    "claimedAt": "2026-11-09T15:31:42.882Z"
+  },
+  "contributors": [
+    "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  ],
+  "reviewedFiles": [
+    {
+      "pr": 247,
+      "ref": "ecbe6325b65bdf3cffb56222e1016388b4984d7b",
+      "path": "docs/specs/inflation-calculator/AUTHOR-CHECK.md",
+      "blob": "0c5c1b86a4ee8855d09e9677231ea2d294ba48cd",
+      "bytes": 3915,
+      "sha256": "4ad2581d7e619cb148dd1eea753b883794d881b879bf0710ddbcc74630ebf94e"
+    },
+    {
+      "pr": 247,
+      "ref": "ecbe6325b65bdf3cffb56222e1016388b4984d7b",
+      "path": "docs/specs/inflation-calculator/BRIEF.md",
+      "blob": "ff6ab6c80fa00bde912a050df369e0359f2aa1c4",
+      "bytes": 1576,
+      "sha256": "f973c9e2db14c489a69c0a455801ccbe9788383f30a1ad4ba84c73bf383b5405"
+    },
+    {
+      "pr": 247,
+      "ref": "ecbe6325b65bdf3cffb56222e1016388b4984d7b",
+      "path": "docs/specs/inflation-calculator/SPEC.md",
+      "blob": "6f3ba82fe35890efa1a3917d86c30eca41307dc8",
+      "bytes": 25625,
+      "sha256": "948e9f7b95ad882ebe7dbbec7aef1a4017b5b39aee1054209044bf0ec4b4c8ad"
+    },
+    {
+      "pr": 247,
+      "ref": "ecbe6325b65bdf3cffb56222e1016388b4984d7b",
+      "path": "docs/specs/inflation-calculator/fixtures.json",
+      "blob": "62a3807353025b6c8983214f2ab1eb79ae6b4600",
+      "bytes": 52553,
+      "sha256": "888ae6a956bc5bda31a7c2af53633b5b64fabea2d25ae3d6d917b8023983a03f"
+    }
+  ],
+  "observedTaskStatus": "reviewing",
+  "observedSpecStatus": "draft",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": false,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 96,
+      "evidence": "§goal 界定桌面跨年薪資、房租比較與手機估算購買力，成果包含名目與實質方向。",
+      "status": "PASS"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 94,
+      "evidence": "§scope 鎖定兩模式、使用者自填 CPI、無資料集與匯率。獨立讀相近複利與儲蓄目標的固定規格，確認其月存／帳戶模型與本案不同。",
+      "status": "PASS"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 86,
+      "evidence": "§userFlow 定義雙草稿、按鈕、錯誤、取消、重設和下載生命週期。以實際主計總處兩份官方指數操作時，欄位和 FAQ 未提示共基期與年數前提（INFL-03）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 67,
+      "evidence": "§inputsOutputs 定義 schema、欄位首錯及報告。合法通縮輸入的有限購買力在 round2 後變 Infinity，和 null 及輸出語義衝突（INFL-01）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 76,
+      "evidence": "§implementation 的本地 ESM、快照、Worker 世代及 CSP 可實作。全環境一致的要求與 Math.pow 的近似語義同時存在，半分附近輸出可分歧（INFL-04）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 95,
+      "evidence": "§acceptance 九項逐一固定 ID、證據及門檻。產品狀態仍 NOT_RUN，雙語和正式站 gate 的測法已定義。",
+      "status": "PASS"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 78,
+      "evidence": "24 核心加 3 controller 均與獨立推導一致。§tests 指定的捨入後嚴格遞增與符號性質有合法反例（INFL-02）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 97,
+      "evidence": "§handoff 固定四檔案、另取製作 claim、雙語候選、正式放行責任、原 owner 與重審新 head。",
+      "status": "PASS"
+    }
+  ],
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    }
+  ],
+  "documentStatus": "FAIL",
+  "productionInheritance": {
+    "status": "FAIL",
+    "blockerId": "REG-01",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "requiredProductIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missingIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "extraIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blocksReady": true
+  },
+  "readyRecommendation": false,
+  "recommendedTaskVerdict": "revision",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "commands": [
+    {
+      "command": "node verify-sources.mjs",
+      "exitCode": 0,
+      "evidence": "../source-check.json"
+    },
+    {
+      "command": "node inflation-calculator/verify.mjs",
+      "node": "v24.14.0",
+      "exitCode": 0,
+      "fixturesPassed": 27,
+      "fixturesTotal": 27,
+      "evidence": "fixture-results.json",
+      "log": "fixture-run.txt"
+    }
+  ]
+}

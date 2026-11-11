@@ -1,0 +1,357 @@
+{
+  "title": "車輛折舊計算",
+  "reviewedAt": "2026-11-11T03:06:21Z",
+  "productAspectIds": [
+    "functionality",
+    "boundaries",
+    "privacy",
+    "security",
+    "usability",
+    "accessibility",
+    "localization-seo",
+    "toolchain-provenance",
+    "compatibility"
+  ],
+  "sectionAssessments": {
+    "goal": {
+      "score": 96,
+      "evidence": "§goal 指明桌面查折舊路徑與現場手機估算，常駐揭露購入價模型僅供規劃。"
+    },
+    "scope": {
+      "score": 96,
+      "evidence": "§scope 釘版三模式、整元、殘值下限與逐年表。核對固定燃油與房貸規格，皆有不同資料與成果。"
+    },
+    "userFlow": {
+      "score": 92,
+      "evidence": "§userFlow 定義方式切換、分離草稿與核心、結果、取消、錯誤、重設和下載。直線期末語義與下限標記須對應計算規則。"
+    },
+    "inputsOutputs": {
+      "score": 80,
+      "evidence": "§inputsOutputs 限制語法、順序、列號、精度與匯出。對有效且不可整除的價格，直線攤提期末可能未達殘值甚至永遠不動（CAR-01）。"
+    },
+    "implementation": {
+      "score": 95,
+      "evidence": "§implementation 的 BigInt、七欄草稿投影成五欄核心、工作世代及 CSP 為零依賴可實作，運算只需 30 列。"
+    },
+    "acceptance": {
+      "score": 95,
+      "evidence": "§acceptance 九產品面向定義逐項檢查、≥90 與必要項完成，包含三種方式、兩語與正式站 gate。產品全部 NOT_RUN。"
+    },
+    "tests": {
+      "score": 85,
+      "evidence": "14 核心與 3 controller 均由獨立演算比對通過。現行直線期滿案例剛好整除，漏掉 CAR-01 的捨入餘差。"
+    },
+    "handoff": {
+      "score": 97,
+      "evidence": "§handoff 列固定文件包、原 owner、另取製作 claim、命令與交驗/發布責任。"
+    }
+  },
+  "blockers": [
+    {
+      "id": "CAR-01",
+      "title": "直線攤提年限不能可靠決定殘值到期點",
+      "observed": "`{method:'straight',price:'880003',years:'10',salvagePercent:'10',usefulLife:'10'}`。殘值 `88000`，折舊基礎 `792003`，每年固定整元 `79200`。第 10 年剩 `88003` 且 `floorReachedYear=null`，第 11 年仍折 3 元才到下限。另一合法例購入價 1、殘值 0%、攤提 3 年，年額四捨五入為 0，30 年仍值 1 元。",
+      "expected": "保留整元並固定餘差分配，使攤提年限當年完成折舊至殘值。以 880003 元例驗第 10 年 `currentValue=88000`、累計 `792003`，第 11 年折舊 0。若產品刻意採固定整元扣減模型，須改寫攤提年限欄位與雙語方法說明，明示何時可能延後或未達下限。",
+      "impact": "使用者用攤提年限和首次達下限年做規劃，現有年額規則與「直線攤提年數」的期末語義不合。IAS 16 在此只作方法定義佐證。",
+      "sources": [
+        {
+          "label": "IFRS Foundation IAS 16 §50、53、62",
+          "url": "https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ias-16-property-plant-and-equipment.pdf?bypass=on"
+        }
+      ]
+    }
+  ],
+  "nonblocking": [
+    "預設 20/18/15/12/10/8/8/6/6/5% 可作可編輯的假設示例。規格沒有支持「常見」的台灣成交資料來源，將雙語措辭收斂至示例即可。",
+    "FAQ 把後期 0 折舊一律解釋為達下限。購入價 100000、定率 50%、殘值 0 時，第 18 年起因整元鏈停在 1，未達下限。另可說明零費率與捨入停滯。",
+    "等於下限與本年發生裁切各有意義。`straight-floor-before-life` 第 10 年 `endValue=50000` 但 `floored=false`，UI 下限標記宜按相等判定。",
+    "§tests 案例表可補已存在且重算通過的 `table-half-used`，使 14 個核心案例均可從表定位。"
+  ],
+  "sources": [
+    {
+      "label": "IFRS Foundation IAS 16",
+      "url": "https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ias-16-property-plant-and-equipment.pdf?bypass=on",
+      "evidence": "實讀 §50、53、62，直線法以折舊基礎扣殘值後分配至使用年限，用於核對模型語義。"
+    },
+    {
+      "label": "Kelley Blue Book 估值方法",
+      "url": "https://b2b.kbb.com/kbb-vehicle-values/faq/",
+      "evidence": "實讀車況、里程、地區及成交資料的作用。未將其美國行情當作台灣預設係數。"
+    },
+    {
+      "label": "燃料成本固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/23ea1fefda8c495a29e71932d8fd55cc92f2d804/docs/specs/fuel-cost-calculator/SPEC.md",
+      "evidence": "§1–2 為里程、油耗和油價估燃料開支。"
+    },
+    {
+      "label": "房貸固定來源",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/e0ef81a2b5489489f13b2bc088f8906978700cb5/docs/specs/mortgage-amortization/SPEC.md",
+      "evidence": "§1–2 為本金、利率與分期償還，無車價折舊。"
+    },
+    {
+      "label": "批次任務說明",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/1ce7ba3c83b35eeb99e2f11e3b3eb9e9c6df72bd/docs/consolidation/2026-11-09/SPEC-AUTHOR-BRIEF.md",
+      "evidence": "核對零依賴、八節、九項未來驗收與文件 ready 門檻。"
+    }
+  ],
+  "scope": "independent specification review",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "participatedInCandidate": false
+  },
+  "registrySnapshot": {
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "inventoryComplete": true,
+    "readyUnconsumed": 2,
+    "branch": "codex/initial-publication",
+    "head": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "baseline": "26525d5f6380915ea95dde879dec769442db0d95"
+  },
+  "taskId": "labs-car-depreciation-calculator-spec-20261109",
+  "specId": "spec-car-depreciation-calculator-20261109",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "efad9c067e608d72b02078755e24357d5635b3b7",
+    "path": "docs/specs/car-depreciation-calculator/SPEC.md"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/250",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-car-depreciation-c-claim-20261109T153606Z-0f72e",
+    "claimedAt": "2026-11-09T15:36:06.842Z"
+  },
+  "contributors": [
+    "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  ],
+  "reviewedFiles": [
+    {
+      "pr": 250,
+      "ref": "efad9c067e608d72b02078755e24357d5635b3b7",
+      "path": "docs/specs/car-depreciation-calculator/AUTHOR-CHECK.md",
+      "blob": "bc2732c1bb7688602c5c393817cdc3de95eb95c2",
+      "bytes": 4619,
+      "sha256": "f4b5b61701f49c6b2866a9beca03da6e06a69c07c6bb8218dd88ffba87ed4de3"
+    },
+    {
+      "pr": 250,
+      "ref": "efad9c067e608d72b02078755e24357d5635b3b7",
+      "path": "docs/specs/car-depreciation-calculator/BRIEF.md",
+      "blob": "2b9c3d9ca7fd532b61ec0cff7b7c2170f53b2ca5",
+      "bytes": 1470,
+      "sha256": "bbca9b6d03f06ffefa00a042f3fc03379a8a1a78a404b9b212f4362450255d52"
+    },
+    {
+      "pr": 250,
+      "ref": "efad9c067e608d72b02078755e24357d5635b3b7",
+      "path": "docs/specs/car-depreciation-calculator/SPEC.md",
+      "blob": "d6fcc57b9e5f919c95baeee6bf666f6cba259b03",
+      "bytes": 23759,
+      "sha256": "18a750423d27bf156d0c8f7ed634555937b8b94f5e4d23de452c38ed15f7e6f2"
+    },
+    {
+      "pr": 250,
+      "ref": "efad9c067e608d72b02078755e24357d5635b3b7",
+      "path": "docs/specs/car-depreciation-calculator/fixtures.json",
+      "blob": "dc8f7b2ca4d7b543d1618c3ac6a0654f8a85e7e0",
+      "bytes": 18419,
+      "sha256": "524c6c91aac13f7318221b73d7cacb41d650fa5e2020fd7df9133b5fe09260df"
+    }
+  ],
+  "observedTaskStatus": "reviewing",
+  "observedSpecStatus": "draft",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": true,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 96,
+      "evidence": "§goal 指明桌面查折舊路徑與現場手機估算，常駐揭露購入價模型僅供規劃。",
+      "status": "PASS"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 96,
+      "evidence": "§scope 釘版三模式、整元、殘值下限與逐年表。核對固定燃油與房貸規格，皆有不同資料與成果。",
+      "status": "PASS"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 92,
+      "evidence": "§userFlow 定義方式切換、分離草稿與核心、結果、取消、錯誤、重設和下載。直線期末語義與下限標記須對應計算規則。",
+      "status": "PASS"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 80,
+      "evidence": "§inputsOutputs 限制語法、順序、列號、精度與匯出。對有效且不可整除的價格，直線攤提期末可能未達殘值甚至永遠不動（CAR-01）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 95,
+      "evidence": "§implementation 的 BigInt、七欄草稿投影成五欄核心、工作世代及 CSP 為零依賴可實作，運算只需 30 列。",
+      "status": "PASS"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 95,
+      "evidence": "§acceptance 九產品面向定義逐項檢查、≥90 與必要項完成，包含三種方式、兩語與正式站 gate。產品全部 NOT_RUN。",
+      "status": "PASS"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 85,
+      "evidence": "14 核心與 3 controller 均由獨立演算比對通過。現行直線期滿案例剛好整除，漏掉 CAR-01 的捨入餘差。",
+      "status": "FAIL"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 97,
+      "evidence": "§handoff 列固定文件包、原 owner、另取製作 claim、命令與交驗/發布責任。",
+      "status": "PASS"
+    }
+  ],
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    }
+  ],
+  "documentStatus": "FAIL",
+  "productionInheritance": {
+    "status": "FAIL",
+    "blockerId": "REG-01",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "requiredProductIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missingIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "extraIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blocksReady": true
+  },
+  "readyRecommendation": false,
+  "recommendedTaskVerdict": "revision",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "commands": [
+    {
+      "command": "node verify-sources.mjs",
+      "exitCode": 0,
+      "evidence": "../source-check.json"
+    },
+    {
+      "command": "node car-depreciation-calculator/verify.mjs",
+      "node": "v24.14.0",
+      "exitCode": 0,
+      "fixturesPassed": 17,
+      "fixturesTotal": 17,
+      "evidence": "fixture-results.json",
+      "log": "fixture-run.txt"
+    }
+  ]
+}

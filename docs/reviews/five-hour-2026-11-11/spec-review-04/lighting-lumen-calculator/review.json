@@ -1,0 +1,399 @@
+{
+  "title": "照明流明計算",
+  "reviewedAt": "2026-11-11T03:12:04Z",
+  "productAspectIds": [
+    "functionality",
+    "boundaries",
+    "privacy",
+    "security",
+    "usability",
+    "accessibility",
+    "localization-seo",
+    "toolchain-provenance",
+    "compatibility"
+  ],
+  "sectionAssessments": {
+    "goal": {
+      "score": 87,
+      "evidence": "§goal 界定在家與賣場用燈泡標示估顆數的情境，卻承諾裝完後的實際照度，與資料及模型能力不合（LIGHT-03）。"
+    },
+    "scope": {
+      "score": 74,
+      "evidence": "§scope 有單房、局部照明和係數的界線。原版標準的表號、住宅走道列和書寫閱讀混合照明均需校正（LIGHT-02）。"
+    },
+    "userFlow": {
+      "score": 84,
+      "evidence": "§userFlow 明定雙模式、選項來源、dirty／cancel／reset 和下載。停用欄位仍可能成為首錯而未給復原路徑（LIGHT-04）。"
+    },
+    "inputsOutputs": {
+      "score": 78,
+      "evidence": "§inputsOutputs 的精確坪換算、欄位驗序與報告 shape 可重算。先把需求取到整流明再取顆數，合法例達不到簡化目標（LIGHT-01）。"
+    },
+    "implementation": {
+      "score": 95,
+      "evidence": "§implementation 採 BigInt 有理數、純核心、控制層世代、靜態雙語與 CSP。精確面積及整數進位皆可在零依賴瀏覽器重現。"
+    },
+    "acceptance": {
+      "score": 95,
+      "evidence": "§acceptance 九項產品 gate 包含兩模式及邊界、隱私、鍵盤、雙語 SEO、隔離瀏覽器與重現性，產品維持 NOT_RUN。"
+    },
+    "tests": {
+      "score": 85,
+      "evidence": "14 核心及 3 controller 均相符。現有整數倍與 +1 lm 檢查漏掉精確需求僅比整數倍多不到半流明的案例（LIGHT-01）。"
+    },
+    "handoff": {
+      "score": 97,
+      "evidence": "§handoff 固定四檔與 owner，另領製作 claim，列 Node 建置、獨立交驗與部署順序。"
+    }
+  },
+  "blockers": [
+    {
+      "id": "LIGHT-01",
+      "title": "先取整需求流明可能少算一顆",
+      "observed": "`mode=area, areaUnit=ping, areaValue=1.09, roomType=kitchen, bulbLumens=360`。面積 `436/121 m²`，100 lx 需 `43600/121 ≈ 360.3306 lm`。規格先捨入到 360 再進位得 1 顆，模型結果 99.9 lx。精確需求直接除以單顆後進位為 2 顆。現有整倍 fixture 則恰為 100 lx，FAQ 的一律超過目標也不成立。",
+      "expected": "在簡化模型下用未捨入的需求決定足夠顆數，或明定不足可接受的容差與顯示狀態。若沿用可手算的整流明展示，可另定義向上顯示的整數需求。增列 1.09 坪及恰整倍案例。",
+      "impact": "產品的主要任務是判斷要買幾顆，合法輸入可能推薦低於自己的目標。"
+    },
+    {
+      "id": "LIGHT-02",
+      "title": "住宅照度原表的表號、走道列與作業適用性失實",
+      "observed": "GB 50034-2013 的住宅原表是 5.2.1，續表已有走道／樓梯間地面 50 lx。GB/T 50034-2024 表 5.2.1 列住宅走廊／樓梯間地面 100 lx。兩版的住宅起居室書寫閱讀 300 lx 均有混合照明星號。候選稱舊版表 5.1.1 無走廊，並將居家書寫列命名為「書房／辦公」一般照明。",
+      "expected": "更正表號、原列及參考平面。可固定現行 GB/T 50034-2024 表 5.2.1 作住宅預設，維持目前數值。若保留 EN 工作場所走廊作住宅估算參考，說明採用理由及適用差異。300 lx 說明為居家閱讀／書寫參考，保留混合照明前提。",
+      "impact": "來源列的選擇會改變顆數，14 m² 走廊搭配 800 lm，50 lx 需 1 顆，100 lx 需 2 顆。原表和適用範圍需可追溯。",
+      "sources": [
+        {
+          "label": "2013 國標原文表 5.2.1（教育主管機關存本）",
+          "url": "https://jyt.nmg.gov.cn/nmgzbzx/ywgz/zbjs/202408/P020240830428934615813.pdf"
+        },
+        {
+          "label": "2024 國標原文表 5.2.1（高校存本）",
+          "url": "https://zcsys.ncepu.edu.cn/docs/2025-01/d5c197c2837e4892ac7d02faae298500.pdf"
+        },
+        {
+          "label": "住建部換版公告",
+          "url": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_777466.html"
+        }
+      ]
+    },
+    {
+      "id": "LIGHT-03",
+      "title": "用燈泡標示流明算不出實際照度",
+      "observed": "預設案例 14 m²、2 × 800 lm 得 114.3 lx。這是把發出的總流明除以房間面積，沒有入射至參考面比例、配光及維護資料。BRIEF、§goal、§userFlow 使用「實際照度」，即使旁邊已有簡化揭露也會讓主要結果看似測值。",
+      "expected": "把雙語結果及 FAQ 定義為簡化模型的估算平均照度，保留利用與維護係數的限制，並使下載欄位的定義一致。產品驗收核對值與標籤。",
+      "impact": "同房間、同額定流明的不同燈具或安裝位置會有不同的入射照度，無法用現有欄位判定實際讀值。",
+      "sources": [
+        {
+          "label": "CIE 照度定義",
+          "url": "https://cie.co.at/eilvterm/17-21-060"
+        }
+      ]
+    },
+    {
+      "id": "LIGHT-04",
+      "title": "未啟用欄位可阻擋送出但無可驗的復原路徑",
+      "observed": "既有 `inactive-field-over-limit` 在長寬模式留下 `areaValue='123456789'`，首錯 `INPUT_LIMIT/areaValue`。該欄僅面積模式啟用。送出失敗要求焦點到首錯欄，但規格未定義如何顯示或啟用目前不可編輯的欄位。",
+      "expected": "保留核心檢查並定義 UI 可達復原，例如在切換前處理超限、把錯誤關聯到可操作的模式切換，或明定輸入層可防止此狀態並測鍵入／貼上／切換。用上述草稿和實際鍵盤測例檢查。",
+      "impact": "使用者改回合法的長寬後，仍可能無法完成計算，也無法依規格聚焦造成首錯的欄。"
+    }
+  ],
+  "nonblocking": [
+    "移除無檔案欄、無列輸入的 File.arrayBuffer 與待修列模板描述，保留必要的 Worker 和報告回收。"
+  ],
+  "sources": [
+    {
+      "label": "GB 50034-2013 原文",
+      "url": "https://jyt.nmg.gov.cn/nmgzbzx/ywgz/zbjs/202408/P020240830428934615813.pdf",
+      "evidence": "實讀第 17–18 頁表 5.2.1 與續表，含住宅走道 50 lx 和書寫閱讀 300 lx 的混合照明註記。"
+    },
+    {
+      "label": "住建部正式公告及附件",
+      "url": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_777466.html",
+      "evidence": "核對 GB/T 50034-2024 自 2024-08-01 實施並廢止 2013 版。"
+    },
+    {
+      "label": "GB/T 50034-2024 原文",
+      "url": "https://zcsys.ncepu.edu.cn/docs/2025-01/d5c197c2837e4892ac7d02faae298500.pdf",
+      "evidence": "實讀第 25–26 頁表 5.2.1，核對居住用途六個候選值，住宅走廊 100 lx，床頭閱讀 200 lx、廚房操作台 300 lx 屬另外的列。"
+    },
+    {
+      "label": "BSI BS EN 12464-1:2021",
+      "url": "https://landingpage.bsigroup.com/LandingPage/Standard?UPI=000000000030385601",
+      "evidence": "官方條目確認採用版次與室內工作場所範圍。表 9 的工作場所走廊 100 lx 與 2024 住宅列同值，兩者適用情境有別。"
+    },
+    {
+      "label": "淡水地政事務所面積換算",
+      "url": "https://www.tamsui.land.ntpc.gov.tw/cp.aspx?n=6396",
+      "evidence": "官方 1 m² = 0.3025 坪，倒數化為 400/121 m²/坪。"
+    },
+    {
+      "label": "CIE e-ILV",
+      "url": "https://cie.co.at/eilvterm/17-21-060",
+      "evidence": "定義照度使用入射光通量，支持估算欄位的語義更正。"
+    },
+    {
+      "label": "坪數換算固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/6d7cc4cd18a273b0d386b19b85b883573d097cba/docs/specs/ping-area-converter/SPEC.md",
+      "evidence": "核對其核心是四種面積單位換算與速查表。電費工具使用瓦數與期間而非照度。"
+    }
+  ],
+  "scope": "independent specification review",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "participatedInCandidate": false
+  },
+  "registrySnapshot": {
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "inventoryComplete": true,
+    "readyUnconsumed": 2,
+    "branch": "codex/initial-publication",
+    "head": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "baseline": "26525d5f6380915ea95dde879dec769442db0d95"
+  },
+  "taskId": "labs-lighting-lumen-calculator-spec-20261109",
+  "specId": "spec-lighting-lumen-calculator-20261109",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+    "path": "docs/specs/lighting-lumen-calculator/SPEC.md"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/251",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-lighting-lumen-cal-claim-20261109T153716Z-809bd",
+    "claimedAt": "2026-11-09T15:37:16.671Z"
+  },
+  "contributors": [
+    "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  ],
+  "reviewedFiles": [
+    {
+      "pr": 251,
+      "ref": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+      "path": "docs/specs/lighting-lumen-calculator/AUTHOR-CHECK.md",
+      "blob": "93d2fdaf621f30885510d00fbd9c70b0e9ba219a",
+      "bytes": 7123,
+      "sha256": "33a3ec2a5f9f2e3c2ad390bb6b1930024ae78a5beadc6d5b6a71c13c62847338"
+    },
+    {
+      "pr": 251,
+      "ref": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+      "path": "docs/specs/lighting-lumen-calculator/BRIEF.md",
+      "blob": "4479444c2bdc17296e4aab1c8c3e1daf1571eb2c",
+      "bytes": 1464,
+      "sha256": "5b46ebb520ffcc91350795f5acf3df291b5f4af48c0e1602cfb2ce4f5d65bb1f"
+    },
+    {
+      "pr": 251,
+      "ref": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+      "path": "docs/specs/lighting-lumen-calculator/SPEC.md",
+      "blob": "20ac2ec9705826319a087a50a724726baf64b3f3",
+      "bytes": 22223,
+      "sha256": "af3859e3613a3dfa17d9cfe8942a4a092eafe4cd60d574b5ebcd447da78d9f9b"
+    },
+    {
+      "pr": 251,
+      "ref": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+      "path": "docs/specs/lighting-lumen-calculator/fixtures.json",
+      "blob": "4b1cf31c2cf81210d4dfa7ac8b82a622431675bb",
+      "bytes": 7770,
+      "sha256": "a1d297f5f221dc9b2730fa8e01b63f55901ddb0cfced5509350a0f553d7629d0"
+    }
+  ],
+  "observedTaskStatus": "reviewing",
+  "observedSpecStatus": "draft",
+  "sections": {
+    "goal": false,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 87,
+      "evidence": "§goal 界定在家與賣場用燈泡標示估顆數的情境，卻承諾裝完後的實際照度，與資料及模型能力不合（LIGHT-03）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 74,
+      "evidence": "§scope 有單房、局部照明和係數的界線。原版標準的表號、住宅走道列和書寫閱讀混合照明均需校正（LIGHT-02）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 84,
+      "evidence": "§userFlow 明定雙模式、選項來源、dirty／cancel／reset 和下載。停用欄位仍可能成為首錯而未給復原路徑（LIGHT-04）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 78,
+      "evidence": "§inputsOutputs 的精確坪換算、欄位驗序與報告 shape 可重算。先把需求取到整流明再取顆數，合法例達不到簡化目標（LIGHT-01）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 95,
+      "evidence": "§implementation 採 BigInt 有理數、純核心、控制層世代、靜態雙語與 CSP。精確面積及整數進位皆可在零依賴瀏覽器重現。",
+      "status": "PASS"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 95,
+      "evidence": "§acceptance 九項產品 gate 包含兩模式及邊界、隱私、鍵盤、雙語 SEO、隔離瀏覽器與重現性，產品維持 NOT_RUN。",
+      "status": "PASS"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 85,
+      "evidence": "14 核心及 3 controller 均相符。現有整數倍與 +1 lm 檢查漏掉精確需求僅比整數倍多不到半流明的案例（LIGHT-01）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 97,
+      "evidence": "§handoff 固定四檔與 owner，另領製作 claim，列 Node 建置、獨立交驗與部署順序。",
+      "status": "PASS"
+    }
+  ],
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    }
+  ],
+  "documentStatus": "FAIL",
+  "productionInheritance": {
+    "status": "FAIL",
+    "blockerId": "REG-01",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "requiredProductIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missingIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "extraIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blocksReady": true
+  },
+  "readyRecommendation": false,
+  "recommendedTaskVerdict": "revision",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "commands": [
+    {
+      "command": "node verify-sources.mjs",
+      "exitCode": 0,
+      "evidence": "../source-check.json"
+    },
+    {
+      "command": "node lighting-lumen-calculator/verify.mjs",
+      "node": "v24.14.0",
+      "exitCode": 0,
+      "fixturesPassed": 17,
+      "fixturesTotal": 17,
+      "evidence": "fixture-results.json",
+      "log": "fixture-run.txt"
+    }
+  ]
+}

@@ -1,0 +1,1037 @@
+{
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "efad9c067e608d72b02078755e24357d5635b3b7",
+    "path": "docs/specs/car-depreciation-calculator/SPEC.md"
+  },
+  "fixtureBlob": "dc8f7b2ca4d7b543d1618c3ac6a0654f8a85e7e0",
+  "method": "Independent offline derivation and exact deep comparison of the complete outputs. Controller cases use a state model.",
+  "node": "v24.14.0",
+  "passed": 17,
+  "total": 17,
+  "exitCode": 0,
+  "cases": [
+    {
+      "id": "declining-basic",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "1000000",
+        "years": "5",
+        "salvagePercent": "10",
+        "rate": "15"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 100000,
+          "currentValue": 443705,
+          "totalDepreciation": 556295,
+          "totalDepreciationPercent": "55.63",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "15.00",
+              "depreciation": 150000,
+              "endValue": 850000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "15.00",
+              "depreciation": 127500,
+              "endValue": 722500,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "15.00",
+              "depreciation": 108375,
+              "endValue": 614125,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": "15.00",
+              "depreciation": 92119,
+              "endValue": 522006,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": "15.00",
+              "depreciation": 78301,
+              "endValue": 443705,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "table-default",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "table",
+        "price": "800000",
+        "years": "5",
+        "salvagePercent": "10",
+        "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "table",
+          "floorValue": 80000,
+          "currentValue": 353295,
+          "totalDepreciation": 446705,
+          "totalDepreciationPercent": "55.84",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "20.00",
+              "depreciation": 160000,
+              "endValue": 640000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "18.00",
+              "depreciation": 115200,
+              "endValue": 524800,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "15.00",
+              "depreciation": 78720,
+              "endValue": 446080,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": "12.00",
+              "depreciation": 53530,
+              "endValue": 392550,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": "10.00",
+              "depreciation": 39255,
+              "endValue": 353295,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "straight-basic",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "straight",
+        "price": "900000",
+        "years": "6",
+        "salvagePercent": "10",
+        "usefulLife": "10"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "straight",
+          "floorValue": 90000,
+          "currentValue": 414000,
+          "totalDepreciation": 486000,
+          "totalDepreciationPercent": "54.00",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 819000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 738000,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 657000,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 576000,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 495000,
+              "floored": false
+            },
+            {
+              "year": 6,
+              "ratePercent": null,
+              "depreciation": 81000,
+              "endValue": 414000,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "floor-hit-declining",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "200000",
+        "years": "5",
+        "salvagePercent": "10",
+        "rate": "60"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 20000,
+          "currentValue": 20000,
+          "totalDepreciation": 180000,
+          "totalDepreciationPercent": "90.00",
+          "floorReachedYear": 3,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "60.00",
+              "depreciation": 120000,
+              "endValue": 80000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "60.00",
+              "depreciation": 48000,
+              "endValue": 32000,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "60.00",
+              "depreciation": 12000,
+              "endValue": 20000,
+              "floored": true
+            },
+            {
+              "year": 4,
+              "ratePercent": "60.00",
+              "depreciation": 0,
+              "endValue": 20000,
+              "floored": true
+            },
+            {
+              "year": 5,
+              "ratePercent": "60.00",
+              "depreciation": 0,
+              "endValue": 20000,
+              "floored": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rounding-chain-pinned",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "15",
+        "years": "3",
+        "salvagePercent": "0",
+        "rate": "10"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 0,
+          "currentValue": 12,
+          "totalDepreciation": 3,
+          "totalDepreciationPercent": "20.00",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "10.00",
+              "depreciation": 1,
+              "endValue": 14,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "10.00",
+              "depreciation": 1,
+              "endValue": 13,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "10.00",
+              "depreciation": 1,
+              "endValue": 12,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "years-zero",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "500000",
+        "years": "0",
+        "salvagePercent": "10",
+        "rate": "15"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 50000,
+          "currentValue": 500000,
+          "totalDepreciation": 0,
+          "totalDepreciationPercent": "0.00",
+          "floorReachedYear": null,
+          "schedule": []
+        }
+      }
+    },
+    {
+      "id": "table-repeat-last",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "table",
+        "price": "300000",
+        "years": "4",
+        "salvagePercent": "10",
+        "tableRates": "30\n20"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "table",
+          "floorValue": 30000,
+          "currentValue": 107520,
+          "totalDepreciation": 192480,
+          "totalDepreciationPercent": "64.16",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "30.00",
+              "depreciation": 90000,
+              "endValue": 210000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "20.00",
+              "depreciation": 42000,
+              "endValue": 168000,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "20.00",
+              "depreciation": 33600,
+              "endValue": 134400,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": "20.00",
+              "depreciation": 26880,
+              "endValue": 107520,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "straight-floor-before-life",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "straight",
+        "price": "500000",
+        "years": "12",
+        "salvagePercent": "10",
+        "usefulLife": "10"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "straight",
+          "floorValue": 50000,
+          "currentValue": 50000,
+          "totalDepreciation": 450000,
+          "totalDepreciationPercent": "90.00",
+          "floorReachedYear": 10,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 455000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 410000,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 365000,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 320000,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 275000,
+              "floored": false
+            },
+            {
+              "year": 6,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 230000,
+              "floored": false
+            },
+            {
+              "year": 7,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 185000,
+              "floored": false
+            },
+            {
+              "year": 8,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 140000,
+              "floored": false
+            },
+            {
+              "year": 9,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 95000,
+              "floored": false
+            },
+            {
+              "year": 10,
+              "ratePercent": null,
+              "depreciation": 45000,
+              "endValue": 50000,
+              "floored": false
+            },
+            {
+              "year": 11,
+              "ratePercent": null,
+              "depreciation": 0,
+              "endValue": 50000,
+              "floored": true
+            },
+            {
+              "year": 12,
+              "ratePercent": null,
+              "depreciation": 0,
+              "endValue": 50000,
+              "floored": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-zero",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "100000",
+        "years": "3",
+        "salvagePercent": "10",
+        "rate": "0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 10000,
+          "currentValue": 100000,
+          "totalDepreciation": 0,
+          "totalDepreciationPercent": "0.00",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "0.00",
+              "depreciation": 0,
+              "endValue": 100000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "0.00",
+              "depreciation": 0,
+              "endValue": 100000,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "0.00",
+              "depreciation": 0,
+              "endValue": 100000,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "salvage-half-cap",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "100000",
+        "years": "2",
+        "salvagePercent": "50",
+        "rate": "90"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "declining",
+          "floorValue": 50000,
+          "currentValue": 50000,
+          "totalDepreciation": 50000,
+          "totalDepreciationPercent": "50.00",
+          "floorReachedYear": 1,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "90.00",
+              "depreciation": 50000,
+              "endValue": 50000,
+              "floored": true
+            },
+            {
+              "year": 2,
+              "ratePercent": "90.00",
+              "depreciation": 0,
+              "endValue": 50000,
+              "floored": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "table-half-used",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "table",
+        "price": "500000",
+        "years": "2",
+        "salvagePercent": "10",
+        "tableRates": "20\n15\n12\n10"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "method": "table",
+          "floorValue": 50000,
+          "currentValue": 340000,
+          "totalDepreciation": 160000,
+          "totalDepreciationPercent": "32.00",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "20.00",
+              "depreciation": 100000,
+              "endValue": 400000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "15.00",
+              "depreciation": 60000,
+              "endValue": 340000,
+              "floored": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "price-zero-range",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "0",
+        "years": "5",
+        "salvagePercent": "10",
+        "rate": "15"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "price",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-format-error",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "declining",
+        "price": "100000",
+        "years": "5",
+        "salvagePercent": "10",
+        "rate": "1.234"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "rate",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "table-row-range",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "method": "table",
+        "price": "300000",
+        "years": "2",
+        "salvagePercent": "10",
+        "tableRates": "20\n95"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "tableRates",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "initial": {
+          "method": "declining",
+          "price": "1000000",
+          "years": "5",
+          "salvagePercent": "10",
+          "rate": "15",
+          "usefulLife": "10",
+          "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+        },
+        "edit": {
+          "method": "declining",
+          "price": "0",
+          "years": "5",
+          "salvagePercent": "10",
+          "rate": "15",
+          "usefulLife": "10",
+          "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "price",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "draft": {
+          "method": "declining",
+          "price": "1000000",
+          "years": "5",
+          "salvagePercent": "10",
+          "rate": "15",
+          "usefulLife": "10",
+          "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+        },
+        "lateResult": {
+          "method": "declining",
+          "floorValue": 100000,
+          "currentValue": 443705,
+          "totalDepreciation": 556295,
+          "totalDepreciationPercent": "55.63",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "15.00",
+              "depreciation": 150000,
+              "endValue": 850000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "15.00",
+              "depreciation": 127500,
+              "endValue": 722500,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "15.00",
+              "depreciation": 108375,
+              "endValue": 614125,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": "15.00",
+              "depreciation": 92119,
+              "endValue": 522006,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": "15.00",
+              "depreciation": 78301,
+              "endValue": 443705,
+              "floored": false
+            }
+          ]
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "method": "declining",
+            "price": "1000000",
+            "years": "5",
+            "salvagePercent": "10",
+            "rate": "15",
+            "usefulLife": "10",
+            "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "method": "declining",
+            "price": "880000",
+            "years": "5",
+            "salvagePercent": "10",
+            "rate": "15",
+            "usefulLife": "10",
+            "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "olderDraft": {
+          "method": "declining",
+          "price": "1000000",
+          "years": "5",
+          "salvagePercent": "10",
+          "rate": "15",
+          "usefulLife": "10",
+          "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+        },
+        "newerDraft": {
+          "method": "declining",
+          "price": "0",
+          "years": "5",
+          "salvagePercent": "10",
+          "rate": "15",
+          "usefulLife": "10",
+          "tableRates": "20\n18\n15\n12\n10\n8\n8\n6\n6\n5"
+        },
+        "olderLateResult": {
+          "method": "declining",
+          "floorValue": 100000,
+          "currentValue": 443705,
+          "totalDepreciation": 556295,
+          "totalDepreciationPercent": "55.63",
+          "floorReachedYear": null,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": "15.00",
+              "depreciation": 150000,
+              "endValue": 850000,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": "15.00",
+              "depreciation": 127500,
+              "endValue": 722500,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": "15.00",
+              "depreciation": 108375,
+              "endValue": 614125,
+              "floored": false
+            },
+            {
+              "year": 4,
+              "ratePercent": "15.00",
+              "depreciation": 92119,
+              "endValue": 522006,
+              "floored": false
+            },
+            {
+              "year": 5,
+              "ratePercent": "15.00",
+              "depreciation": 78301,
+              "endValue": 443705,
+              "floored": false
+            }
+          ]
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "price",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "price",
+            "row": null
+          }
+        }
+      }
+    }
+  ],
+  "probes": [
+    {
+      "id": "CAR-01",
+      "input": {
+        "method": "straight",
+        "price": "880003",
+        "years": "10",
+        "salvagePercent": "10",
+        "usefulLife": "10"
+      },
+      "resultAtLife": {
+        "floor": 88000,
+        "value": 88003,
+        "floorReachedYear": null
+      },
+      "yearAfterLife": {
+        "year": 11,
+        "ratePercent": null,
+        "depreciation": 3,
+        "endValue": 88000,
+        "floored": true
+      },
+      "tooEarly": {
+        "input": {
+          "method": "straight",
+          "price": "2",
+          "years": "3",
+          "salvagePercent": "0",
+          "usefulLife": "3"
+        },
+        "result": {
+          "method": "straight",
+          "floorValue": 0,
+          "currentValue": 0,
+          "totalDepreciation": 2,
+          "totalDepreciationPercent": "100.00",
+          "floorReachedYear": 2,
+          "schedule": [
+            {
+              "year": 1,
+              "ratePercent": null,
+              "depreciation": 1,
+              "endValue": 1,
+              "floored": false
+            },
+            {
+              "year": 2,
+              "ratePercent": null,
+              "depreciation": 1,
+              "endValue": 0,
+              "floored": false
+            },
+            {
+              "year": 3,
+              "ratePercent": null,
+              "depreciation": 0,
+              "endValue": 0,
+              "floored": true
+            }
+          ]
+        }
+      },
+      "neverReaches": {
+        "input": {
+          "method": "straight",
+          "price": "1",
+          "years": "30",
+          "salvagePercent": "0",
+          "usefulLife": "3"
+        },
+        "valueAfter30": 1
+      }
+    },
+    {
+      "id": "CAR-FAQ",
+      "input": {
+        "method": "declining",
+        "price": "100000",
+        "years": "20",
+        "salvagePercent": "0",
+        "rate": "50"
+      },
+      "floor": 0,
+      "floorReachedYear": null,
+      "lateRows": [
+        {
+          "year": 17,
+          "ratePercent": "50.00",
+          "depreciation": 1,
+          "endValue": 1,
+          "floored": false
+        },
+        {
+          "year": 18,
+          "ratePercent": "50.00",
+          "depreciation": 0,
+          "endValue": 1,
+          "floored": false
+        },
+        {
+          "year": 19,
+          "ratePercent": "50.00",
+          "depreciation": 0,
+          "endValue": 1,
+          "floored": false
+        },
+        {
+          "year": 20,
+          "ratePercent": "50.00",
+          "depreciation": 0,
+          "endValue": 1,
+          "floored": false
+        }
+      ]
+    },
+    {
+      "id": "exact-floor-ui",
+      "floor": 50000,
+      "exactFloorRow": {
+        "year": 10,
+        "ratePercent": null,
+        "depreciation": 45000,
+        "endValue": 50000,
+        "floored": false
+      }
+    }
+  ],
+  "productChecks": "NOT_RUN"
+}
