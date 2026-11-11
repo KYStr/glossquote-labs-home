@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>薪資換算｜Gloss Tools</title>
+<meta name="description" content="輸入月薪、日薪、時薪或年薪任一種金額，依台灣常見慣例一次換算全部：日薪為月薪 ÷ 30、時薪為月薪 ÷ 240，年薪含年終獎金月數。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>薪資換算</h1>
+  <p class="lede">輸入月薪、日薪、時薪或年薪任一種金額，依台灣常見慣例一次換算全部：日薪為月薪 ÷ 30、時薪為月薪 ÷ 240，年薪含年終獎金月數。比較 offer、核對薪資單或反推年薪落點時，不必再反覆手算。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">計算基準、金額與獎金</h2>
+      <form id="salary-form" novalidate>
+        <fieldset class="field">
+          <legend>計算基準</legend>
+          <p class="help" id="help-sourceBasis">先選你手上金額的計薪基準，下面的金額就以這個基準輸入。</p>
+          <div class="segments" role="radiogroup" aria-describedby="help-sourceBasis">
+            <label class="segment"><input id="field-sourceBasis-monthly" name="sourceBasis" type="radio" value="monthly" checked>月薪</label>
+            <label class="segment"><input id="field-sourceBasis-daily" name="sourceBasis" type="radio" value="daily">日薪</label>
+            <label class="segment"><input id="field-sourceBasis-hourly" name="sourceBasis" type="radio" value="hourly">時薪</label>
+            <label class="segment"><input id="field-sourceBasis-annual" name="sourceBasis" type="radio" value="annual">年薪</label>
+          </div>
+          <p class="field-error" id="error-sourceBasis" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-amount">金額（新台幣）</label>
+          <p class="help" id="help-amount">整數或最多兩位小數，必須大於 0。上限依基準：月薪 99,999,999、日薪 9,999,999、時薪 999,999、年薪 999,999,999。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="40000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bonusMonths">年終獎金（月數）</label>
+          <p class="help" id="help-bonusMonths">以月薪為單位，最多一位小數，範圍 0–24 個月；沒有年終就填 0。</p>
+          <input id="field-bonusMonths" name="bonusMonths" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-bonusMonths">
+          <p class="field-error" id="error-bonusMonths" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。請輸入金額，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算薪資</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="換算結果" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">金額（新台幣）</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel conventions" aria-labelledby="conventions-heading">
+    <h2 id="conventions-heading">換算慣例與捨入</h2>
+    <p>換算慣例：日薪 = 月薪 ÷ 30、時薪 = 月薪 ÷ 240（每月 30 天 × 每日 8 小時）、年薪 = 月薪 ×（12 ＋ 年終獎金月數）。這些是台灣常見的薪資換算慣例，不是勞動基準法的定義；實際金額以勞動契約與公司規定為準。</p>
+    <p>每個金額都由未捨入的月薪一次換算，再四捨五入到整數元；因此時薪 × 240 不一定等於顯示的月薪，年薪（含獎金）與年薪（不含獎金）＋獎金之間也可能差 1 元。</p>
+  </section>
+
+  <details class="details">
+    <summary>輸入格式說明</summary>
+    <p>金額只接受 ASCII 數字與一個小數點：整數或最多兩位小數；逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。年終獎金月數最多一位小數。不論由哪個基準輸入，都先換成未捨入的月薪，再由月薪一次算出全部六個金額，每個金額只四捨五入一次到整數元。下載的報告檔名固定為 salary-converter-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼時薪是月薪除以 240？</dt>
+      <dd>慣例以每月 30 天、每日 8 小時計算，30 × 8 = 240。勞基法實務計算平日每小時工資額時也常用同一基礎，但本工具只做金額換算，不判斷加班費或法定義務。</dd>
+      <dt>年終獎金月數可以輸入小數嗎？</dt>
+      <dd>可以，最多一位小數，例如 1.5 個月，範圍 0 到 24 個月。獎金金額 = 月薪 × 月數，年薪（含獎金）= 月薪 ×（12 ＋ 月數）。</dd>
+      <dt>用年薪反推時，為什麼各金額兜不回年薪？</dt>
+      <dd>月薪 = 年薪 ÷（12 ＋ 年終獎金月數）通常不是整數。每個顯示金額都由未捨入的月薪分別換算並四捨五入，所以彼此可能差 1 元；年薪（含獎金）本身由未捨入月薪直接乘回，與輸入年薪在捨入後一致。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
