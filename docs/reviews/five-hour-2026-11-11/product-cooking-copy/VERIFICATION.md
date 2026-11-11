@@ -43,3 +43,9 @@ node scripts/check-generated.mjs --mode preview
 
 合併兩項退修後 70/70 測試通過，靜態檢查、兩次可重現的預覽建置及生成驗證皆 exit 0。和上一候選逐檔比對後，僅 controller、生成 controller、預覽 manifest、兩組測試和引用檢查器有差異。兩語頁、引用、核心與固定 fixtures bytes 相同，沿用 20 筆換算及 14 份 UTF-8 報告相符的證據。Worker 測試是離線注入式驗證。瀏覽器、真機、Network/Storage 及原生下載仍為 `NOT_RUN_USER_FOCUS_INCIDENT`。
 
+## Worker Blob URL 退修
+
+主統籌在 `4f259d919e56c2f098035d2ae9d4431dc7b50af6` 重現 Worker 建構同步拋錯後沒有撤銷 Blob URL。此輪修正只改 `createWorker`、必要生成檔及回歸測試。建構失敗會撤銷該 URL 並拋回原始錯誤。終止時即使底層拋錯也會撤銷 URL。重複終止不重複清理。[主統籌的範圍修正](https://github.com/KYStr/glossquote-labs-home/blob/3ffe6eb207e86c08691a7b45bd4459a740beff29/docs/reviews/five-hour-2026-11-11/dispatch/product-cooking-copy/AMENDMENT-URL-LIFECYCLE.md)
+
+三項 Node VM 注入式回歸在修正前皆失敗，修正後通過。驗證原始例外、URL 撤銷、保留輸入與可成功重試、正常及拋錯終止時只清理一次。完整離線套件 73/73 通過，靜態檢查及生成檢查 exit 0。兩次預覽建置相同。兩語頁、核心、固定 fixtures 和報告序列化與上一候選逐檔相同，沿用 20 筆換算及 14 份報告 bytes 比對。真實瀏覽器的 Worker/Blob 行為、Network/Storage、真機與原生下載維持 `NOT_RUN_USER_FOCUS_INCIDENT`。
+
