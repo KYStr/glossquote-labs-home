@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "FH-SAVINGS-R2",
+  "kind": "independent-maintenance-document-review",
+  "observedAt": "2026-11-11T04:42:31Z",
+  "repository": "KYStr/glossquote-labs-home",
+  "taskId": "labs-five-hour-repair-savings-20261111",
+  "candidate": {
+    "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/306",
+    "head": "35b2d302033af86e48337b7019a286180d5e8259",
+    "parent": "1ffbc97defae56546824333671b90e2d87b0c359",
+    "parentBase": "17ac162a0b3e41fb372c91c1be1f7ffbb1631677",
+    "state": "open",
+    "draft": true,
+    "specPath": "docs/specs/savings-goal-calculator/SPEC.md",
+    "changedFiles": 7
+  },
+  "reviewer": {
+    "actorId": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "contributed": false
+  },
+  "owner": {
+    "actorId": "local-codex:01a1c8a3-8c54-7810-a0e1-bc3a2ffbfe01",
+    "claimId": "fh-savings-claim-77e39ae9-60eb-4275-88cd-f2fe4c1218fe"
+  },
+  "registry": {
+    "checkedHead": "6e862ed3f702e69fb4a3a2a8fcf8042baed6c1b5",
+    "revision": 1591,
+    "gitBlobSha": "39465ccc3d14ebb309430132e8345a82430da020",
+    "maintenanceStatus": "working",
+    "submission": null,
+    "disposition": null,
+    "reviewWrite": "NOT_RUN_NO_SLOT",
+    "ack": "NOT_RUN_NO_SLOT",
+    "ready": "NOT_RUN",
+    "evidence": "registry-check.json"
+  },
+  "maintenanceDocumentChecks": "PASS",
+  "scoreThresholdPerAspect": 90,
+  "aspects": [
+    {
+      "id": "spec-corrections",
+      "label": "修正既有工具升級範圍、目標與尾款後餘額語義、精確冪與首次達標月上限。",
+      "score": 100,
+      "status": "PASS",
+      "evidence": "既有 compound-interest 升級、模式 B 目標和實際餘額分列、月末實存整分、精確比較、入口先限 0–1200、先 B(1200)、界內最多 11 次中點、雙語報告披露。"
+    },
+    {
+      "id": "exact-fixtures",
+      "label": "以獨立精確遞推核對字面結果、最小尾款、1200/1201、小額捨入及正利率超期。",
+      "score": 100,
+      "status": "PASS",
+      "evidence": "獨立逐月利息帳本核對 23 核心及 3 合成狀態、三份 canonical 報告、全部 1,200 個首達位置、96 組固定種子金流試算與 12 個補例、21 個原案例的逐欄差異。"
+    },
+    {
+      "id": "provenance-and-scope",
+      "label": "核對四個原始檔及固定前案，記錄差異、原 owner 與 NOT_RUN，範圍限文件維護。",
+      "score": 100,
+      "status": "PASS",
+      "evidence": "核對七個候選公開 Git blobs、四個 parent 與 #245 原檔、GitHub 完整 diff、本機四檔 hunks、兩個既有固定前案、maintenance 和原 owner/claim、未執行的產品門檻。"
+    }
+  ],
+  "firstReviewFindings": [
+    {
+      "id": "SG-01",
+      "status": "ADDRESSED",
+      "scope": "existing-tool-upgrade",
+      "readyStockContribution": 0
+    },
+    {
+      "id": "SG-02",
+      "status": "ADDRESSED",
+      "exactEvidence": "verification.json"
+    },
+    {
+      "id": "SG-03",
+      "status": "ADDRESSED",
+      "exactEvidence": "verification.json"
+    },
+    {
+      "id": "REG-01",
+      "status": "OPEN_OUTSIDE_MAINTENANCE_SCOPE",
+      "evidence": "registry-check.json"
+    }
+  ],
+  "originalDocumentSections": [
+    "goal",
+    "scope",
+    "userFlow",
+    "inputsOutputs",
+    "implementation",
+    "acceptance",
+    "tests",
+    "handoff"
+  ],
+  "originalDocumentFormalRereview": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "boundaries",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "privacy",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "security",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "usability",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "accessibility",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "localization-seo",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "toolchain-provenance",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "compatibility",
+      "status": "NOT_RUN",
+      "score": null
+    }
+  ],
+  "verification": {
+    "method": "獨立以 Python Fraction 逐月分開記錄本金與精確利息，另用有界閉式檢查搜尋索引；合成 controller 以不透明快照 token 驗證晚到事件。",
+    "coreLiterals": 23,
+    "syntheticControllerLiterals": 3,
+    "retainedOriginal": 21,
+    "changedOriginalExpected": 7,
+    "revisedPurposeFields": 4,
+    "newCases": 5,
+    "searchThresholds": 1200,
+    "maximumMidpoints": 11,
+    "supplementalMathChecks": 4,
+    "supplementalInputChecks": 8,
+    "seededCashFlowChecks": 96,
+    "canonicalReports": 3,
+    "proof": "verification.json",
+    "checks": [
+      {
+        "name": "anonymous pinned source and hashes",
+        "exit": 0,
+        "evidence": "source-check.json"
+      },
+      {
+        "name": "three full diff reconstructions and local hunks",
+        "exit": 0,
+        "evidence": "diff-audit.json"
+      },
+      {
+        "name": "independent portable Python replay",
+        "command": "python -B -X utf8 verify.py --check",
+        "version": "3.12.5",
+        "exit": 0,
+        "evidence": "verification.json"
+      },
+      {
+        "name": "Node canonical JSON replay for three samples",
+        "version": "24.14.0",
+        "exit": 0,
+        "evidence": "verification.json"
+      }
+    ]
+  },
+  "unexecuted": {
+    "liveProduct": "NOT_RUN",
+    "browser": "NOT_RUN",
+    "download": "NOT_RUN",
+    "networkAndStorage": "NOT_RUN",
+    "seo": "NOT_RUN",
+    "integration": "NOT_RUN",
+    "merge": "NOT_RUN",
+    "deployment": "NOT_RUN"
+  }
+}

@@ -1,0 +1,1102 @@
+{
+  "fixtureSha256": {
+    "original": "b4115210a148532133b2ec728ed87772b59ca3af98a76adc28cccaa014405979",
+    "revised": "7ccf7239d2b5bfe209a69c9b711b4533f8d1ae231b84e160ac02d08caf1f3632"
+  },
+  "literalChecks": {
+    "core": 23,
+    "controller": 3
+  },
+  "cases": {
+    "payment-basic-zero-rate": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 12,
+          "monthlyPayment": "7500.00",
+          "totalDeposits": "90000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "100000.00"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-zero-rate-ceiling": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 3,
+          "monthlyPayment": "333.34",
+          "totalDeposits": "1000.02",
+          "totalInterest": "0.00",
+          "finalBalance": "1000.02"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-with-interest": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 12,
+          "monthlyPayment": "7245.98",
+          "totalDeposits": "86951.76",
+          "totalInterest": "3048.26",
+          "finalBalance": "100000.02"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-one-month-timing": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 1,
+          "monthlyPayment": "1000.00",
+          "totalDeposits": "1000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "1000.00"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-long-horizon": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 360,
+          "monthlyPayment": "1201.55",
+          "totalDeposits": "432558.00",
+          "totalInterest": "567442.36",
+          "finalBalance": "1000000.36"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-already-funded": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "already-funded",
+          "months": 24,
+          "monthlyPayment": "0.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "3705.42",
+          "finalBalance": "63705.42"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "payment-growth-sufficient": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "growth-sufficient",
+          "months": 12,
+          "monthlyPayment": "0.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "1268.25",
+          "finalBalance": "11268.25"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "months-exact-zero-rate": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "12000.00",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 20,
+          "finalMonthPayment": "500.00",
+          "balanceIfFullPayment": "12000.00",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "12000.00"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "1150000.00000000",
+        "beforeTailCents": "1150000.00000000",
+        "plannedEndingCents": "1200000.00000000",
+        "earnedInterestCents": "0.00000000",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "602000.00",
+        "binaryIndices": [],
+        "verificationIndices": [
+          19,
+          20
+        ]
+      }
+    },
+    "months-ceiling-boundary": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "10000.00",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 31,
+          "finalMonthPayment": "10.00",
+          "balanceIfFullPayment": "10323.00",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "10000.00"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "999000.00000000",
+        "beforeTailCents": "999000.00000000",
+        "plannedEndingCents": "1000000.00000000",
+        "earnedInterestCents": "0.00000000",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "399600.00",
+        "binaryIndices": [],
+        "verificationIndices": [
+          30,
+          31
+        ]
+      }
+    },
+    "months-with-interest": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "20000.00",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 42,
+          "finalMonthPayment": "152.88",
+          "balanceIfFullPayment": "20147.13",
+          "totalDeposits": "12452.88",
+          "totalInterest": "2547.13",
+          "finalBalance": "20000.01"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "1974838.34985001",
+        "beforeTailCents": "1984712.54159926",
+        "plannedEndingCents": "2000000.54159926",
+        "earnedInterestCents": "254712.54159926",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "25773750.71",
+        "binaryIndices": [
+          600,
+          300,
+          150,
+          75,
+          38,
+          57,
+          48,
+          43,
+          41,
+          42
+        ],
+        "verificationIndices": [
+          41,
+          42
+        ]
+      }
+    },
+    "months-growth-only-crossing": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "11000.00",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 10,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "11046.22",
+          "totalDeposits": "0.00",
+          "totalInterest": "1046.22",
+          "finalBalance": "11046.22"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "1093685.27268436",
+        "beforeTailCents": "1104622.12541120",
+        "plannedEndingCents": "1104622.12541120",
+        "earnedInterestCents": "104622.12541120",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": null
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1533375568.06",
+        "binaryIndices": [
+          600,
+          300,
+          150,
+          75,
+          38,
+          19,
+          10,
+          5,
+          8,
+          9
+        ],
+        "verificationIndices": [
+          9,
+          10
+        ]
+      }
+    },
+    "months-already-funded": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "5000.00",
+          "reason": null,
+          "status": "already-funded",
+          "monthsRequired": 0,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "5000.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "0.00",
+          "finalBalance": "5000.00"
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "months-unreachable-no-growth": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "10000.00",
+          "reason": "no-growth",
+          "status": "unreachable",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "months-unreachable-horizon": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "100000.00",
+          "reason": "beyond-horizon",
+          "status": "unreachable",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "ledger": {
+        "exactHorizonBelowGoal": true,
+        "horizonCents": "120000.00000000",
+        "horizonDisplay": "1200.00"
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1200.00",
+        "binaryIndices": [],
+        "verificationIndices": []
+      }
+    },
+    "months-at-horizon": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "1200.00",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 1200,
+          "finalMonthPayment": "1.00",
+          "balanceIfFullPayment": "1200.00",
+          "totalDeposits": "1200.00",
+          "totalInterest": "0.00",
+          "finalBalance": "1200.00"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "119900.00000000",
+        "beforeTailCents": "119900.00000000",
+        "plannedEndingCents": "120000.00000000",
+        "earnedInterestCents": "0.00000000",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1200.00",
+        "binaryIndices": [],
+        "verificationIndices": [
+          1199,
+          1200
+        ]
+      }
+    },
+    "months-first-over-horizon": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "1201.00",
+          "reason": "beyond-horizon",
+          "status": "unreachable",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "ledger": {
+        "exactHorizonBelowGoal": true,
+        "horizonCents": "120000.00000000",
+        "horizonDisplay": "1200.00"
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1200.00",
+        "binaryIndices": [],
+        "verificationIndices": []
+      }
+    },
+    "months-positive-rate-beyond-horizon": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "999999999.99",
+          "reason": "beyond-horizon",
+          "status": "unreachable",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "ledger": {
+        "exactHorizonBelowGoal": true,
+        "horizonCents": "1.01005012",
+        "horizonDisplay": "0.01"
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "0.01",
+        "binaryIndices": [],
+        "verificationIndices": []
+      }
+    },
+    "months-unrounded-growth-small-balance": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "0.02",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 70,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "0.02",
+          "totalDeposits": "0.00",
+          "totalInterest": "0.01",
+          "finalBalance": "0.02"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "1.98689442",
+        "beforeTailCents": "2.00676337",
+        "plannedEndingCents": "2.00676337",
+        "earnedInterestCents": "1.00676337",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": null
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1533.38",
+        "binaryIndices": [
+          600,
+          300,
+          150,
+          75,
+          38,
+          57,
+          66,
+          71,
+          69,
+          70
+        ],
+        "verificationIndices": [
+          69,
+          70
+        ]
+      }
+    },
+    "months-one-cent-tail": {
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "targetAmount": "0.51",
+          "reason": null,
+          "status": "ok",
+          "monthsRequired": 1,
+          "finalMonthPayment": "0.01",
+          "balanceIfFullPayment": "0.52",
+          "totalDeposits": "0.01",
+          "totalInterest": "0.01",
+          "finalBalance": "0.52"
+        }
+      },
+      "ledger": {
+        "priorMonthCents": "50.00000000",
+        "beforeTailCents": "50.50000000",
+        "plannedEndingCents": "51.50000000",
+        "earnedInterestCents": "0.50000000",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "230005.34",
+        "binaryIndices": [
+          600,
+          300,
+          150,
+          75,
+          38,
+          19,
+          10,
+          5,
+          3,
+          2,
+          1
+        ],
+        "verificationIndices": [
+          0,
+          1
+        ]
+      }
+    },
+    "error-months-zero": {
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "months",
+          "row": null
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "error-rate-format": {
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "annualRate",
+          "row": null
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "error-money-format": {
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "targetAmount",
+          "row": null
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "error-mode-enum": {
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "state-dirty-error": {
+      "actual": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "state-cancel-late": {
+      "actual": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "annualRate": "6",
+            "initialAmount": "10000",
+            "mode": "payment",
+            "monthlyPayment": "3000",
+            "months": "12",
+            "targetAmount": "100000"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "payment",
+            "targetAmount": "100000",
+            "initialAmount": "10000",
+            "annualRate": "3",
+            "months": "60",
+            "monthlyPayment": "3000"
+          }
+        }
+      },
+      "ledger": null,
+      "search": null
+    },
+    "state-replace-late": {
+      "actual": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        }
+      },
+      "ledger": null,
+      "search": null
+    }
+  },
+  "originalDelta": {
+    "retained": 21,
+    "unchanged": 14,
+    "removed": [],
+    "added": [
+      "months-at-horizon",
+      "months-first-over-horizon",
+      "months-one-cent-tail",
+      "months-positive-rate-beyond-horizon",
+      "months-unrounded-growth-small-balance"
+    ],
+    "expectedChanges": {
+      "months-exact-zero-rate": {
+        "targetAmount": {
+          "before": null,
+          "after": "12000.00"
+        }
+      },
+      "months-ceiling-boundary": {
+        "targetAmount": {
+          "before": null,
+          "after": "10000.00"
+        }
+      },
+      "months-with-interest": {
+        "finalBalance": {
+          "before": "20000.00",
+          "after": "20000.01"
+        },
+        "targetAmount": {
+          "before": null,
+          "after": "20000.00"
+        },
+        "totalInterest": {
+          "before": "2547.12",
+          "after": "2547.13"
+        }
+      },
+      "months-growth-only-crossing": {
+        "finalBalance": {
+          "before": "11000.00",
+          "after": "11046.22"
+        },
+        "targetAmount": {
+          "before": null,
+          "after": "11000.00"
+        },
+        "totalInterest": {
+          "before": "1000.00",
+          "after": "1046.22"
+        }
+      },
+      "months-already-funded": {
+        "targetAmount": {
+          "before": null,
+          "after": "5000.00"
+        }
+      },
+      "months-unreachable-no-growth": {
+        "targetAmount": {
+          "before": null,
+          "after": "10000.00"
+        }
+      },
+      "months-unreachable-horizon": {
+        "targetAmount": {
+          "before": null,
+          "after": "100000.00"
+        }
+      }
+    },
+    "purposeEdits": {
+      "months-with-interest": {
+        "before": "\u6a21\u5f0f B \u4e00\u822c\u6848\u4f8b\uff1a\u5c0d\u6578\u4f30\u8a08\u5f8c\u4ee5\u7cbe\u78ba\u6709\u7406\u6578\u6821\u6b63\uff0c\u7b2c 41 \u6708 19748.38 < \u76ee\u6a19 \u2264 \u7b2c 42 \u6708 20147.13",
+        "after": "\u7b2c 42 \u6708\u9996\u6b21\u9054\u6a19\u3002\u4ee5\u986f\u793a\u5c3e\u6b3e 152.88 \u5b58\u5165\u5f8c\uff0c\u8a08\u756b\u671f\u672b\u70ba 20000.01\u3002"
+      },
+      "months-growth-only-crossing": {
+        "before": "\u6a21\u5f0f B\uff1a\u6708\u5b58 0\u3001\u9760\u6210\u9577\u9054\u6a19\uff1b\u8de8\u8d8a\u767c\u751f\u5728\u6700\u5f8c\u4e00\u6708\u7684\u6210\u9577\u9014\u4e2d\uff0c\u6700\u5f8c\u4e00\u6708\u9700\u5b58\u91d1\u984d\u622a\u70ba 0.00",
+        "after": "\u55ae\u9760\u6210\u9577\u5728\u7b2c 10 \u6708\u9054\u6a19\u3002\u5c3e\u6b3e\u70ba 0.00\uff0c\u8a08\u756b\u671f\u672b\u70ba 11046.22\u3002"
+      },
+      "months-unreachable-no-growth": {
+        "before": "\u6a21\u5f0f B\uff1a\u76ee\u524d\u5b58\u6b3e 0 \u4e14\u6708\u5b58 0\uff0c\u9918\u984d\u6c38\u4e0d\u6210\u9577 \u2192 unreachable / no-growth\uff0c\u6578\u503c\u6b04\u4f4d\u7686 null",
+        "after": "\u521d\u59cb\u8207\u6708\u5b58\u5747\u70ba\u96f6\uff0c\u9918\u984d\u7dad\u6301\u96f6\u3002\u56de no-growth\uff0c\u4fdd\u7559\u76ee\u6a19\u8207\u516d\u500b null \u63a8\u5c0e\u503c\u3002"
+      },
+      "months-unreachable-horizon": {
+        "before": "\u6a21\u5f0f B\uff1a\u96f6\u5229\u7387\u6708\u5b58 1 \u5143\u9700 100000 \u500b\u6708\uff0c\u8d85\u904e 1200 \u500b\u6708\u4e0a\u9650 \u2192 unreachable / beyond-horizon",
+        "after": "\u96f6\u5229\u7387\u6bcf\u6708\u5b58 1 \u5143\uff0c\u7b2c 1200 \u6708\u4f4e\u65bc\u76ee\u6a19\u3002\u56de beyond-horizon\uff0c\u4fdd\u7559\u76ee\u6a19\u8207\u516d\u500b null \u63a8\u5c0e\u503c\u3002"
+      }
+    }
+  },
+  "boundedSearchProof": {
+    "rejectedBeforeArithmetic": [
+      -1,
+      1201,
+      3039425,
+      1.5,
+      true
+    ],
+    "integerCrossings": 1200,
+    "midpointCountDistribution": {
+      "10": 848,
+      "11": 352
+    },
+    "maximumMidpoints": 11,
+    "maxUnreducedPowerDigits": 6137
+  },
+  "previousModel": {
+    "oldBalanceCentsAt600": 1,
+    "preciseBalanceCentsByMonth": {
+      "69": "1.98689442",
+      "70": "2.00676337"
+    }
+  },
+  "canonicalReports": {
+    "months-with-interest": {
+      "bytes": 371,
+      "sha256": "9b80ce6af411e6b9e7e9129161cf11f111a3a34213b34f92e06c4377b021561a",
+      "text": "{\"input\":{\"annualRate\":\"6\",\"initialAmount\":\"5000\",\"mode\":\"months\",\"monthlyPayment\":\"300\",\"months\":\"60\",\"targetAmount\":\"20000\"},\"result\":{\"balanceIfFullPayment\":\"20147.13\",\"finalBalance\":\"20000.01\",\"finalMonthPayment\":\"152.88\",\"mode\":\"months\",\"monthsRequired\":42,\"reason\":null,\"status\":\"ok\",\"targetAmount\":\"20000.00\",\"totalDeposits\":\"12452.88\",\"totalInterest\":\"2547.13\"}}\n"
+    },
+    "payment-preserves-unused-deposit": {
+      "bytes": 276,
+      "sha256": "007f7c49c7233e65f6ddbee96db3e17377a4b675e12f9262af64dd6fe0bafb31",
+      "text": "{\"input\":{\"annualRate\":\"0\",\"initialAmount\":\"10\",\"mode\":\"payment\",\"monthlyPayment\":\"\u8a66\u7b97\ud83d\ude42\",\"months\":\"3\",\"targetAmount\":\"13\"},\"result\":{\"finalBalance\":\"13.00\",\"mode\":\"payment\",\"monthlyPayment\":\"1.00\",\"months\":3,\"status\":\"ok\",\"totalDeposits\":\"3.00\",\"totalInterest\":\"0.00\"}}\n"
+    },
+    "months-preserves-unused-term": {
+      "bytes": 364,
+      "sha256": "884216b60129afcfca97b81c1d9a1c565f67e350737d8535f9e20909afc3b3e6",
+      "text": "{\"input\":{\"annualRate\":\"12\",\"initialAmount\":\"0.50\",\"mode\":\"months\",\"monthlyPayment\":\"0.01\",\"months\":\"\u58de\ud83d\ude42\\ud800\",\"targetAmount\":\"0000.51\"},\"result\":{\"balanceIfFullPayment\":\"0.52\",\"finalBalance\":\"0.52\",\"finalMonthPayment\":\"0.01\",\"mode\":\"months\",\"monthsRequired\":1,\"reason\":null,\"status\":\"ok\",\"targetAmount\":\"0.51\",\"totalDeposits\":\"0.01\",\"totalInterest\":\"0.01\"}}\n"
+    }
+  },
+  "extraChecks": {
+    "positive-rate-at-month-1200": {
+      "input": {
+        "mode": "months",
+        "targetAmount": "1205.50",
+        "initialAmount": "0",
+        "annualRate": "0.01",
+        "months": "60",
+        "monthlyPayment": "1"
+      },
+      "result": {
+        "mode": "months",
+        "targetAmount": "1205.50",
+        "reason": null,
+        "status": "ok",
+        "monthsRequired": 1200,
+        "finalMonthPayment": "0.49",
+        "balanceIfFullPayment": "1206.01",
+        "totalDeposits": "1199.49",
+        "totalInterest": "6.01",
+        "finalBalance": "1205.50"
+      },
+      "ledger": {
+        "priorMonthCents": "120500.49581695",
+        "beforeTailCents": "120501.49998775",
+        "plannedEndingCents": "120550.49998775",
+        "earnedInterestCents": "601.49998775",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": true
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "1206.01",
+        "binaryIndices": [
+          600,
+          900,
+          1050,
+          1125,
+          1163,
+          1182,
+          1191,
+          1196,
+          1198,
+          1199
+        ],
+        "verificationIndices": [
+          1199,
+          1200
+        ]
+      }
+    },
+    "rounded-horizon-still-short": {
+      "input": {
+        "mode": "months",
+        "targetAmount": "0.56",
+        "initialAmount": "0.55",
+        "annualRate": "0.01",
+        "months": "60",
+        "monthlyPayment": "0"
+      },
+      "result": {
+        "mode": "months",
+        "targetAmount": "0.56",
+        "reason": "beyond-horizon",
+        "status": "unreachable",
+        "monthsRequired": null,
+        "finalMonthPayment": null,
+        "balanceIfFullPayment": null,
+        "totalDeposits": null,
+        "totalInterest": null,
+        "finalBalance": null
+      },
+      "ledger": {
+        "exactHorizonBelowGoal": true,
+        "horizonCents": "55.55275687",
+        "horizonDisplay": "0.56"
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "0.56",
+        "binaryIndices": [],
+        "verificationIndices": []
+      }
+    },
+    "zero-tail-with-positive-deposit": {
+      "input": {
+        "mode": "months",
+        "targetAmount": "101",
+        "initialAmount": "100",
+        "annualRate": "12",
+        "months": "60",
+        "monthlyPayment": "10"
+      },
+      "result": {
+        "mode": "months",
+        "targetAmount": "101.00",
+        "reason": null,
+        "status": "ok",
+        "monthsRequired": 1,
+        "finalMonthPayment": "0.00",
+        "balanceIfFullPayment": "111.00",
+        "totalDeposits": "0.00",
+        "totalInterest": "1.00",
+        "finalBalance": "101.00"
+      },
+      "ledger": {
+        "priorMonthCents": "10000.00000000",
+        "beforeTailCents": "10100.00000000",
+        "plannedEndingCents": "10100.00000000",
+        "earnedInterestCents": "100.00000000",
+        "exactPriorBelowGoal": true,
+        "oneCentLessFails": null
+      },
+      "search": {
+        "preflightMonth": 1200,
+        "preflightDisplay": "168670312.49",
+        "binaryIndices": [
+          600,
+          300,
+          150,
+          75,
+          38,
+          19,
+          10,
+          5,
+          3,
+          2,
+          1
+        ],
+        "verificationIndices": [
+          0,
+          1
+        ]
+      }
+    },
+    "mode-a-largest-initial-and-term": {
+      "input": {
+        "mode": "payment",
+        "targetAmount": "999999999.99",
+        "initialAmount": "999999999.99",
+        "annualRate": "100",
+        "months": "600",
+        "monthlyPayment": "3000"
+      },
+      "result": {
+        "mode": "payment",
+        "status": "already-funded",
+        "months": 600,
+        "monthlyPayment": "0.00",
+        "totalDeposits": "0.00",
+        "totalInterest": "719886046129080477065358290896.07",
+        "finalBalance": "719886046129080477066358290896.06"
+      },
+      "ledger": null,
+      "search": null
+    },
+    "first-error": [
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "0",
+          "initialAmount": "10000",
+          "annualRate": "12.345",
+          "months": "60",
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "RANGE",
+            "field": "targetAmount",
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "3",
+          "months": "60",
+          "monthlyPayment": "3000",
+          "unknown": ""
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "SCHEMA",
+            "field": null,
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "3",
+          "months": 12,
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "SCHEMA",
+            "field": null,
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "999999999.99",
+          "initialAmount": "1000000000",
+          "annualRate": "3",
+          "months": "60",
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "RANGE",
+            "field": "initialAmount",
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "100.01",
+          "months": "60",
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "RANGE",
+            "field": "annualRate",
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "\ud800",
+          "months": "60",
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "UNICODE",
+            "field": "annualRate",
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "payment",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "3",
+          "months": "60",
+          "monthlyPayment": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "INPUT_LIMIT",
+            "field": "monthlyPayment",
+            "row": null
+          }
+        }
+      },
+      {
+        "input": {
+          "mode": "months",
+          "targetAmount": "100000",
+          "initialAmount": "10000",
+          "annualRate": "3",
+          "months": "xxxxxxxxx",
+          "monthlyPayment": "3000"
+        },
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "INPUT_LIMIT",
+            "field": "months",
+            "row": null
+          }
+        }
+      }
+    ],
+    "nonnegative-interest-sweep": {
+      "seed": 306,
+      "paymentCases": 48,
+      "monthsCases": 48
+    }
+  },
+  "productAndBrowserChecks": "NOT_RUN"
+}
