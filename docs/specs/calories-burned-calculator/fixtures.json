@@ -145,47 +145,584 @@
   {
     "id": "state-dirty-error",
     "kind": "controller",
-    "initialInput": { "weight": "60", "durationMinutes": "30", "activities": ["walking-moderate"] },
+    "initialInput": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+    "expectedInitial": {
+      "state": "empty",
+      "active": true,
+      "epoch": 0,
+      "pendingEpoch": null,
+      "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+      "result": null,
+      "error": null,
+      "reportAvailable": false,
+      "liveUrl": null,
+      "revokedUrls": []
+    },
     "steps": [
-      { "action": "runInitial" },
-      { "action": "edit", "field": "weight", "value": "60kg" },
-      { "action": "runAgain" },
-      { "action": "assertInitial" }
-    ],
-    "expectedError": { "code": "DECIMAL_FORMAT", "field": "weight", "row": null }
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 1,
+          "pendingEpoch": 1,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":1,"result":{"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":114}],"totalKcal":114}},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 1,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": {"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":114}],"totalKcal":114},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 1,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": {"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":114}],"totalKcal":114},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": "blob:fixture/1",
+          "revokedUrls": []
+        },
+        "expectedDownload": {
+          "filename": "calories-burned-report.json",
+          "utf8": "{\"activities\":[\"walking-moderate\"],\"durationMinutes\":\"30\",\"rows\":[{\"activityId\":\"walking-moderate\",\"code\":\"17190\",\"kcal\":114,\"met\":\"3.8\"}],\"tool\":\"calories-burned-calculator\",\"totalKcal\":114,\"version\":1,\"weight\":\"60\"}\n"
+        }
+      },
+      {
+        "event": {"type":"edit","field":"weight","value":"60kg"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 2,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"cleanup","url":"blob:fixture/1"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 2,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 2,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        },
+        "expectedDownload": null
+      },
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": 3,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":3,"error":{"code":"DECIMAL_FORMAT","field":"weight","row":null}},
+        "expected": {
+          "state": "error",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": {"code":"DECIMAL_FORMAT","field":"weight","row":null},
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":1,"result":{"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":114}],"totalKcal":114}},
+        "expected": {
+          "state": "error",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": {"code":"DECIMAL_FORMAT","field":"weight","row":null},
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "error",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": {"code":"DECIMAL_FORMAT","field":"weight","row":null},
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        },
+        "expectedDownload": null
+      },
+      {
+        "event": {"type":"edit","field":"weight","value":"60"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 4,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      }
+    ]
   },
   {
     "id": "state-cancel-late",
     "kind": "controller",
-    "initialInput": { "weight": "60", "durationMinutes": "30", "activities": ["walking-moderate"] },
-    "lateResult": {
-      "rows": [
-        { "activityId": "walking-moderate", "code": "17190", "met": "3.8", "kcal": 114 }
-      ],
-      "totalKcal": 114
+    "initialInput": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+    "expectedInitial": {
+      "state": "empty",
+      "active": true,
+      "epoch": 0,
+      "pendingEpoch": null,
+      "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+      "result": null,
+      "error": null,
+      "reportAvailable": false,
+      "liveUrl": null,
+      "revokedUrls": []
     },
     "steps": [
-      { "action": "runInitial" },
-      { "action": "cancel" },
-      { "action": "deliverLate", "result": "lateResult" },
-      { "action": "assertInitial" }
+      {
+        "event": {"type":"edit","field":"durationMinutes","value":"45"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 1,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 2,
+          "pendingEpoch": 2,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"cancel"},
+        "expected": {
+          "state": "cancelled",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":2,"result":{"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":171}],"totalKcal":171}},
+        "expected": {
+          "state": "cancelled",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "cancelled",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        },
+        "expectedDownload": null
+      },
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 4,
+          "pendingEpoch": 4,
+          "draft": {"weight":"60","durationMinutes":"45","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"reset"},
+        "expected": {
+          "state": "empty",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":4,"result":{"rows":[{"activityId":"walking-moderate","code":"17190","met":"3.8","kcal":171}],"totalKcal":171}},
+        "expected": {
+          "state": "empty",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      }
     ]
   },
   {
     "id": "state-replace-late",
     "kind": "controller",
-    "initialInput": { "weight": "60", "durationMinutes": "30", "activities": ["walking-moderate"] },
-    "lateResult": {
-      "rows": [
-        { "activityId": "walking-moderate", "code": "17190", "met": "3.8", "kcal": 114 }
-      ],
-      "totalKcal": 114
+    "initialInput": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+    "expectedInitial": {
+      "state": "empty",
+      "active": true,
+      "epoch": 0,
+      "pendingEpoch": null,
+      "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+      "result": null,
+      "error": null,
+      "reportAvailable": false,
+      "liveUrl": null,
+      "revokedUrls": []
     },
     "steps": [
-      { "action": "runInitial" },
-      { "action": "replace" },
-      { "action": "deliverLate", "result": "lateResult" },
-      { "action": "assertInitial" }
+      {
+        "event": {"type":"edit","field":"weight","value":"60kg"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 1,
+          "pendingEpoch": null,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 2,
+          "pendingEpoch": 2,
+          "draft": {"weight":"60kg","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"edit","field":"weight","value":"80.0"},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 3,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"edit","field":"activities","value":["walking-brisk","jogging-general"]},
+        "expected": {
+          "state": "dirty",
+          "active": true,
+          "epoch": 4,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"start"},
+        "expected": {
+          "state": "busy",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": 5,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":5,"result":{"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492}},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": {"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":2,"error":{"code":"DECIMAL_FORMAT","field":"weight","row":null}},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": {"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": null,
+          "revokedUrls": []
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": {"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": "blob:fixture/1",
+          "revokedUrls": []
+        },
+        "expectedDownload": {
+          "filename": "calories-burned-report.json",
+          "utf8": "{\"activities\":[\"walking-brisk\",\"jogging-general\"],\"durationMinutes\":\"30\",\"rows\":[{\"activityId\":\"walking-brisk\",\"code\":\"17200\",\"kcal\":192,\"met\":\"4.8\"},{\"activityId\":\"jogging-general\",\"code\":\"12020\",\"kcal\":300,\"met\":\"7.5\"}],\"tool\":\"calories-burned-calculator\",\"totalKcal\":492,\"version\":1,\"weight\":\"80.0\"}\n"
+        }
+      },
+      {
+        "event": {"type":"cleanup","url":"blob:fixture/1"},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": {"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1"]
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "success",
+          "active": true,
+          "epoch": 5,
+          "pendingEpoch": null,
+          "draft": {"weight":"80.0","durationMinutes":"30","activities":["walking-brisk","jogging-general"]},
+          "result": {"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492},
+          "error": null,
+          "reportAvailable": true,
+          "liveUrl": "blob:fixture/2",
+          "revokedUrls": ["blob:fixture/1"]
+        },
+        "expectedDownload": {
+          "filename": "calories-burned-report.json",
+          "utf8": "{\"activities\":[\"walking-brisk\",\"jogging-general\"],\"durationMinutes\":\"30\",\"rows\":[{\"activityId\":\"walking-brisk\",\"code\":\"17200\",\"kcal\":192,\"met\":\"4.8\"},{\"activityId\":\"jogging-general\",\"code\":\"12020\",\"kcal\":300,\"met\":\"7.5\"}],\"tool\":\"calories-burned-calculator\",\"totalKcal\":492,\"version\":1,\"weight\":\"80.0\"}\n"
+        }
+      },
+      {
+        "event": {"type":"pagehide"},
+        "expected": {
+          "state": "empty",
+          "active": false,
+          "epoch": 6,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1","blob:fixture/2"]
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":5,"result":{"rows":[{"activityId":"walking-brisk","code":"17200","met":"4.8","kcal":192},{"activityId":"jogging-general","code":"12020","met":"7.5","kcal":300}],"totalKcal":492}},
+        "expected": {
+          "state": "empty",
+          "active": false,
+          "epoch": 6,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1","blob:fixture/2"]
+        }
+      },
+      {
+        "event": {"type":"pageshow","persisted":true},
+        "expected": {
+          "state": "empty",
+          "active": true,
+          "epoch": 6,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1","blob:fixture/2"]
+        }
+      },
+      {
+        "event": {"type":"deliver","epoch":2,"error":{"code":"DECIMAL_FORMAT","field":"weight","row":null}},
+        "expected": {
+          "state": "empty",
+          "active": true,
+          "epoch": 6,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1","blob:fixture/2"]
+        }
+      },
+      {
+        "event": {"type":"download"},
+        "expected": {
+          "state": "empty",
+          "active": true,
+          "epoch": 6,
+          "pendingEpoch": null,
+          "draft": {"weight":"60","durationMinutes":"30","activities":["walking-moderate"]},
+          "result": null,
+          "error": null,
+          "reportAvailable": false,
+          "liveUrl": null,
+          "revokedUrls": ["blob:fixture/1","blob:fixture/2"]
+        },
+        "expectedDownload": null
+      }
     ]
   }
 ]
