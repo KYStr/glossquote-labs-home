@@ -30,14 +30,14 @@ are pinned literally.
   weight and duration.
 - Exact integer arithmetic: `kcal_row = MET × kg × minutes / 60` evaluated as
   `MET_tenths × weight_hundredths × minutes_tenths / 600000` and rounded once
-  per row to a whole kcal, half away from zero. The reported total is the sum
-  of the rounded row values, so the displayed rows always add up to the
-  displayed total.
+  per row to a whole kcal, half away from zero. The result and JSON report
+  retain the sum of the rounded rows. Compare mode shows each alternative's
+  estimate separately.
 - Results are gross totals: they include the resting (about 1 MET) share, as
   the Compendium formula defines them. A pinned bilingual disclaimer and FAQ
   say so and explain how to derive a net figure by hand; there is no net
   toggle.
-- One-click copyable canonical JSON report download named
+- One-click canonical JSON report download named
   `calories-burned-report.json`, with an output-size limit.
 
 ## Explicit non-goals
