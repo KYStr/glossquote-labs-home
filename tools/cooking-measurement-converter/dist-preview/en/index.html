@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cooking Measurement Converter | Gloss Tools</title>
+<meta name="description" content="Convert between cups, tablespoons, teaspoons, millilitres and grams, with weight conversions for 12 common ingredients through one fixed density table.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Cooking Measurement Converter</h1>
+  <p class="lede">Convert between cups, tablespoons, teaspoons, millilitres and grams while following a recipe. Weight and volume are different quantities: converting between them goes through one fixed ingredient density table, never a generic “1 cup = 240 g” factor.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Convert</h2>
+      <form id="convert-form" novalidate>
+        <div class="field">
+          <label for="field-amount">Amount</label>
+          <p class="help" id="help-amount">Greater than 0 and at most 100,000; a decimal point is allowed (for example 2.5).</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-fromUnit">From</label>
+          <select id="field-fromUnit" name="fromUnit">
+            <option value="ml">Millilitres (ml)</option>
+            <option value="tsp">Teaspoons (tsp)</option>
+            <option value="tbsp">Tablespoons (tbsp)</option>
+            <option value="cup" selected>Cups (cup)</option>
+            <option value="g">Grams (g)</option>
+          </select>
+          <p class="field-error" id="error-fromUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-toUnit">To</label>
+          <select id="field-toUnit" name="toUnit">
+            <option value="ml">Millilitres (ml)</option>
+            <option value="tsp">Teaspoons (tsp)</option>
+            <option value="tbsp">Tablespoons (tbsp)</option>
+            <option value="cup">Cups (cup)</option>
+            <option value="g" selected>Grams (g)</option>
+          </select>
+          <p class="field-error" id="error-toUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ingredient">Ingredient</label>
+          <p class="help" id="help-ingredient">Required between weight and volume; choose “None” for volume-only conversions.</p>
+          <select id="field-ingredient" name="ingredient" aria-describedby="help-ingredient">
+            <option value="none">None (volume only)</option>
+            <option value="water">Water</option>
+            <option value="all-purpose-flour" selected>All-Purpose Flour</option>
+            <option value="granulated-sugar">Granulated Sugar</option>
+            <option value="brown-sugar">Brown Sugar (packed)</option>
+            <option value="powdered-sugar">Powdered Sugar</option>
+            <option value="butter">Butter</option>
+            <option value="vegetable-oil">Vegetable Oil</option>
+            <option value="honey">Honey</option>
+            <option value="cocoa-powder">Cocoa Powder (unsweetened)</option>
+            <option value="milk">Milk</option>
+            <option value="long-grain-rice">Long-Grain Rice (uncooked)</option>
+            <option value="rolled-oats">Rolled Oats</option>
+          </select>
+          <p class="field-error" id="error-ingredient" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing converted yet. Enter an amount and units, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Result</h2>
+      <p class="result-value" id="result-value"></p>
+      <p class="result-fraction" id="result-fraction-row" hidden><span id="result-fraction-label">As a fraction</span>: <span id="result-fraction"></span></p>
+      <p class="result-note" id="result-density" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Ingredient density table (grams per cup) and the volume basis</summary>
+    <p>Ingredient weights per cup are fixed estimates. King Arthur Baking’s <a href="https://www.kingarthurbaking.com/learn/ingredient-weight-chart" rel="noreferrer">Ingredient Weight Chart</a> lists water and fresh milk at 227 g per cup each and honey at 21 g per tablespoon, which gives 336 g per cup using 16 tablespoons per cup. The tool uses 89 g per cup for old-fashioned or quick-cooking oats. Dry goods are spooned and levelled, and brown sugar is packed.</p>
+    <p>For butter, page 1 of King Arthur Baking’s <a href="https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1" rel="noreferrer">Easy As Pie</a> gives 227 g per cup of unsalted butter.</p>
+    <p>The tool’s volume basis is 1 cup = 240 mL, 1 tablespoon = 15 mL, and 1 teaspoon = 5 mL, using the FDA household measures for nutrition labelling. A US customary cup is about 236.588 mL. The model applies the US weight-per-cup figures to its 240 mL cup. The two cup volumes differ by about 1.4%.</p>
+    <div class="table-scroll" role="region" aria-label="Ingredient density table" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">食材</th><th scope="col">Ingredient</th><th scope="col">g per cup</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>水</td><td>Water</td><td>227</td></tr>
+          <tr><td>中筋麵粉</td><td>All-Purpose Flour</td><td>120</td></tr>
+          <tr><td>細砂糖</td><td>Granulated Sugar</td><td>198</td></tr>
+          <tr><td>紅糖（壓實）</td><td>Brown Sugar (packed)</td><td>213</td></tr>
+          <tr><td>糖粉</td><td>Powdered Sugar</td><td>113</td></tr>
+          <tr><td>奶油</td><td>Butter</td><td>227</td></tr>
+          <tr><td>植物油</td><td>Vegetable Oil</td><td>198</td></tr>
+          <tr><td>蜂蜜</td><td>Honey</td><td>336</td></tr>
+          <tr><td>可可粉（無糖）</td><td>Cocoa Powder (unsweetened)</td><td>84</td></tr>
+          <tr><td>牛奶</td><td>Milk</td><td>227</td></tr>
+          <tr><td>長米（生）</td><td>Long-Grain Rice (uncooked)</td><td>198</td></tr>
+          <tr><td>燕麥片</td><td>Rolled Oats</td><td>89</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The downloaded report is always named cooking-measurement-report.json. Its content is the result as compact JSON with object keys sorted by UTF-16 code units, recursively, and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How many millilitres is a cup here?</dt>
+      <dd>This tool uses the FDA household measure for nutrition labelling: 240 mL per cup. A US customary cup is about 236.588 mL.</dd>
+      <dt>Why isn't a cup of water 240 grams?</dt>
+      <dd>For volume-to-weight conversions, the tool uses the ingredient chart’s estimate of 227 g per cup of water. For volume-only conversions, 1 cup equals 240 mL.</dd>
+      <dt>What if my ingredient is not listed?</dt>
+      <dd>Weight-to-volume conversion only works for the 12 table ingredients; for volume-only conversions choose "None".</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally on this page; your input is not uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
