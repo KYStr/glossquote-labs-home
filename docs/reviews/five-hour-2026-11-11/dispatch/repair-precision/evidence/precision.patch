@@ -1,0 +1,319 @@
+diff --git a/docs/specs/cooking-measurement-converter/AUTHOR-CHECK.md b/docs/specs/cooking-measurement-converter/AUTHOR-CHECK.md
+index c16e22a..d71626f 100644
+--- a/docs/specs/cooking-measurement-converter/AUTHOR-CHECK.md
++++ b/docs/specs/cooking-measurement-converter/AUTHOR-CHECK.md
+@@ -12,10 +12,10 @@
+ - 採用：1 cup = 240 ml、1 tbsp = 15 ml、1 tsp = 5 ml。來源 FDA 21 CFR 101.9(b)(5)(viii) 家用量測定義；NIST《Metric Kitchen》指南同列此組值供家庭料理使用。三個整數互為倍數（16 tbsp = 1 cup、3 tsp = 1 tbsp），核心可用精確整數運算。
+ - 不採用：美國習慣單位精確值 1 cup = 236.588 ml、1 tbsp = 14.787 ml、1 tsp = 4.929 ml（NIST SP 811）。已在 SPEC 的 inputsOutputs 與 FAQ 揭露此取捨。
+ 
+-密度表全表同源 King Arthur Baking《Ingredient Weight Chart》（2026-11-09 查證，乾貨 spooned & levelled、紅糖 packed）：水 227、中筋麵粉 120、細砂糖 198、紅糖 213、糖粉 113、奶油 227、植物油 198、蜂蜜 336、可可粉 84、牛奶 227、長米（生）198、燕麥片 89（g/杯）。
++原作者以 King Arthur Baking《Ingredient Weight Chart》作為主要來源（乾貨 spooned & levelled、紅糖 packed），並採用以下固定值：水 227、中筋麵粉 120、細砂糖 198、紅糖 213、糖粉 113、奶油 227、植物油 198、蜂蜜 336、可可粉 84、牛奶 227、長米（生）198、燕麥片 89（g/杯）。
+ 
+ - 衝突 1（蜂蜜）：原表以 21 g／tbsp 刊出，×16 = 336；多家二手表寫 340。釘版 336（二手表的 340 無原表出處），SPEC 表值註記已載明。
+-- 衝突 2（水、牛奶）：原表水為 227 g／杯（以 8 oz 重量計），與 240 ml 水約 240 g 的物理重量不同；部分換算站因此把水改成 237 或 244/245（牛奶）。本表堅持全表同源，釘版原表 227／227，並在 SPEC 揭露；純體積換算不查表，不受影響。
++- 衝突 2（水、牛奶）：原表水為 227 g／杯（以 8 oz 重量計），與 240 ml 水約 240 g 的物理重量不同；部分換算站因此把水改成 237 或 244/245（牛奶）。水與牛奶均採該表的 227 g／杯，SPEC 已揭露；純體積換算使用固定毫升數。
+ - 模型選擇：原表 g/杯以美國習慣杯量測，本工具套用到釘版 240 ml 杯（差異 ≤ 約 1.4%），已在 SPEC 揭露，未隱藏。
+ 
+ ## Fixture 推導（兩種方法，結果一致）
+@@ -31,3 +31,7 @@
+ - 產品交驗、Chrome/Edge、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN，九面向分數 null。本文只交付文件，未固定產品候選、未獨評前不計 ready。
+ 
+ 2026-11-10 維修補記。原紀錄的 liter → ENUM 與 4 單元容量衝突。現用 2 單元 oz 測 ENUM，並把 5 單元 liter 的 INPUT_LIMIT 獨立列為字面測例。14 筆成功案例原預期保留。
++
++## 2026-11-11 維護覆核
++
++King Arthur Baking《Easy As Pie》第 1 頁直接列無鹽奶油 227 g／杯。其食材重量表列半杯為 4 oz／113 g，以該表已取整的公克數倍乘會得到 226 g。現行模型採教材的一杯值，既有 227 g → 1 cup 字面測例照用。89 g／杯指重量表的一般燕麥或快熟燕麥列。 [Easy As Pie](https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1) · [Ingredient Weight Chart](https://www.kingarthurbaking.com/learn/ingredient-weight-chart)
+diff --git a/docs/specs/cooking-measurement-converter/BRIEF.md b/docs/specs/cooking-measurement-converter/BRIEF.md
+index 2211fe1..682cafa 100644
+--- a/docs/specs/cooking-measurement-converter/BRIEF.md
++++ b/docs/specs/cooking-measurement-converter/BRIEF.md
+@@ -4,7 +4,7 @@
+ 
+ 家庭料理者照美式食譜備料，手邊只有廚房秤（或反過來只有量杯量匙），需要把杯／湯匙／茶匙／毫升與公克互相換算；重量與體積的換算只經一份固定的食材密度表，不用約略的萬用係數。
+ 
+-MVP 範圍。單位 ml、tsp、tbsp、cup、g；12 種食材的公克／杯密度表（來源 King Arthur Baking 食材重量表，全表同源）；目標單位為 cup 時附最接近的八分之一杯分數表示；固定報告下載。非目標為盎司／磅、250 ml 公制杯與英制量匙、溫度換算、食譜倍量縮放、表外食材、自訂密度、熟食狀態換算。
++MVP 範圍。單位 ml、tsp、tbsp、cup、g；12 種食材的公克／杯密度表（主要採 King Arthur Baking 食材重量表，奶油採同出版社教材的每杯值）；目標單位為 cup 時附最接近的八分之一杯分數表示；固定報告下載。非目標為盎司／磅、250 ml 公制杯與英制量匙、溫度換算、食譜倍量縮放、表外食材、自訂密度、熟食狀態換算。
+ 
+ 首個可觀察案例。1 杯中筋麵粉換算為 120 公克（`example-cup-flour-to-grams`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
+ 
+diff --git a/docs/specs/cooking-measurement-converter/SPEC.md b/docs/specs/cooking-measurement-converter/SPEC.md
+index 761a581..29ac0d1 100644
+--- a/docs/specs/cooking-measurement-converter/SPEC.md
++++ b/docs/specs/cooking-measurement-converter/SPEC.md
+@@ -62,7 +62,7 @@ MVP 必做：單位 ml、tsp、tbsp、cup、g 五種互換；12 種食材的密
+ 
+ 體積基準（全為整數，精確）：1 cup = 240 ml、1 tbsp = 15 ml、1 tsp = 5 ml。來源為 FDA 21 CFR 101.9(b)(5)(viii) 的家用量測定義（NIST Metric Kitchen 指南同列此組數值供家庭料理使用）。揭露：美國習慣單位的精確值是 1 cup = 236.588 ml、1 tbsp = 14.787 ml、1 tsp = 4.929 ml（NIST SP 811），本工具不採用；兩組定義下 1 cup = 16 tbsp、1 tbsp = 3 tsp 的比例皆精確。
+ 
+-密度表（公克／杯，字面資料，全表同源）：King Arthur Baking《Ingredient Weight Chart》，2026-11-09 查證；乾貨以湯匙舀入量杯刮平（spooned & levelled）計，紅糖以壓實（packed）計。
++密度表固定使用下列公克／杯數值。主要來源為 King Arthur Baking 食材重量表，奶油採同出版社教材的每杯值。乾貨以湯匙舀入量杯刮平（spooned & levelled）計，紅糖以壓實（packed）計。 [Ingredient Weight Chart](https://www.kingarthurbaking.com/learn/ingredient-weight-chart)
+ 
+ | id | 繁中 | English | g/cup |
+ | --- | --- | --- | --- |
+@@ -79,7 +79,11 @@ MVP 必做：單位 ml、tsp、tbsp、cup、g 五種互換；12 種食材的密
+ | long-grain-rice | 長米（生） | Long-Grain Rice (uncooked) | 198 |
+ | rolled-oats | 燕麥片 | Rolled Oats | 89 |
+ 
+-表值註記（皆為刻意釘版，審查勿逕改）：蜂蜜原表以 21 g／tbsp 刊出，×16 得 336 g／杯；部分二手表寫 340，本工具不用。水與牛奶 227 是原表刊值（原表以 8 oz 重量計一杯水）；240 ml 水的物理重量約 240 g，本工具不採，全表同源優先。原表的公克／杯係以美國習慣杯量測，本工具將其套用到釘版的 240 ml 杯，差異至多約 1.4%，在此揭露為模型選擇。
++蜂蜜按重量表的 21 g／tbsp × 16 換算為 336 g／杯。水與牛奶使用重量表的 227 g／杯。燕麥片使用表中一般燕麥或快熟燕麥列的 89 g／杯，表中另列 King Arthur 品牌燕麥片 113 g／杯。 [Ingredient Weight Chart](https://www.kingarthurbaking.com/learn/ingredient-weight-chart)
++
++奶油採 King Arthur Baking《Easy As Pie》第 1 頁無鹽奶油的 227 g／杯。重量表另列半杯 4 oz／113 g，倍乘其已取整的公克數得到 226 g。工具採用教材直接列出的一杯值。 [Easy As Pie](https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1)
++
++模型將美國習慣杯的每杯重量套用到工具固定的 240 ml 杯，兩種杯量相差約 1.4%。例如純體積換算 1 杯等於 240 ml，選水做體積與重量換算則採 227 g／杯。
+ 
+ 計算（精確有理數，不經浮點）：令 M(u) 為單位 u 的毫升數（ml=1、tsp=5、tbsp=15、cup=240），D 為所選食材的 g/cup。
+ 
+@@ -170,7 +174,7 @@ MVP 必做：單位 ml、tsp、tbsp、cup、g 五種互換；12 種食材的密
+ 
+ - 繁中 lang=zh-Hant，H1「料理單位換算」，title「料理單位換算｜Gloss Tools」，description「把杯、湯匙、茶匙、毫升與公克互相換算；麵粉、糖、奶油等 12 種食材的重量換算只經一張固定密度表。」。英文 lang=en，H1 “Cooking Measurement Converter”，title “Cooking Measurement Converter | Gloss Tools”，description “Convert between cups, tablespoons, teaspoons, millilitres and grams, with weight conversions for 12 common ingredients through one fixed density table.”。兩頁靜態呈現操作、限制、FAQ。全部狀態及錯誤使用對等本地化訊息。
+ - FAQ。這裡的 1 杯是幾毫升？釘版 240 ml（FDA 家用量測定義）；美國習慣單位的精確值是 236.588 ml，本工具不採用。 / How many millilitres is a cup here? A pinned 240 ml (the FDA household measure); the exact US customary cup is 236.588 ml and is not used.
+-- FAQ。為什麼 1 杯水不是 240 公克？密度表全表同源 King Arthur 食材重量表，水在該表為 227 g／杯；純體積換算（杯↔毫升）不查表。 / Why isn't a cup of water 240 grams? The density table follows one source, King Arthur's ingredient weight chart, which lists water at 227 g per cup; pure volume conversions never use the table.
++- FAQ。為什麼 1 杯水不是 240 公克？工具採用 King Arthur Baking 食材重量表的 227 g／杯。純體積換算時，1 杯等於 240 ml。 / Why isn't a cup of water 240 grams? This tool uses King Arthur Baking’s ingredient weight chart value of 227 g per cup of water. For volume conversions, 1 cup equals 240 ml.
+ - FAQ。沒有我要的食材怎麼辦？重量與體積互換只能用表內 12 種食材；只換體積時選「不指定」即可，不需食材。 / What if my ingredient is not listed? Weight-to-volume conversion only works for the 12 table ingredients; for volume-only conversions choose "None".
+ - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
+ - 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。規劃 origin https://cooking-measurement-converter.glossquote.com 尚未配置。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
+diff --git a/docs/specs/nhi-premium-calculator/SPEC.md b/docs/specs/nhi-premium-calculator/SPEC.md
+index d0d370e..137b287 100644
+--- a/docs/specs/nhi-premium-calculator/SPEC.md
++++ b/docs/specs/nhi-premium-calculator/SPEC.md
+@@ -151,7 +151,7 @@ MVP 必做：單一投保類別「第一類之公、民營事業、機構及有
+ 
+ 使用原生 HTML/CSS/ESM 與 Node 24 built-ins，零 runtime／建置依賴。候選目標 `tools/nhi-premium-calculator/`。src/core.mjs 放純驗證、查表、推導、格式化；分級表 58 列金額為 core 內的字面常數陣列（與本文表格逐值一致，測試以附錄對照全列斷言）。src/controller.mjs 管草稿、工作世代及資源。src/app.mjs 用安全 DOM API 綁表單。public/index.html 和 public/en/index.html 為兩個靜態入口。Node scripts 只建置工具 allowlist，不取線上檔、不發布。
+ 
+-- 精度：查級與三項保費全用整數（Number 安全整數內；insuredAmount × 483912 ≤ 313,000 × 483,912 ≈ 1.52e11，遠低於 2^53）或 BigInt，禁止以二進浮點計算 5.17% 相關乘積——例如第 1 級本人保費 457.545 在浮點下易被算成 457.54499… 而誤捨為 457，正確值為 458，此例列入邊界測試。
++- 精度：查級與三項保費使用精確整數（Number 安全整數內或 BigInt）。以 §4 的整數分子與分母計算，依商與餘數執行 half-up，僅在最後捨入。最大保費分子 insuredAmount × 483912 ≤ 313,000 × 483,912 ≈ 1.52e11，遠低於 2^53。第 1 級本人保費 457.545 → 458，恰半界以 150,000 元投保金額的 2,326.5 → 2,327 驗證。
+ - 工作開始先使舊結果失效並遞增世代號。Node 建置時從固定 source bytes 嵌入純核心及固定訊息處理器，頁面載入後從該固定字串建立 module Worker Blob URL。禁止使用者內容參與程式、eval、new Function 或動態 import。測試 import 同一份核心。
+ - Worker 每次只收目前快照及世代號。取消、換來源、重設、替換或 pagehide 時 terminate 並釋放結果及 URL。只收目前世代且 busy 的結果。成功後也停止 Worker。bfcache 回來重設。明確點下載才建 Blob URL，30 秒內撤銷，結果失效即提早撤銷。
+ - 表格與預覽用 textContent/value。輸入不當標記、style、selector、href、src 或檔名。禁 fetch、XHR、WebSocket、beacon、analytics、遠端字型、上傳、帳號、剪貼簿、持久 storage、service worker。工作內容不進 URL、history、console、日誌或執行證據。離頁丟棄引用，無安全抹除承諾。
+@@ -200,7 +200,7 @@ MVP 必做：單一投保類別「第一類之公、民營事業、機構及有
+ 
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測：附錄 58 列全表斷言（每級的 selfPremium、employerPremium、governmentPremium 與附錄逐值相等）；每級邊界月薪（級金額與級金額＋1 分屬相鄰兩級）；dependents 3 與 4 的員工合計相同而 dependentsCapped 不同；dependents 99 合法、100 為 RANGE；錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息；浮點陷阱案例（以常見浮點路徑重算第 1 級本人保費應得 457 的反例，證明核心未用浮點）。所有 employeeTotalPremium 恆等於 selfPremium × (1＋dependentsCharged)。
++另測：附錄 58 列全表斷言（每級的 selfPremium、employerPremium、governmentPremium 與附錄逐值相等）；每級邊界月薪（級金額與級金額＋1 分屬相鄰兩級）；dependents 3 與 4 的員工合計相同而 dependentsCapped 不同；dependents 99 合法、100 為 RANGE；錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息；核對核心以 §4 的精確整數分子／分母執行 half-up，並以獨立精確有理數逐級重算三項保費。用 `half-up-discriminator` 區分恰 0.5 進位與銀行家捨入。所有 employeeTotalPremium 恆等於 selfPremium × (1＋dependentsCharged)。
+ 
+ 候選 gate（均 NOT_RUN）
+ 
+diff --git a/docs/specs/race-time-predictor/AUTHOR-CHECK.md b/docs/specs/race-time-predictor/AUTHOR-CHECK.md
+index a06a7f5..8b4a722 100644
+--- a/docs/specs/race-time-predictor/AUTHOR-CHECK.md
++++ b/docs/specs/race-time-predictor/AUTHOR-CHECK.md
+@@ -1,6 +1,6 @@
+ # 完賽時間預測 — 作者檢查
+ 
+-作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`（run 5 規格作者）。本文件是作者文件核對，**不是**獨立審查；待非作者 reviewer 對固定候選逐節實核後才可 mark-spec-ready。
++作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`（run 5 規格作者）。本文件是作者文件核對，**不是**獨立審查；現行修訂版為待獨立文件審查的既有工具升級提案。
+ 
+ - 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+ - §6 已預宣告九個產品面向（functionality／boundaries／privacy／security／usability／accessibility／localization-seo／toolchain-provenance／compatibility），產品分數皆 null、狀態 NOT_RUN。
+@@ -8,7 +8,7 @@
+ ## 查重與概念備註的更正
+ 
+ - 已比對 checkout 內 `docs/specs/` 全部既有預案，無 `race-time-predictor` 同名規格。
+-- 最相近者為 Running Pace Calculator。既有規格包含三欄求解、分段表和 Riegel 1.06 預測，也接受範圍內的任意已知距離（公里或英里），並顯示四個標準距離的各列預測配速。此案的差異是直接從已知成績預測、可增加一個自訂目標距離，以及固定公尺輸入和每公里配速。2026-11-10 維修依固定來源補正這項比較，仍待文件獨立審查。 [既有固定 SPEC](https://github.com/KYStr/glossquote-labs-home/blob/40a7dc689e8e2fc2c527c323ca68398d95e9db19/docs/specs/running-pace-calculator/SPEC.md#L6-L23)
++- 最相近者為 Running Pace Calculator。既有規格包含三欄求解、分段表和 Riegel 1.06 預測，也接受範圍內的任意已知距離（公里或英里），並顯示四個標準距離的各列預測配速。既有求配速模式也已直接接受時間與距離。2026-11-11 主統籌將本案定位為既有 Running Pace Calculator 升級，聚焦選填自訂目標與簡化預測流程。 [既有固定 SPEC](https://github.com/KYStr/glossquote-labs-home/blob/40a7dc689e8e2fc2c527c323ca68398d95e9db19/docs/specs/running-pace-calculator/SPEC.md#L6-L23)
+ - 自訂距離上限 42,195 m 與 `running-pace-calculator`「預測不超過全馬」的既有限制對齊，避免兩工具對外口徑衝突。
+ 
+ ## Fixtures 雙推導紀錄
+@@ -23,4 +23,8 @@ fixtures.json 共 18 筆（15 核心＋3 controller）。所有成功案例的
+ ## 未驗項
+ 
+ - 產品交驗、Chrome/Edge 真實瀏覽器、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN。
+-- 本文件未經任何非作者審查；未固定候選或未獨評前不計 ready。
++- 原候選已有非作者初審。本修訂版的獨立複驗仍待執行，此升級提案不計新工具 ready 庫存。
++
++## 2026-11-11 維護覆核
++
++新增 `custom-source-matching-target`，用 15000 m 已知距離及 1:07:30 成績，將同一距離填入自訂目標。第五列以 4050 × (15000 / 15000)^1.06 得 4050 秒，4050 ÷ 15 得 270.0 秒／公里。對照原有 `custom-source` 的四列，新案例共有五列，前四列與原案例相同。現行共 16 筆核心、3 筆 controller，前述雙推導為原作者的歷史紀錄。
+diff --git a/docs/specs/race-time-predictor/BRIEF.md b/docs/specs/race-time-predictor/BRIEF.md
+index 48990fb..edb5739 100644
+--- a/docs/specs/race-time-predictor/BRIEF.md
++++ b/docs/specs/race-time-predictor/BRIEF.md
+@@ -1,13 +1,13 @@
+ # 完賽時間預測 / Race Time Predictor — BRIEF
+ 
+-**文件草案，產品檢查 NOT_RUN** · `spec-race-time-predictor-20261109`
++**既有工具升級提案，產品檢查 NOT_RUN** · `spec-race-time-predictor-20261109`
+ 
+ 跑者比完一場 10K 後想知道「照這個狀態，全馬大概跑多久」，或反過來用一場全馬成績回推 5K 實力。手邊只有一筆完賽成績（距離＋時間），需要的是一張用具名公式算出、連同等值配速一起列出的跨距離預測表，而不是訓練計畫或即時定位。
+ 
+-MVP 範圍。單筆已知成績輸入，Riegel 公式 `T2 = T1 × (D2/D1)^1.06`（指數 1.06 釘版），輸出 5K、10K、半馬、全馬四個標準距離加一個選填自訂目標距離的預測時間與每公里等值配速。非目標為配速／時間／距離三欄求解、分段配速表（split table）、英里單位、GPS／地圖輸入、海拔或天氣修正、訓練計畫、成績保存或分享。
++預測流程範圍。單筆已知成績輸入，Riegel 公式 `T2 = T1 × (D2/D1)^1.06`（指數 1.06 釘版），輸出 5K、10K、半馬、全馬四個標準距離加一個選填自訂目標距離的預測時間與每公里等值配速。非目標為配速／時間／距離三欄求解、分段配速表（split table）、英里單位、GPS／地圖輸入、海拔或天氣修正、訓練計畫、成績保存或分享。
+ 
+-與 Running Pace Calculator 的區隔。兩者都支援自訂已知距離，並以 Riegel 1.06 預測四個標準距離的時間與配速。本工具提供直接從已知成績執行預測的流程，以及一個選填的自訂目標距離。詳見 [SPEC.md](SPEC.md) scope 節。
++既有 Running Pace Calculator 已可直接輸入時間與距離，並以 Riegel 1.06 預測四個標準目標。本提案聚焦一個選填自訂目標距離，以及簡化使用既有預測的流程。詳見 [SPEC.md](SPEC.md) scope 節。
+ 
+ 首個可觀察案例。10K 40:00 推全馬（`classic-10k`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
+ 
+-先完成核心／狀態測試，再交雙語靜態頁、匯出、build/check、同一候選的九面向證據。目標 `tools/race-time-predictor/`，固定分支與 PR 交驗。
++後續以獨立任務整合到既有 Running Pace Calculator，再於同一候選交驗核心／狀態、雙語頁、匯出、build/check 和九面向證據。
+diff --git a/docs/specs/race-time-predictor/SPEC.md b/docs/specs/race-time-predictor/SPEC.md
+index 6b535c1..1ea0cc9 100644
+--- a/docs/specs/race-time-predictor/SPEC.md
++++ b/docs/specs/race-time-predictor/SPEC.md
+@@ -1,6 +1,6 @@
+ # 完賽時間預測 / Race Time Predictor
+ 
+-**DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-race-time-predictor-20261109` · 2026-11-09 · v1
++**升級提案，待獨立文件審查** · `existing-tool-upgrade` · 原規格 `spec-race-time-predictor-20261109` · 2026-11-11
+ 
+ [個別任務簡報](BRIEF.md) · [字面案例](fixtures.json) · [作者檢查](AUTHOR-CHECK.md)
+ 
+@@ -15,14 +15,11 @@
+ 
+ ## scope
+ 
+-MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測 5K、10K、半馬、全馬四個標準距離，加一個選填的自訂目標距離；每一列同時給預測秒數與每公里等值配速；固定報告下載。
++升級提案涵蓋既有 Running Pace Calculator 的選填自訂目標距離與簡化預測流程。預測流程接收一筆已知成績（距離＋時間），以 Riegel 公式輸出 5K、10K、半馬、全馬及選填目標的預測時間與等值配速。以下保留該流程的字面輸入、輸出和報告契約，供後續整合任務核對。
+ 
+-非目標：配速／時間／距離三欄任意求解、分段配速表（split table）、英里或公里單位切換（本工具距離一律公尺、配速一律每公里）、GPS／地圖輸入、海拔、天氣或路線修正、負分段或其他配速策略、訓練計畫、心率區間、成績保存、歷史紀錄或分享。
++升級範圍限於預測功能。下列提案測例固定使用公尺輸入與每公里配速。既有三向求解、分段表、公里／英里支援由原產品契約覆蓋。
+ 
+-已比對 checkout 內 `docs/specs/` 全部既有預案，最相近者的實質差異如下。
+-
+-- 既有 Running Pace Calculator 支援配速、時間、距離任填二求一與等速分段表。已知距離可在允許範圍內輸入公里或英里小數，並以 Riegel 1.06 顯示 5K、10K、半馬、全馬的預測時間及各列配速。本工具也用相同公式和四個標準目標，差異在於直接輸入已知成績後執行預測、可另輸入一個自訂目標距離，以及用公尺輸入並固定顯示每公里配速。 [既有固定 Running Pace SPEC](https://github.com/KYStr/glossquote-labs-home/blob/40a7dc689e8e2fc2c527c323ca68398d95e9db19/docs/specs/running-pace-calculator/SPEC.md#L6-L23)
+-- 由跑步配速推單一距離的分段與完賽時間是該工具的求解範圍；本工具不接受配速作為輸入。
++既有 Running Pace Calculator 在求配速模式已可直接輸入時間與距離，並以 Riegel 1.06 自動預測四個標準目標。升級新增的是選填自訂目標距離，並簡化抵達預測結果的流程。 [既有固定 Running Pace SPEC](https://github.com/KYStr/glossquote-labs-home/blob/40a7dc689e8e2fc2c527c323ca68398d95e9db19/docs/specs/running-pace-calculator/SPEC.md#L6-L23)
+ 
+ 判定規則由本文定義，無線上資料或外部服務依賴。
+ 
+@@ -42,7 +39,7 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ | empty | 初載／重設，無結果，提示輸入或載入範例。 |
+ | dirty | 任一輸入、選項、來源或範例改變，立即撤銷舊結果和下載。顯示「輸入已變更，請重新執行 / Input changed. Run again.」。 |
+ | busy | 明確執行時處理快照，顯示「處理中 / Working」及「取消 / Cancel」。無下載。編輯終止舊工作並回 dirty。 |
+-| success | 報告對應目前快照。預測表含已知距離本身一列，其值與輸入完全相同。 |
++| success | 報告對應目前快照。預測表依序顯示四個標準目標，選填的自訂目標列在最後。若某列距離等於已知距離，該列預測時間等於輸入時間。 |
+ | error | 保留草稿，沒有結果。顯示本地化錯誤、欄位及適用列號。只有提交失敗才移焦首錯欄。 |
+ | cancelled | 保留草稿，終止並告知「已取消，可重新執行 / Cancelled. You can run again.」。舊結果仍無效。 |
+ 
+@@ -66,7 +63,7 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ 1. D1 = 已知距離公尺數（預設查表或自訂解析值），T1 = 已知時間總秒數（整數）。
+ 2. 對每個目標距離 Dt（依序 5000、10000、21097.5、42195，若有自訂目標再加其值）：以 IEEE-754 雙精度浮點計算 `ratio = Dt / D1`、`factor = Math.pow(ratio, 1.06)`、`rawSeconds = T1 * factor`，中間值不捨入。
+ 3. `predictedSeconds = floor(rawSeconds + 0.5)`（四捨五入至整秒，只捨入一次）。`paceSecPerKm = floor(rawSeconds / (Dt / 1000) * 10 + 0.5) / 10`，即由未捨入的 rawSeconds 除以公里數、四捨五入至 0.1 秒，只捨入一次；不得由 predictedSeconds 反推配速。
+-4. 已知距離本身必為預測列之一：Dt = D1 時 factor 恰為 1，predictedSeconds 恰等於 T1。
++4. 對任何已列出的目標，Dt = D1 時 factor 恰為 1，predictedSeconds 恰等於 T1，配速等於 knownPaceSecPerKm。若自訂已知距離與所有目標距離皆不同，預測表沒有同距離列。
+ 5. 結果 `{knownDistanceM, knownTimeSeconds, knownPaceSecPerKm, predictions}`。`knownPaceSecPerKm = floor(T1 / (D1 / 1000) * 10 + 0.5) / 10`。`predictions` 每列 `{key, distanceM, predictedSeconds, paceSecPerKm}`，key 依序為 `5k`、`10k`、`half`、`marathon`，自訂列 key 為 `custom` 且恆列最後。distanceM 為數字（half 為 21097.5，其餘標準距離與整數自訂值為整數）。
+ 
+ 顯示格式（app 層釘版，不影響核心數值）：predictedSeconds ≥ 3600 顯示 `H:MM:SS`（H 無前導零，MM／SS 兩位），否則 `M:SS`。配速顯示把 paceSecPerKm 再四捨五入至整秒後以 `M:SS` 呈現，繁中加後綴「／公里」，英文加後綴「/km」。機器值不隨 locale 改。
+@@ -77,7 +74,7 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ 
+ ## implementation
+ 
+-使用原生 HTML/CSS/ESM 與 Node 24 built-ins，零 runtime／建置依賴。候選目標 `tools/race-time-predictor/`。src/core.mjs 放純驗證、推導、格式化。src/controller.mjs 管草稿、工作世代及資源。src/app.mjs 用安全 DOM API 綁表單。public/index.html 和 public/en/index.html 為兩個靜態入口。Node scripts 只建置工具 allowlist，不取線上檔、不發布。
++使用原生 HTML/CSS/ESM 與 Node 24 built-ins，零 runtime／建置依賴。整合目標為既有 Running Pace Calculator，由另立的整合任務決定產品實作位置與既有程式重用方式。src/core.mjs 放純驗證、推導、格式化。src/controller.mjs 管草稿、工作世代及資源。src/app.mjs 用安全 DOM API 綁表單。public/index.html 和 public/en/index.html 為兩個靜態入口。Node scripts 只建置工具 allowlist，不取線上檔、不發布。
+ 
+ - 核心只用 `Math.pow` 與基本運算，不讀 Date、主機時區或任何隨機來源；同一輸入在任何環境得到同一輸出。
+ - 工作開始先使舊結果失效並遞增世代號。Node 建置時從固定 source bytes 嵌入純核心及固定訊息處理器，頁面載入後從該固定字串建立 module Worker Blob URL。禁止使用者內容參與程式、eval、new Function 或動態 import。測試 import 同一份核心。
+@@ -103,7 +100,7 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ 
+ ## tests
+ 
+-驗收輸入見 [fixtures.json](fixtures.json)。15 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected；fixtures 的數值由作者以高精度運算手算推導、再以 IEEE-754 雙精度腳本獨立重算，雙推導紀錄見 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)。
++驗收輸入見 [fixtures.json](fixtures.json)。16 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected；fixtures 的數值由作者以高精度運算手算推導、再以 IEEE-754 雙精度腳本獨立重算，雙推導紀錄見 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)。
+ 
+ | 案例 ID | 驗證行為 |
+ | --- | --- |
+@@ -111,7 +108,8 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ | `five-k-source` | 5K 20:00 向上預測，已知列恰等於輸入 |
+ | `marathon-source` | 全馬 3:30:00 向下預測短距離 |
+ | `half-with-custom-target` | 半馬成績加自訂目標 30000 m，自訂列恆最後 |
+-| `custom-source` | 自訂已知距離 15000 m 成績 |
++| `custom-source` | 自訂已知距離 15000 m，未填自訂目標時只列四個標準目標 |
++| `custom-source-matching-target` | 自訂已知距離與自訂目標皆為 15000 m，第五列回傳 4050 秒、270.0 秒／公里 |
+ | `min-custom-boundary` | 自訂距離下限 400 m 端點合法 |
+ | `inactive-custom-ignored` | 非自訂預設時 knownCustomM 內容被忽略 |
+ | `err-time-format` | 時間 SS 非兩位數 → TIME_FORMAT |
+@@ -128,11 +126,11 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ 
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測合法上限（自訂距離 42195、時間 359999 秒）、剛好超限（42195.01、總秒 360000、SS／MM = 60 的三段式）、錯型別、缺欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證：已知列 predictedSeconds 恆等於輸入秒數；Dt 遞增時 predictedSeconds 不遞減；自訂列只在 targetCustomM 非空時出現且恆為最後一列。
++另測合法上限（自訂距離 42195、時間 359999 秒）、剛好超限（42195.01、總秒 360000、SS／MM = 60 的三段式）、錯型別、缺欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。比對四種成功組合的字面列鍵、順序與距離：標準已知距離且無自訂目標（`classic-10k`）、標準已知距離且有自訂目標（`half-with-custom-target`）、自訂已知距離且無自訂目標（`custom-source`、`min-custom-boundary`）、自訂已知距離且有自訂目標（`custom-source-matching-target`）。所有 Dt = D1 的列都須精確等於輸入秒數及已知配速。若 Dt 遞增，predictedSeconds 不遞減。自訂列只在 targetCustomM 非空時出現且恆為最後一列。
+ 
+ 候選 gate（均 NOT_RUN）
+ 
+-- 於 `tools/race-time-predictor/` 記 Node 24.x，執行 `node --test`（core/controller/HTML/下載/建置）、`node scripts/check.mjs`（語法、外部依賴、危險 sink、allowlist）、`node scripts/build.mjs --mode preview`（重建兩次並逐檔比對排序後的 SHA-256）。測試僅合成資料及本機檔案。
++- 後續於既有 Running Pace Calculator 的整合候選記 Node 24.x，執行 `node --test`（core/controller/HTML/下載/建置）、`node scripts/check.mjs`（語法、外部依賴、危險 sink、allowlist）、`node scripts/build.mjs --mode preview`（重建兩次並逐檔比對排序後的 SHA-256）。測試僅合成資料及本機檔案。
+ - 以 `node scripts/serve.mjs --host 127.0.0.1 --port 4173 --dir dist-preview` 供隔離預覽。已用端口則換空閒端口並記錄。GET/HEAD 正確 MIME、404、拒絕 traversal／符號連結逃逸，不列目錄或記請求內容。
+ - 各 Chrome、Edge 在兩語頁做範例、實際鍵入或合成檔、錯誤、成功後 edit、取消、重設、Blob 下載並核對 bytes。在 1280×800 及 320 CSS px 檢查。真實 200% zoom、reduced motion、Tab/Shift+Tab、Enter/Space、focus、狀態與錯誤、正文對比≥4.5:1、控制／大字≥3:1、主要觸控≥44×44，40% 譯文增長不遺失功能。
+ - Network/Storage 以乾淨隔離 profile 核對初始請求、處理與重設的零工作 request、local/sessionStorage、IndexedDB、CacheStorage、cookie、service worker、URL 及 console。檢查資產載好後的離線計算。回首頁為明確使用者導航。
+@@ -145,14 +143,14 @@ MVP 必做：單筆已知成績（距離＋時間）輸入；Riegel 公式預測
+ - FAQ。預測準確嗎？僅為估算，假設各距離的訓練與體能狀態相當；距離比越大越不穩定。 / How accurate is the prediction? It is an estimate that assumes equivalent training and fitness across distances; it gets less reliable as the distance ratio grows.
+ - FAQ。可以預測超過全馬的距離嗎？本工具的自訂距離上限為 42,195 公尺，不提供超馬預測。 / Can I predict distances beyond the marathon? Custom distances are capped at 42,195 metres in this tool; ultramarathon predictions are not offered.
+ - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
+-- 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。規劃 origin https://race-time-predictor.glossquote.com 尚未配置。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
++- 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。沿用既有 Running Pace Calculator 的發布入口。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
+ 
+ ## handoff
+ 
+ 本份交付文件。固定保存 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json) 及 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)，registry document 指向實際 GitHub commit。主頁基線 [固定 README](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md)。開工與送審前重讀遠端規則、registry、基線和既有 owner，檢查新增範圍。
+ 
+-非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。缺陷交原作者修訂，重審新 head。
++非作者 reviewer 核對同一固定文件候選的八節與字面案例，保存 evidence。此升級提案不計新工具 ready 庫存。
+ 
+-製作須有另登記 task、本人 ACK、明示 allowed executor、CAS 後同 operationId/claimId/owner 讀回。遵循 40 ready、5 held、1 working。製作目標 `tools/race-time-predictor/`，同 repo 用 `codex/<task>-<actor>` 分支與開啟 PR。先完成核心／狀態 fixtures，再交雙語候選與真瀏覽器證據。
++後續由主統籌另行指派既有工具整合，依當時的固定 Running Pace Calculator 候選、原承接者與有效 claim 規劃實作，於同 repo 的獨立分支與 PR 交驗核心／狀態 fixtures、雙語候選和真瀏覽器證據。
+ 
+-交驗附 candidate commit、PR head、來源與建置 hash、命令與 exit、實測及九項 evidence、未驗項和原 owner checkpoint。文件 ready、產品交驗、accepted、來源發布、部署及 catalog 各自留證。上線走既有批准。發現重疊、新依賴、費用、權限、持久環境或焦點風險，留 checkpoint 停在該項。
++交驗附 candidate commit、PR head、來源與建置 hash、命令與 exit、實測及九項 evidence、未驗項和原 owner checkpoint。升級提案文件審查、既有產品交驗、accepted、來源發布與部署各自留證。上線走既有批准。發現重疊、新依賴、費用、權限、持久環境或焦點風險，留 checkpoint 停在該項。
+diff --git a/docs/specs/race-time-predictor/fixtures.json b/docs/specs/race-time-predictor/fixtures.json
+index 344afb1..45de795 100644
+--- a/docs/specs/race-time-predictor/fixtures.json
++++ b/docs/specs/race-time-predictor/fixtures.json
+@@ -235,6 +235,57 @@
+         }
+       }
+     },
++    {
++      "id": "custom-source-matching-target",
++      "kind": "core",
++      "purpose": "選填 15000 m 自訂目標，驗證第五列與已知時間及配速恆等",
++      "input": {
++        "knownPreset": "custom",
++        "knownCustomM": "15000",
++        "knownTime": "1:07:30",
++        "targetCustomM": "15000"
++      },
++      "expected": {
++        "ok": true,
++        "result": {
++          "knownDistanceM": 15000,
++          "knownTimeSeconds": 4050,
++          "knownPaceSecPerKm": 270.0,
++          "predictions": [
++            {
++              "key": "5k",
++              "distanceM": 5000,
++              "predictedSeconds": 1264,
++              "paceSecPerKm": 252.8
++            },
++            {
++              "key": "10k",
++              "distanceM": 10000,
++              "predictedSeconds": 2635,
++              "paceSecPerKm": 263.5
++            },
++            {
++              "key": "half",
++              "distanceM": 21097.5,
++              "predictedSeconds": 5814,
++              "paceSecPerKm": 275.6
++            },
++            {
++              "key": "marathon",
++              "distanceM": 42195,
++              "predictedSeconds": 12122,
++              "paceSecPerKm": 287.3
++            },
++            {
++              "key": "custom",
++              "distanceM": 15000,
++              "predictedSeconds": 4050,
++              "paceSecPerKm": 270.0
++            }
++          ]
++        }
++      }
++    },
+     {
+       "id": "min-custom-boundary",
+       "kind": "core",
