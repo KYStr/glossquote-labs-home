@@ -312,3 +312,5 @@ node scripts/coordination.mjs apply-batch < commands.json
 3. 經 claim/readback/start 後，owner 用同一固定 commit 交驗。獨立 reviewer 必須逐一檢查所有預宣告規格的八節，以及九項產品 criteria 與 SPEC 內容的對應，再對八節逐項給分及附證據。每項須至少 90，必要檢查均已完成。改動固定 commit 時，保留舊任務，另用新 taskId 宣告新 targets 並重新獨審。
 4. 固定 primary 本人以當前 ACK、revision、operationId、observedAt、actor 及 `action: "apply-spec-maintenance"`、映射 `taskId`、目標 `specId` 套用。每份規格均須完全匹配登記舊狀態，未被任何任務引用且 `consumedBy` 為 null。請走會讀取固定映射內容、來源 bytes 及同一開啟 PR head 的 adapter，再做一次 CAS 與精確讀回。支援既有單次及批次格式。操作記錄完整舊規格狀態、新 refs 和 criteria、來源維護任務、映射 claim、固定候選和獨立驗收證據引用。完整提交與驗收保留在映射任務，歷史條目記其摘要和 canonical SHA-256。
 5. 規格回到 draft。原作者及所有歷任 makers 均排除於 readiness reviewer。由實際獨立 reviewer 對套用後固定版本執行 `mark-spec-ready`，另附精確 `document` ref 與 `evidenceRef`，八節全數確認後才計入庫存。這四十個 ID 的新 readiness、製作登記及 claim 均要求九項產品 criteria。舊快照仍可讀取。
+
+維護規格的當前庫存與新製作登記、claim 依最新已套用映射重新檢查。新發現的來源候選尚未接受、來源形成循環、映射缺少目前已知 maker，或映射及 readiness 的 reviewer 涉入製作時，原紀錄仍可查閱，該規格的現行製作資格失效。未派工規格可用新固定映射重走獨立驗收、套用回 draft 與 readiness。已登記製作的凍結與既有 claim 保留。

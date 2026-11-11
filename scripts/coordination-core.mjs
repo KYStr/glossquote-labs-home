@@ -172,7 +172,7 @@ function acceptedMaintenance(registry, taskId) {
   return task;
 }
 
-function maintenanceSources(registry, target, mappingTaskId, historicalFilter) {
+function maintenanceSources(registry, target, mappingTaskId, historicalFilter, makersOnly = false) {
   const fixedTask = taskId => {
     const task = acceptedMaintenance(registry, taskId);
     maintenanceRef(task.submission.candidate, 'source maintenance candidate');
@@ -198,7 +198,8 @@ function maintenanceSources(registry, target, mappingTaskId, historicalFilter) {
   while (stack.length) {
     const {task, exit} = stack.pop();
     if (exit) { active.delete(task.id); continue; }
-    check(task.id !== mappingTaskId && !active.has(task.id) && !sameCommit(task.source, target.mappingRef),
+    if (makersOnly && (task.id === mappingTaskId || active.has(task.id))) continue;
+    check(makersOnly || (task.id !== mappingTaskId && !active.has(task.id) && !sameCommit(task.source, target.mappingRef)),
       'MAINTENANCE_SOURCE_CYCLE', 'The known maintenance source chain contains a cycle.');
     if (lineage.has(task.id)) continue;
     lineage.set(task.id, task);
@@ -239,7 +240,7 @@ function knownSpecMakers(registry, spec) {
     && (task.specId === spec.id || (task.submission?.candidate && sameFile(task.submission.candidate, spec.document))
       || (task.brief.repository === spec.document.repository && task.brief.path === briefPath)));
   const maintenanceMakers = (spec.maintenanceHistory ?? []).flatMap(entry =>
-    maintenanceSources(registry, entry.replacement, entry.taskId).lineage.flatMap(taskMakers));
+    maintenanceSources(registry, entry.replacement, entry.taskId, () => true, true).lineage.flatMap(taskMakers));
   return [spec.authorId, ...(spec.contributors ?? []), ...specTasks.flatMap(taskMakers), ...maintenanceMakers];
 }
 
@@ -435,6 +436,33 @@ function validateSpecReadiness(spec, maintained = Boolean(spec.maintenanceHistor
   }
 }
 
+// Historical readiness is structurally readable even when later source records disqualify it for new work.
+function effectiveReadinessIssue(registry, spec) {
+  try {
+    validateSpecReadiness(spec);
+    const latest = spec.maintenanceHistory?.at(-1);
+    if (latest) {
+      const mapping = acceptedMaintenance(registry, latest.taskId);
+      const makers = new Set([...knownSpecMakers(registry, spec), ...mappingSourceMakers(registry, mapping)]);
+      check(!makers.has(mapping.acceptance.reviewerId), 'MAPPING_REVIEW_CONFLICT',
+        'The current mapping needs a fresh independent acceptance because its recorded reviewer is now a known maker.');
+      check(!makers.has(spec.readiness.reviewerId), 'INDEPENDENT_REVIEW_REQUIRED',
+        'A recorded specification maker cannot independently approve readiness.');
+      check([...makers].every(maker => mapping.contributors.includes(maker)), 'MAINTENANCE_SOURCE_STALE',
+        'The current mapping is missing a known maker. Register and independently review a fresh mapping.');
+    }
+    return null;
+  } catch (error) {
+    if (error instanceof CoordinationError) return error;
+    throw error;
+  }
+}
+
+function requireEffectiveReadiness(registry, spec) {
+  const issue = effectiveReadinessIssue(registry, spec);
+  if (issue) throw issue;
+}
+
 function currentActor(registry, actor) {
   actorIdentity(actor);
   const record = registry.actors.find(row => row.id === actor.id);
@@ -456,7 +484,7 @@ export function isReconciled(registry) {
 export function inventorySummary(registry) {
   validateRegistry(registry);
   const known = registry.baseline.inventoryComplete && isReconciled(registry);
-  const count = known ? registry.specs.filter(spec => spec.status === 'ready').length : null;
+  const count = known ? registry.specs.filter(spec => spec.status === 'ready' && !effectiveReadinessIssue(registry, spec)).length : null;
   return {
     ...LABS_BATCH_POLICY, readyUnconsumedCount: count, inventoryStatus: known ? 'confirmed' : 'unknown',
     specPriority: known ? (count < LABS_BATCH_POLICY.threshold ? 'P1' : 'P3') : null,
@@ -494,7 +522,7 @@ function readyToClaim(registry, task, actor) {
     const spec = registry.specs.find(row => row.id === task.specId);
     check(spec && (spec.status === 'ready' || (spec.status === 'consumed' && spec.consumedBy.taskId === task.id)), 'SPEC_UNAVAILABLE', 'Production needs a ready spec or the same previously consumed spec.');
     if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
-    validateSpecReadiness(spec);
+    requireEffectiveReadiness(registry, spec);
   }
 }
 
@@ -586,17 +614,17 @@ export function applyOperation(input, command) {
     }
     case 'mark-spec-ready': {
       const spec = registry.specs.find(row => row.id === command.specId); check(spec, 'NOT_FOUND', 'Specification not found.');
+      const maintained = Boolean(spec.maintenanceHistory?.length);
       check(['draft', 'invalid', 'reserved'].includes(spec.status), 'SPEC_UNAVAILABLE', 'Only a draft, reserved or invalidated spec can be reviewed.');
       if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
       spec.readiness = {reviewerId: command.actor.id, sections: command.sections, evidence: command.evidence, reviewedAt: command.observedAt};
-      if (spec.maintenanceHistory?.length) {
+      if (maintained) {
         fields(command, [...COMMAND_FIELDS, 'specId', 'sections', 'evidence', 'document', 'evidenceRef']);
-        check(!knownSpecMakers(registry, spec).includes(command.actor.id),
-          'INDEPENDENT_REVIEW_REQUIRED', 'A recorded specification maker cannot independently approve readiness.');
         spec.readiness.document = command.document;
         spec.readiness.evidenceRef = command.evidenceRef;
       }
-      validateSpecReadiness(spec); spec.status = spec.status === 'reserved' ? 'consumed' : 'ready';
+      requireEffectiveReadiness(registry, spec);
+      spec.status = spec.status === 'reserved' ? 'consumed' : 'ready';
       break;
     }
     case APPLY_MAINTENANCE: {
@@ -639,6 +667,10 @@ export function applyOperation(input, command) {
         check(spec, 'NOT_FOUND', 'Register the production specification first.');
         if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
         check(same(task.acceptanceCriteria, spec.acceptanceCriteria), 'RUBRIC_MISMATCH', 'Production acceptance criteria must exactly match the reviewed specification.');
+        if (spec.maintenanceHistory?.length) {
+          check(['ready', 'consumed'].includes(spec.status), 'SPEC_UNAVAILABLE', 'A maintained specification must be independently ready before production registration.');
+          requireEffectiveReadiness(registry, spec);
+        }
       }
       const registered = {id: task.id, title: task.title, workType: task.workType, source: task.source, brief: task.brief, specId: task.specId ?? null, allowedExecutors, acceptanceCriteria: task.acceptanceCriteria, contributors: [], status: 'ready', owner: null, checkpoint: null, blocker: null, handoff: null, submission: null, acceptance: null, publication: null, registeredAt: command.observedAt};
       if (Object.hasOwn(task, 'specRevisionTargets')) {

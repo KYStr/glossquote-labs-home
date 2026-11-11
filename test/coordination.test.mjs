@@ -497,11 +497,11 @@ function mappingInputs(status = 'draft', withAncestor = false) {
     const oldDocument = registry.specs[0].document;
     registry = apply(registry, ancestorMaker, 'register-task', {task: {
       id: ancestorTask, title: 'Earlier accepted maintenance', workType: 'maintenance',
-      source: withAncestor === 'cycle' ? {...originCandidate, path: oldDocument.path} : oldDocument,
+      source: ['cycle', 'late-cycle'].includes(withAncestor) ? {...originCandidate, path: oldDocument.path} : oldDocument,
       brief: {...proof, path: 'docs/reviews/ancestor/TASK.md'}, acceptanceCriteria: criteria
     }});
     registry = claimAndStart(registry, ancestorMaker, ancestorTask).registry;
-    if (withAncestor !== 'unsubmitted') registry = submitAncestorRepair(registry);
+    if (!['unsubmitted', 'late-cycle'].includes(withAncestor)) registry = submitAncestorRepair(registry);
     if (withAncestor === true || withAncestor === 'cycle') {
       registry = applyOperation(registry, maintenanceReview(registry, ancestorTask, ancestorCandidate)).registry;
     }
@@ -535,14 +535,14 @@ function mappingInputs(status = 'draft', withAncestor = false) {
   return {registry, targets, task};
 }
 
-function mappingFixture(status, withAncestor) {
+function mappingFixture(status, withAncestor, mappingReviewer = reviewer) {
   const {registry: before, task, targets} = mappingInputs(status, withAncestor);
   const registered = apply(before, mappingMaker, 'register-task', {task});
   const started = claimAndStart(registered, mappingMaker, task.id);
   const submit = {taskId: task.id, claimId: started.claimId, candidate: mappingCandidate,
     pullRequest: mappingPR, evidence: 'Fixed mapping candidate.', evidenceRef: proof};
   const reviewing = apply(started.registry, mappingMaker, 'submit', submit);
-  const registry = applyOperation(reviewing, maintenanceReview(reviewing, task.id, mappingCandidate)).registry;
+  const registry = applyOperation(reviewing, maintenanceReview(reviewing, task.id, mappingCandidate, {actor: mappingReviewer})).registry;
   return {registry, before, task, targets, registered, started, submit, reviewing};
 }
 
@@ -991,7 +991,7 @@ test('a later accepted ancestor leaves historical snapshots valid and requires f
   const previouslyApplied = applyOperation(registry, maintain(registry)).registry;
   const updatedReady = acceptAncestor(previouslyApplied);
   assert.throws(() => applyOperation(updatedReady, markMaintained(updatedReady, ancestorMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
-  assert.equal(applyOperation(updatedReady, markMaintained(updatedReady)).registry.specs[0].status, 'ready');
+  assert.throws(() => applyOperation(updatedReady, markMaintained(updatedReady)), {code: 'MAINTENANCE_SOURCE_STALE'});
 });
 
 test('adapter blocks upstream self-review before CAS and still requires bytes from an explicitly declared candidate', async () => {
@@ -1094,4 +1094,102 @@ test('a reachable source cycle or a known submitted but unaccepted source stops 
     assert.equal(state.writes, 0);
     assert.deepEqual(state.registry, registry);
   }
+});
+
+function readyBeforeSource(options = {}) {
+  const {mappingReviewer = reviewer, readyReviewer = reviewer, cycle = false} = options;
+  const {registry, task, targets} = mappingFixture('draft', cycle ? 'late-cycle' : 'unsubmitted', mappingReviewer);
+  const applied = applyOperation(registry, maintain(registry)).registry;
+  const ready = applyOperation(applied, markMaintained(applied, readyReviewer)).registry;
+  return {ready, task, targets};
+}
+
+function ageProduction(registry, id = 'fixture-aged-production') {
+  return {id, title: 'Production from current age specification', workType: 'production', specId: ageSpec,
+    source: registry.specs[0].document, brief: proof, acceptanceCriteria: productRubric};
+}
+
+function lateSource(registry, pending = false) {
+  const submitted = submitAncestorRepair(registry);
+  return pending ? submitted : applyOperation(submitted, maintenanceReview(submitted, ancestorTask, ancestorCandidate)).registry;
+}
+
+test('effective readiness excludes late conflicts, pending sources, cycles, and incomplete known makers before new production writes', async () => {
+  const scenarios = [
+    [{readyReviewer: ancestorMaker}, false, 'INDEPENDENT_REVIEW_REQUIRED'],
+    [{mappingReviewer: ancestorMaker}, false, 'MAPPING_REVIEW_CONFLICT'],
+    [{}, true, 'MAINTENANCE_SOURCE_PENDING'],
+    [{cycle: true}, false, 'MAINTENANCE_SOURCE_CYCLE'],
+    [{}, false, 'MAINTENANCE_SOURCE_STALE']
+  ];
+  for (const [options, pending, code] of scenarios) {
+    const {ready, targets} = readyBeforeSource(options);
+    const task = ageProduction(ready);
+    assert.equal(inventorySummary(ready).readyUnconsumedCount, 1);
+    const preregistered = apply(ready, primary, 'register-task', {task});
+    const stale = lateSource(preregistered, pending);
+    assert.doesNotThrow(() => validateRegistry(stale));
+    assert.deepEqual(stale.specs[0], ready.specs[0]);
+    assert.deepEqual(taskRow(stale, mappingTask), taskRow(ready, mappingTask));
+    assert.equal(inventorySummary(stale).readyUnconsumedCount, 0);
+    assert.throws(() => apply(stale, primary, 'register-task', {task: ageProduction(stale, 'another-production')}), {code});
+    const claim = command(stale, primary, 'claim', {taskId: task.id});
+    assert.throws(() => applyOperation(stale, claim), {code});
+    const fake = adapterFixture(stale, targets);
+    await assert.rejects(executeOperation(fake.client, claim), {code});
+    assert.equal(fake.state.writes, 0);
+    assert.deepEqual(fake.state.registry, stale);
+  }
+});
+
+test('unrelated source activity leaves maintained readiness effective and old claims survive later discovery', () => {
+  const {ready} = readyBeforeSource({readyReviewer: ancestorMaker});
+  const unrelatedCandidate = {...originCandidate, commit: '8'.repeat(40)};
+  const unrelated = acceptedRepair(ready, local, 'fixture-unrelated-maintenance', source, unrelatedCandidate, 94);
+  assert.equal(inventorySummary(unrelated).readyUnconsumedCount, 1);
+  const task = ageProduction(unrelated);
+  const registered = apply(unrelated, primary, 'register-task', {task});
+  const claimed = apply(registered, primary, 'claim', {taskId: task.id});
+  const stale = lateSource(claimed);
+  const originalClaim = taskRow(claimed, task.id);
+  assert.deepEqual(taskRow(stale, task.id), originalClaim);
+  assert.deepEqual(stale.specs[0].consumedBy, claimed.specs[0].consumedBy);
+  assert.deepEqual(stale.specs[0].readiness, claimed.specs[0].readiness);
+  const released = apply(stale, primary, 'release', {taskId: task.id, claimId: originalClaim.owner.claimId,
+    checkpoint: 'Existing ownership intentionally released.', reason: 'Fixture release', evidenceRef: proof});
+  assert.throws(() => apply(released, primary, 'claim', {taskId: task.id}), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+});
+
+test('an unassigned stale specification recovers through fresh independent mapping and preserves previous evidence', () => {
+  const {ready, task, targets} = readyBeforeSource({mappingReviewer: ancestorMaker});
+  const stale = lateSource(ready);
+  const previous = clone(stale);
+  assert.equal(inventorySummary(stale).readyUnconsumedCount, 0);
+  assert.throws(() => applyOperation(stale, markMaintained(stale)), {code: 'SPEC_UNAVAILABLE'});
+  const spec = stale.specs[0];
+  const mapRef = {...mappingRef, commit: '7'.repeat(40)};
+  const next = {...task, id: 'fixture-fresh-independent-mapping', specRevisionTargets: [{
+    ...targets[0], expectedDocument: spec.document, expectedSource: spec.source,
+    expectedCriteriaHash: criteriaHash(productRubric), mappingRef: mapRef,
+    document: {...spec.document, commit: mapRef.commit}, source: {...spec.source, commit: mapRef.commit}
+  }]};
+  const registered = apply(stale, mappingMaker, 'register-task', {task: next});
+  assert.ok(taskRow(registered, next.id).contributors.includes(ancestorMaker.id));
+  const started = claimAndStart(registered, mappingMaker, next.id);
+  const candidate = {...mappingCandidate, commit: mapRef.commit};
+  const reviewing = apply(started.registry, mappingMaker, 'submit', {taskId: next.id, claimId: started.claimId,
+    candidate, pullRequest: mappingPR, evidence: 'New pinned independently reviewable mapping.', evidenceRef: proof});
+  const accepted = applyOperation(reviewing, maintenanceReview(reviewing, next.id, candidate)).registry;
+  const applied = applyOperation(accepted, maintain(accepted, {taskId: next.id})).registry;
+  assert.equal(applied.specs[0].status, 'draft');
+  assert.equal(applied.specs[0].readiness, null);
+  assert.deepEqual(applied.specs[0].maintenanceHistory[0], previous.specs[0].maintenanceHistory[0]);
+  assert.deepEqual(applied.specs[0].maintenanceHistory[1].previous.readiness, previous.specs[0].readiness);
+  assert.deepEqual(applied.tasks.filter(row => row.id !== next.id), previous.tasks);
+  assert.throws(() => applyOperation(applied, markMaintained(applied, ancestorMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  const recovered = applyOperation(applied, markMaintained(applied)).registry;
+  assert.equal(inventorySummary(recovered).readyUnconsumedCount, 1);
+  const production = ageProduction(recovered);
+  const dispatched = apply(recovered, primary, 'register-task', {task: production});
+  assert.equal(taskRow(apply(dispatched, primary, 'claim', {taskId: production.id}), production.id).status, 'claimed');
 });
