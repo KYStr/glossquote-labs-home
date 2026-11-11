@@ -1,0 +1,349 @@
+{
+  "taskId": "labs-photo-print-size-calculator-spec-20261109",
+  "specId": "spec-photo-print-size-calculator-20261109",
+  "workType": "spec",
+  "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a",
+  "reviewerContributed": false,
+  "independenceEvidence": {
+    "owner": {
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "claimId": "muse-r4-photo-print-size-c-claim-20261109T154359Z-2438b",
+      "claimedAt": "2026-11-09T15:43:59.879Z"
+    },
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "contributors": [
+      "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+    ]
+  },
+  "registry": {
+    "branchHead": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "taskStatus": "reviewing",
+    "specStatus": "draft"
+  },
+  "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/255",
+  "prHead": "58edaa0d845256b1eb4cb772d8f7d7d80811e4d8",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "58edaa0d845256b1eb4cb772d8f7d7d80811e4d8",
+    "path": "docs/specs/photo-print-size-calculator/SPEC.md"
+  },
+  "sourceFiles": {
+    "BRIEF.md": {
+      "gitBlob": "865a4be9c78ecc333b9bc819b3026f5c0a2f9709",
+      "remoteGitBlob": "865a4be9c78ecc333b9bc819b3026f5c0a2f9709",
+      "sha256": "6a19df35c9419ad18cf4727b080649c7cd846483edadacea3ab3a190ab0368d1",
+      "bytes": 1869,
+      "identical": true
+    },
+    "SPEC.md": {
+      "gitBlob": "6634333aaa7e4fb7e649a503535fb37f49b8b80e",
+      "remoteGitBlob": "6634333aaa7e4fb7e649a503535fb37f49b8b80e",
+      "sha256": "36587cd0435813304d62ac1f055fa15394e5a1f8c8b1d80adb760707f4297ac7",
+      "bytes": 26895,
+      "identical": true
+    },
+    "fixtures.json": {
+      "gitBlob": "625dd905a14cf1185bfe27c6c86612c162182716",
+      "remoteGitBlob": "625dd905a14cf1185bfe27c6c86612c162182716",
+      "sha256": "7893229924415e87fed19f31819a9e8dfc1571621c16cc2f08640755bdc85106",
+      "bytes": 17464,
+      "identical": true
+    },
+    "AUTHOR-CHECK.md": {
+      "gitBlob": "906eced938e43229e6857a648bf871e8023ad077",
+      "remoteGitBlob": "906eced938e43229e6857a648bf871e8023ad077",
+      "sha256": "ad6a7ff01672ce5d35bacafd7e595d0301862163fe53550200310ea0d0dde43e",
+      "bytes": 5177,
+      "identical": true
+    }
+  },
+  "observedAt": "2026-11-11 03:00:07 UTC",
+  "status": "FAIL",
+  "readyRecommended": false,
+  "sections": {
+    "goal": true,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "桌面挑旅遊照、手機在沖印店拿像素值核對尺寸。成功產物是可核對的逐尺寸表或需求像素。"
+    },
+    {
+      "id": "scope",
+      "score": 78,
+      "status": "FAIL",
+      "evidence": "三模式與相機檔案、裁切、插值排除清楚，但只查 `docs/specs/` 便宣稱無同功能。既有 `labs-31-print-size` 同樣完成指定尺寸的解析度與像素門檻判定。見 PHOTO-01。"
+    },
+    {
+      "id": "userFlow",
+      "score": 82,
+      "status": "FAIL",
+      "evidence": "三模式可見輸入、範例、編輯失效、取消與 reset 都有交代。兩語 FAQ 卻把兩邊獨立密度當成完整照片按比例鋪滿，並將 PPI 標成印表 DPI。見 PHOTO-02。"
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 85,
+      "status": "FAIL",
+      "evidence": "合法域、停用欄容量、固定尺寸、精確 ceil／half-up、fit 不使用顯示值都能重算。輸出有效密度在比例不同時的實體含義待澄清。"
+    },
+    {
+      "id": "implementation",
+      "score": 95,
+      "status": "PASS",
+      "evidence": "定標有理數、固定 9 列、純核心／Worker 世代、原生雙語靜態與零依賴可行。"
+    },
+    {
+      "id": "acceptance",
+      "score": 96,
+      "status": "PASS",
+      "evidence": "三模式真輸入、逐列資料、端點、CSP、隱私、真瀏覽器與 SEO 都有可驗方法和門檻。"
+    },
+    {
+      "id": "tests",
+      "score": 87,
+      "status": "FAIL",
+      "evidence": "25 筆 core 與 3 筆 controller 全數相符，但 AUTHOR-CHECK 誤稱 200 品質帶找不到捨入前後分類不同的案例。見 PHOTO-03。"
+    },
+    {
+      "id": "handoff",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "四份固定規格檔、GitHub task/PR、Node 命令、里程碑與接續條件都有紀錄。"
+    }
+  ],
+  "independentFixtureCheck": {
+    "status": "PASS",
+    "passed": 28,
+    "failed": 0,
+    "exit": 0,
+    "runtime": "v24.14.0",
+    "output": "fixture-results.json",
+    "command": "node photo-print-size-calculator/verify.mjs fixtures/photo-print-size-calculator.json",
+    "source": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "58edaa0d845256b1eb4cb772d8f7d7d80811e4d8",
+      "path": "docs/specs/photo-print-size-calculator/fixtures.json",
+      "gitBlob": "625dd905a14cf1185bfe27c6c86612c162182716",
+      "bytes": 17464,
+      "sha256": "7893229924415e87fed19f31819a9e8dfc1571621c16cc2f08640755bdc85106"
+    }
+  },
+  "productChecks": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "三模式及固定九列逐值比對，畫面和下載同快照。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "像素 1/200000、密度 1/1200、半入與無條件進位、尺寸門檻、未啟用欄和首錯。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "無照片檔上傳，Network/Storage/URL/console 及清除。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意文字 inert、CSP、固定檔名、上限、Worker/Blob 撤銷。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語三模式、預設鈕、忙／取消、錯誤恢復、下載和桌面行動可達。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、可見焦點、320px、實際 zoom、對比、觸控、狀態語意。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩 HTML、九尺寸與品質標籤、noindex、同語回鏈、正式 canonical/hreflang。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "同候選 PR、Node 24、兩次重建 bytes、離線命令與 exit。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Chrome/Edge 的兩語輸入、錯誤、Worker、Blob 和 reflow。"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "PHOTO-01",
+      "title": "核心任務和已有原 owner 的圖片列印尺寸試算重疊",
+      "where": "SPEC.md §scope、AUTHOR-CHECK.md 去重；r1530 `labs-31-print-size` 與 `spec-31-print-size`",
+      "input": {
+        "image": "1800×1200 px",
+        "legacyPrintWidthMm": "152.40",
+        "newStandardSize": "4x6",
+        "targetDensity": "300"
+      },
+      "actual": "既有工具用 152.40 mm 的寬度算出 101.60 mm 等比例高度、300 PPI、需要 1800×1200 px、達標。新案的 4×6 三模式覆蓋同一沖印決策。它新增九尺寸比較和預設尺寸逆推，也限制尺寸輸入，作者比對未納入既有工具。r1530 既有 task 由 local-codex:01a14c6b-81df-7592-9372-9dfaa5daafe9 承接，固定來源 647b254ce566a519d31fa6c4261d8024009f66de。",
+      "expected": "把兩份固定流程的共同工作、已存在功能及新增能力寫入範圍。主統籌先和既有責任人決定增補既有工具或足以獨立的範圍，保留原 owner 和固定來源，再重新核對 ready。"
+    },
+    {
+      "id": "PHOTO-02",
+      "title": "長寬比不同時，計算的是逐邊像素密度而非全幅不裁切的實際印刷 DPI",
+      "where": "SPEC.md §userFlow 的密度／符合標示、§inputsOutputs 逐邊公式與 §tests 兩語 FAQ/SEO",
+      "input": {
+        "mode": "check",
+        "pixelsW": "6000",
+        "pixelsH": "4000",
+        "dpi": "",
+        "sizeId": "A4"
+      },
+      "actual": "輸入照片是 3:2，A4 為 297×210 mm。依規格算 513.1、483.8 和取小 483.8。全幅等比例按長邊 297 mm 印時，照片短邊是 198 mm，有 12 mm 餘量。兩邊都鋪滿且不裁切會改變比例。現行 FAQ 說假設全幅不裁切，結果則標為「實際 DPI」。",
+      "expected": "保留同一算式也可修正：兩語說明逐邊像素密度的定義和 `fits` 只表示像素門檻。比例不同要由店家處理裁切或留白。使用 PPI 或清楚註明店家口語 DPI 指圖片 PPI，區別印表機的墨點 DPI。以此案例核對 UI、FAQ 和 JSON 語義。"
+    },
+    {
+      "id": "PHOTO-03",
+      "title": "200 品質帶有可區分前後捨入的整數像素案例",
+      "where": "AUTHOR-CHECK.md 的 200 帶界；SPEC.md §tests 與 fixtures.json",
+      "input": {
+        "mode": "check",
+        "pixelsW": "2338",
+        "pixelsH": "1800",
+        "dpi": "",
+        "sizeId": "A4"
+      },
+      "actual": "A4 長邊 2338×25.4÷297 = 199.950168…，短邊約 217.7。按規格取小後捨入 200.0，quality=good；若按未捨入值為 acceptable。A3 長邊 3307 px 同樣是反例。",
+      "expected": "更正「不存在」的作者查核並加入能區分兩種實作的 200 品質帶 fixture。字面 expected 為 effectiveDpi 200、quality good。重跑獨立逐值比對。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "固定既有圖片列印規格 FR-02–04",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/be197ea30d909b1353e7f77bdf16b1811ac41f71/coordination/local/2026-10-29/specs/31-print-size/SPEC.md",
+      "observation": "既有工作已涵蓋等比尺寸、有效 PPI、目標判斷及需求像素。"
+    },
+    {
+      "title": "既有圖片列印固定來源",
+      "url": "https://github.com/KYStr/glossquote-labs-print-size/tree/647b254ce566a519d31fa6c4261d8024009f66de",
+      "observation": "登記冊的既有實作版本。"
+    },
+    {
+      "title": "ISO 216:2007",
+      "url": "https://www.iso.org/standard/36631.html",
+      "observation": "官方摘要確認適用 A/B 系列裁切尺寸。公開摘要未刊三項尺寸表。"
+    },
+    {
+      "title": "Canon Océ VarioPrint 手冊 §4.10.1",
+      "url": "https://files.lfpp.csa.canon.com/media/Assets/PDFs/TSS/external/VP1105/Documentation/VP1105_CONTR_GB.pdf",
+      "observation": "官方手冊核對 A3 297×420、A4 210×297、A5 148×210 mm。"
+    },
+    {
+      "title": "NIST SI 長度",
+      "url": "https://www.nist.gov/pml/owm/si-units-length",
+      "observation": "1 in 精確等於 25.4 mm。"
+    },
+    {
+      "title": "Adobe Photoshop 影像尺寸與解析度",
+      "url": "https://helpx.adobe.com/photoshop/desktop/crop-resize-transform/resize-adjust-resolution/image-size-resolution-and-resampling.html",
+      "observation": "原圖像素除以實體尺寸的單位是 PPI；保留比例與獨立拉伸兩邊有不同結果。"
+    }
+  ],
+  "nonBlocking": [
+    "§implementation 的 File.arrayBuffer 晚到處理在目前不讀照片檔的範圍無使用路徑。",
+    "可把 201 px ÷ 200 = 1.005 in → 1.01 in 的恰半反例加進 tests；現有 28 筆資料未驗這一點。"
+  ],
+  "phase2": {
+    "githubEvidence": "NOT_RUN",
+    "acknowledge": "NOT_RUN",
+    "registryReview": "NOT_RUN",
+    "markSpecReady": "NOT_RUN",
+    "requires": "主統籌安排串行寫入，重新核對 PR head、owner 和登記冊，再由本人執行。"
+  },
+  "documentReviewStatus": "FAIL",
+  "registryProductionContract": {
+    "status": "FAIL",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "specId": "spec-photo-print-size-calculator-20261109",
+    "field": "spec.acceptanceCriteria",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "documentTaskCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "specDeclaredProductCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missing": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "unexpected": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blockerId": "REG-01",
+    "evidence": "原規格製作 task 用八節評分正確。spec.acceptanceCriteria 也被登記成同八節，缺 SPEC.md §acceptance 的九個產品面向。新 production 需原樣繼承 spec.acceptanceCriteria，照現況無法繼承規格的產品契約。",
+    "resolution": "由主統籌依維護流程更正登記，保留原規格 task、候選和 owner；讀回相符九面向後才重評 ready/可開工。"
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "taskId": "labs-group-generator-spec-20261109",
+  "specId": "spec-group-generator-20261109",
+  "workType": "spec",
+  "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a",
+  "reviewerContributed": false,
+  "independenceEvidence": {
+    "owner": {
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "claimId": "muse-r4-group-generator-claim-20261109T154627Z-28346",
+      "claimedAt": "2026-11-09T15:46:27.698Z"
+    },
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "contributors": [
+      "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+    ]
+  },
+  "registry": {
+    "branchHead": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "taskStatus": "reviewing",
+    "specStatus": "draft"
+  },
+  "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/256",
+  "prHead": "93c1a8a8b12930270b611850a6b85007da4f5c4d",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "93c1a8a8b12930270b611850a6b85007da4f5c4d",
+    "path": "docs/specs/group-generator/SPEC.md"
+  },
+  "sourceFiles": {
+    "BRIEF.md": {
+      "gitBlob": "45f70295c5c2564d54899b1b2a96ee404d747a88",
+      "remoteGitBlob": "45f70295c5c2564d54899b1b2a96ee404d747a88",
+      "sha256": "0ed275e7c7c17bf90981e89693297679b9c4279a0130b4c460c279fb328b9a6f",
+      "bytes": 1609,
+      "identical": true
+    },
+    "SPEC.md": {
+      "gitBlob": "291a3cb9f6fbdd30c41db572b6c32ef44f1b31a2",
+      "remoteGitBlob": "291a3cb9f6fbdd30c41db572b6c32ef44f1b31a2",
+      "sha256": "1012b0d3015913eb1144d3d1c72e2da052ba222459ab82a2aff27d930ba4b8ed",
+      "bytes": 25436,
+      "identical": true
+    },
+    "fixtures.json": {
+      "gitBlob": "98b00e09839db8ba732a46e7c87482e5c23e9aea",
+      "remoteGitBlob": "98b00e09839db8ba732a46e7c87482e5c23e9aea",
+      "sha256": "51fd1ac04063da885fde5ebf4a287599283cca837de03d3075ca92f60ce976fb",
+      "bytes": 21138,
+      "identical": true
+    },
+    "AUTHOR-CHECK.md": {
+      "gitBlob": "1cee224ea4da63cdd172c6ef855e775f6e40b63a",
+      "remoteGitBlob": "1cee224ea4da63cdd172c6ef855e775f6e40b63a",
+      "sha256": "b6b2bc5ba38c38703e9b1e748178372b527b485a48fd1e889f2f13bfb9d86758",
+      "bytes": 4510,
+      "identical": true
+    }
+  },
+  "observedAt": "2026-11-11 03:03:13 UTC",
+  "status": "FAIL",
+  "readyRecommended": false,
+  "sections": {
+    "goal": true,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": true,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 95,
+      "status": "PASS",
+      "evidence": "老師桌面貼班級名單、主辦人手機貼報名名單都有可觀察結果，組數、人數與種子可驗。重現條件與同名可辨識仍須修正。"
+    },
+    {
+      "id": "scope",
+      "score": 78,
+      "status": "FAIL",
+      "evidence": "規格自述 legacy 差異，但種子重現、每組上限與匯出是既有名單分組工作的擴充，未有既有 owner 的範圍處理證據。見 GRP-01。"
+    },
+    {
+      "id": "userFlow",
+      "score": 82,
+      "status": "FAIL",
+      "evidence": "貼名單、停用欄、種子生成、重設、取消及丟棄舊回傳都有路徑。固定說明忽略組別設定的重現條件，且每組人數標籤會被理解為固定人數。見 GRP-03。"
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 84,
+      "status": "FAIL",
+      "evidence": "首錯、列號、uint32、洗牌與輪流分配確定。結果只保留名字，使同名落不同組時無法回查原人。見 GRP-02。"
+    },
+    {
+      "id": "implementation",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "無依賴，原生靜態頁，`getRandomValues` 只給 app 填空種子，BigInt 驗算吻合固定 lottery 位元規則；可驗 Worker 資源與取消。"
+    },
+    {
+      "id": "acceptance",
+      "score": 96,
+      "status": "PASS",
+      "evidence": "功能、界線、隱私、資安、易用、可及、雙語 SEO、工具鏈、相容性九面向都有同 head 的必要證據。"
+    },
+    {
+      "id": "tests",
+      "score": 96,
+      "status": "PASS",
+      "evidence": "17 core／3 controller 全數相符。另重算種子 42 的八個分子、雙語 TXT 與 JSON 匯出預期字節。"
+    },
+    {
+      "id": "handoff",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "四文件固定、兩階段里程碑、既有權限與原 task 讀回路徑可追溯。"
+    }
+  ],
+  "independentFixtureCheck": {
+    "status": "PASS",
+    "passed": 20,
+    "failed": 0,
+    "exit": 0,
+    "runtime": "v24.14.0",
+    "output": "fixture-results.json",
+    "command": "node group-generator/verify.mjs fixtures/group-generator.json",
+    "source": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "93c1a8a8b12930270b611850a6b85007da4f5c4d",
+      "path": "docs/specs/group-generator/fixtures.json",
+      "gitBlob": "98b00e09839db8ba732a46e7c87482e5c23e9aea",
+      "bytes": 21138,
+      "sha256": "51fd1ac04063da885fde5ebf4a287599283cca837de03d3075ca92f60ce976fb"
+    }
+  },
+  "productChecks": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "按組數或上限分組、同設定重現、空種子注入、UI 與 JSON/TXT 一致。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "500/501 筆、N/K/S、名稱 40/41 單位、種子 0/4294967295、來源列與首錯。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "合成名單，核對使用／重設期間 Network、Storage、URL、console。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意名字 inert、固定下載名、CSP、Worker/Blob dispose、純核心無外部熵。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "教師貼名單到結果、兩語桌面行動、選擇模式、取消與下載。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、標籤與錯誤、狀態、320px、zoom、觸控及對比。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "固定語言路徑、種子和分組說明對譯、同語首頁、noindex 與正式 SEO。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、固定 commit/PR、離線重建、PRNG 錨點、artifact hash。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome/Edge 兩語操作、Worker 與 Blob，分組與 bytes 可重現。"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "GRP-01",
+      "title": "和已有原 owner 的名單隨機分組工作重疊",
+      "where": "SPEC.md §scope、AUTHOR-CHECK.md 查重；登記 `labs-17-random-groups`／`spec-17-random-groups`",
+      "input": {
+        "names": "A\nB\nC\nD\nE",
+        "mode": "count",
+        "groupCount": "2",
+        "groupSize": "",
+        "seed": "42"
+      },
+      "actual": "兩工具都讓老師／主辦人貼一人一列、指定組數、產出人數差最多一人的名單。新規格增加種子重現、每組上限及匯出，可作同一工作的增補。既有 task 由 local-codex:01a13361-86f1-7e13-a1ef-573ec200bc4f 承接，固定實作 a8711a7cb8dc477dfee18c5667935c5be44602e1。",
+      "expected": "由主統籌確認增補既有工具或足以分立的使用目的，保留現有 owner、歷史來源與不可重現的分組路徑。確認前不開同名工作、不把文件算作新 production ready。"
+    },
+    {
+      "id": "GRP-02",
+      "title": "同名雖分在不同組，畫面與匯出無法識別是哪個人",
+      "where": "SPEC.md §goal 的每人可核對、§userFlow 群組清單、§inputsOutputs 的 members 與 TXT、fixtures.json `duplicates-kept`",
+      "input": {
+        "names": " 小明 \n\n小華\n小明\n　\n小美",
+        "mode": "count",
+        "groupCount": "2",
+        "groupSize": "",
+        "seed": "42"
+      },
+      "actual": "種子 42 使來源第 4 列小明進第 1 組、第 1 列小明進第 2 組。兩組輸出均只有「小明」，JSON 與 TXT 無法分辨。已存在的舊工具有成員序號。",
+      "expected": "固定同名可辨識路徑，例如用來源列／穩定輸入序號在畫面與帶走的產物對照。補同名跨組 fixture，驗每一原成員恰好一次且可識別。"
+    },
+    {
+      "id": "GRP-03",
+      "title": "重現文案缺分組設定，每組人數實際為上限",
+      "where": "SPEC.md §goal、§userFlow 的種子／結果文案及 §tests FAQ；BRIEF.md",
+      "input": {
+        "names": "A\nB\nC\nD\nE",
+        "mode": "count",
+        "groupCount": "2",
+        "groupSize": "",
+        "seed": "42"
+      },
+      "actual": "種子 42 洗出 D、C、E、B、A。K=2 是 D/E/A、C/B，K=3 是 D/B、C/A、E，名單與種子相同卻有不同分組。另以 11 人、groupSize=5，按規則得到 4/4/3，畫面「每組人數 5」不足以解釋。",
+      "expected": "兩語把重現條件釘為同順序名單、同分組模式和數值、同種子，並使用「每組最多人數」及平均分配說明。用兩個輸入檢查畫面與 FAQ。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "固定既有名單分組規格 FR-02 至 FR-07",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/be197ea30d909b1353e7f77bdf16b1811ac41f71/coordination/local/2026-10-29/specs/17-random-groups/SPEC.md",
+      "observation": "舊作已完成貼名單到平衡分組的同一工作，並保留同名來源序號。"
+    },
+    {
+      "title": "既有名單分組固定實作",
+      "url": "https://github.com/KYStr/glossquote-labs-random-groups/tree/a8711a7cb8dc477dfee18c5667935c5be44602e1",
+      "observation": "登記冊原有來源版本。"
+    },
+    {
+      "title": "同 commit 的 lottery 核心",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/93c1a8a8b12930270b611850a6b85007da4f5c4d/tools/lottery-number-picker/public/js/core/lottery.mjs",
+      "observation": "驗 mulberry32 位元常數、種子文法與前向抽取。"
+    },
+    {
+      "title": "同 commit 的 placeholder PRNG",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/93c1a8a8b12930270b611850a6b85007da4f5c4d/docs/specs/placeholder-text-generator/SPEC.md",
+      "observation": "§4 的種子 42 錨點與 BigInt 結果相符。"
+    },
+    {
+      "title": "W3C Web Cryptography §10.1.1",
+      "url": "https://www.w3.org/TR/webcrypto/#Crypto-method-getRandomValues",
+      "observation": "瀏覽器原生 getRandomValues 可填整數 typed array。"
+    }
+  ],
+  "nonBlocking": [
+    "若保留「40 字」錯誤文案，可明示 UTF-16 上限對某些字和 emoji 會以兩個單位計。"
+  ],
+  "phase2": {
+    "githubEvidence": "NOT_RUN",
+    "acknowledge": "NOT_RUN",
+    "registryReview": "NOT_RUN",
+    "markSpecReady": "NOT_RUN",
+    "requires": "主統籌安排串行寫入，重新核對 PR head、owner 和登記冊，再由本人執行。"
+  },
+  "documentReviewStatus": "FAIL",
+  "registryProductionContract": {
+    "status": "FAIL",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "specId": "spec-group-generator-20261109",
+    "field": "spec.acceptanceCriteria",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "documentTaskCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "specDeclaredProductCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missing": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "unexpected": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blockerId": "REG-01",
+    "evidence": "原規格製作 task 用八節評分正確。spec.acceptanceCriteria 也被登記成同八節，缺 SPEC.md §acceptance 的九個產品面向。新 production 需原樣繼承 spec.acceptanceCriteria，照現況無法繼承規格的產品契約。",
+    "resolution": "由主統籌依維護流程更正登記，保留原規格 task、候選和 owner；讀回相符九面向後才重評 ready/可開工。"
+  }
+}
