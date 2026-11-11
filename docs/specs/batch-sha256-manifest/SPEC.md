@@ -222,7 +222,7 @@ Controller 的請求精確為 `{type:"verify",version:1,runId,manifest,files}`�
 | ID | 產品必要證據 |
 | --- | --- |
 | `functionality` | 走兩語主要路徑，驗 mixed／all match／zero selected 的逐列狀態、表格與完整下載 bytes。獨立重算 SHA-256。 |
-| `boundaries` | 字面測例命中 UTF-8/BOM、CRLF／裸 CR、格式、名稱、重名、大小、件數、總量、精確 Unicode 配對、read_error、digest／Worker 故障及 controller 世代。錯誤時選檔內容讀取為零。 |
+| `boundaries` | 字面測例命中 UTF-8/BOM、CRLF／裸 CR、格式、名稱、重名、大小、件數、總量、精確 Unicode 配對、read_error、digest／Worker 故障及 controller 世代。預檢失敗時待核對檔內容讀取為零，預檢可讀取清單 File。執行中個別配對檔讀取失敗時記為 read_error 並繼續，保留完整報告。digest 或 Worker 故障時核對已發生的讀取及全批失敗，無部分報告。 |
 | `privacy` | 真實隔離瀏覽器以合成資料觀察初始資產完成後的 Network／Storage，走開始、取消、改檔、重跑、下載、語言、pagehide／返回。核對零上傳、零持久化、無同源遙測、所有過期 URLs 及 Worker 釋放。正式站另觀察主機注入。 |
 | `security` | 確認 CSP、固定路徑、secure context、metadata schema、對 malformed／過期訊息的拒絕，檔名作文字及顯示轉義，原始例外和內容不出現在 UI/log。 |
 | `usability` | 真實 Desktop 使用兩種清單來源、多選替換、移除、樣本、修正錯誤、進度取消、篩選後完整下載及清理。320 px 仍可完成小批次。 |

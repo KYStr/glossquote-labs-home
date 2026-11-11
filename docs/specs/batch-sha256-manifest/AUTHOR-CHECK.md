@@ -24,8 +24,12 @@ SHA-256 已知答案用固定 hex 位元組，主案例以逐行資料、選取�
 | 文件 | SHA-256 |
 | --- | --- |
 | `BRIEF.md` | `b7421e829b695361a74d6707d4ffad13796f2dc663ae71b213b519f06000ec90` |
-| `SPEC.md` | `05212f35a3501a24b1ed04692f4362c841157f700fd72825ebb4d919f4705497` |
+| `SPEC.md` | `639af18c02d681f29ab6888761765d5b8d79aa6eada7d9f1a1f7d3091cc9eccf` |
 | `fixtures.json` | `5b214e3c5d63c7d5de25496612be265a840c1993e1a8ad22279e921548d10f6c` |
+
+## FH-SHA312-01 退修驗證
+
+boundaries 的零讀取條件限於預檢失敗時的待核對檔，並明列配對讀取失敗與全批執行故障。以 Node v24.14.0 重驗獨審最小反例：合法清單與同名 x 檔（hex 616263），注入 digestRejectAtFileIndex=1，先讀取及呼叫 digest（readSelected=[1]、digestSelected=[1]），再回 DIGEST_FAILED，reportUtf8=null。另核對固定的預檢失敗、配對 read_error 續行與 digest 拒絕案例。BRIEF 與 fixtures 保留原 bytes，沿用原離線算術證據。 [固定獨立審查](https://github.com/KYStr/glossquote-labs-home/blob/b5857f2658d5e10d29756a473c935f9b8a48fb89/docs/reviews/five-hour-2026-11-11/spec-review-01/new-sha256-manifest/REVIEW.md)
 
 ## 候選目錄內可重跑的檢查
 
