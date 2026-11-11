@@ -1,0 +1,5515 @@
+{
+  "schemaVersion": 1,
+  "hashAnswers": [
+    {
+      "bytesHex": "616263",
+      "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    },
+    {
+      "bytesHex": "68656c6c6f",
+      "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+    },
+    {
+      "bytesHex": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "batchCases": [
+    {
+      "id": "main-batch",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt"
+        },
+        "selected": [
+          {
+            "name": "extra.txt",
+            "sizeBytes": 5,
+            "bytesHex": "68656c6c6f"
+          },
+          {
+            "name": "agenda.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          },
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 1,
+              "mismatch": 1,
+              "missing": 1,
+              "unexpected": 1,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "agenda.txt",
+                "status": "mismatch",
+                "sizeBytes": 3,
+                "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "empty.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "actualSha256": null
+              },
+              {
+                "name": "extra.txt",
+                "status": "unexpected",
+                "sizeBytes": 5,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          3,
+          2
+        ],
+        "digestSelected": [
+          3,
+          2
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":1,\"missing\":1,\"unexpected\":1,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"mismatch\",\"sizeBytes\":3,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null},{\"name\":\"extra.txt\",\"status\":\"unexpected\",\"sizeBytes\":5,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "zero-byte-match",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt"
+        },
+        "selected": [
+          {
+            "name": "empty.txt",
+            "sizeBytes": 0,
+            "bytesHex": ""
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "empty.txt",
+                "status": "match",
+                "sizeBytes": 0,
+                "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "actualSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"empty.txt\",\"status\":\"match\",\"sizeBytes\":0,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}]}\n"
+      }
+    },
+    {
+      "id": "zero-selected",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 0,
+              "mismatch": 0,
+              "missing": 2,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "agenda.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "case-exact",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "Notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 0,
+              "mismatch": 0,
+              "missing": 1,
+              "unexpected": 1,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "Notes.txt",
+                "status": "unexpected",
+                "sizeBytes": 3,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":1,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"Notes.txt\",\"status\":\"unexpected\",\"sizeBytes\":3,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "unicode-exact-and-spaces",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  é.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824  a b.txt"
+        },
+        "selected": [
+          {
+            "name": "é.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "a b.txt",
+            "sizeBytes": 5,
+            "bytesHex": "68656c6c6f"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 1,
+              "unexpected": 1,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "é.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "a b.txt",
+                "status": "match",
+                "sizeBytes": 5,
+                "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                "actualSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+              },
+              {
+                "name": "é.txt",
+                "status": "unexpected",
+                "sizeBytes": 3,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":1,\"unexpected\":1,\"read_error\":0},\"rows\":[{\"name\":\"é.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"a b.txt\",\"status\":\"match\",\"sizeBytes\":5,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\"},{\"name\":\"é.txt\",\"status\":\"unexpected\",\"sizeBytes\":3,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "utf8-bom-crlf-file",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 232,
+          "bytesHex": "efbbbf6261373831366266386630316366656134313431343064653564616532323233623030333631613339363137376139636234313066663631663230303135616420206120622e7478740d0a42413738313642463846303143464541343134313430444535444145323232334230303336314133393631373741394342343130464636314632303031354144202a6e6f7465732e7478740d0a653362306334343239386663316331343961666266346338393936666239323432376165343165343634396239333463613439353939316237383532623835352020656d7074792e7478740d0a"
+        },
+        "selected": [
+          {
+            "name": "empty.txt",
+            "sizeBytes": 0,
+            "bytesHex": ""
+          },
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          },
+          {
+            "name": "a b.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 3,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "a b.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "notes.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "empty.txt",
+                "status": "match",
+                "sizeBytes": 0,
+                "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "actualSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [
+          3,
+          2,
+          1
+        ],
+        "digestSelected": [
+          3,
+          2,
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":3,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"a b.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"empty.txt\",\"status\":\"match\",\"sizeBytes\":0,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}]}\n"
+      }
+    },
+    {
+      "id": "read-error-continues",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  bad.txt\nba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "extra.txt",
+            "sizeBytes": 5,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          },
+          {
+            "name": "bad.txt",
+            "sizeBytes": 3,
+            "readMode": "reject"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 1,
+              "read_error": 1
+            },
+            "rows": [
+              {
+                "name": "bad.txt",
+                "status": "read_error",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "notes.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "extra.txt",
+                "status": "unexpected",
+                "sizeBytes": 5,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          3,
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":1,\"read_error\":1},\"rows\":[{\"name\":\"bad.txt\",\"status\":\"read_error\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"extra.txt\",\"status\":\"unexpected\",\"sizeBytes\":5,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "read-size-mismatch",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 4,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 0,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 1
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "read_error",
+                "sizeBytes": 4,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":1},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"read_error\",\"sizeBytes\":4,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "exact-name-byte-limit",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界"
+        },
+        "selected": [
+          {
+            "name": "界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"}]}\n"
+      }
+    },
+    {
+      "id": "invisible-name-keeps-original",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  alpha\u202e.txt"
+        },
+        "selected": [
+          {
+            "name": "alpha\u202e.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "alpha\u202e.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"alpha\u202e.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"}]}\n"
+      }
+    },
+    {
+      "id": "map-names",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  __proto__\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  constructor"
+        },
+        "selected": [
+          {
+            "name": "constructor",
+            "sizeBytes": 0,
+            "bytesHex": ""
+          },
+          {
+            "name": "__proto__",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 2,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "__proto__",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "constructor",
+                "status": "match",
+                "sizeBytes": 0,
+                "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "actualSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          2,
+          1
+        ],
+        "digestSelected": [
+          2,
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":2,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"__proto__\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"constructor\",\"status\":\"match\",\"sizeBytes\":0,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}]}\n"
+      }
+    },
+    {
+      "id": "selected-total-exact-limit",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "x.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "y.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "z.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "q.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 0,
+              "mismatch": 0,
+              "missing": 1,
+              "unexpected": 4,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "missing",
+                "sizeBytes": null,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "x.bin",
+                "status": "unexpected",
+                "sizeBytes": 33554432,
+                "expectedSha256": null,
+                "actualSha256": null
+              },
+              {
+                "name": "y.bin",
+                "status": "unexpected",
+                "sizeBytes": 33554432,
+                "expectedSha256": null,
+                "actualSha256": null
+              },
+              {
+                "name": "z.bin",
+                "status": "unexpected",
+                "sizeBytes": 33554432,
+                "expectedSha256": null,
+                "actualSha256": null
+              },
+              {
+                "name": "q.bin",
+                "status": "unexpected",
+                "sizeBytes": 33554432,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":4,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"x.bin\",\"status\":\"unexpected\",\"sizeBytes\":33554432,\"expectedSha256\":null,\"actualSha256\":null},{\"name\":\"y.bin\",\"status\":\"unexpected\",\"sizeBytes\":33554432,\"expectedSha256\":null,\"actualSha256\":null},{\"name\":\"z.bin\",\"status\":\"unexpected\",\"sizeBytes\":33554432,\"expectedSha256\":null,\"actualSha256\":null},{\"name\":\"q.bin\",\"status\":\"unexpected\",\"sizeBytes\":33554432,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "required",
+      "input": {
+        "manifest": null,
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_REQUIRED",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "mutually-exclusive-envelope",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+          "file": "unexpected"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "INPUT_SCHEMA",
+            "field": null,
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "empty-text",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": ""
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_EMPTY",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "zero-byte-manifest-file",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 0,
+          "bytesHex": ""
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_EMPTY",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "bom-only-file",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 3,
+          "bytesHex": "efbbbf"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_EMPTY",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "double-bom",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "﻿﻿ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROW_FORMAT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "bad-utf8",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 5,
+          "bytesHex": "efbbbfc328"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_UTF8",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-size-invalid",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": -1,
+          "bytesHex": "",
+          "readMode": "must-not-read"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_SIZE_INVALID",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-file-over-limit-before-read",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 65537,
+          "bytesHex": "",
+          "readMode": "must-not-read"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BYTES_LIMIT",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-read-rejection",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 1,
+          "bytesHex": "",
+          "readMode": "reject"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_READ_FAILED",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-read-size-mismatch",
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 4,
+          "bytesHex": "616263"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_READ_FAILED",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "nul-before-bare-cr",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r\u00002cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NUL",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "bare-cr",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BARE_CR",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "terminal-bare-cr",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BARE_CR",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "extra-blank-row",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n\n"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BLANK_LINE",
+            "field": "manifest",
+            "line": 2,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "gnu-escaped",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "\\ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ESCAPED",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "gnu-tagged",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "SHA256 (notes.txt) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_TAGGED",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "short-hash",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015a  notes.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROW_FORMAT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "tab-separator",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\t notes.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROW_FORMAT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "invalid-mode",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad !notes.txt"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROW_FORMAT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "empty-manifest-name",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  "
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_EMPTY",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-slash-path",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  ../notes.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-backslash-path",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  sub\\notes.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-colon",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  note:1.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-dot",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  ."
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-dotdot",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  .."
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-standard-input",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  -"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-c0",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  a\tb.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-c1",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  ab.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-del",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  ab.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-leading-space",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad   notes.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-trailing-space",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt "
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-lone-surrogate",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  x\ud800.txt"
+        },
+        "selected": [
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_INVALID",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-name-over-utf8-limit",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界a"
+        },
+        "selected": []
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_NAME_LIMIT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-duplicate-before-file-cap",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "oversize.bin",
+            "sizeBytes": 33554433,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_DUPLICATE",
+            "field": "manifest",
+            "line": 2,
+            "fileIndex": null,
+            "firstLine": 1,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-size-invalid",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "x.bin",
+            "sizeBytes": -1,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_METADATA",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "single-file-over-limit",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "x.bin",
+            "sizeBytes": 0,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "../oversize.bin",
+            "sizeBytes": 33554433,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_SIZE_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": 2,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-total-over-limit-before-name",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "x.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "y.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "z.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "q.bin",
+            "sizeBytes": 33554432,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "../extra.bin",
+            "sizeBytes": 1,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILES_TOTAL_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-name-empty",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_NAME_EMPTY",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-path",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "sub\\extra.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_NAME_INVALID",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-name-over-limit",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界a",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_NAME_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-duplicate-unmatched",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+        },
+        "selected": [
+          {
+            "name": "extra.txt",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "different.txt",
+            "sizeBytes": 0,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "extra.txt",
+            "sizeBytes": 4,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_DUPLICATE",
+            "field": "files",
+            "line": null,
+            "fileIndex": 3,
+            "firstLine": null,
+            "firstFileIndex": 1
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "digest-rejects-batch",
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt"
+        },
+        "selected": [
+          {
+            "name": "agenda.txt",
+            "sizeBytes": 5,
+            "readMode": "must-not-read"
+          },
+          {
+            "name": "notes.txt",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ],
+        "faults": {
+          "digestRejectAtFileIndex": 2
+        }
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "DIGEST_FAILED",
+            "field": "files",
+            "line": null,
+            "fileIndex": 2,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": null
+      }
+    }
+  ],
+  "controllerCases": [
+    {
+      "id": "cancel-change-ignore-retry-filter-download-clean",
+      "steps": [
+        {
+          "action": "initial",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 0,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "load-sample",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 1,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 3,
+              "selectedBytes": 11,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 3,
+              "selectedBytes": 11,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 2,
+              "totalPairs": 2
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 3,
+              "selectedBytes": 11,
+              "progress": {
+                "completed": 0,
+                "total": 2
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "progress",
+              "version": 1,
+              "runId": 2,
+              "completedPairs": 1
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 3,
+              "selectedBytes": 11,
+              "progress": {
+                "completed": 1,
+                "total": 2
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "cancel",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "cancelled",
+              "generation": 3,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 3,
+              "selectedBytes": 11,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "replace-files",
+          "input": {
+            "files": [
+              {
+                "name": "notes.txt",
+                "sizeBytes": 3,
+                "bytesHex": "616263"
+              }
+            ]
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "result",
+              "version": 1,
+              "runId": 2,
+              "report": {
+                "schemaVersion": 1,
+                "algorithm": "SHA-256",
+                "exactMatch": false,
+                "counts": {
+                  "match": 1,
+                  "mismatch": 1,
+                  "missing": 1,
+                  "unexpected": 1,
+                  "read_error": 0
+                },
+                "rows": [
+                  {
+                    "name": "notes.txt",
+                    "status": "match",
+                    "sizeBytes": 3,
+                    "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+                  },
+                  {
+                    "name": "agenda.txt",
+                    "status": "mismatch",
+                    "sizeBytes": 3,
+                    "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                    "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+                  },
+                  {
+                    "name": "empty.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "actualSha256": null
+                  },
+                  {
+                    "name": "extra.txt",
+                    "status": "unexpected",
+                    "sizeBytes": 5,
+                    "expectedSha256": null,
+                    "actualSha256": null
+                  }
+                ]
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 5,
+              "totalPairs": 1
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": {
+                "completed": 0,
+                "total": 1
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "progress",
+              "version": 1,
+              "runId": 5,
+              "completedPairs": 1
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": {
+                "completed": 1,
+                "total": 1
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "result",
+              "version": 1,
+              "runId": 5,
+              "report": {
+                "schemaVersion": 1,
+                "algorithm": "SHA-256",
+                "exactMatch": false,
+                "counts": {
+                  "match": 1,
+                  "mismatch": 0,
+                  "missing": 2,
+                  "unexpected": 0,
+                  "read_error": 0
+                },
+                "rows": [
+                  {
+                    "name": "notes.txt",
+                    "status": "match",
+                    "sizeBytes": 3,
+                    "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+                  },
+                  {
+                    "name": "agenda.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                    "actualSha256": null
+                  },
+                  {
+                    "name": "empty.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "actualSha256": null
+                  }
+                ]
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": {
+                "completed": 1,
+                "total": 1
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "filter",
+          "input": {
+            "value": "issues"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": {
+                "completed": 1,
+                "total": 1
+              },
+              "filter": "issues",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "download",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 1,
+              "selectedBytes": 3,
+              "progress": {
+                "completed": 1,
+                "total": 1
+              },
+              "filter": "issues",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": "requested"
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "remove-file",
+          "input": {
+            "fileIndex": 1
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 6,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "download",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 6,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 228,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "pagehide",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 7,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "failure",
+              "version": 1,
+              "runId": 5,
+              "error": {
+                "code": "WORKER_FAILED",
+                "field": null,
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 7,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "pageshow",
+          "input": {
+            "persisted": true
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 7,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":2,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"agenda.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\",\"actualSha256\":null},{\"name\":\"empty.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "raw-paste-noop-and-real-edit",
+      "steps": [
+        {
+          "action": "initial",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 0,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+            "value": "",
+            "selectionStart": 0,
+            "selectionEnd": 0
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 1,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "edit-text",
+          "input": {
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 1,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "failure",
+              "version": 1,
+              "runId": 2,
+              "error": {
+                "code": "MANIFEST_BARE_CR",
+                "field": "manifest",
+                "line": 1,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "MANIFEST_BARE_CR",
+                "field": "manifest",
+                "line": 1,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "edit-text",
+          "input": {
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 3,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 156,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 156,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 4
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 4,
+              "totalPairs": 0
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 156,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 4
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 2,
+            "message": {
+              "type": "result",
+              "version": 1,
+              "runId": 4,
+              "report": {
+                "schemaVersion": 1,
+                "algorithm": "SHA-256",
+                "exactMatch": false,
+                "counts": {
+                  "match": 0,
+                  "mismatch": 0,
+                  "missing": 2,
+                  "unexpected": 0,
+                  "read_error": 0
+                },
+                "rows": [
+                  {
+                    "name": "notes.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "actualSha256": null
+                  },
+                  {
+                    "name": "agenda.txt.bak",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                    "actualSha256": null
+                  }
+                ]
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 156,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 4
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt.bak",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "reset",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 5,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                },
+                {
+                  "worker": 2,
+                  "runId": 4
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "partial-paste-raw-boundaries-source-switch",
+      "steps": [
+        {
+          "action": "initial",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 0,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+            "value": "",
+            "selectionStart": 0,
+            "selectionEnd": 0
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 1,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "\n",
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+            "selectionStart": 76,
+            "selectionEnd": 76
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 153,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\re3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+            "selectionStart": 76,
+            "selectionEnd": 152
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 3,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 234,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\re3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": false,
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+            "selectionStart": 0,
+            "selectionEnd": 0
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 3,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 234,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": [
+                "paste-no-plain-text"
+              ]
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\re3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  replacement.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "choose-manifest-file",
+          "input": {
+            "file": {
+              "kind": "file",
+              "name": "SHA256SUMS",
+              "sizeBytes": 75,
+              "bytesHex": "653362306334343239386663316331343961666266346338393936666239323432376165343165343634396239333463613439353939316237383532623835352020656d7074792e747874"
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 4,
+              "manifestSource": "file",
+              "textOrigin": null,
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": [
+                "paste-no-plain-text"
+              ]
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "picker-cancel",
+          "input": {
+            "picker": "manifest"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 4,
+              "manifestSource": "file",
+              "textOrigin": null,
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": [
+                "paste-no-plain-text"
+              ]
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+            "value": "",
+            "selectionStart": 0,
+            "selectionEnd": 0
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": [
+                "paste-no-plain-text"
+              ]
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "paste"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "current-worker-faults-download-retry-language-leave",
+      "steps": [
+        {
+          "action": "initial",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 0,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 1,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "MANIFEST_REQUIRED",
+                "field": "manifest",
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "edit-text",
+          "input": {
+            "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {
+            "fault": "env-unavailable"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 3,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "ENV_UNAVAILABLE",
+                "field": null,
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {
+            "fault": "worker-factory-before-url"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 4,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "WORKER_START_FAILED",
+                "field": null,
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 5,
+              "totalPairs": 0,
+              "unknown": true
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 5,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "WORKER_PROTOCOL",
+                "field": null,
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 6,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-error",
+          "input": {
+            "worker": 2
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "error",
+              "generation": 6,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": {
+                "code": "WORKER_FAILED",
+                "field": null,
+                "line": null,
+                "fileIndex": null,
+                "firstLine": null,
+                "firstFileIndex": null
+              },
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 7,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 3,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 7,
+              "totalPairs": 0
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 7,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 3,
+            "message": {
+              "type": "result",
+              "version": 1,
+              "runId": 7,
+              "report": {
+                "schemaVersion": 1,
+                "algorithm": "SHA-256",
+                "exactMatch": false,
+                "counts": {
+                  "match": 0,
+                  "mismatch": 0,
+                  "missing": 1,
+                  "unexpected": 0,
+                  "read_error": 0
+                },
+                "rows": [
+                  {
+                    "name": "notes.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "actualSha256": null
+                  }
+                ]
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 7,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "download",
+          "input": {
+            "fault": "report-object-url"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 7,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": "failed"
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "download",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 7,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 75,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": "requested"
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "language-leave",
+          "input": {
+            "target": "en"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 8,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "pagehide",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 8,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "pageshow",
+          "input": {
+            "persisted": true
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 8,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 5
+                },
+                {
+                  "worker": 2,
+                  "runId": 6
+                },
+                {
+                  "worker": 3,
+                  "runId": 7
+                }
+              ],
+              "workersTerminated": [
+                1,
+                2,
+                3
+              ],
+              "workerUrlsRevoked": [
+                "worker:1",
+                "worker:2",
+                "worker:3"
+              ],
+              "reportUrlsCreated": [
+                "report:1"
+              ],
+              "reportUrlsRevoked": [
+                "report:1"
+              ],
+              "downloads": [
+                {
+                  "url": "report:1",
+                  "filename": "sha256-manifest-report.json",
+                  "mime": "application/json;charset=utf-8",
+                  "utf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":1,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"missing\",\"sizeBytes\":null,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+                }
+              ],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "start-uses-visible-edited-text",
+      "steps": [
+        {
+          "action": "initial",
+          "input": {},
+          "expect": {
+            "snapshot": {
+              "phase": "idle",
+              "generation": 0,
+              "manifestSource": "none",
+              "textOrigin": null,
+              "manifestBytes": null,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": null
+          }
+        },
+        {
+          "action": "paste",
+          "input": {
+            "hasPlainText": true,
+            "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+            "value": "",
+            "selectionStart": 0,
+            "selectionEnd": 0
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "dirty",
+              "generation": 1,
+              "manifestSource": "text",
+              "textOrigin": "paste",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\r2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt",
+              "origin": "paste"
+            }
+          }
+        },
+        {
+          "action": "start",
+          "input": {
+            "observedTextareaValue": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new"
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "validating",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": null,
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "prepared",
+              "version": 1,
+              "runId": 2,
+              "totalPairs": 0
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "hashing",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": false,
+              "exactMatch": null,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [],
+              "workerUrlsRevoked": [],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "origin": "textarea"
+            }
+          }
+        },
+        {
+          "action": "worker-message",
+          "input": {
+            "worker": 1,
+            "message": {
+              "type": "result",
+              "version": 1,
+              "runId": 2,
+              "report": {
+                "schemaVersion": 1,
+                "algorithm": "SHA-256",
+                "exactMatch": false,
+                "counts": {
+                  "match": 0,
+                  "mismatch": 0,
+                  "missing": 2,
+                  "unexpected": 0,
+                  "read_error": 0
+                },
+                "rows": [
+                  {
+                    "name": "notes.txt",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "actualSha256": null
+                  },
+                  {
+                    "name": "agenda.new",
+                    "status": "missing",
+                    "sizeBytes": null,
+                    "expectedSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                    "actualSha256": null
+                  }
+                ]
+              }
+            }
+          },
+          "expect": {
+            "snapshot": {
+              "phase": "complete",
+              "generation": 2,
+              "manifestSource": "text",
+              "textOrigin": "textarea",
+              "manifestBytes": 152,
+              "selectedCount": 0,
+              "selectedBytes": 0,
+              "progress": {
+                "completed": 0,
+                "total": 0
+              },
+              "filter": "all",
+              "reportReady": true,
+              "exactMatch": false,
+              "error": null,
+              "downloadNotice": null
+            },
+            "effects": {
+              "workersCreated": [
+                {
+                  "worker": 1,
+                  "runId": 2
+                }
+              ],
+              "workersTerminated": [
+                1
+              ],
+              "workerUrlsRevoked": [
+                "worker:1"
+              ],
+              "reportUrlsCreated": [],
+              "reportUrlsRevoked": [],
+              "downloads": [],
+              "uiNotices": []
+            },
+            "textDraft": {
+              "raw": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "display": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.new",
+              "origin": "textarea"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "boundaryRecipes": [
+    {
+      "id": "text-byte-gate-equality",
+      "recipe": {
+        "kind": "repeat-text",
+        "character": "a",
+        "count": 65536
+      },
+      "expect": {
+        "utf8Bytes": 65536,
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROW_FORMAT",
+            "field": "manifest",
+            "line": 1,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": []
+      }
+    },
+    {
+      "id": "text-byte-gate-plus-one",
+      "recipe": {
+        "kind": "repeat-text",
+        "character": "a",
+        "count": 65537
+      },
+      "expect": {
+        "utf8Bytes": 65537,
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BYTES_LIMIT",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": []
+      }
+    },
+    {
+      "id": "largest-valid-manifest",
+      "recipe": {
+        "kind": "manifest-grid",
+        "rows": 200,
+        "digest": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "namePrefix": "a",
+        "prefixCount": 252,
+        "indexWidth": 3,
+        "mode": " ",
+        "eol": "\r\n",
+        "terminalEol": true,
+        "bom": true
+      },
+      "expect": {
+        "utf8Bytes": 64603,
+        "ok": true,
+        "entries": 200,
+        "first": {
+          "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa001",
+          "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "line": 1
+        },
+        "last": {
+          "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa200",
+          "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "line": 200
+        },
+        "readSelected": []
+      }
+    },
+    {
+      "id": "manifest-row-count-plus-one",
+      "recipe": {
+        "kind": "manifest-grid",
+        "rows": 201,
+        "digest": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "namePrefix": "a",
+        "prefixCount": 1,
+        "indexWidth": 3,
+        "mode": " ",
+        "eol": "\n",
+        "terminalEol": true,
+        "bom": false
+      },
+      "expect": {
+        "utf8Bytes": 14271,
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_ROWS_LIMIT",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readSelected": []
+      }
+    },
+    {
+      "id": "selected-count-exact",
+      "recipe": {
+        "kind": "selected-grid",
+        "count": 200,
+        "prefix": "extra-",
+        "indexWidth": 3,
+        "suffix": ".txt",
+        "sizeBytes": 0,
+        "readMode": "must-not-read",
+        "manifestText": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+      },
+      "expect": {
+        "ok": true,
+        "exactMatch": false,
+        "rows": 201,
+        "counts": {
+          "match": 0,
+          "mismatch": 0,
+          "missing": 1,
+          "unexpected": 200,
+          "read_error": 0
+        },
+        "first": {
+          "name": "notes.txt",
+          "status": "missing",
+          "sizeBytes": null,
+          "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "actualSha256": null
+        },
+        "firstExtra": {
+          "name": "extra-001.txt",
+          "status": "unexpected",
+          "sizeBytes": 0,
+          "expectedSha256": null,
+          "actualSha256": null
+        },
+        "last": {
+          "name": "extra-200.txt",
+          "status": "unexpected",
+          "sizeBytes": 0,
+          "expectedSha256": null,
+          "actualSha256": null
+        },
+        "readSelected": [],
+        "digestSelected": []
+      }
+    },
+    {
+      "id": "selected-count-plus-one",
+      "recipe": {
+        "kind": "selected-grid",
+        "count": 201,
+        "prefix": "extra-",
+        "indexWidth": 3,
+        "suffix": ".txt",
+        "sizeBytes": 0,
+        "readMode": "must-not-read",
+        "manifestText": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  notes.txt"
+      },
+      "expect": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILES_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readSelected": [],
+        "digestSelected": []
+      }
+    },
+    {
+      "id": "single-file-exact-limit",
+      "recipe": {
+        "kind": "repeat-file-byte",
+        "byteHex": "00",
+        "count": 33554432,
+        "name": "data.bin",
+        "manifestText": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302  data.bin"
+      },
+      "expect": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": true,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 0
+            },
+            "rows": [
+              {
+                "name": "data.bin",
+                "status": "match",
+                "sizeBytes": 33554432,
+                "expectedSha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+                "actualSha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302"
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [
+          1
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":true,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":0},\"rows\":[{\"name\":\"data.bin\",\"status\":\"match\",\"sizeBytes\":33554432,\"expectedSha256\":\"83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302\",\"actualSha256\":\"83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302\"}]}\n"
+      }
+    },
+    {
+      "id": "literal-display",
+      "recipe": {
+        "kind": "display-name",
+        "name": "<tag>&alpha\u202e.txt"
+      },
+      "expect": {
+        "display": "<tag>&alpha\\u202e.txt",
+        "reportName": "<tag>&alpha\u202e.txt",
+        "domKind": "text"
+      }
+    }
+  ]
+}
