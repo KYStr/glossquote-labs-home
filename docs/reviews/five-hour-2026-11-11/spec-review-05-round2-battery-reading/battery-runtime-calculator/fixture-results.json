@@ -1,0 +1,1892 @@
+{
+  "command": "node verify.mjs original-fixtures.json candidate-fixtures.json",
+  "exit": 0,
+  "runtime": "v24.14.0",
+  "passed": 40,
+  "failed": 0,
+  "unchangedOriginalCases": 31,
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "phone-basic",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "10000",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 37,
+          "mode": "runtime-mah",
+          "runtimeHours": 3.7,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 42,
+          "runtimeTotalMinutes": 222,
+          "status": "ok",
+          "usableWh": 37
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 37,
+          "usableWh": 37,
+          "runtimeHours": 3.7,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 42,
+          "runtimeTotalMinutes": 222
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "37000000000000000/1000000000000000",
+        "exactMinutesRatio": "222000000000000000000000000000000/1000000000000000000000000000000",
+        "roundedMinutes": "222"
+      },
+      "expectedReport": {
+        "bytes": 155,
+        "sha256": "6c4f194a64567096270f447edf8f2f07e7deb11e157768cf9828866155c80ce6",
+        "text": "{\"energyWh\":37,\"mode\":\"runtime-mah\",\"runtimeHours\":3.7,\"runtimeHoursPart\":3,\"runtimeMinutesPart\":42,\"runtimeTotalMinutes\":222,\"status\":\"ok\",\"usableWh\":37}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "powerbank-laptop",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "20000",
+        "loadWatts": "45",
+        "mode": "runtime-mah",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 74,
+          "mode": "runtime-mah",
+          "runtimeHours": 1.6,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 39,
+          "runtimeTotalMinutes": 99,
+          "status": "ok",
+          "usableWh": 74
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 74,
+          "usableWh": 74,
+          "runtimeHours": 1.6,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 39,
+          "runtimeTotalMinutes": 99
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "74000000000000000/1000000000000000",
+        "exactMinutesRatio": "444000000000000000000000000000000/4500000000000000000000000000000",
+        "roundedMinutes": "99"
+      },
+      "expectedReport": {
+        "bytes": 154,
+        "sha256": "77c6e7971e7b192e0b58a24d77bd8a067b6272d60d19d11469c76d6e31685b2d",
+        "text": "{\"energyWh\":74,\"mode\":\"runtime-mah\",\"runtimeHours\":1.6,\"runtimeHoursPart\":1,\"runtimeMinutesPart\":39,\"runtimeTotalMinutes\":99,\"status\":\"ok\",\"usableWh\":74}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "dod-lead-acid",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "60000",
+        "depthOfDischargePercent": "50",
+        "loadWatts": "100",
+        "mode": "runtime-mah",
+        "voltage": "12"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 720,
+          "mode": "runtime-mah",
+          "runtimeHours": 3.6,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 36,
+          "runtimeTotalMinutes": 216,
+          "status": "ok",
+          "usableWh": 360
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 720,
+          "usableWh": 360,
+          "runtimeHours": 3.6,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 36,
+          "runtimeTotalMinutes": 216
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "720000000000000000/1000000000000000",
+        "exactMinutesRatio": "2160000000000000000000000000000000/10000000000000000000000000000000",
+        "roundedMinutes": "216"
+      },
+      "expectedReport": {
+        "bytes": 157,
+        "sha256": "6fad84f70b33673ad0ddf96287fba74320bf67c09d4a068dac1993c68c033901",
+        "text": "{\"energyWh\":720,\"mode\":\"runtime-mah\",\"runtimeHours\":3.6,\"runtimeHoursPart\":3,\"runtimeMinutesPart\":36,\"runtimeTotalMinutes\":216,\"status\":\"ok\",\"usableWh\":360}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "half-up-tie",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "5000",
+        "loadWatts": "20",
+        "mode": "runtime-mah",
+        "voltage": "9"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 45,
+          "mode": "runtime-mah",
+          "runtimeHours": 2.3,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 15,
+          "runtimeTotalMinutes": 135,
+          "status": "ok",
+          "usableWh": 45
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 45,
+          "usableWh": 45,
+          "runtimeHours": 2.3,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 15,
+          "runtimeTotalMinutes": 135
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "45000000000000000/1000000000000000",
+        "exactMinutesRatio": "270000000000000000000000000000000/2000000000000000000000000000000",
+        "roundedMinutes": "135"
+      },
+      "expectedReport": {
+        "bytes": 155,
+        "sha256": "2dfe8f77997d6efb85f00f423c28d5e0f69301179d20563c67cd71f3b0774263",
+        "text": "{\"energyWh\":45,\"mode\":\"runtime-mah\",\"runtimeHours\":2.3,\"runtimeHoursPart\":2,\"runtimeMinutesPart\":15,\"runtimeTotalMinutes\":135,\"status\":\"ok\",\"usableWh\":45}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "minutes-tie",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "41",
+        "loadWatts": "40",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 41,
+          "mode": "runtime-wh",
+          "runtimeHours": 1,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 2,
+          "runtimeTotalMinutes": 62,
+          "status": "ok",
+          "usableWh": 41
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 41,
+          "usableWh": 41,
+          "runtimeHours": 1,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 2,
+          "runtimeTotalMinutes": 62
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "41000000/1000000",
+        "exactMinutesRatio": "246000000000000000000000/4000000000000000000000",
+        "roundedMinutes": "62"
+      },
+      "expectedReport": {
+        "bytes": 150,
+        "sha256": "2221ed8349ef14641ce87b8c7002cc9bec61b55db30dbc6d50949969f43d9b65",
+        "text": "{\"energyWh\":41,\"mode\":\"runtime-wh\",\"runtimeHours\":1,\"runtimeHoursPart\":1,\"runtimeMinutesPart\":2,\"runtimeTotalMinutes\":62,\"status\":\"ok\",\"usableWh\":41}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "zero-load-infinite",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "5000",
+        "loadWatts": "0",
+        "mode": "runtime-mah",
+        "voltage": "5"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 25,
+          "mode": "runtime-mah",
+          "runtimeHours": null,
+          "runtimeHoursPart": null,
+          "runtimeMinutesPart": null,
+          "runtimeTotalMinutes": null,
+          "status": "infinite",
+          "usableWh": 25
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "infinite",
+          "energyWh": 25,
+          "usableWh": 25,
+          "runtimeHours": null,
+          "runtimeHoursPart": null,
+          "runtimeMinutesPart": null,
+          "runtimeTotalMinutes": null
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "25000000000000000/1000000000000000"
+      },
+      "expectedReport": {
+        "bytes": 168,
+        "sha256": "5a39a623554966e71488055e3872f2ab05e70f3e5091388f18c1700d6b3bcf05",
+        "text": "{\"energyWh\":25,\"mode\":\"runtime-mah\",\"runtimeHours\":null,\"runtimeHoursPart\":null,\"runtimeMinutesPart\":null,\"runtimeTotalMinutes\":null,\"status\":\"infinite\",\"usableWh\":25}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "tiny-runtime",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "1",
+        "loadWatts": "100000",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 1,
+          "mode": "runtime-wh",
+          "runtimeHours": 0,
+          "runtimeHoursPart": 0,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 0,
+          "status": "ok",
+          "usableWh": 1
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 1,
+          "usableWh": 1,
+          "runtimeHours": 0,
+          "runtimeHoursPart": 0,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 0
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "1000000/1000000",
+        "exactMinutesRatio": "6000000000000000000000/10000000000000000000000000",
+        "roundedMinutes": "0"
+      },
+      "expectedReport": {
+        "bytes": 147,
+        "sha256": "5a9b12493cd559b109cc1a2f0662e32e93f550836c26433e9775a1424dd07d9b",
+        "text": "{\"energyWh\":1,\"mode\":\"runtime-wh\",\"runtimeHours\":0,\"runtimeHoursPart\":0,\"runtimeMinutesPart\":0,\"runtimeTotalMinutes\":0,\"status\":\"ok\",\"usableWh\":1}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "ups-wh",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "512",
+        "loadWatts": "128",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 512,
+          "mode": "runtime-wh",
+          "runtimeHours": 4,
+          "runtimeHoursPart": 4,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 240,
+          "status": "ok",
+          "usableWh": 512
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 512,
+          "usableWh": 512,
+          "runtimeHours": 4,
+          "runtimeHoursPart": 4,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 240
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "512000000/1000000",
+        "exactMinutesRatio": "3072000000000000000000000/12800000000000000000000",
+        "roundedMinutes": "240"
+      },
+      "expectedReport": {
+        "bytes": 153,
+        "sha256": "9fcd6e74dda671d72ba3c477013a1c6ed0f6ce9d382475b0b829aaf49e6d30f8",
+        "text": "{\"energyWh\":512,\"mode\":\"runtime-wh\",\"runtimeHours\":4,\"runtimeHoursPart\":4,\"runtimeMinutesPart\":0,\"runtimeTotalMinutes\":240,\"status\":\"ok\",\"usableWh\":512}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "wh-with-dod",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "100",
+        "depthOfDischargePercent": "80",
+        "loadWatts": "30",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 100,
+          "mode": "runtime-wh",
+          "runtimeHours": 2.7,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 40,
+          "runtimeTotalMinutes": 160,
+          "status": "ok",
+          "usableWh": 80
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 100,
+          "usableWh": 80,
+          "runtimeHours": 2.7,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 40,
+          "runtimeTotalMinutes": 160
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "100000000/1000000",
+        "exactMinutesRatio": "480000000000000000000000/3000000000000000000000",
+        "roundedMinutes": "160"
+      },
+      "expectedReport": {
+        "bytes": 155,
+        "sha256": "27d75a56ea5fb1e24cb01cb9e216155b8cc070e2091a31de99e180d2ece915e8",
+        "text": "{\"energyWh\":100,\"mode\":\"runtime-wh\",\"runtimeHours\":2.7,\"runtimeHoursPart\":2,\"runtimeMinutesPart\":40,\"runtimeTotalMinutes\":160,\"status\":\"ok\",\"usableWh\":80}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "exact-not-display",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "3350",
+        "loadWatts": "0.43215",
+        "mode": "runtime-mah",
+        "voltage": "3.87"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 12.96,
+          "mode": "runtime-mah",
+          "runtimeHours": 30,
+          "runtimeHoursPart": 30,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 1800,
+          "status": "ok",
+          "usableWh": 12.96
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 12.96,
+          "usableWh": 12.96,
+          "runtimeHours": 30,
+          "runtimeHoursPart": 30,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 1800
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "12964500000000000/1000000000000000",
+        "exactMinutesRatio": "77787000000000000000000000000000/43215000000000000000000000000",
+        "roundedMinutes": "1800"
+      },
+      "expectedReport": {
+        "bytes": 161,
+        "sha256": "128970b10d7285f3c38862797755e24af503dfc439a595a1743b2c5920899360",
+        "text": "{\"energyWh\":12.96,\"mode\":\"runtime-mah\",\"runtimeHours\":30,\"runtimeHoursPart\":30,\"runtimeMinutesPart\":0,\"runtimeTotalMinutes\":1800,\"status\":\"ok\",\"usableWh\":12.96}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-phone",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "loadWatts": "5",
+        "mode": "solve",
+        "targetRuntimeHours": "10",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "requiredCapacityMah": 13514,
+          "requiredEnergyWh": 50,
+          "status": "ok"
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "status": "ok",
+          "requiredEnergyWh": 50,
+          "requiredCapacityMah": 13514
+        }
+      },
+      "exactWitness": {
+        "exactCapacityRatio": "5000000000000000000000000/370000000000000000000",
+        "ceilMah": "13514",
+        "exactEnergyWhRatio": "5000000000000000/100000000000000"
+      },
+      "expectedReport": {
+        "bytes": 81,
+        "sha256": "317f70dfad1758d8298d35c7e45a4a075ba3aef7d62560d53429f138b3658c44",
+        "text": "{\"mode\":\"solve\",\"requiredCapacityMah\":13514,\"requiredEnergyWh\":50,\"status\":\"ok\"}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-with-dod",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "depthOfDischargePercent": "50",
+        "loadWatts": "25",
+        "mode": "solve",
+        "targetRuntimeHours": "8",
+        "voltage": "12"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "requiredCapacityMah": 33334,
+          "requiredEnergyWh": 400,
+          "status": "ok"
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "status": "ok",
+          "requiredEnergyWh": 400,
+          "requiredCapacityMah": 33334
+        }
+      },
+      "exactWitness": {
+        "exactCapacityRatio": "20000000000000000000000000/600000000000000000000",
+        "ceilMah": "33334",
+        "exactEnergyWhRatio": "20000000000000000/50000000000000"
+      },
+      "expectedReport": {
+        "bytes": 82,
+        "sha256": "c5d9b763b199a51385020f66d9b64e4c346459bd54427f6936d6810aba1f156a",
+        "text": "{\"mode\":\"solve\",\"requiredCapacityMah\":33334,\"requiredEnergyWh\":400,\"status\":\"ok\"}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-zero-load",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "loadWatts": "0",
+        "mode": "solve",
+        "targetRuntimeHours": "5",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "requiredCapacityMah": 0,
+          "requiredEnergyWh": 0,
+          "status": "ok"
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "status": "ok",
+          "requiredEnergyWh": 0,
+          "requiredCapacityMah": 0
+        }
+      },
+      "exactWitness": {
+        "exactCapacityRatio": "0/370000000000000000000",
+        "ceilMah": "0",
+        "exactEnergyWhRatio": "0/100000000000000"
+      },
+      "expectedReport": {
+        "bytes": 76,
+        "sha256": "e2f8797c0185ebfa6388c5a2e40ad795e0faf09f2d0a34285fbc2bd43bde3376",
+        "text": "{\"mode\":\"solve\",\"requiredCapacityMah\":0,\"requiredEnergyWh\":0,\"status\":\"ok\"}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "solve-exact-integer",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "loadWatts": "10",
+        "mode": "solve",
+        "targetRuntimeHours": "3.7",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "requiredCapacityMah": 10000,
+          "requiredEnergyWh": 37,
+          "status": "ok"
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "status": "ok",
+          "requiredEnergyWh": 37,
+          "requiredCapacityMah": 10000
+        }
+      },
+      "exactWitness": {
+        "exactCapacityRatio": "3700000000000000000000000/370000000000000000000",
+        "ceilMah": "10000",
+        "exactEnergyWhRatio": "3700000000000000/100000000000000"
+      },
+      "expectedReport": {
+        "bytes": 81,
+        "sha256": "43649f1555dce3260c79a8efaaf5534d94ee13495a9ae2c36326940f0a2da547",
+        "text": "{\"mode\":\"solve\",\"requiredCapacityMah\":10000,\"requiredEnergyWh\":37,\"status\":\"ok\"}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "pack-4s2p",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "cellCapacityMah": "3500",
+        "cellVoltage": "3.7",
+        "loadWatts": "37",
+        "mode": "pack",
+        "parallelCount": "2",
+        "seriesCount": "4"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 103.6,
+          "mode": "pack",
+          "packCapacityMah": 7000,
+          "packVoltageV": 14.8,
+          "runtimeHours": 2.8,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 48,
+          "runtimeTotalMinutes": 168,
+          "status": "ok",
+          "usableWh": 103.6
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "pack",
+          "status": "ok",
+          "energyWh": 103.6,
+          "usableWh": 103.6,
+          "packCapacityMah": 7000,
+          "packVoltageV": 14.8,
+          "runtimeHours": 2.8,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 48,
+          "runtimeTotalMinutes": 168
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "103600000000000000/1000000000000000",
+        "exactMinutesRatio": "621600000000000000000000000000000/3700000000000000000000000000000",
+        "roundedMinutes": "168"
+      },
+      "expectedReport": {
+        "bytes": 197,
+        "sha256": "68d7e5a4143fead85102d23e8df222041f5b3be71250c9d85ad62756e770118b",
+        "text": "{\"energyWh\":103.6,\"mode\":\"pack\",\"packCapacityMah\":7000,\"packVoltageV\":14.8,\"runtimeHours\":2.8,\"runtimeHoursPart\":2,\"runtimeMinutesPart\":48,\"runtimeTotalMinutes\":168,\"status\":\"ok\",\"usableWh\":103.6}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "pack-single-cell",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "cellCapacityMah": "2600",
+        "cellVoltage": "3.6",
+        "loadWatts": "5.2",
+        "mode": "pack",
+        "parallelCount": "1",
+        "seriesCount": "1"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 9.36,
+          "mode": "pack",
+          "packCapacityMah": 2600,
+          "packVoltageV": 3.6,
+          "runtimeHours": 1.8,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 48,
+          "runtimeTotalMinutes": 108,
+          "status": "ok",
+          "usableWh": 9.36
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "pack",
+          "status": "ok",
+          "energyWh": 9.36,
+          "usableWh": 9.36,
+          "packCapacityMah": 2600,
+          "packVoltageV": 3.6,
+          "runtimeHours": 1.8,
+          "runtimeHoursPart": 1,
+          "runtimeMinutesPart": 48,
+          "runtimeTotalMinutes": 108
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "9360000000000000/1000000000000000",
+        "exactMinutesRatio": "56160000000000000000000000000000/520000000000000000000000000000",
+        "roundedMinutes": "108"
+      },
+      "expectedReport": {
+        "bytes": 194,
+        "sha256": "f15a8ee1aa54dd227fb87dca4e5fc6534b212e8b085b80dbc2b133e4021f2bc4",
+        "text": "{\"energyWh\":9.36,\"mode\":\"pack\",\"packCapacityMah\":2600,\"packVoltageV\":3.6,\"runtimeHours\":1.8,\"runtimeHoursPart\":1,\"runtimeMinutesPart\":48,\"runtimeTotalMinutes\":108,\"status\":\"ok\",\"usableWh\":9.36}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "pack-zero-load",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "cellCapacityMah": "2000",
+        "cellVoltage": "3.2",
+        "loadWatts": "0",
+        "mode": "pack",
+        "parallelCount": "3",
+        "seriesCount": "2"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 38.4,
+          "mode": "pack",
+          "packCapacityMah": 6000,
+          "packVoltageV": 6.4,
+          "runtimeHours": null,
+          "runtimeHoursPart": null,
+          "runtimeMinutesPart": null,
+          "runtimeTotalMinutes": null,
+          "status": "infinite",
+          "usableWh": 38.4
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "pack",
+          "status": "infinite",
+          "energyWh": 38.4,
+          "usableWh": 38.4,
+          "packCapacityMah": 6000,
+          "packVoltageV": 6.4,
+          "runtimeHours": null,
+          "runtimeHoursPart": null,
+          "runtimeMinutesPart": null,
+          "runtimeTotalMinutes": null
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "38400000000000000/1000000000000000"
+      },
+      "expectedReport": {
+        "bytes": 207,
+        "sha256": "95fbcbe36e045ceee57f452d1c73032cc29f7cf5dd02ea3e72832222377eede3",
+        "text": "{\"energyWh\":38.4,\"mode\":\"pack\",\"packCapacityMah\":6000,\"packVoltageV\":6.4,\"runtimeHours\":null,\"runtimeHoursPart\":null,\"runtimeMinutesPart\":null,\"runtimeTotalMinutes\":null,\"status\":\"infinite\",\"usableWh\":38.4}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "boundary-max",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "100000",
+        "loadWatts": "1000000",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 100000,
+          "mode": "runtime-wh",
+          "runtimeHours": 0.1,
+          "runtimeHoursPart": 0,
+          "runtimeMinutesPart": 6,
+          "runtimeTotalMinutes": 6,
+          "status": "ok",
+          "usableWh": 100000
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 100000,
+          "usableWh": 100000,
+          "runtimeHours": 0.1,
+          "runtimeHoursPart": 0,
+          "runtimeMinutesPart": 6,
+          "runtimeTotalMinutes": 6
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "100000000000/1000000",
+        "exactMinutesRatio": "600000000000000000000000000/100000000000000000000000000",
+        "roundedMinutes": "6"
+      },
+      "expectedReport": {
+        "bytes": 159,
+        "sha256": "ec0bbd9ec6cd622c422087fca001fa8021da077afbc1b2ddf98b5fc76800e1d4",
+        "text": "{\"energyWh\":100000,\"mode\":\"runtime-wh\",\"runtimeHours\":0.1,\"runtimeHoursPart\":0,\"runtimeMinutesPart\":6,\"runtimeTotalMinutes\":6,\"status\":\"ok\",\"usableWh\":100000}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "err-decimal-format",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "10,000",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "capacityMah",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "capacityMah",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-range-voltage",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "5000",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "1000.1"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "voltage",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "voltage",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-empty-load",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "100",
+        "loadWatts": "",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "loadWatts",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "loadWatts",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-input-limit",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "1000000000000",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "capacityMah",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "capacityMah",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-enum-mode",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "mode": "turbo"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-schema-extra-field",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "100",
+        "loadWatts": "10",
+        "mode": "runtime-wh",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-unicode-surrogate",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityMah": "5\ud800",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "3.7"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "UNICODE",
+          "field": "capacityMah",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "capacityMah",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-range-count",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "cellCapacityMah": "3500",
+        "cellVoltage": "3.7",
+        "loadWatts": "10",
+        "mode": "pack",
+        "parallelCount": "2",
+        "seriesCount": "101"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "seriesCount",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "seriesCount",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-integer-format",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "cellCapacityMah": "3500",
+        "cellVoltage": "3.7",
+        "loadWatts": "10",
+        "mode": "pack",
+        "parallelCount": "2.5",
+        "seriesCount": "2"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "parallelCount",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "parallelCount",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-range-dod-zero",
+      "kind": "core",
+      "origin": "original",
+      "input": {
+        "capacityWh": "100",
+        "depthOfDischargePercent": "0",
+        "loadWatts": "10",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "depthOfDischargePercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "depthOfDischargePercent",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "origin": "original",
+      "input": {
+        "edit": {
+          "capacityMah": "10000",
+          "loadWatts": "1000001",
+          "mode": "runtime-mah",
+          "voltage": "3.7"
+        },
+        "initial": {
+          "capacityMah": "10000",
+          "loadWatts": "10",
+          "mode": "runtime-mah",
+          "voltage": "3.7"
+        }
+      },
+      "candidateExpected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "loadWatts",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "independentExpected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "loadWatts",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "origin": "original",
+      "input": {
+        "draft": {
+          "capacityMah": "10000",
+          "loadWatts": "10",
+          "mode": "runtime-mah",
+          "voltage": "3.7"
+        },
+        "lateResult": {
+          "energyWh": 37,
+          "mode": "runtime-mah",
+          "runtimeHours": 3.7,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 42,
+          "runtimeTotalMinutes": 222,
+          "status": "ok",
+          "usableWh": 37
+        }
+      },
+      "candidateExpected": {
+        "afterCancel": {
+          "draft": {
+            "capacityMah": "10000",
+            "loadWatts": "10",
+            "mode": "runtime-mah",
+            "voltage": "3.7"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "capacityMah": "10000",
+            "loadWatts": "10",
+            "mode": "runtime-mah",
+            "voltage": "3.7"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "independentExpected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "capacityMah": "10000",
+            "loadWatts": "10",
+            "mode": "runtime-mah",
+            "voltage": "3.7"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "runtime-mah",
+            "capacityMah": "10000",
+            "voltage": "3.7",
+            "loadWatts": "10"
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "origin": "original",
+      "input": {
+        "newerDraft": {
+          "capacityMah": "5000",
+          "loadWatts": "10",
+          "mode": "runtime-mah",
+          "voltage": "0"
+        },
+        "olderDraft": {
+          "capacityMah": "10000",
+          "loadWatts": "10",
+          "mode": "runtime-mah",
+          "voltage": "3.7"
+        },
+        "olderLateResult": {
+          "energyWh": 37,
+          "mode": "runtime-mah",
+          "runtimeHours": 3.7,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 42,
+          "runtimeTotalMinutes": 222,
+          "status": "ok",
+          "usableWh": 37
+        }
+      },
+      "candidateExpected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "voltage",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "voltage",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "independentExpected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "voltage",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "voltage",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "err-result-limit-solve",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "depthOfDischargePercent": "0.00001",
+        "loadWatts": "1000000",
+        "mode": "solve",
+        "targetRuntimeHours": "100000",
+        "voltage": "3"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "exactCapacityRatio": "10000000000000000000000000000000000/30000000000000",
+        "ceilMah": "333333333333333333334",
+        "exactEnergyWhRatio": "10000000000000000000000000/10000000"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-result-limit-pack",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "cellCapacityMah": "10000000",
+        "cellVoltage": "1000",
+        "loadWatts": "0.000007",
+        "mode": "pack",
+        "parallelCount": "100",
+        "seriesCount": "100"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "100000000000000000000000000/1000000000000000",
+        "exactMinutesRatio": "600000000000000000000000000000000000000000/700000000000000000000000",
+        "roundedMinutes": "857142857142857143"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "pack-minutes-safe-before",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "cellCapacityMah": "8813975.7527",
+        "cellVoltage": "170.3204",
+        "loadWatts": "0.000001",
+        "mode": "pack",
+        "parallelCount": "1",
+        "seriesCount": "100"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 150119987.58,
+          "mode": "pack",
+          "packCapacityMah": 8813975.7527,
+          "packVoltageV": 17032.04,
+          "runtimeHours": 150119987579016.5,
+          "runtimeHoursPart": 150119987579016,
+          "runtimeMinutesPart": 30,
+          "runtimeTotalMinutes": 9007199254740990,
+          "status": "ok",
+          "usableWh": 150119987.58
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "pack",
+          "status": "ok",
+          "energyWh": 150119987.58,
+          "usableWh": 150119987.58,
+          "packCapacityMah": 8813975.7527,
+          "packVoltageV": 17032.04,
+          "runtimeHours": 150119987579016.5,
+          "runtimeHoursPart": 150119987579016,
+          "runtimeMinutesPart": 30,
+          "runtimeTotalMinutes": 9007199254740990
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "150119987579016508000000/1000000000000000",
+        "exactMinutesRatio": "900719925474099048000000000000000000000/100000000000000000000000",
+        "roundedMinutes": "9007199254740990"
+      },
+      "expectedReport": {
+        "bytes": 264,
+        "sha256": "9304e00333a5fc3d890987587ec75f9edc0ae965025382e62b27181bf873a5fe",
+        "text": "{\"energyWh\":150119987.58,\"mode\":\"pack\",\"packCapacityMah\":8813975.7527,\"packVoltageV\":17032.04,\"runtimeHours\":150119987579016.5,\"runtimeHoursPart\":150119987579016,\"runtimeMinutesPart\":30,\"runtimeTotalMinutes\":9007199254740990,\"status\":\"ok\",\"usableWh\":150119987.58}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "pack-minutes-safe-max",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "cellCapacityMah": "9332999.3285",
+        "cellVoltage": "160.8486",
+        "loadWatts": "0.000001",
+        "mode": "pack",
+        "parallelCount": "1",
+        "seriesCount": "100"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 150119987.58,
+          "mode": "pack",
+          "packCapacityMah": 9332999.3285,
+          "packVoltageV": 16084.86,
+          "runtimeHours": 150119987579016.5,
+          "runtimeHoursPart": 150119987579016,
+          "runtimeMinutesPart": 31,
+          "runtimeTotalMinutes": 9007199254740991,
+          "status": "ok",
+          "usableWh": 150119987.58
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "pack",
+          "status": "ok",
+          "energyWh": 150119987.58,
+          "usableWh": 150119987.58,
+          "packCapacityMah": 9332999.3285,
+          "packVoltageV": 16084.86,
+          "runtimeHours": 150119987579016.5,
+          "runtimeHoursPart": 150119987579016,
+          "runtimeMinutesPart": 31,
+          "runtimeTotalMinutes": 9007199254740991
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "150119987579016510000000/1000000000000000",
+        "exactMinutesRatio": "900719925474099060000000000000000000000/100000000000000000000000",
+        "roundedMinutes": "9007199254740991"
+      },
+      "expectedReport": {
+        "bytes": 264,
+        "sha256": "0dc42c943c12f1a26db8cac5e81fbabb0f040893a9b19bcf4ba6aa3597f6cb4c",
+        "text": "{\"energyWh\":150119987.58,\"mode\":\"pack\",\"packCapacityMah\":9332999.3285,\"packVoltageV\":16084.86,\"runtimeHours\":150119987579016.5,\"runtimeHoursPart\":150119987579016,\"runtimeMinutesPart\":31,\"runtimeTotalMinutes\":9007199254740991,\"status\":\"ok\",\"usableWh\":150119987.58}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "err-pack-minutes-safe-after",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "cellCapacityMah": "9157164.3031",
+        "cellVoltage": "163.9372",
+        "loadWatts": "0.000001",
+        "mode": "pack",
+        "parallelCount": "1",
+        "seriesCount": "100"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "RESULT_LIMIT",
+          "field": null,
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "150119987579016532000000/1000000000000000",
+        "exactMinutesRatio": "900719925474099192000000000000000000000/100000000000000000000000",
+        "roundedMinutes": "9007199254740992"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "err-input-before-result-limit",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "cellCapacityMah": "10000000",
+        "cellVoltage": "1,000",
+        "loadWatts": "0.000007",
+        "mode": "pack",
+        "parallelCount": "100",
+        "seriesCount": "100"
+      },
+      "candidateExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "cellVoltage",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentExpected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "cellVoltage",
+          "row": null
+        }
+      },
+      "exactWitness": {
+        "stage": "input"
+      },
+      "expectedReport": null,
+      "status": "PASS"
+    },
+    {
+      "id": "rated-output-mah",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "capacityMah": "6000",
+        "loadWatts": "10",
+        "mode": "runtime-mah",
+        "voltage": "5"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 30,
+          "mode": "runtime-mah",
+          "runtimeHours": 3,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 180,
+          "status": "ok",
+          "usableWh": 30
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-mah",
+          "status": "ok",
+          "energyWh": 30,
+          "usableWh": 30,
+          "runtimeHours": 3,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 180
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "30000000000000000/1000000000000000",
+        "exactMinutesRatio": "180000000000000000000000000000000/1000000000000000000000000000000",
+        "roundedMinutes": "180"
+      },
+      "expectedReport": {
+        "bytes": 152,
+        "sha256": "37dd2a34d115afa3a8b130ded987550580c682136bd0db268533724886d60d15",
+        "text": "{\"energyWh\":30,\"mode\":\"runtime-mah\",\"runtimeHours\":3,\"runtimeHoursPart\":3,\"runtimeMinutesPart\":0,\"runtimeTotalMinutes\":180,\"status\":\"ok\",\"usableWh\":30}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rated-output-wh",
+      "kind": "core",
+      "origin": "repair",
+      "input": {
+        "capacityWh": "30",
+        "loadWatts": "10",
+        "mode": "runtime-wh"
+      },
+      "candidateExpected": {
+        "ok": true,
+        "result": {
+          "energyWh": 30,
+          "mode": "runtime-wh",
+          "runtimeHours": 3,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 180,
+          "status": "ok",
+          "usableWh": 30
+        }
+      },
+      "independentExpected": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 30,
+          "usableWh": 30,
+          "runtimeHours": 3,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 180
+        }
+      },
+      "exactWitness": {
+        "energyWhRatio": "30000000/1000000",
+        "exactMinutesRatio": "180000000000000000000000/1000000000000000000000",
+        "roundedMinutes": "180"
+      },
+      "expectedReport": {
+        "bytes": 151,
+        "sha256": "beb9691b69d383ef25aaeb8193d2afbcdddbd75f4ed034afb8407fcf2acbf92b",
+        "text": "{\"energyWh\":30,\"mode\":\"runtime-wh\",\"runtimeHours\":3,\"runtimeHoursPart\":3,\"runtimeMinutesPart\":0,\"runtimeTotalMinutes\":180,\"status\":\"ok\",\"usableWh\":30}\n"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-dirty-result-limit",
+      "kind": "controller",
+      "origin": "repair",
+      "input": {
+        "edit": {
+          "cellCapacityMah": "10000000",
+          "cellVoltage": "1000",
+          "loadWatts": "0.000007",
+          "mode": "pack",
+          "parallelCount": "100",
+          "seriesCount": "100"
+        },
+        "initial": {
+          "capacityMah": "6000",
+          "loadWatts": "10",
+          "mode": "runtime-mah",
+          "voltage": "5"
+        }
+      },
+      "candidateExpected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RESULT_LIMIT",
+            "field": null,
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "independentExpected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RESULT_LIMIT",
+            "field": null,
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    }
+  ],
+  "extra": [
+    {
+      "id": "BAT-R2-01-output-rating-unadjusted",
+      "input": {
+        "mode": "runtime-wh",
+        "capacityWh": "30",
+        "loadWatts": "10"
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 30,
+          "usableWh": 30,
+          "runtimeHours": 3,
+          "runtimeHoursPart": 3,
+          "runtimeMinutesPart": 0,
+          "runtimeTotalMinutes": 180
+        }
+      },
+      "witness": {
+        "energyWhRatio": "30000000/1000000",
+        "exactMinutesRatio": "180000000000000000000000/1000000000000000000000",
+        "roundedMinutes": "180"
+      }
+    },
+    {
+      "id": "BAT-R2-01-output-rating-additional-derate",
+      "input": {
+        "mode": "runtime-wh",
+        "capacityWh": "30",
+        "loadWatts": "10",
+        "depthOfDischargePercent": "80"
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "runtime-wh",
+          "status": "ok",
+          "energyWh": 30,
+          "usableWh": 24,
+          "runtimeHours": 2.4,
+          "runtimeHoursPart": 2,
+          "runtimeMinutesPart": 24,
+          "runtimeTotalMinutes": 144
+        }
+      },
+      "witness": {
+        "energyWhRatio": "30000000/1000000",
+        "exactMinutesRatio": "144000000000000000000000/1000000000000000000000",
+        "roundedMinutes": "144"
+      }
+    },
+    {
+      "id": "BAT-R2-02-DoD-legal-minimum",
+      "input": {
+        "mode": "solve",
+        "targetRuntimeHours": "1",
+        "loadWatts": "0",
+        "voltage": "3",
+        "depthOfDischargePercent": "0.00001"
+      },
+      "actual": {
+        "ok": true,
+        "result": {
+          "mode": "solve",
+          "status": "ok",
+          "requiredEnergyWh": 0,
+          "requiredCapacityMah": 0
+        }
+      },
+      "witness": {
+        "exactCapacityRatio": "0/30000000000000",
+        "ceilMah": "0",
+        "exactEnergyWhRatio": "0/10000000"
+      }
+    },
+    {
+      "id": "BAT-R2-02-DoD-one-more-decimal",
+      "input": {
+        "mode": "solve",
+        "targetRuntimeHours": "1",
+        "loadWatts": "0",
+        "voltage": "3",
+        "depthOfDischargePercent": "0.000001"
+      },
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "depthOfDischargePercent",
+          "row": null
+        }
+      },
+      "witness": {
+        "stage": "input"
+      }
+    }
+  ],
+  "stderrEmpty": true
+}
