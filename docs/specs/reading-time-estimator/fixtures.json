@@ -384,6 +384,98 @@
       }
     },
     {
+      "id": "japanese-kanji-kana",
+      "kind": "core",
+      "purpose": "日文漢字依碼點區段計數，假名不計",
+      "input": {
+        "text": "漢字かな",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cjkChars": 2,
+          "latinWords": 0,
+          "silentSeconds": 0,
+          "speakSeconds": 1,
+          "silentDisplay": "0:00",
+          "speakDisplay": "0:01"
+        }
+      }
+    },
+    {
+      "id": "japanese-kana-only",
+      "kind": "core",
+      "purpose": "純假名的字數與詞數均為 0",
+      "input": {
+        "text": "かなカナ",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cjkChars": 0,
+          "latinWords": 0,
+          "silentSeconds": 0,
+          "speakSeconds": 0,
+          "silentDisplay": "0:00",
+          "speakDisplay": "0:00"
+        }
+      }
+    },
+    {
+      "id": "400-cjk-one-minute",
+      "kind": "core",
+      "purpose": "400 字按每分鐘 400 字靜讀，結果為 1 分鐘",
+      "input": {
+        "text": "字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cjkChars": 400,
+          "latinWords": 0,
+          "silentSeconds": 60,
+          "speakSeconds": 100,
+          "silentDisplay": "1:00",
+          "speakDisplay": "1:40"
+        }
+      }
+    },
+    {
+      "id": "astral-linear-b-excluded",
+      "kind": "core",
+      "purpose": "U+10000 位於四個計數區段外，與 astral-cjk 的 U+20000 對照",
+      "input": {
+        "text": "𐀀😀好",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cjkChars": 1,
+          "latinWords": 0,
+          "silentSeconds": 0,
+          "speakSeconds": 0,
+          "silentDisplay": "0:00",
+          "speakDisplay": "0:00"
+        }
+      }
+    },
+    {
       "id": "state-dirty-error",
       "kind": "controller",
       "purpose": "先產出真結果，再把英文靜讀速度改為 0（低於下限 50），舊結果及所有下載立即失效，重跑得到 RANGE。",

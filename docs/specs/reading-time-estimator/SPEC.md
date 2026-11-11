@@ -24,7 +24,7 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 - 中文分詞（把字串切成詞）不在範圍：中文一律逐字計，這正是本工具與分詞型工具的差異，頁面 FAQ 明示。
 - 可讀性／難度評分、檔案上傳、把本文送出或保存、逐字稿時間軸對齊，皆非目標。
 
-已知限制（釘版並揭露）：日文假名（U+3040–U+30FF）與韓文音節（U+AC00–U+D7AF）既不在本文的漢字區段、也不含 ASCII 字母數字，純假名或純韓文本文會得到計數 0；漢字標點（U+3000–U+303F）與全形字元（U+FF00–U+FF60）同理不計。此為 v1 的刻意取捨，FAQ 明示，不做無聲的近似。
+計數限制（釘版並在 FAQ 揭露）。日文漢字落在本規格列出的四個碼點區段時逐字計入。假名、韓文音節、漢字標點（U+3000–U+303F）與全形字元（U+FF00–U+FF60）均不計為漢字。純假名或純韓文音節的字數與詞數均為 0。英文詞依 token 是否含 ASCII 字母或數字判定。
 
 判定規則由本文定義，無線上資料或外部服務依賴。
 
@@ -42,7 +42,7 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 | empty | 初載／重設，無結果，提示輸入或載入範例。 |
 | dirty | 任一輸入、選項、來源或範例改變，立即撤銷舊結果和下載。顯示「輸入已變更，請重新執行 / Input changed. Run again.」。 |
 | busy | 明確執行時處理快照，顯示「處理中 / Working」及「取消 / Cancel」。無下載。編輯終止舊工作並回 dirty。 |
-| success | 報告對應目前快照。計數全為 0 時有說明（例如本文只有空白或符號）。 |
+| success | 報告對應目前快照。兩項計數均為 0 時，顯示雙語說明。例：「這段文字沒有落在計數區段的漢字，也沒有包含 ASCII 字母或數字的詞。只有假名、空白或符號的文字也可能得到這個結果。」 / “This text contains no ideographs in the counted ranges and no word tokens with ASCII letters or digits. Text made up of kana, whitespace or symbols can give this result.” |
 | error | 保留草稿，沒有結果。顯示本地化錯誤、欄位及適用列號。只有提交失敗才移焦首錯欄。 |
 | cancelled | 保留草稿，終止並告知「已取消，可重新執行 / Cancelled. You can run again.」。舊結果仍無效。 |
 
@@ -55,7 +55,7 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 欄位順序固定為 `text`、`zhSilentRate`、`zhSpeakRate`、`enSilentRate`、`enSpeakRate`，驗證依此順序逐欄進行，每欄內依「容量 → surrogate → 空 → 文法 → 範圍」進行。整份失敗回 `{ok:false,error:{code,field,row}}`，row 恆為 null。成功僅為 `{ok:true,result}`。資源或 Worker 失敗用固定 INTERNAL/WORKER_ERROR，不回傳堆疊。
 
 1. `text`：raw 以 UTF-16 code units 計最多 100,000 單位，超過 INPUT_LIMIT；含不成對 surrogate 為 UNICODE；長度 0（空字串）為 EMPTY。只有空白的本文合法（計數全為 0），不是 EMPTY。
-2. 四個速度欄：raw 每欄最多 8 單位，超過 INPUT_LIMIT；不成對 surrogate 為 UNICODE；空字串為 EMPTY；文法為 ASCII 十進整數字串——`0` 或非零開頭、無空白／正負號／小數／指數——不符為 INTEGER_FORMAT；範圍不符為 RANGE。各欄範圍與預設：`zhSilentRate` 50–2000（預設 400，字/分）、`zhSpeakRate` 50–1200（預設 240，字/分）、`enSilentRate` 50–1000（預設 200，詞/分）、`enSpeakRate` 50–600（預設 150，詞/分）。四個預設值是公開範圍內選定的可調慣例值，不是自然常數，頁面與結果旁均標示可調整（依據見 AUTHOR-CHECK.md）。
+2. 四個速度欄：raw 每欄最多 8 單位，超過 INPUT_LIMIT；不成對 surrogate 為 UNICODE；空字串為 EMPTY；文法為 ASCII 十進整數字串——`0` 或非零開頭、無空白／正負號／小數／指數——不符為 INTEGER_FORMAT；範圍不符為 RANGE。各欄範圍與預設：`zhSilentRate` 50–2000（預設 400，字/分）、`zhSpeakRate` 50–1200（預設 240，字/分）、`enSilentRate` 50–1000（預設 200，詞/分）、`enSpeakRate` 50–600（預設 150，詞/分）。四個預設值是可調的產品估算起點。頁面與結果旁均標示可依自己的閱讀或朗讀速度調整。
 3. 計數（以 Unicode code point 逐一掃描本文，與上限的 UTF-16 單位刻意不同）：
    - 漢字數 `cjkChars`：code point 落在 U+3400–U+4DBF、U+4E00–U+9FFF、U+F900–U+FAFF、U+20000–U+2A6DF 四個區段之一者計 1。星形平面字元（如 U+20000）計 1 個字（佔 2 個 UTF-16 單位）。假名、韓文音節、漢字標點（U+3000–U+303F）、全形字元（U+FF00–U+FF60）、組合記號皆不計；組合序列依書寫原樣逐 code point 計（例：`e` + U+0301 是 2 個 code point，其中無一是漢字）。
    - 英文詞數 `latinWords`：先以空白集合 W 切分 token，W = {U+0009–U+000D、U+0020、U+0085、U+00A0、U+1680、U+2000–U+200A、U+2028、U+2029、U+202F、U+205F、U+3000}（Unicode White_Space 屬性全集）；token 為非空白 code point 的極大連續段。token 內含至少一個 ASCII 字母或數字（U+0030–U+0039、U+0041–U+005A、U+0061–U+007A）者計 1 詞，其餘計 0。釘版例：`don't` = 1、`2026-11-09` = 1、`well-known` = 1（連字號不切分，與 word-frequency 的規則差異是刻意的）、`—` = 0、全形 `ＡＢＣ` = 0、只含重音字母的 token（如 `é`）= 0。同一 token 可同時貢獻漢字數與 1 個詞數（中英夾雜 token，如 `中文abc`：漢字 2、詞 1）——兩種計數獨立，最後相加。
@@ -92,7 +92,7 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 
 ## tests
 
-驗收輸入見 [fixtures.json](fixtures.json)。17 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+驗收輸入見 [fixtures.json](fixtures.json)。21 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
 
 | 案例 ID | 驗證行為 |
 | --- | --- |
@@ -113,6 +113,10 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 | `rate-decimal` | 速度含小數點 INTEGER_FORMAT |
 | `rate-range` | 速度 2001 超上限 RANGE |
 | `input-limit` | 本文 100,001 單位 INPUT_LIMIT |
+| `japanese-kanji-kana` | 漢字かな含 2 個計入的漢字，朗讀 0.5 秒捨入為 1 秒 |
+| `japanese-kana-only` | 純假名合法，漢字及英文詞均為 0 |
+| `400-cjk-one-minute` | 400 字按 400 字/分靜讀為 1 分鐘，按 240 字/分朗讀為 1 分 40 秒 |
+| `astral-linear-b-excluded` | 將 `astral-cjk` 的 U+20000 換成 U+10000，剩 1 個計入的漢字，靜讀及朗讀均捨入為 0 秒 |
 | `state-dirty-error` | 先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。 |
 | `state-cancel-late` | 延遲成功後取消，舊回傳不能復活，重設回預設值。 |
 | `state-replace-late` | 新工作失敗後收到上一份工作的成功，保留目前錯誤。 |
@@ -132,11 +136,11 @@ MVP 必做：貼上本文計數（漢字逐字、英文空白分詞，規則見 
 兩語靜態內容與正式 gate（目前 NOT_RUN）
 
 - 繁中 lang=zh-Hant，H1「閱讀時間估算」，title「閱讀時間估算｜Gloss Tools」，description「貼上中文、英文或混寫的稿子，依釘版計數規則與可調速度，估算靜讀與朗讀各需要多久。」。英文 lang=en，H1 “Reading Time Estimator”，title “Reading Time Estimator | Gloss Tools”，description “Paste Chinese, English or mixed text and estimate silent reading and read-aloud time from pinned counting rules and adjustable speeds.”。兩頁靜態呈現操作、限制、FAQ。全部狀態及錯誤使用對等本地化訊息。
-- FAQ。中文為什麼數字數不分詞？中文沒有空格分詞，本工具以字數乘上可調的字/分速度估算；要逐詞頻率請用字詞頻率工具。 / Why count characters instead of words for Chinese? Chinese text has no spaces between words, so this tool multiplies the character count by an adjustable characters-per-minute rate. For per-word frequencies, use the frequency counter.
-- FAQ。朗讀時間可以保證錄音長度嗎？不行，這是依平均速度的估算，停頓與語氣都會改變實際長度，本工具也不會真的發出聲音。 / Can the speaking time guarantee my recording length? No. It is an estimate from average rates; pauses and delivery change the real duration, and this tool never plays audio.
+- FAQ。如何估算閱讀時間？靜讀與朗讀分別計算。把漢字數除以對應字速，英文詞數除以對應詞速，把兩項分鐘相加再換算成秒，最後捨入到最接近的整秒，剛好半秒時進位。400 字以每分鐘 400 字靜讀，估算為 1 分鐘。要查逐詞頻率，請用字詞頻率工具。 / How are reading times estimated? For silent reading and reading aloud, divide the ideograph count by its characters-per-minute rate and the English word count by its words-per-minute rate. Add the two times, convert the total to seconds and round to the nearest whole second, with half seconds rounded up. At 400 characters per minute, 400 characters take one minute. Use the frequency counter for per-word frequencies.
+- FAQ。朗讀時間可以保證錄音長度嗎？這是按所選速度算出的估計。停頓與語氣會影響實際錄音長度。 / Can the speaking time guarantee my recording length? The estimate uses your selected speeds. Pauses and delivery affect the actual recording length.
 - FAQ。英文的連字號詞怎麼算？只以空白分詞，well-known 算 1 詞；全形字母數字不算英文詞。 / How are hyphenated English words counted? Tokens are split on whitespace only, so well-known counts as 1 word; full-width letters and digits do not count as English words.
-- FAQ。速度預設值是哪來的？是常見公開範圍內選定的可調慣例值，不是自然常數，請改成你自己的速度。 / Where do the default speeds come from? They are adjustable conventions chosen inside commonly published ranges, not constants of nature; set them to your own pace.
-- FAQ。日文或韓文本文為什麼計數是 0？v1 的漢字區段只含表意文字，假名與韓文音節不在其中，也不是英文詞，頁面會提示此限制。 / Why does Japanese or Korean text count as zero? In v1 the character ranges cover ideographs only; kana and Hangul syllables are neither CJK ideographs here nor English words, and the page discloses this limit.
+- FAQ。如何使用預設速度？四個預設是估算起點。中文靜讀與朗讀預設分別為每分鐘 400 字和 240 字，英文分別為每分鐘 200 詞和 150 詞。可依自己的速度調整。 / How do I use the default speeds? The four defaults give you a starting point. Silent and read-aloud rates default to 400 and 240 Chinese characters per minute and 200 and 150 English words per minute. Adjust them to your own pace.
+- FAQ。如何計算含假名、韓文音節或日文漢字的文字？落在本工具四個漢字碼點區段的字都會逐字計入，包括符合區段的日文漢字。假名與韓文音節本身對兩項計數的貢獻都是 0。例如「漢字かな」計 2 個漢字，純假名或純韓文音節的字數與詞數均為 0。 / How does the tool count kana, Hangul syllables and Japanese kanji? It counts each ideograph whose code point is in one of the four specified ranges, including Japanese kanji within those ranges. Kana and Hangul syllables contribute zero to both counts. For example, 漢字かな contains two counted ideographs. Text made up solely of kana or Hangul syllables returns zero for both counts.
 - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
 - 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。規劃 origin https://reading-time-estimator.glossquote.com 尚未配置。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
 
