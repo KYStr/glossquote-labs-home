@@ -8,4 +8,6 @@ MVP 範圍。四種模式：以 mAh＋電壓算續航、以 Wh 直接算續航�
 
 首個可觀察案例。手機電池 10000 mAh / 3.7 V 供 10 W 負載，總電量 37 Wh、續航 3.7 小時（3 小時 42 分）（`phone-basic`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
 
+維護契約。先以精確算式檢查最終整數是否在 0 至 9007199254740991，合法輸入超界時回 RESULT_LIMIT，清除結果與下載。mAh 與 V 使用同一組額定資料，負載瓦數對應同一端。反推進位只適用於理想估算，模型未扣除轉換損耗。
+
 先完成核心／狀態測試，再交雙語靜態頁、匯出、build/check、同一候選的九面向證據。目標 `tools/battery-runtime-calculator/`，固定分支與 PR 交驗。

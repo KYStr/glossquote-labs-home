@@ -27,3 +27,15 @@
 - 核心禁止以二進位浮點運算（逢五進位邊界會翻盤），已在 SPEC implementation 釘版為 BigInt 定標整數或等價有理數。
 
 - 產品交驗、Chrome/Edge、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN，分數 null。未固定候選或未獨評前不計 ready。
+
+
+## BAT-01／BAT-02 維護紀錄
+
+維護者 `local-codex:01a1c8a3-9150-7bd0-aac8-4b7495c2da91`，task `labs-five-hour-repair-battery-20261111`。以上為原作者歷史自查。固定底稿來自 [原 PR #253](https://github.com/KYStr/glossquote-labs-home/pull/253) 的 `13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9`，維護依 [固定簡報](https://github.com/KYStr/glossquote-labs-home/blob/418aee70f60a04cbe19e339597c91a056bcad0c4/docs/reviews/five-hour-2026-11-11/dispatch/repair-battery/TASK.md)。
+
+- 原 31 筆 fixture 與原字面預期均保留。新增 8 筆核心、1 筆控制器，共 40 筆。BAT-01 反推用 `ceil(10⁶ × 10⁵ × 100 ÷ 0.00001 × 1000 ÷ 3)`，得 `333333333333333333334` mAh。pack 用 `60 × 10¹¹ ÷ 0.000007` 再 half-up，得 `857142857142857143` 分。兩個值都回 RESULT_LIMIT。
+- pack 三個安全邊界用 `mAh × V × 100 ÷ 1000 × 60 ÷ 0.000001`。精確分鐘為 `9007199254740990.48`、`9007199254740990.6`、`9007199254740991.92`，half-up 後各為 `9007199254740990`、`9007199254740991`、`9007199254740992`。前兩筆均可用 `150119987579016 × 60` 加 30 或 31 還原總分鐘，最後一筆回 RESULT_LIMIT。
+- BAT-02 用 `6000 × 5 ÷ 1000 = 30 Wh`，`30 × 60 ÷ 10 = 180 分`，核對與同端 Wh 模式相符。四模式保留，兩語提示區分電芯、電池組及輸出額定口徑，反推進位限定在理想模型。
+- 本紀錄由維護者填寫。三項維護面向與文件八節等待同候選的非作者檢查。產品九面向、瀏覽器、實際下載、部署皆 NOT_RUN。REG-01 登記修復另案。
+- 維護查核以 Python 3.12.5 的 Fraction 獨立重算，核心 36/36、控制器模型 4/4，exit 0。原 31 筆字面預期完全相同。
+- BAT-SCOPE-01 勘誤。舊版範圍句把放電深度描述為轉換損耗的近似。此處的放電深度只控制納入估算的額定電量比例，模型不計轉換損耗。

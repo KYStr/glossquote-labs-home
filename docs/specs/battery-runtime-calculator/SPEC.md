@@ -22,7 +22,7 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 
 - Peukert 效應：放電速率改變有效容量，本工具不模擬。
 - 以電流（A）輸入負載：負載只接受瓦數（W）。知道電流與電壓者可自行相乘後輸入，本工具不提供此輸入路徑。
-- 轉換器（逆變器／升降壓）損耗的獨立參數：只能以放電深度粗略涵蓋，不另設效率欄位。
+- 轉換器（逆變器／升降壓）的損耗不在模型內。放電深度只控制納入估算的額定電量比例。
 - 充電時間、充電效率、電池健康度、循環壽命、依化學種類（鋰離子／鉛酸／磷酸鐵鋰）自動帶入參數。放電深度預設 100% 不依種類調整；鉛酸約 50% 僅在說明文字中標示為簡化指引。
 - 即時監測、裝置控制、電池選購推薦或安全認證。
 
@@ -52,14 +52,23 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 | seriesCount | 串聯數 | Cells in series |
 | parallelCount | 並聯數 | Cells in parallel |
 
+欄位旁固定顯示下列兩語提示，以 aria-describedby 連到各欄。
+
+| 適用欄位 | 繁中提示 | English help |
+| --- | --- | --- |
+| runtime-mah 的 mAh、V | 容量與電壓請用同一組額定值。若標示 5 V 輸出容量 6000 mAh，請輸入 6000 mAh 和 5 V。電芯容量須配電芯電壓。 | Use the capacity and voltage from the same rating. For an output rated at 6000 mAh at 5 V, enter 6000 mAh and 5 V. Pair cell capacity with cell voltage. |
+| pack 的單顆 mAh、V | 填同一顆電芯的額定容量與額定電壓。 | Enter the rated capacity and voltage of the same cell. |
+| solve 的 V | 填你希望以 mAh 表示所需容量的額定電壓。 | Enter the rated voltage at which you want the required capacity in mAh. |
+| 四模式的負載 W | 以同一端的瓦數計算。用額定輸出容量時填輸出端負載。若用電芯額定值估算外接裝置，結果為未扣除轉換損耗的理想估算。 | Use the load in watts on the same side as the energy rating. For rated output capacity, use the output-side load. Estimating an external device from cell ratings assumes lossless conversion. |
+
 模式選項標籤：`runtime-mah`「用 mAh 計算 / From mAh」、`runtime-wh`「用 Wh 計算 / From Wh」、`solve`「反推所需容量 / Solve required capacity」、`pack`「電池組組合 / Battery pack」。
 
 - 「計算 / Calculate」是主要操作。「載入範例 / Load example」填入 [fixtures.json](fixtures.json) 第一個合成案例（`phone-basic`），明示範例並等待手動執行。
 - 結果先摘要再列細節：續航同時以「3.7 小時」與「3 小時 42 分」兩種形式顯示；反推模式顯示「所需電量 / Required energy」與「所需容量 / Required capacity」。成功才顯示「下載報告 / Download report」。文字可手動選取。
 - 狀態 `infinite`（負載 0 W）顯示「無負載，續航無限 / No load — runtime is unlimited」，電量數值照常列出，續航欄位顯示此狀態文字而非數字。
-- 結果下方常駐估算聲明，原文釘版：「本工具為估算：實際續航會因溫度、電池老化、放電速率與裝置效率而不同。 / This tool gives estimates only: actual runtime varies with temperature, battery age, discharge rate and device efficiency.」
+- 結果下方常駐估算聲明，原文釘版：「本工具估算理想續航，未扣除轉換損耗。實際續航會因溫度、電池老化、放電速率和裝置效率而異。 / This tool estimates ideal runtime and excludes conversion losses. Actual runtime varies with temperature, battery age, discharge rate and device efficiency.」
 - 放電深度欄位旁的輔助文字，原文釘版：「放電深度預設 100%。鉛酸電池常以約 50% 為可用上限，此為簡化假設，不依電池種類自動調整。 / Depth of discharge defaults to 100%. Lead-acid batteries are commonly limited to about 50% usable capacity; this is a simplifying assumption and is not adjusted automatically by battery type.」
-- 反推模式結果旁註記，原文釘版：「所需容量以無條件進位至整數 mAh，確保不低於目標續航所需。 / Required capacity is rounded up to the next whole mAh so it never falls short of the target runtime.」
+- 反推模式結果旁註記，原文釘版：「在此估算模型內，所需容量進位到整數 mAh。實際續航仍取決於電池與裝置的使用條件。 / In this estimate, required capacity rounds up to a whole mAh. Actual runtime depends on the battery and how the device is used.」
 
 | 狀態 | 操作與結果 |
 | --- | --- |
@@ -67,8 +76,10 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 | dirty | 任一輸入、模式或範例改變，立即撤銷舊結果和下載。顯示「輸入已變更，請重新執行 / Input changed. Run again.」。 |
 | busy | 明確執行時處理快照，顯示「處理中 / Working」及「取消 / Cancel」。無下載。編輯終止舊工作並回 dirty。 |
 | success | 報告對應目前快照。`infinite` 狀態有專屬說明文字。 |
-| error | 保留草稿，沒有結果。顯示本地化錯誤、欄位。只有提交失敗才移焦首錯欄。 |
+| error | 保留草稿，清除舊結果及下載並顯示本地化錯誤。提交失敗且有欄位定位時才移焦首錯欄。表單層錯誤在狀態區顯示與宣告，不移焦到任意欄位。 |
 | cancelled | 保留草稿，終止並告知「已取消，可重新執行 / Cancelled. You can run again.」。舊結果仍無效。 |
+
+`RESULT_LIMIT` 的表單層提示為「結果超出可精確顯示的範圍。請核對數值和單位後再計算。」/ “The result is too large to display accurately. Check the values and units, then calculate again.”
 
 「重設 / Reset」停止工作，復原預設 `{"mode":"runtime-mah","capacityMah":"10000","voltage":"3.7","loadWatts":"10"}`（放電深度未填，視為 100）並聚焦首欄。用 aria-busy 和 polite 回報狀態，以 aria-describedby/aria-errormessage 連結錯誤。語言連結旁揭露切語或離頁會失去草稿。沒有登入或權限要求。頁面載入後可離線計算，Worker 失敗保留草稿供重試。
 
@@ -83,6 +94,7 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 - 整數文法（seriesCount、parallelCount）：`^[0-9]+$`，前導零允許。
 - raw 長度上限（UTF-16 code units，INPUT_LIMIT）：capacityMah 12、capacityWh 10、voltage 8、loadWatts 11、targetRuntimeHours 10、depthOfDischargePercent 7、cellCapacityMah 12、cellVoltage 8、seriesCount 3、parallelCount 3。各上限均不截斷合法最大值（例如電壓最大值 `"1000.000"` 恰 8 單位）。
 - 範圍：capacityMah、cellCapacityMah 為 0 < x ≤ 10,000,000；capacityWh 為 0 < x ≤ 100,000；voltage、cellVoltage 為 0 < x ≤ 1,000；loadWatts 為 0 ≤ x ≤ 1,000,000（0 合法，語義見下）；targetRuntimeHours 為 0 < x ≤ 100,000；depthOfDischargePercent 為 0 < x ≤ 100；seriesCount、parallelCount 為整數 1–100。
+- mAh 與 V 代表同一組額定資料。Wh 與負載 W 也以同一能量端為準。電芯、電池組與輸出額定值各有自己的口徑。DoD 只表示使用的放電深度，轉換損耗未建模。
 - depthOfDischargePercent 為所有模式的選填欄：缺席視為 `"100"`；出現則必須通過同一套驗證（空字串為 EMPTY，不視為缺席）。
 - 各模式的必要欄位：runtime-mah = capacityMah、voltage、loadWatts；runtime-wh = capacityWh、loadWatts；solve = targetRuntimeHours、loadWatts、voltage；pack = cellCapacityMah、cellVoltage、seriesCount、parallelCount、loadWatts。
 
@@ -93,6 +105,8 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 3. 欄位集合 SCHEMA：出現未知欄位、不適用於目前模式的欄位，或缺少必要欄位 → SCHEMA，field=null。
 4. 型別 SCHEMA：任一出現的欄位值非字串 → SCHEMA，field=null。
 5. 逐欄驗證，依模式的欄位順序：runtime-mah 為 capacityMah、voltage、loadWatts、depthOfDischargePercent；runtime-wh 為 capacityWh、loadWatts、depthOfDischargePercent；solve 為 targetRuntimeHours、loadWatts、voltage、depthOfDischargePercent；pack 為 cellCapacityMah、cellVoltage、seriesCount、parallelCount、loadWatts、depthOfDischargePercent。每欄依序：容量 INPUT_LIMIT → 不成對 surrogate UNICODE → 缺內容 EMPTY → 文法 DECIMAL_FORMAT（計數欄為 INTEGER_FORMAT）→ 範圍 RANGE。field 即該欄位名。
+
+6. 結果界限 RESULT_LIMIT。前五步全數通過後，完成精確推導與捨入，再檢查結果域。超界固定回 `{"ok":false,"error":{"code":"RESULT_LIMIT","field":null,"row":null}}`。不得產生部分結果、報告 bytes 或下載。輸入錯誤優先於 RESULT_LIMIT，RESULT_LIMIT 優先於報告大小的 OUTPUT_LIMIT。
 
 成功僅為 `{ok:true,result}`。資源或 Worker 失敗用固定 INTERNAL/WORKER_ERROR，不回傳堆疊。
 
@@ -110,9 +124,11 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 **結果形狀（釘版，欄位集合不多不少）。**
 
 - runtime-mah、runtime-wh：`{mode, status, energyWh, usableWh, runtimeHours, runtimeTotalMinutes, runtimeHoursPart, runtimeMinutesPart}`。
-- pack：`{mode, status, packVoltageV, packCapacityMah, energyWh, usableWh, runtimeHours, runtimeTotalMinutes, runtimeHoursPart, runtimeMinutesPart}`。packVoltageV 與 packCapacityMah 為精確值（不捨入；由文法保證小數位有限）。
+- pack：`{mode, status, packVoltageV, packCapacityMah, energyWh, usableWh, runtimeHours, runtimeTotalMinutes, runtimeHoursPart, runtimeMinutesPart}`。packVoltageV 與 packCapacityMah 的精確值不做產品層小數捨入，直接依下列規則轉成最接近的 Number。
 - solve：`{mode, status, requiredEnergyWh, requiredCapacityMah}`，status 恆 `"ok"`。
-- 數值輸出為釘版小數的最接近 IEEE-754 double（即 JSON 字面值；37.0 序列化為 37）。runtimeTotalMinutes、runtimeHoursPart、runtimeMinutesPart、requiredCapacityMah 為 JSON 整數。機器值不隨 locale 改。
+- `runtimeTotalMinutes`、`runtimeHoursPart`、`runtimeMinutesPart`、`requiredCapacityMah` 為 JSON 整數。每個實際出現的整數欄位須在精確整數域內通過 `0 ≤ value ≤ 9007199254740991`（`Number.MAX_SAFE_INTEGER`）後才可轉為 Number。零負載分支的 null 續航欄維持 null。
+- 十進位顯示量以精確定稿值轉成最接近的有限 IEEE-754 double。`37.0` 序列化為 `37`。畫面依既定精度與語系格式呈現，機器值不隨 locale 改。
+- 依輸入界限先約束精確顯示量。pack 電壓至多 10⁵ V、容量至多 10⁹ mAh，所有續航模式的總電量及可用電量至多 10¹¹ Wh。非零負載最小 10⁻⁶ W，故續航至多 10¹⁷ h。反推用最小 DoD 10⁻⁶%、最大 10⁶ W 與 10⁵ h，故所需電量至多 10¹⁹ Wh。這些上界亦適用各自的 half-up 顯示量，遠小於 finite Number 上界。精確顯示量須在對應的非負有限範圍內，否則同樣回 RESULT_LIMIT。
 
 固定下載 `battery-runtime-report.json`。內容為 result 的 compact JSON、object own keys 按 UTF-16 code units 升序遞迴排列，array 順序不改，末尾一個 LF、UTF-8 無 BOM。字串用 JSON 字面轉義，不呼叫輸入的 toJSON。報告上限 2,097,152 bytes，超過 OUTPUT_LIMIT 並停用所有產物。
 
@@ -120,10 +136,10 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 
 使用原生 HTML/CSS/ESM 與 Node 24 built-ins，零 runtime／建置依賴。候選目標 `tools/battery-runtime-calculator/`。src/core.mjs 放純驗證、推導、格式化。src/controller.mjs 管草稿、工作世代及資源。src/app.mjs 用安全 DOM API 綁表單。public/index.html 和 public/en/index.html 為兩個靜態入口。Node scripts 只建置工具 allowlist，不取線上檔、不發布。
 
-- 精度（釘版）：核心必須以 BigInt 定標整數（或等價的有理數表示）實作十進位運算，禁止以二進位浮點執行核心計算。理由：fixtures 釘版了精確的逢五進位邊界（2.25 小時 → 2.3、61.5 分 → 62 分），double 表示誤差會使這類邊界翻盤。只在最終把釘版小數轉為 JSON number 輸出時才可經過 double。
+- 精度（釘版）：核心必須以 BigInt 定標整數（或等價的有理數表示）實作十進位運算，禁止以二進位浮點執行核心計算。理由：fixtures 釘版了精確的逢五進位邊界（2.25 小時 → 2.3、61.5 分 → 62 分），double 表示誤差會使這類邊界翻盤。先逐欄檢查精確整數及顯示量的界限，通過才把完整結果轉成 Number。十進位顯示量用精確定稿十進位文字一次轉成 Number，或使用等價的一次轉換。禁止把整數先轉 Number 才驗上限，也禁止先轉縮放分子再除而造成二次捨入。
 - 核心不讀 Date、不讀主機時區、不讀 locale，同輸入在任何環境同輸出。
 - 工作開始先使舊結果失效並遞增世代號。Node 建置時從固定 source bytes 嵌入純核心及固定訊息處理器，頁面載入後從該固定字串建立 module Worker Blob URL。禁止使用者內容參與程式、eval、new Function 或動態 import。測試 import 同一份核心。
-- Worker 每次只收目前快照及世代號。取消、換模式、重設、替換或 pagehide 時 terminate 並釋放結果及 URL。只收目前世代且 busy 的結果。成功後也停止 Worker。bfcache 回來重設。明確點下載才建 Blob URL，30 秒內撤銷，結果失效即提早撤銷。
+- Worker 每次只收目前快照及世代號。取消、換模式、重設、替換或 pagehide 時 terminate 並釋放結果及 URL。只收目前世代且 busy 的結果。成功或失敗後皆停止 Worker。RESULT_LIMIT 只交付結構化錯誤，維持無結果、無下載狀態。bfcache 回來重設。明確點下載才建 Blob URL，30 秒內撤銷，結果失效即提早撤銷。
 - 表格與預覽用 textContent/value。輸入不當標記、style、selector、href、src 或檔名。禁 fetch、XHR、WebSocket、beacon、analytics、遠端字型、上傳、帳號、剪貼簿、持久 storage、service worker。工作內容不進 URL、history、console、日誌或執行證據。離頁丟棄引用，無安全抹除承諾。
 - 正式與預覽均用同源靜態資產。CSP default-src none、script-src self、style-src self、worker-src blob:、img-src self、connect-src none、object-src none、base-uri none、form-action none、frame-ancestors none。self/none 加單引號。另設 nosniff、no-referrer 並拒絕 camera/microphone/geolocation 權限。語言和首頁連結是固定導航。
 
@@ -134,7 +150,7 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 | 面向 ID | 同一候選的必要證據 |
 | --- | --- |
 | functionality | 從真實輸入執行「計算」，四種模式的畫面和完整報告符合核心 fixtures，使用者取得對應產物。 |
-| boundaries | 合法端點、剛好越界、第一個錯誤、逢五進位邊界與三種 controller case 的證據。 |
+| boundaries | 合法端點、安全整數上限前後、第一個錯誤、逢五進位邊界及四筆 controller case 的證據。 |
 | privacy | 靜態載入後從使用到重設的零工作請求，並核對 storage、URL 和 log。 |
 | security | 敵意輸入 inert、無動態執行、CSP、固定下載名稱、資源上限和 Worker/Blob dispose。 |
 | usability | 兩語桌面與行動的主流程、空、繁忙、取消、錯誤、修改和下載可操作。 |
@@ -145,7 +161,7 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 
 ## tests
 
-驗收輸入見 [fixtures.json](fixtures.json)。28 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+驗收輸入見 [fixtures.json](fixtures.json)。36 個字面核心案例與 4 個 controller 案例，保留原 31 筆。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
 
 | 案例 ID | 驗證行為 |
 | --- | --- |
@@ -177,27 +193,36 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 | `err-range-count` | 串聯數 101 回 RANGE |
 | `err-integer-format` | 並聯數含小數點回 INTEGER_FORMAT |
 | `err-range-dod-zero` | 放電深度 0 回 RANGE |
+| `err-result-limit-solve` | BAT-01。合法反推精確得 333333333333333333334 mAh，回 RESULT_LIMIT。 |
+| `err-result-limit-pack` | BAT-01。合法 pack 精確捨入為 857142857142857143 分，回 RESULT_LIMIT。 |
+| `pack-minutes-safe-before` | 精確 9007199254740990.48 分，捨為 safe 上限前一格，時分可還原總分鐘。 |
+| `pack-minutes-safe-max` | 精確 9007199254740990.6 分，捨為 safe 上限，時分可還原總分鐘。 |
+| `err-pack-minutes-safe-after` | 精確 9007199254740991.92 分，捨為 safe 上限後一格，回 RESULT_LIMIT。 |
+| `err-input-before-result-limit` | pack 超界組合中的較早欄位改成格式錯誤，先回該欄 DECIMAL_FORMAT。 |
+| `rated-output-mah` | BAT-02。同組 6000 mAh、5 V 額定值在 10 W 下得 30 Wh、180 分。 |
+| `rated-output-wh` | BAT-02。同端 30 Wh 在 10 W 下也得 180 分。 |
+| `state-dirty-result-limit` | 成功後改為輸入合法但結果超界的組合，dirty、error 均撤銷報告。 |
 | `state-dirty-error` | 先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。 |
 | `state-cancel-late` | 延遲成功後取消，舊回傳不能復活，重設回預設值。 |
 | `state-replace-late` | 新工作失敗後收到上一份工作的成功，保留目前錯誤。 |
 
-狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+狀態測例使用可控制完成時間的假 Worker。state-dirty-error 與 state-dirty-result-limit 各自先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
 
-另測文法邊界：`.5`、`5.`、`1e3`、`+5`、` 5`（前置空白）皆 DECIMAL_FORMAT；`"007"` 合法且等於 7；depthOfDischargePercent `"100.000"` 恰在 raw 上限內且合法；voltage `"1000"` 合法、capacityMah `"10000000"` 合法；seriesCount `"0"` 回 RANGE。性質測試：任一合法 pack 輸入，packCapacityMah × packVoltageV / 1000 恰等於單顆 Wh × 串聯 × 並聯；任一 ok 結果，runtimeMinutesPart 介於 0–59 且 runtimeHoursPart × 60 + runtimeMinutesPart = runtimeTotalMinutes；solve 結果的 requiredCapacityMah 換回 Wh（× voltage / 1000）恆 ≥ requiredEnergyExact 的顯示值所需且差距小於 1 mAh 換算量。
+另測文法邊界：`.5`、`5.`、`1e3`、`+5`、` 5`（前置空白）皆 DECIMAL_FORMAT；`"007"` 合法且等於 7；depthOfDischargePercent `"100.000"` 恰在 raw 上限內且合法；voltage `"1000"` 合法、capacityMah `"10000000"` 合法；seriesCount `"0"` 回 RANGE。性質測試：任一合法 pack 輸入，轉 Number 之前的精確 packCapacity × packVoltage / 1000 恰等於單顆 Wh × 串聯 × 並聯。每筆成功且有限的續航，runtimeMinutesPart 介於 0–59 且 runtimeHoursPart × 60 + runtimeMinutesPart = runtimeTotalMinutes。每筆成功的 solve，所需容量減去依未捨入 requiredEnergyExact 換算的精確容量，差值為 0（含）至 1 mAh（不含）。
 
 候選 gate（均 NOT_RUN）
 
 - 於 `tools/battery-runtime-calculator/` 記 Node 24.x，執行 `node --test`（core/controller/HTML/下載/建置）、`node scripts/check.mjs`（語法、外部依賴、危險 sink、allowlist）、`node scripts/build.mjs --mode preview`（重建兩次並逐檔比對排序後的 SHA-256）。測試僅合成資料及本機檔案。
 - 以 `node scripts/serve.mjs --host 127.0.0.1 --port 4173 --dir dist-preview` 供隔離預覽。已用端口則換空閒端口並記錄。GET/HEAD 正確 MIME、404、拒絕 traversal／符號連結逃逸，不列目錄或記請求內容。
-- 各 Chrome、Edge 在兩語頁做範例、實際鍵入、錯誤、成功後 edit、取消、重設、Blob 下載並核對 bytes。在 1280×800 及 320 CSS px 檢查。真實 200% zoom、reduced motion、Tab/Shift+Tab、Enter/Space、focus、狀態與錯誤、正文對比≥4.5:1、控制／大字≥3:1、主要觸控≥44×44，40% 譯文增長不遺失功能。
+- 各 Chrome、Edge 在兩語頁做範例、實際鍵入、錯誤、成功後 edit、取消、重設、Blob 下載並核對 bytes。核對 6000 mAh／5 V 與 30 Wh 的相同結果、mAh／V／W 就地提示、反推理想模型文字。從成功切換至超界組合，核對兩語 RESULT_LIMIT、草稿保留、無結果和下載，且沒有新報告 Blob URL。在 1280×800 及 320 CSS px 檢查。真實 200% zoom、reduced motion、Tab/Shift+Tab、Enter/Space、focus、狀態與錯誤、正文對比≥4.5:1、控制／大字≥3:1、主要觸控≥44×44，40% 譯文增長不遺失功能。
 - Network/Storage 以乾淨隔離 profile 核對初始請求、處理與重設的零工作 request、local/sessionStorage、IndexedDB、CacheStorage、cookie、service worker、URL 及 console。檢查資產載好後的離線計算。回首頁為明確使用者導航。
 - 主代理須先證明隔離不碰桌面焦點、keyboard/IME/clipboard 或原生對話。禁止用 active 或 hidden IAB 試隔離。無合格機制記 NOT_RUN_USER_FOCUS_INCIDENT。原生選檔／OS 下載對話只列人工 NOT_RUN。記真實瀏覽器版本、證據和未驗項，Node／DOM 替代檢查不可冒稱 browser 通過。
 
 兩語靜態內容與正式 gate（目前 NOT_RUN）
 
 - 繁中 lang=zh-Hant，H1「電池續航計算」，title「電池續航計算｜Gloss Tools」，description「輸入電池容量（mAh 或 Wh）、電壓與負載瓦數，估算可用電量與續航時間，也能反推達到目標續航所需的容量，或計算串並聯電池組的總電量。」。英文 lang=en，H1 “Battery Runtime Calculator”，title “Battery Runtime Calculator | Gloss Tools”，description “Estimate usable energy and runtime from battery capacity in mAh or Wh, voltage and load in watts — or solve for the capacity a target runtime requires, or combine cells in series and parallel.”。兩頁靜態呈現操作、限制、FAQ。全部狀態及錯誤使用對等本地化訊息。
-- FAQ。Wh 怎麼換算？Wh = mAh × V ÷ 1000。 / How is Wh calculated? Wh = mAh × V ÷ 1000.
-- FAQ。為什麼實際續航比較短？溫度、老化、放電速率與轉換損耗都會降低可用電量；本工具為估算，可用放電深度粗略反映。 / Why is real-world runtime shorter? Temperature, ageing, discharge rate and conversion losses all reduce usable energy; this tool gives an estimate and the depth-of-discharge input can approximate them.
+- FAQ。Wh 怎麼換算？用同一組額定 mAh 和 V，Wh = mAh × V ÷ 1000。標示為 5 V 輸出的 6000 mAh 是 30 Wh。 / How is Wh calculated? Use the capacity and voltage from the same rating. Wh = mAh × V ÷ 1000. A rated output of 6000 mAh at 5 V is 30 Wh. [Anker 額定容量說明 / Anker's capacity explanation](https://service.anker.com/eu/article-description/Why-Is-the-Rated-Capacity-Marked-on-a-Power-Bank-Lower-Than-Expected)
+- FAQ。為什麼實際續航可能較短？溫度、老化與放電速率會影響電池表現。裝置供電過程也可能有轉換損耗，本模型未扣除。放電深度只控制納入估算的額定電量比例。 / Why might real-world runtime be shorter? Temperature, ageing and discharge rate affect battery performance. Power conversion can also consume energy, which this model excludes. Depth of discharge sets the share of rated energy used in the estimate.
 - FAQ。負載填 0 W 為什麼顯示無限？模型中沒有負載就不消耗電量，續航不設上限；這是狀態，不是錯誤。 / Why does a 0 W load show unlimited runtime? With no load the model draws no energy, so runtime has no finite limit; this is a status, not an error.
 - FAQ。有考慮 Peukert 效應嗎？沒有。大電流放電時鉛酸電池的有效容量會下降，本工具不模擬此效應。 / Is the Peukert effect included? No. Effective capacity drops at high discharge rates, especially for lead-acid batteries; this tool does not model that effect.
 - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
@@ -207,7 +232,7 @@ MVP 為四種模式：以 mAh＋電壓計算續航、以 Wh 直接計算續航�
 
 本份交付文件。固定保存 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json) 及 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)，registry document 指向實際 GitHub commit。主頁基線 [固定 README](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md)。開工與送審前重讀遠端規則、registry、基線和既有 owner，檢查新增範圍。
 
-非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。缺陷交原作者修訂，重審新 head。
+非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。文件修訂依可追溯的維護 task 交驗，原作者和原 PR 保留。BAT-01、BAT-02 的來源維護 task 為 `labs-five-hour-repair-battery-20261111`。其三面向的審查、正式規格的八節重評、九產品面向及 REG-01 登記更正各有自己的證據與流程。
 
 製作須有另登記 task、本人 ACK、明示 allowed executor、CAS 後同 operationId/claimId/owner 讀回。遵循 40 ready、5 held、1 working。製作目標 `tools/battery-runtime-calculator/`，同 repo 用 `codex/<task>-<actor>` 分支與開啟 PR。先完成核心／狀態 fixtures，再交雙語候選與真瀏覽器證據。
 
