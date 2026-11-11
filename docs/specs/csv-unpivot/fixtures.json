@@ -1,0 +1,6619 @@
+{
+  "schemaVersion": 1,
+  "parse": [
+    {
+      "id": "brief-source",
+      "source": {
+        "kind": "text",
+        "text": "team,2026-11-02,2026-11-09,備註\n001,2,,\n002,0,\"歸還,待查\",晚班"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "team",
+            "2026-11-02",
+            "2026-11-09",
+            "備註"
+          ],
+          "rows": [
+            [
+              "001",
+              "2",
+              "",
+              ""
+            ],
+            [
+              "002",
+              "0",
+              "歸還,待查",
+              "晚班"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bom-and-mixed-newlines",
+      "source": {
+        "kind": "file",
+        "hex": "efbbbf69642c780d0a3030312c22610d0a62220d0a3030322c22630d64220a3030332c22650a66220d0a"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": [
+            [
+              "001",
+              "a\r\nb"
+            ],
+            [
+              "002",
+              "c\rd"
+            ],
+            [
+              "003",
+              "e\nf"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "quote-escape",
+      "source": {
+        "kind": "text",
+        "text": "\"i\"\"d\",\"x\"\n001,\"he said \"\"hi\"\"\""
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "i\"d",
+            "x"
+          ],
+          "rows": [
+            [
+              "001",
+              "he said \"hi\""
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "trailing-empty",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": [
+            [
+              "001",
+              ""
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "quoted-empty-pair",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n,\"\"\n"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": [
+            [
+              "",
+              ""
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "exact-headers",
+      "source": {
+        "kind": "text",
+        "text": "id,é,é,ID, \n🙂,a,b,c,﻿data"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "é",
+            "é",
+            "ID",
+            " "
+          ],
+          "rows": [
+            [
+              "🙂",
+              "a",
+              "b",
+              "c",
+              "﻿data"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "header-only",
+      "source": {
+        "kind": "text",
+        "text": "id,x"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": []
+        }
+      }
+    },
+    {
+      "id": "header-only-crlf",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780d0a"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": []
+        }
+      }
+    },
+    {
+      "id": "space-and-tab-are-data",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\t \n002, \n003,0"
+      },
+      "expected": {
+        "ok": true,
+        "table": {
+          "headers": [
+            "id",
+            "x"
+          ],
+          "rows": [
+            [
+              "001",
+              "\t "
+            ],
+            [
+              "002",
+              " "
+            ],
+            [
+              "003",
+              "0"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-source",
+      "source": {
+        "kind": "text",
+        "text": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY_SOURCE",
+          "record": 1,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "bom-only",
+      "source": {
+        "kind": "file",
+        "hex": "efbbbf"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY_SOURCE",
+          "record": 1,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "double-bom",
+      "source": {
+        "kind": "file",
+        "hex": "efbbbfefbbbf69642c78"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUPLICATE_BOM",
+          "record": 1,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "bad-utf8",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780ac328"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_UTF8",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "unpaired-surrogate",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\ud800"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_UNICODE",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "source-unknown-field",
+      "source": {
+        "kind": "text",
+        "text": "id,x",
+        "extra": 0
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SOURCE_SCHEMA",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "one-header",
+      "source": {
+        "kind": "text",
+        "text": "id"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_WIDTH",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "empty-first-header",
+      "source": {
+        "kind": "text",
+        "text": ",x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_NAME",
+          "record": 1,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "ascii-space-header",
+      "source": {
+        "kind": "text",
+        "text": "id,\"  \""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_NAME",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "tab-header",
+      "source": {
+        "kind": "text",
+        "text": "id,\"x\ty\""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_NAME",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "newline-header",
+      "source": {
+        "kind": "file",
+        "hex": "69642c22780d0a79220d0a"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_NAME",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "duplicate-header",
+      "source": {
+        "kind": "text",
+        "text": "id,x,x\n001,2,3"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUPLICATE_HEADER",
+          "record": 1,
+          "column": 3,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "duplicate-before-later-bad-header",
+      "source": {
+        "kind": "text",
+        "text": "id,id,\" \"\n001,2,3"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUPLICATE_HEADER",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "short-row",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001\n"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "extra-column",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2,3"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 3,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "empty-interior-record",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n\n001,2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "outside-cr",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780d3030312c32"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "BARE_CR",
+          "record": 1,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "bare-cr-after-close",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780a3030312c2232220d"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "BARE_CR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "quote-in-unquoted",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n00\"1,2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "QUOTE_IN_UNQUOTED",
+          "record": 2,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "after-quote",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\"2\" "
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "AFTER_QUOTE",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "unclosed-quote",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\"two\nlines"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNCLOSED_QUOTE",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "nul-before-eof",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\"v\u0000"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CONTROL_CHAR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "vertical-tab",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\"v\u000b\""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CONTROL_CHAR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "lexical-before-row-width",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2,\"v\" x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "AFTER_QUOTE",
+          "record": 2,
+          "column": 3,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "closed-record-before-later-quote",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001\n002,\"v"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "logical-record-after-embedded-lf",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780d0a3030312c22610a62220d0a303032"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 3,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "control-after-closing-quote",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,\"v\"\u0001"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CONTROL_CHAR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "header-lexical-before-duplicate-check",
+      "source": {
+        "kind": "text",
+        "text": "id,id,\"x\" y"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "AFTER_QUOTE",
+          "record": 1,
+          "column": 3,
+          "field": null
+        }
+      }
+    }
+  ],
+  "conversions": [
+    {
+      "id": "brief-keep",
+      "source": {
+        "kind": "text",
+        "text": "team,2026-11-02,2026-11-09,備註\n001,2,,\n002,0,\"歸還,待查\",晚班"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "expand",
+          "omit"
+        ],
+        "attributeName": "date",
+        "valueName": "loan",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "team",
+            "date",
+            "loan"
+          ],
+          "rows": [
+            [
+              "001",
+              "2026-11-02",
+              "2"
+            ],
+            [
+              "001",
+              "2026-11-09",
+              ""
+            ],
+            [
+              "002",
+              "2026-11-02",
+              "0"
+            ],
+            [
+              "002",
+              "2026-11-09",
+              "歸還,待查"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 4,
+            "actual": 4,
+            "emptyCells": 1,
+            "skippedEmpty": 0,
+            "omittedColumns": [
+              4
+            ]
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 127,
+              "utf8": "\"team\",\"date\",\"loan\"\r\n\"001\",\"2026-11-02\",\"2\"\r\n\"001\",\"2026-11-09\",\"\"\r\n\"002\",\"2026-11-02\",\"0\"\r\n\"002\",\"2026-11-09\",\"歸還,待查\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 173,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"team\",\"date\",\"loan\"],\"rows\":[[\"001\",\"2026-11-02\",\"2\"],[\"001\",\"2026-11-09\",\"\"],[\"002\",\"2026-11-02\",\"0\"],[\"002\",\"2026-11-09\",\"歸還,待查\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "brief-skip",
+      "source": {
+        "kind": "text",
+        "text": "team,2026-11-02,2026-11-09,備註\n001,2,,\n002,0,\"歸還,待查\",晚班"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "expand",
+          "omit"
+        ],
+        "attributeName": "date",
+        "valueName": "loan",
+        "skipEmpty": true
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "team",
+            "date",
+            "loan"
+          ],
+          "rows": [
+            [
+              "001",
+              "2026-11-02",
+              "2"
+            ],
+            [
+              "002",
+              "2026-11-02",
+              "0"
+            ],
+            [
+              "002",
+              "2026-11-09",
+              "歸還,待查"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 4,
+            "actual": 3,
+            "emptyCells": 1,
+            "skippedEmpty": 1,
+            "omittedColumns": [
+              4
+            ]
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 104,
+              "utf8": "\"team\",\"date\",\"loan\"\r\n\"001\",\"2026-11-02\",\"2\"\r\n\"002\",\"2026-11-02\",\"0\"\r\n\"002\",\"2026-11-09\",\"歸還,待查\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 149,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"team\",\"date\",\"loan\"],\"rows\":[[\"001\",\"2026-11-02\",\"2\"],[\"002\",\"2026-11-02\",\"0\"],[\"002\",\"2026-11-09\",\"歸還,待查\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "space-and-zero",
+      "source": {
+        "kind": "text",
+        "text": "id,Week\n001,\" \"\n001,0"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": true
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "Week",
+              " "
+            ],
+            [
+              "001",
+              "Week",
+              "0"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 2,
+            "actual": 2,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 60,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"Week\",\" \"\r\n\"001\",\"Week\",\"0\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 104,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"Week\",\" \"],[\"001\",\"Week\",\"0\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "header-only",
+      "source": {
+        "kind": "text",
+        "text": "id,x"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [],
+          "origins": [],
+          "counts": {
+            "potential": 0,
+            "actual": 0,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 24,
+              "utf8": "\"id\",\"attribute\",\"value\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 67,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "header-only-risk",
+      "source": {
+        "kind": "text",
+        "text": "=id,x"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "=id",
+            "attribute",
+            "value"
+          ],
+          "rows": [],
+          "origins": [],
+          "counts": {
+            "potential": 0,
+            "actual": 0,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [
+            {
+              "record": 1,
+              "column": 1,
+              "sourceRecord": 1,
+              "sourceColumn": 1
+            }
+          ],
+          "files": {
+            "rawCsv": {
+              "status": "formula-risk",
+              "byteLength": null,
+              "utf8": null
+            },
+            "protectedCsv": {
+              "status": "ready",
+              "byteLength": 26,
+              "utf8": "\"'=id\",\"attribute\",\"value\""
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 68,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"=id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "formula-risk",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,=1+1"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "=1+1"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 1,
+            "actual": 1,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [
+            {
+              "record": 2,
+              "column": 3,
+              "sourceRecord": 2,
+              "sourceColumn": 2
+            }
+          ],
+          "files": {
+            "rawCsv": {
+              "status": "formula-risk",
+              "byteLength": null,
+              "utf8": null
+            },
+            "protectedCsv": {
+              "status": "ready",
+              "byteLength": 43,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"'=1+1\""
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 85,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"=1+1\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "risk-only-marked",
+      "source": {
+        "kind": "text",
+        "text": "id,x,y\n001,  =1+1,0"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "  =1+1"
+            ],
+            [
+              "001",
+              "y",
+              "0"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 2,
+            "actual": 2,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [
+            {
+              "record": 2,
+              "column": 3,
+              "sourceRecord": 2,
+              "sourceColumn": 2
+            }
+          ],
+          "files": {
+            "rawCsv": {
+              "status": "formula-risk",
+              "byteLength": null,
+              "utf8": null
+            },
+            "protectedCsv": {
+              "status": "ready",
+              "byteLength": 60,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"'  =1+1\"\r\n\"001\",\"y\",\"0\""
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 103,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"  =1+1\"],[\"001\",\"y\",\"0\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "risk-origin-and-multiplicity",
+      "source": {
+        "kind": "text",
+        "text": "id,＋week,ordinary,unused\n-12,0,\"safe, text\",=1+1"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "expand",
+          "omit"
+        ],
+        "attributeName": "when",
+        "valueName": "@value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "when",
+            "@value"
+          ],
+          "rows": [
+            [
+              "-12",
+              "＋week",
+              "0"
+            ],
+            [
+              "-12",
+              "ordinary",
+              "safe, text"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 2,
+            "actual": 2,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": [
+              4
+            ]
+          },
+          "risk": [
+            {
+              "record": 1,
+              "column": 3,
+              "sourceRecord": null,
+              "sourceColumn": null
+            },
+            {
+              "record": 2,
+              "column": 1,
+              "sourceRecord": 2,
+              "sourceColumn": 1
+            },
+            {
+              "record": 2,
+              "column": 2,
+              "sourceRecord": 1,
+              "sourceColumn": 2
+            },
+            {
+              "record": 3,
+              "column": 1,
+              "sourceRecord": 2,
+              "sourceColumn": 1
+            }
+          ],
+          "files": {
+            "rawCsv": {
+              "status": "formula-risk",
+              "byteLength": null,
+              "utf8": null
+            },
+            "protectedCsv": {
+              "status": "ready",
+              "byteLength": 76,
+              "utf8": "\"id\",\"when\",\"'@value\"\r\n\"'-12\",\"'＋week\",\"0\"\r\n\"'-12\",\"ordinary\",\"safe, text\""
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 116,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"when\",\"@value\"],\"rows\":[[\"-12\",\"＋week\",\"0\"],[\"-12\",\"ordinary\",\"safe, text\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "only-omitted-risk",
+      "source": {
+        "kind": "text",
+        "text": "id,=unused,x\n001,=1+1,"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "omit",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              ""
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 1,
+            "actual": 1,
+            "emptyCells": 1,
+            "skippedEmpty": 0,
+            "omittedColumns": [
+              2
+            ]
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 38,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 81,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "skipped-value-omits-risk-attribute",
+      "source": {
+        "kind": "text",
+        "text": "id,=week\n001,"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": true
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [],
+          "origins": [],
+          "counts": {
+            "potential": 1,
+            "actual": 0,
+            "emptyCells": 1,
+            "skippedEmpty": 1,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 24,
+              "utf8": "\"id\",\"attribute\",\"value\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 67,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "multiple-keep-and-duplicate-records",
+      "source": {
+        "kind": "text",
+        "text": "second,z,first,x\nβ,9,001,0\nβ,9,001,0"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "second",
+            "first",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "β",
+              "001",
+              "z",
+              "9"
+            ],
+            [
+              "β",
+              "001",
+              "x",
+              "0"
+            ],
+            [
+              "β",
+              "001",
+              "z",
+              "9"
+            ],
+            [
+              "β",
+              "001",
+              "x",
+              "0"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          "counts": {
+            "potential": 4,
+            "actual": 4,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 116,
+              "utf8": "\"second\",\"first\",\"attribute\",\"value\"\r\n\"β\",\"001\",\"z\",\"9\"\r\n\"β\",\"001\",\"x\",\"0\"\r\n\"β\",\"001\",\"z\",\"9\"\r\n\"β\",\"001\",\"x\",\"0\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 162,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"second\",\"first\",\"attribute\",\"value\"],\"rows\":[[\"β\",\"001\",\"z\",\"9\"],[\"β\",\"001\",\"x\",\"0\"],[\"β\",\"001\",\"z\",\"9\"],[\"β\",\"001\",\"x\",\"0\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "quoted-crlf-and-double-quote",
+      "source": {
+        "kind": "file",
+        "hex": "69642c780d0a3030312c22610d0a622c222263222222"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "a\r\nb,\"c\""
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 1,
+            "actual": 1,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 48,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"a\r\nb,\"\"c\"\"\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 93,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"a\\r\\nb,\\\"c\\\"\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "name-can-match-nonkept-source-header",
+      "source": {
+        "kind": "text",
+        "text": "id,x,rename\n001,4,blank"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "omit"
+        ],
+        "attributeName": "rename",
+        "valueName": "x",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "rename",
+            "x"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "4"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 1,
+            "actual": 1,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": [
+              3
+            ]
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 32,
+              "utf8": "\"id\",\"rename\",\"x\"\r\n\"001\",\"x\",\"4\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 75,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"rename\",\"x\"],\"rows\":[[\"001\",\"x\",\"4\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "short-clean",
+      "source": {
+        "kind": "text",
+        "text": "id,x,y\n001,2,0"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "2"
+            ],
+            [
+              "001",
+              "y",
+              "0"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "counts": {
+            "potential": 2,
+            "actual": 2,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 54,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"2\"\r\n\"001\",\"y\",\"0\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 98,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"2\"],[\"001\",\"y\",\"0\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "wrong-settings-schema",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": 1
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPTIONS_SCHEMA",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "unknown-settings-field",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false,
+        "extra": 0
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPTIONS_SCHEMA",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "role-length",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROLE_LENGTH",
+          "record": null,
+          "column": null,
+          "field": "roles"
+        }
+      }
+    },
+    {
+      "id": "role-value",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "skip"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROLE_VALUE",
+          "record": null,
+          "column": 2,
+          "field": "roles"
+        }
+      }
+    },
+    {
+      "id": "keep-before-expand",
+      "source": {
+        "kind": "text",
+        "text": "id,x,y\n001,2,0"
+      },
+      "options": {
+        "roles": [
+          "omit",
+          "omit",
+          "omit"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "KEEP_REQUIRED",
+          "record": null,
+          "column": null,
+          "field": "roles"
+        }
+      }
+    },
+    {
+      "id": "expand-required",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "omit"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EXPAND_REQUIRED",
+          "record": null,
+          "column": null,
+          "field": "roles"
+        }
+      }
+    },
+    {
+      "id": "bad-output-name",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": " \t",
+        "valueName": "id",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OUTPUT_NAME",
+          "record": null,
+          "column": null,
+          "field": "attributeName"
+        }
+      }
+    },
+    {
+      "id": "kept-name-collision",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "id",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OUTPUT_NAME_COLLISION",
+          "record": null,
+          "column": null,
+          "field": "attributeName"
+        }
+      }
+    },
+    {
+      "id": "new-name-collision",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "measure",
+        "valueName": "measure",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OUTPUT_NAME_COLLISION",
+          "record": null,
+          "column": null,
+          "field": "valueName"
+        }
+      }
+    },
+    {
+      "id": "parse-error-before-settings",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001\n"
+      },
+      "options": {
+        "roles": [
+          "omit"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "protected-duplicate-looking-headers",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,2"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "'=qty",
+        "valueName": "=qty",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "'=qty",
+            "=qty"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "2"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 1,
+            "actual": 1,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [
+            {
+              "record": 1,
+              "column": 3,
+              "sourceRecord": null,
+              "sourceColumn": null
+            }
+          ],
+          "files": {
+            "rawCsv": {
+              "status": "formula-risk",
+              "byteLength": null,
+              "utf8": null
+            },
+            "protectedCsv": {
+              "status": "ready",
+              "byteLength": 35,
+              "utf8": "\"id\",\"'=qty\",\"'=qty\"\r\n\"001\",\"x\",\"2\""
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 77,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"'=qty\",\"=qty\"],\"rows\":[[\"001\",\"x\",\"2\"]]}\n"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "pagination-26",
+      "source": {
+        "kind": "text",
+        "text": "id,x\n001,v\n002,v\n003,v\n004,v\n005,v\n006,v\n007,v\n008,v\n009,v\n010,v\n011,v\n012,v\n013,v\n014,v\n015,v\n016,v\n017,v\n018,v\n019,v\n020,v\n021,v\n022,v\n023,v\n024,v\n025,v\n026,v"
+      },
+      "options": {
+        "roles": [
+          "keep",
+          "expand"
+        ],
+        "attributeName": "attribute",
+        "valueName": "value",
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "columns": [
+            "id",
+            "attribute",
+            "value"
+          ],
+          "rows": [
+            [
+              "001",
+              "x",
+              "v"
+            ],
+            [
+              "002",
+              "x",
+              "v"
+            ],
+            [
+              "003",
+              "x",
+              "v"
+            ],
+            [
+              "004",
+              "x",
+              "v"
+            ],
+            [
+              "005",
+              "x",
+              "v"
+            ],
+            [
+              "006",
+              "x",
+              "v"
+            ],
+            [
+              "007",
+              "x",
+              "v"
+            ],
+            [
+              "008",
+              "x",
+              "v"
+            ],
+            [
+              "009",
+              "x",
+              "v"
+            ],
+            [
+              "010",
+              "x",
+              "v"
+            ],
+            [
+              "011",
+              "x",
+              "v"
+            ],
+            [
+              "012",
+              "x",
+              "v"
+            ],
+            [
+              "013",
+              "x",
+              "v"
+            ],
+            [
+              "014",
+              "x",
+              "v"
+            ],
+            [
+              "015",
+              "x",
+              "v"
+            ],
+            [
+              "016",
+              "x",
+              "v"
+            ],
+            [
+              "017",
+              "x",
+              "v"
+            ],
+            [
+              "018",
+              "x",
+              "v"
+            ],
+            [
+              "019",
+              "x",
+              "v"
+            ],
+            [
+              "020",
+              "x",
+              "v"
+            ],
+            [
+              "021",
+              "x",
+              "v"
+            ],
+            [
+              "022",
+              "x",
+              "v"
+            ],
+            [
+              "023",
+              "x",
+              "v"
+            ],
+            [
+              "024",
+              "x",
+              "v"
+            ],
+            [
+              "025",
+              "x",
+              "v"
+            ],
+            [
+              "026",
+              "x",
+              "v"
+            ]
+          ],
+          "origins": [
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              7,
+              2
+            ],
+            [
+              8,
+              2
+            ],
+            [
+              9,
+              2
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              11,
+              2
+            ],
+            [
+              12,
+              2
+            ],
+            [
+              13,
+              2
+            ],
+            [
+              14,
+              2
+            ],
+            [
+              15,
+              2
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              17,
+              2
+            ],
+            [
+              18,
+              2
+            ],
+            [
+              19,
+              2
+            ],
+            [
+              20,
+              2
+            ],
+            [
+              21,
+              2
+            ],
+            [
+              22,
+              2
+            ],
+            [
+              23,
+              2
+            ],
+            [
+              24,
+              2
+            ],
+            [
+              25,
+              2
+            ],
+            [
+              26,
+              2
+            ],
+            [
+              27,
+              2
+            ]
+          ],
+          "counts": {
+            "potential": 26,
+            "actual": 26,
+            "emptyCells": 0,
+            "skippedEmpty": 0,
+            "omittedColumns": []
+          },
+          "risk": [],
+          "files": {
+            "rawCsv": {
+              "status": "ready",
+              "byteLength": 414,
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"v\"\r\n\"002\",\"x\",\"v\"\r\n\"003\",\"x\",\"v\"\r\n\"004\",\"x\",\"v\"\r\n\"005\",\"x\",\"v\"\r\n\"006\",\"x\",\"v\"\r\n\"007\",\"x\",\"v\"\r\n\"008\",\"x\",\"v\"\r\n\"009\",\"x\",\"v\"\r\n\"010\",\"x\",\"v\"\r\n\"011\",\"x\",\"v\"\r\n\"012\",\"x\",\"v\"\r\n\"013\",\"x\",\"v\"\r\n\"014\",\"x\",\"v\"\r\n\"015\",\"x\",\"v\"\r\n\"016\",\"x\",\"v\"\r\n\"017\",\"x\",\"v\"\r\n\"018\",\"x\",\"v\"\r\n\"019\",\"x\",\"v\"\r\n\"020\",\"x\",\"v\"\r\n\"021\",\"x\",\"v\"\r\n\"022\",\"x\",\"v\"\r\n\"023\",\"x\",\"v\"\r\n\"024\",\"x\",\"v\"\r\n\"025\",\"x\",\"v\"\r\n\"026\",\"x\",\"v\""
+            },
+            "protectedCsv": {
+              "status": "unavailable",
+              "byteLength": null,
+              "utf8": null
+            },
+            "originalJson": {
+              "status": "ready",
+              "byteLength": 482,
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"v\"],[\"002\",\"x\",\"v\"],[\"003\",\"x\",\"v\"],[\"004\",\"x\",\"v\"],[\"005\",\"x\",\"v\"],[\"006\",\"x\",\"v\"],[\"007\",\"x\",\"v\"],[\"008\",\"x\",\"v\"],[\"009\",\"x\",\"v\"],[\"010\",\"x\",\"v\"],[\"011\",\"x\",\"v\"],[\"012\",\"x\",\"v\"],[\"013\",\"x\",\"v\"],[\"014\",\"x\",\"v\"],[\"015\",\"x\",\"v\"],[\"016\",\"x\",\"v\"],[\"017\",\"x\",\"v\"],[\"018\",\"x\",\"v\"],[\"019\",\"x\",\"v\"],[\"020\",\"x\",\"v\"],[\"021\",\"x\",\"v\"],[\"022\",\"x\",\"v\"],[\"023\",\"x\",\"v\"],[\"024\",\"x\",\"v\"],[\"025\",\"x\",\"v\"],[\"026\",\"x\",\"v\"]]}\n"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "predicate": [
+    {
+      "value": "=1+1",
+      "risky": true,
+      "protected": "'=1+1"
+    },
+    {
+      "value": "+2",
+      "risky": true,
+      "protected": "'+2"
+    },
+    {
+      "value": "-12",
+      "risky": true,
+      "protected": "'-12"
+    },
+    {
+      "value": "@x",
+      "risky": true,
+      "protected": "'@x"
+    },
+    {
+      "value": "  =x",
+      "risky": true,
+      "protected": "'  =x"
+    },
+    {
+      "value": "＝1",
+      "risky": true,
+      "protected": "'＝1"
+    },
+    {
+      "value": "＋1",
+      "risky": true,
+      "protected": "'＋1"
+    },
+    {
+      "value": "－1",
+      "risky": true,
+      "protected": "'－1"
+    },
+    {
+      "value": "＠x",
+      "risky": true,
+      "protected": "'＠x"
+    },
+    {
+      "value": "\ttext",
+      "risky": true,
+      "protected": "'\ttext"
+    },
+    {
+      "value": "\ntext",
+      "risky": true,
+      "protected": "'\ntext"
+    },
+    {
+      "value": "\rtext",
+      "risky": true,
+      "protected": "'\rtext"
+    },
+    {
+      "value": "\t",
+      "risky": true,
+      "protected": "'\t"
+    },
+    {
+      "value": "　＝1",
+      "risky": true,
+      "protected": "'　＝1"
+    },
+    {
+      "value": "﻿@x",
+      "risky": true,
+      "protected": "'﻿@x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": "\u2028=x",
+      "risky": true,
+      "protected": "'\u2028=x"
+    },
+    {
+      "value": "\u2029=x",
+      "risky": true,
+      "protected": "'\u2029=x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    {
+      "value": "　=x",
+      "risky": true,
+      "protected": "'　=x"
+    },
+    {
+      "value": "﻿=x",
+      "risky": true,
+      "protected": "'﻿=x"
+    },
+    {
+      "value": " \t0",
+      "risky": true,
+      "protected": "' \t0"
+    },
+    {
+      "value": "  \r",
+      "risky": true,
+      "protected": "'  \r"
+    },
+    {
+      "value": " \n0",
+      "risky": true,
+      "protected": "' \n0"
+    },
+    {
+      "value": "",
+      "risky": false,
+      "protected": ""
+    },
+    {
+      "value": "001",
+      "risky": false,
+      "protected": "001"
+    },
+    {
+      "value": "a=1",
+      "risky": false,
+      "protected": "a=1"
+    },
+    {
+      "value": "'=-x",
+      "risky": false,
+      "protected": "'=-x"
+    },
+    {
+      "value": "text\t",
+      "risky": false,
+      "protected": "text\t"
+    },
+    {
+      "value": "  ",
+      "risky": false,
+      "protected": "  "
+    },
+    {
+      "value": "​=x",
+      "risky": false,
+      "protected": "​=x"
+    },
+    {
+      "value": "  ",
+      "risky": false,
+      "protected": "  "
+    },
+    {
+      "value": "0",
+      "risky": false,
+      "protected": "0"
+    },
+    {
+      "value": "normal\ntext",
+      "risky": false,
+      "protected": "normal\ntext"
+    }
+  ],
+  "bounds": [
+    {
+      "id": "file-1MiB",
+      "recipe": "ascii-source-bytes",
+      "args": {
+        "kind": "file",
+        "targetBytes": 1048576
+      },
+      "expected": {
+        "ok": true,
+        "rows": 64,
+        "columns": 2,
+        "bytes": 1048576
+      }
+    },
+    {
+      "id": "file-over-1MiB",
+      "recipe": "ascii-source-bytes",
+      "args": {
+        "kind": "file",
+        "targetBytes": 1048577
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_BYTES",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "paste-1MiB",
+      "recipe": "ascii-source-bytes",
+      "args": {
+        "kind": "text",
+        "targetBytes": 1048576
+      },
+      "expected": {
+        "ok": true,
+        "rows": 64,
+        "columns": 2,
+        "bytes": 1048576
+      }
+    },
+    {
+      "id": "paste-over-1MiB",
+      "recipe": "ascii-source-bytes",
+      "args": {
+        "kind": "text",
+        "targetBytes": 1048577
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_BYTES",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "paste-byte-cap-not-unit-cap",
+      "recipe": "utf8-header-source-bytes",
+      "args": {
+        "targetBytes": 1048577
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_BYTES",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "header-120-codepoints",
+      "recipe": "header-codepoints",
+      "args": {
+        "count": 120
+      },
+      "expected": {
+        "ok": true,
+        "rows": 0,
+        "columns": 2,
+        "firstHeaderCodePoints": 120
+      }
+    },
+    {
+      "id": "header-121-codepoints",
+      "recipe": "header-codepoints",
+      "args": {
+        "count": 121
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "HEADER_NAME",
+          "record": 1,
+          "column": 1,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "field-16384-units",
+      "recipe": "field-units",
+      "args": {
+        "count": 16384
+      },
+      "expected": {
+        "ok": true,
+        "rows": 1,
+        "columns": 2,
+        "firstDataValueUnits": 16384
+      }
+    },
+    {
+      "id": "field-16385-units",
+      "recipe": "field-units",
+      "args": {
+        "count": 16385
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "FIELD_LIMIT",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "width-48",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 48,
+        "rows": 0
+      },
+      "expected": {
+        "ok": true,
+        "rows": 0,
+        "columns": 48
+      }
+    },
+    {
+      "id": "width-49",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 49,
+        "rows": 0
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "COLUMN_LIMIT",
+          "record": 1,
+          "column": 49,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "rows-2000",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 2,
+        "rows": 2000
+      },
+      "expected": {
+        "ok": true,
+        "rows": 2000,
+        "columns": 2
+      }
+    },
+    {
+      "id": "rows-2001",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 2,
+        "rows": 2001
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "record": 2002,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "shape-largest-valid",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 48,
+        "rows": 2000
+      },
+      "expected": {
+        "ok": true,
+        "rows": 2000,
+        "columns": 48,
+        "totalCells": 96048
+      }
+    },
+    {
+      "id": "result-20000",
+      "recipe": "expanded-rows",
+      "args": {
+        "rows": 1000,
+        "expand": 20,
+        "lastEmpty": false,
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": true,
+        "counts": {
+          "potential": 20000,
+          "actual": 20000,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "firstOrigin": [
+          2,
+          2
+        ],
+        "lastOrigin": [
+          1001,
+          21
+        ]
+      }
+    },
+    {
+      "id": "result-20020",
+      "recipe": "expanded-rows",
+      "args": {
+        "rows": 1001,
+        "expand": 20,
+        "lastEmpty": false,
+        "skipEmpty": false
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RESULT_ROWS",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "result-skip-back-to-20000",
+      "recipe": "expanded-rows",
+      "args": {
+        "rows": 1001,
+        "expand": 20,
+        "lastEmpty": true,
+        "skipEmpty": true
+      },
+      "expected": {
+        "ok": true,
+        "counts": {
+          "potential": 20020,
+          "actual": 20000,
+          "emptyCells": 20,
+          "skippedEmpty": 20,
+          "omittedColumns": []
+        },
+        "firstOrigin": [
+          2,
+          2
+        ],
+        "lastOrigin": [
+          1001,
+          21
+        ]
+      }
+    },
+    {
+      "id": "raw-csv-below-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": false,
+        "keepChars": 405429,
+        "padding": 3
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 446514,
+        "rows": 20000,
+        "riskCount": 0,
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 8388607
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null
+          },
+          "originalJson": {
+            "status": "too-large",
+            "byteLength": 8408649
+          }
+        }
+      }
+    },
+    {
+      "id": "raw-csv-at-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": false,
+        "keepChars": 405429,
+        "padding": 4
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 446515,
+        "rows": 20000,
+        "riskCount": 0,
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 8388608
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null
+          },
+          "originalJson": {
+            "status": "too-large",
+            "byteLength": 8408650
+          }
+        }
+      }
+    },
+    {
+      "id": "raw-csv-above-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": false,
+        "keepChars": 405429,
+        "padding": 5
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 446516,
+        "rows": 20000,
+        "riskCount": 0,
+        "files": {
+          "rawCsv": {
+            "status": "too-large",
+            "byteLength": 8388609
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null
+          },
+          "originalJson": {
+            "status": "too-large",
+            "byteLength": 8408651
+          }
+        }
+      }
+    },
+    {
+      "id": "protected-csv-below-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 402429,
+        "padding": 3
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 463514,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 8388607
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 8368649
+          }
+        }
+      }
+    },
+    {
+      "id": "protected-csv-at-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 402429,
+        "padding": 4
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 463515,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 8388608
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 8368650
+          }
+        }
+      }
+    },
+    {
+      "id": "protected-csv-above-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 402429,
+        "padding": 5
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 463516,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "too-large",
+            "byteLength": 8388609
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 8368651
+          }
+        }
+      }
+    },
+    {
+      "id": "json-below-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 403427,
+        "padding": 1
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 464510,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "too-large",
+            "byteLength": 8408565
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 8388607
+          }
+        }
+      }
+    },
+    {
+      "id": "json-at-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 403427,
+        "padding": 2
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 464511,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "too-large",
+            "byteLength": 8408566
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 8388608
+          }
+        }
+      }
+    },
+    {
+      "id": "json-above-8MiB",
+      "recipe": "artifact-bytes",
+      "args": {
+        "marked": true,
+        "keepChars": 403427,
+        "padding": 3
+      },
+      "expected": {
+        "ok": true,
+        "inputBytes": 464512,
+        "rows": 20000,
+        "riskCount": 40000,
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null
+          },
+          "protectedCsv": {
+            "status": "too-large",
+            "byteLength": 8408567
+          },
+          "originalJson": {
+            "status": "too-large",
+            "byteLength": 8388609
+          }
+        }
+      }
+    },
+    {
+      "id": "ragged-2001st-row-before-row-limit",
+      "recipe": "rectangle",
+      "args": {
+        "columns": 2,
+        "rows": 2001,
+        "shortLast": true
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2002,
+          "column": 2,
+          "field": null
+        }
+      }
+    }
+  ],
+  "controller": [
+    {
+      "id": "dirty-cancel-late",
+      "steps": [
+        {
+          "event": {
+            "type": "OBSERVE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 0,
+            "run": 0,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x,y\n001,2,0"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 1,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 2
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 2,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x",
+                  "y"
+                ],
+                "rows": [
+                  [
+                    "001",
+                    "2",
+                    "0"
+                  ]
+                ]
+              }
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "omit",
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_OPTIONS",
+            "patch": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ]
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 3,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 1,
+              "run": 4
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 1,
+            "run": 4,
+            "payload": {
+              "caseId": "short-clean"
+            }
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 54
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 98
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGE",
+            "page": 2
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 54
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 98
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "rawCsv"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 54
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 98
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": [
+            {
+              "kind": "download",
+              "filename": "unpivot.csv",
+              "mime": "text/csv;charset=utf-8",
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"2\"\r\n\"001\",\"y\",\"0\""
+            }
+          ]
+        },
+        {
+          "event": {
+            "type": "EDIT_OPTIONS",
+            "patch": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ]
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 5,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "rawCsv"
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 5,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 6,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 1,
+              "run": 6
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "CANCEL"
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 7,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 1,
+            "run": 6,
+            "payload": {
+              "caseId": "short-clean"
+            }
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 7,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "RESET"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 8,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGESHOW",
+            "persisted": true
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 8,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "risk-review-download-pagehide",
+      "steps": [
+        {
+          "event": {
+            "type": "OBSERVE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 0,
+            "run": 0,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x,y\n001,  =1+1,0"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 1,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 2
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 2,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x",
+                  "y"
+                ],
+                "rows": [
+                  [
+                    "001",
+                    "  =1+1",
+                    "0"
+                  ]
+                ]
+              }
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "omit",
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_OPTIONS",
+            "patch": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ]
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 3,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 1,
+              "run": 4
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 1,
+            "run": 4,
+            "payload": {
+              "caseId": "risk-only-marked"
+            }
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "rawCsv"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "protectedCsv"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "OPEN_PROTECTION"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": true,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": true,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "CLOSE_PROTECTION"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "OPEN_PROTECTION"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": true,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": true,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "protectedCsv"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": [
+            {
+              "kind": "download",
+              "filename": "unpivot-protected.csv",
+              "mime": "text/csv;charset=utf-8",
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"'  =1+1\"\r\n\"001\",\"y\",\"0\""
+            }
+          ]
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "originalJson"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": [
+            {
+              "kind": "download",
+              "filename": "unpivot-original.json",
+              "mime": "application/json;charset=utf-8",
+              "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"  =1+1\"],[\"001\",\"y\",\"0\"]]}\n"
+            }
+          ]
+        },
+        {
+          "event": {
+            "type": "OPEN_PROTECTION"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": true,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 1,
+              "files": {
+                "rawCsv": {
+                  "status": "formula-risk",
+                  "byteLength": null
+                },
+                "protectedCsv": {
+                  "status": "ready",
+                  "byteLength": 60
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 103
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": true,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGEHIDE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 1,
+            "run": 4,
+            "payload": {
+              "caseId": "risk-only-marked"
+            }
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "protectedCsv"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGESHOW",
+            "persisted": true
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "source-replace-error-retry",
+      "steps": [
+        {
+          "event": {
+            "type": "OBSERVE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 0,
+            "run": 0,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x,y\n001,2,0"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 1,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 2
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x\n001\n"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 3,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 4,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 2,
+              "run": 4
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 2,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x",
+                  "y"
+                ],
+                "rows": [
+                  [
+                    "001",
+                    "2",
+                    "0"
+                  ]
+                ]
+              }
+            }
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 4,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 2,
+              "run": 4
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 2,
+            "run": 4,
+            "payload": {
+              "ok": false,
+              "error": {
+                "code": "ROW_WIDTH",
+                "record": 2,
+                "column": 2,
+                "field": null
+              }
+            }
+          },
+          "expected": {
+            "phase": "error",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 4,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": {
+              "code": "ROW_WIDTH",
+              "record": 2,
+              "column": 2,
+              "field": null
+            },
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 2,
+              "run": 5
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "CANCEL"
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 6,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 2,
+            "run": 5,
+            "payload": {
+              "ok": false,
+              "error": {
+                "code": "ROW_WIDTH",
+                "record": 2,
+                "column": 2,
+                "field": null
+              }
+            }
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "text",
+            "sourceVersion": 2,
+            "run": 6,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x,y\n001,2,0"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 7,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 8,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 3,
+              "run": 8
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 3,
+            "run": 8,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x",
+                  "y"
+                ],
+                "rows": [
+                  [
+                    "001",
+                    "2",
+                    "0"
+                  ]
+                ]
+              }
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 8,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "omit",
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 9,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "omit",
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 3,
+              "run": 9
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 3,
+            "run": 9,
+            "payload": {
+              "caseId": "keep-before-expand"
+            }
+          },
+          "expected": {
+            "phase": "error",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 9,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "omit",
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": {
+              "code": "KEEP_REQUIRED",
+              "record": null,
+              "column": null,
+              "field": "roles"
+            },
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_OPTIONS",
+            "patch": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ]
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 10,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 11,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 3,
+              "run": 11
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 3,
+            "run": 11,
+            "payload": {
+              "ok": false,
+              "error": {
+                "code": "WORKER_ERROR",
+                "record": null,
+                "column": null,
+                "field": null
+              }
+            }
+          },
+          "expected": {
+            "phase": "error",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 11,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": {
+              "code": "WORKER_ERROR",
+              "record": null,
+              "column": null,
+              "field": null
+            },
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 12,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 3,
+              "run": 12
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 3,
+            "run": 12,
+            "payload": {
+              "caseId": "short-clean"
+            }
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 3,
+            "run": 12,
+            "headers": [
+              "id",
+              "x",
+              "y"
+            ],
+            "dataRows": 1,
+            "options": {
+              "roles": [
+                "keep",
+                "expand",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 2,
+                "actual": 2,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 54
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 98
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGESHOW",
+            "persisted": true
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 4,
+            "run": 13,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "file-read-error-and-cancel",
+      "steps": [
+        {
+          "event": {
+            "type": "OBSERVE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 0,
+            "run": 0,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "file",
+              "hex": "69642c78"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 1,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 2
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 2,
+            "payload": {
+              "ok": false,
+              "error": {
+                "code": "FILE_READ",
+                "record": null,
+                "column": null,
+                "field": null
+              }
+            }
+          },
+          "expected": {
+            "phase": "error",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": {
+              "code": "FILE_READ",
+              "record": null,
+              "column": null,
+              "field": null
+            },
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 3,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 3
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "CANCEL"
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 3,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x"
+                ],
+                "rows": []
+              }
+            }
+          },
+          "expected": {
+            "phase": "canceled",
+            "source": "file",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "RESET"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 2,
+            "run": 5,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "pagination-full-download",
+      "steps": [
+        {
+          "event": {
+            "type": "OBSERVE"
+          },
+          "expected": {
+            "phase": "empty",
+            "source": "none",
+            "sourceVersion": 0,
+            "run": 0,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_SOURCE",
+            "source": {
+              "kind": "text",
+              "text": "id,x\n001,v\n002,v\n003,v\n004,v\n005,v\n006,v\n007,v\n008,v\n009,v\n010,v\n011,v\n012,v\n013,v\n014,v\n015,v\n016,v\n017,v\n018,v\n019,v\n020,v\n021,v\n022,v\n023,v\n024,v\n025,v\n026,v"
+            }
+          },
+          "expected": {
+            "phase": "source-dirty",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 1,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "READ"
+          },
+          "expected": {
+            "phase": "reading",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [],
+            "dataRows": null,
+            "options": {
+              "roles": [],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "read",
+              "sourceVersion": 1,
+              "run": 2
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "read",
+            "sourceVersion": 1,
+            "run": 2,
+            "payload": {
+              "ok": true,
+              "table": {
+                "headers": [
+                  "id",
+                  "x"
+                ],
+                "rows": [
+                  [
+                    "001",
+                    "v"
+                  ],
+                  [
+                    "002",
+                    "v"
+                  ],
+                  [
+                    "003",
+                    "v"
+                  ],
+                  [
+                    "004",
+                    "v"
+                  ],
+                  [
+                    "005",
+                    "v"
+                  ],
+                  [
+                    "006",
+                    "v"
+                  ],
+                  [
+                    "007",
+                    "v"
+                  ],
+                  [
+                    "008",
+                    "v"
+                  ],
+                  [
+                    "009",
+                    "v"
+                  ],
+                  [
+                    "010",
+                    "v"
+                  ],
+                  [
+                    "011",
+                    "v"
+                  ],
+                  [
+                    "012",
+                    "v"
+                  ],
+                  [
+                    "013",
+                    "v"
+                  ],
+                  [
+                    "014",
+                    "v"
+                  ],
+                  [
+                    "015",
+                    "v"
+                  ],
+                  [
+                    "016",
+                    "v"
+                  ],
+                  [
+                    "017",
+                    "v"
+                  ],
+                  [
+                    "018",
+                    "v"
+                  ],
+                  [
+                    "019",
+                    "v"
+                  ],
+                  [
+                    "020",
+                    "v"
+                  ],
+                  [
+                    "021",
+                    "v"
+                  ],
+                  [
+                    "022",
+                    "v"
+                  ],
+                  [
+                    "023",
+                    "v"
+                  ],
+                  [
+                    "024",
+                    "v"
+                  ],
+                  [
+                    "025",
+                    "v"
+                  ],
+                  [
+                    "026",
+                    "v"
+                  ]
+                ]
+              }
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 2,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "omit",
+                "omit"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "EDIT_OPTIONS",
+            "patch": {
+              "roles": [
+                "keep",
+                "expand"
+              ]
+            }
+          },
+          "expected": {
+            "phase": "loaded",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 3,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PREVIEW"
+          },
+          "expected": {
+            "phase": "converting",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": {
+              "kind": "preview",
+              "sourceVersion": 1,
+              "run": 4
+            },
+            "error": null,
+            "page": null,
+            "review": false,
+            "result": null,
+            "downloads": {
+              "rawCsv": false,
+              "protectedCsv": false,
+              "originalJson": false
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DELIVER",
+            "kind": "preview",
+            "sourceVersion": 1,
+            "run": 4,
+            "payload": {
+              "caseId": "pagination-26"
+            }
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 26,
+                "actual": 26,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 414
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 482
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGE",
+            "page": 2
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 2,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 26,
+                "actual": 26,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 414
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 482
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "PAGE",
+            "page": 3
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 2,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 26,
+                "actual": 26,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 414
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 482
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        },
+        {
+          "event": {
+            "type": "DOWNLOAD",
+            "file": "rawCsv"
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 2,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 26,
+                "actual": 26,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 414
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 482
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": [
+            {
+              "kind": "download",
+              "filename": "unpivot.csv",
+              "mime": "text/csv;charset=utf-8",
+              "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"v\"\r\n\"002\",\"x\",\"v\"\r\n\"003\",\"x\",\"v\"\r\n\"004\",\"x\",\"v\"\r\n\"005\",\"x\",\"v\"\r\n\"006\",\"x\",\"v\"\r\n\"007\",\"x\",\"v\"\r\n\"008\",\"x\",\"v\"\r\n\"009\",\"x\",\"v\"\r\n\"010\",\"x\",\"v\"\r\n\"011\",\"x\",\"v\"\r\n\"012\",\"x\",\"v\"\r\n\"013\",\"x\",\"v\"\r\n\"014\",\"x\",\"v\"\r\n\"015\",\"x\",\"v\"\r\n\"016\",\"x\",\"v\"\r\n\"017\",\"x\",\"v\"\r\n\"018\",\"x\",\"v\"\r\n\"019\",\"x\",\"v\"\r\n\"020\",\"x\",\"v\"\r\n\"021\",\"x\",\"v\"\r\n\"022\",\"x\",\"v\"\r\n\"023\",\"x\",\"v\"\r\n\"024\",\"x\",\"v\"\r\n\"025\",\"x\",\"v\"\r\n\"026\",\"x\",\"v\""
+            }
+          ]
+        },
+        {
+          "event": {
+            "type": "PAGE",
+            "page": 1
+          },
+          "expected": {
+            "phase": "result",
+            "source": "text",
+            "sourceVersion": 1,
+            "run": 4,
+            "headers": [
+              "id",
+              "x"
+            ],
+            "dataRows": 26,
+            "options": {
+              "roles": [
+                "keep",
+                "expand"
+              ],
+              "attributeName": "attribute",
+              "valueName": "value",
+              "skipEmpty": false
+            },
+            "pending": null,
+            "error": null,
+            "page": 1,
+            "review": false,
+            "result": {
+              "counts": {
+                "potential": 26,
+                "actual": 26,
+                "emptyCells": 0,
+                "skippedEmpty": 0,
+                "omittedColumns": []
+              },
+              "riskCount": 0,
+              "files": {
+                "rawCsv": {
+                  "status": "ready",
+                  "byteLength": 414
+                },
+                "protectedCsv": {
+                  "status": "unavailable",
+                  "byteLength": null
+                },
+                "originalJson": {
+                  "status": "ready",
+                  "byteLength": 482
+                }
+              }
+            },
+            "downloads": {
+              "rawCsv": true,
+              "protectedCsv": false,
+              "originalJson": true
+            }
+          },
+          "effects": []
+        }
+      ]
+    }
+  ]
+}
