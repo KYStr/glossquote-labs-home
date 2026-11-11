@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Clothing Size Converter | Gloss Tools</title>
+<meta name="description" content="Convert men's and women's top sizes between US, UK, EU and JP charts — from a chest or bust measurement in centimetres, or from a size in any one system.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Clothing Size Converter</h1>
+  <p class="lede">Convert men's and women's top sizes between US, UK, EU and JP charts — from a chest or bust measurement in centimetres, or from a size in any one system. Before ordering across borders or paying in store, check the measurement or label you have against the full row of all four systems.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Garment and input mode</h2>
+      <form id="size-form" novalidate>
+        <div class="field">
+          <label for="field-garment">Garment</label>
+          <p class="help" id="help-garment">Women's rows are keyed by bust, men's by chest; tops only.</p>
+          <select id="field-garment" name="garment" aria-describedby="help-garment">
+            <option value="women" selected>Women's tops</option>
+            <option value="men">Men's tops</option>
+          </select>
+          <p class="field-error" id="error-garment" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mode">Input mode</label>
+          <p class="help" id="help-mode">Look a row up by measurement, or by a size code from one system.</p>
+          <select id="field-mode" name="mode" aria-describedby="help-mode">
+            <option value="measurement" selected>Measurement (cm)</option>
+            <option value="size">Size code</option>
+          </select>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div id="group-measurement">
+          <div class="field">
+            <label for="field-measurementCm">Chest or bust measurement (cm)</label>
+            <p class="help" id="help-measurementCm">Chest or bust measurement, 50.0–200.0 cm, at most one decimal place.</p>
+            <input id="field-measurementCm" name="measurementCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-measurementCm">
+            <p class="field-error" id="error-measurementCm" role="alert"></p>
+          </div>
+        </div>
+        <div id="group-size" hidden>
+          <div class="field">
+            <label for="field-fromSystem">Source size system</label>
+            <p class="help" id="help-fromSystem">The system your label's size belongs to.</p>
+            <select id="field-fromSystem" name="fromSystem" aria-describedby="help-fromSystem">
+              <option value="us" selected>United States (US)</option>
+              <option value="uk">United Kingdom (UK)</option>
+              <option value="eu">Europe (EU)</option>
+              <option value="jp">Japan (JP)</option>
+            </select>
+            <p class="field-error" id="error-fromSystem" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sizeValue">Source size</label>
+            <p class="help" id="help-sizeValue">Enter that system's letter or numeric size code, such as M, 38, or LL.</p>
+            <input id="field-sizeValue" name="sizeValue" type="text" autocomplete="off" value="" aria-describedby="help-sizeValue">
+            <p class="field-error" id="error-sizeValue" role="alert"></p>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing converted yet. Enter a chest or bust measurement or a size in any system, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert size</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Size match</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Size match" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Value</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note">“—” means that system has no label on this row.</p>
+      <p class="result-note" id="result-note"></p>
+      <p class="result-note" id="disclaimer">Size charts vary by brand: this tool uses one fixed reference chart. Fit and labelling differ between brands, so check the brand's official size chart and try the garment on whenever possible.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>The full reference charts (fixed)</summary>
+    <p>Both charts are fixed references, looked up cell by cell — never derived by formula or interpolation: 8 women's rows keyed by bust and 7 men's rows keyed by chest. Ranges are half-open: a measurement equal to a row's lower edge belongs to that row; a measurement equal to the chart's top edge is outside the chart. A “—” cell means that system has no label on that row and never takes part in a lookup. Men's UK numbers equal the US numbers (both are chest-inches labels), and the men's JP numeric column is always blank. The downloaded report is always named clothing-size-report.json.</p>
+    <h3>Women's tops</h3>
+    <div class="table-scroll" role="region" aria-label="Women's tops chart" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">Row</th><th scope="col">Bust cm</th><th scope="col">US letter</th><th scope="col">US numeric</th><th scope="col">UK numeric</th><th scope="col">EU numeric</th><th scope="col">JP letter</th><th scope="col">JP numeric</th></tr>
+        </thead>
+        <tbody id="women-table-rows"></tbody>
+      </table>
+    </div>
+    <h3>Men's tops</h3>
+    <div class="table-scroll" role="region" aria-label="Men's tops chart" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">Row</th><th scope="col">Chest cm</th><th scope="col">US letter</th><th scope="col">US numeric</th><th scope="col">UK numeric</th><th scope="col">EU numeric</th><th scope="col">JP letter</th><th scope="col">JP numeric</th></tr>
+        </thead>
+        <tbody id="men-table-rows"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why does the same size fit differently across brands?</dt>
+      <dd>Size charts vary by brand. This tool uses one fixed reference chart, so check the brand's official size chart and try the garment on whenever possible.</dd>
+      <dt>What happens when my measurement is exactly on a boundary?</dt>
+      <dd>Ranges are half-open: a measurement equal to a row's lower edge belongs to that row; a measurement equal to the chart's top edge is outside the chart.</dd>
+      <dt>Can I look up shoe or bottom sizes here?</dt>
+      <dd>No. This tool covers tops only; shoe sizes have their own converter, and bottoms are out of scope.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All lookups happen locally on this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
