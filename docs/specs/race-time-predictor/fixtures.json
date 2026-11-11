@@ -1,0 +1,664 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-race-time-predictor-20261109",
+  "slug": "race-time-predictor",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "classic-10k",
+      "kind": "core",
+      "purpose": "10K 40:00 推四個標準距離（範例案例）",
+      "input": {
+        "knownPreset": "10k",
+        "knownCustomM": "",
+        "knownTime": "40:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 10000,
+          "knownTimeSeconds": 2400,
+          "knownPaceSecPerKm": 240.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1151,
+              "paceSecPerKm": 230.2
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2400,
+              "paceSecPerKm": 240.0
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5295,
+              "paceSecPerKm": 251.0
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 11040,
+              "paceSecPerKm": 261.7
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "five-k-source",
+      "kind": "core",
+      "purpose": "5K 20:00 向上預測，已知列恰等於輸入",
+      "input": {
+        "knownPreset": "5k",
+        "knownCustomM": "",
+        "knownTime": "20:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 5000,
+          "knownTimeSeconds": 1200,
+          "knownPaceSecPerKm": 240.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1200,
+              "paceSecPerKm": 240.0
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2502,
+              "paceSecPerKm": 250.2
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5520,
+              "paceSecPerKm": 261.7
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 11509,
+              "paceSecPerKm": 272.8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "marathon-source",
+      "kind": "core",
+      "purpose": "全馬 3:30:00 向下預測短距離",
+      "input": {
+        "knownPreset": "marathon",
+        "knownCustomM": "",
+        "knownTime": "3:30:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 42195,
+          "knownTimeSeconds": 12600,
+          "knownPaceSecPerKm": 298.6,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1314,
+              "paceSecPerKm": 262.7
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2739,
+              "paceSecPerKm": 273.9
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 6043,
+              "paceSecPerKm": 286.4
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 12600,
+              "paceSecPerKm": 298.6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "half-with-custom-target",
+      "kind": "core",
+      "purpose": "半馬成績加自訂目標 30000 m，自訂列恆最後",
+      "input": {
+        "knownPreset": "half",
+        "knownCustomM": "",
+        "knownTime": "1:45:00",
+        "targetCustomM": "30000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 21097.5,
+          "knownTimeSeconds": 6300,
+          "knownPaceSecPerKm": 298.6,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1370,
+              "paceSecPerKm": 273.9
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2855,
+              "paceSecPerKm": 285.5
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 6300,
+              "paceSecPerKm": 298.6
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 13135,
+              "paceSecPerKm": 311.3
+            },
+            {
+              "key": "custom",
+              "distanceM": 30000,
+              "predictedSeconds": 9150,
+              "paceSecPerKm": 305.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "custom-source",
+      "kind": "core",
+      "purpose": "自訂已知距離 15000 m 成績",
+      "input": {
+        "knownPreset": "custom",
+        "knownCustomM": "15000",
+        "knownTime": "1:07:30",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 15000,
+          "knownTimeSeconds": 4050,
+          "knownPaceSecPerKm": 270.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1264,
+              "paceSecPerKm": 252.8
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2635,
+              "paceSecPerKm": 263.5
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5814,
+              "paceSecPerKm": 275.6
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 12122,
+              "paceSecPerKm": 287.3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "min-custom-boundary",
+      "kind": "core",
+      "purpose": "自訂距離下限 400 m 端點合法",
+      "input": {
+        "knownPreset": "custom",
+        "knownCustomM": "400",
+        "knownTime": "1:50",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 400,
+          "knownTimeSeconds": 110,
+          "knownPaceSecPerKm": 275.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1600,
+              "paceSecPerKm": 320.0
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 3336,
+              "paceSecPerKm": 333.6
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 7360,
+              "paceSecPerKm": 348.9
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 15346,
+              "paceSecPerKm": 363.7
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "inactive-custom-ignored",
+      "kind": "core",
+      "purpose": "非自訂預設時 knownCustomM 內容被忽略，結果同 five-k-source",
+      "input": {
+        "knownPreset": "5k",
+        "knownCustomM": "junk!",
+        "knownTime": "20:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "knownDistanceM": 5000,
+          "knownTimeSeconds": 1200,
+          "knownPaceSecPerKm": 240.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1200,
+              "paceSecPerKm": 240.0
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2502,
+              "paceSecPerKm": 250.2
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5520,
+              "paceSecPerKm": 261.7
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 11509,
+              "paceSecPerKm": 272.8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "err-time-format",
+      "kind": "core",
+      "purpose": "時間 SS 非兩位數 → TIME_FORMAT",
+      "input": {
+        "knownPreset": "10k",
+        "knownCustomM": "",
+        "knownTime": "40:5",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TIME_FORMAT",
+          "field": "knownTime",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-time-component-range",
+      "kind": "core",
+      "purpose": "時間 SS = 60 → RANGE",
+      "input": {
+        "knownPreset": "10k",
+        "knownCustomM": "",
+        "knownTime": "40:60",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "knownTime",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-preset-enum",
+      "kind": "core",
+      "purpose": "未知預設值 → ENUM",
+      "input": {
+        "knownPreset": "15k",
+        "knownCustomM": "",
+        "knownTime": "40:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "knownPreset",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-custom-empty",
+      "kind": "core",
+      "purpose": "自訂預設但距離空白 → EMPTY",
+      "input": {
+        "knownPreset": "custom",
+        "knownCustomM": "",
+        "knownTime": "40:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "knownCustomM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-custom-format",
+      "kind": "core",
+      "purpose": "距離含千分位逗號 → DECIMAL_FORMAT",
+      "input": {
+        "knownPreset": "custom",
+        "knownCustomM": "15,000",
+        "knownTime": "40:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "knownCustomM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-custom-range",
+      "kind": "core",
+      "purpose": "距離 399.99 低於下限 → RANGE",
+      "input": {
+        "knownPreset": "custom",
+        "knownCustomM": "399.99",
+        "knownTime": "40:00",
+        "targetCustomM": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "knownCustomM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-target-format",
+      "kind": "core",
+      "purpose": "自訂目標非數字 → DECIMAL_FORMAT（欄位 targetCustomM）",
+      "input": {
+        "knownPreset": "10k",
+        "knownCustomM": "",
+        "knownTime": "40:00",
+        "targetCustomM": "abc"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "targetCustomM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-schema-extra-field",
+      "kind": "core",
+      "purpose": "多出未知欄位 → SCHEMA",
+      "input": {
+        "knownPreset": "10k",
+        "knownCustomM": "",
+        "knownTime": "40:00",
+        "targetCustomM": "",
+        "note": "x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "knownPreset": "10k",
+          "knownCustomM": "",
+          "knownTime": "40:00",
+          "targetCustomM": ""
+        },
+        "edit": {
+          "knownPreset": "10k",
+          "knownCustomM": "",
+          "knownTime": "40:60",
+          "targetCustomM": ""
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "knownTime",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "knownPreset": "10k",
+          "knownCustomM": "",
+          "knownTime": "40:00",
+          "targetCustomM": ""
+        },
+        "lateResult": {
+          "knownDistanceM": 10000,
+          "knownTimeSeconds": 2400,
+          "knownPaceSecPerKm": 240.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1151,
+              "paceSecPerKm": 230.2
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2400,
+              "paceSecPerKm": 240.0
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5295,
+              "paceSecPerKm": 251.0
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 11040,
+              "paceSecPerKm": 261.7
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "knownPreset": "10k",
+            "knownCustomM": "",
+            "knownTime": "40:00",
+            "targetCustomM": ""
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "knownPreset": "10k",
+            "knownCustomM": "",
+            "knownTime": "",
+            "targetCustomM": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "knownPreset": "10k",
+          "knownCustomM": "",
+          "knownTime": "40:00",
+          "targetCustomM": ""
+        },
+        "newerDraft": {
+          "knownPreset": "10k",
+          "knownCustomM": "",
+          "knownTime": "40:60",
+          "targetCustomM": ""
+        },
+        "olderLateResult": {
+          "knownDistanceM": 10000,
+          "knownTimeSeconds": 2400,
+          "knownPaceSecPerKm": 240.0,
+          "predictions": [
+            {
+              "key": "5k",
+              "distanceM": 5000,
+              "predictedSeconds": 1151,
+              "paceSecPerKm": 230.2
+            },
+            {
+              "key": "10k",
+              "distanceM": 10000,
+              "predictedSeconds": 2400,
+              "paceSecPerKm": 240.0
+            },
+            {
+              "key": "half",
+              "distanceM": 21097.5,
+              "predictedSeconds": 5295,
+              "paceSecPerKm": 251.0
+            },
+            {
+              "key": "marathon",
+              "distanceM": 42195,
+              "predictedSeconds": 11040,
+              "paceSecPerKm": 261.7
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "knownTime",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "knownTime",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
