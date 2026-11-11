@@ -1,0 +1,419 @@
+{
+  "candidate": "456b4210b3a2a41c0285cee30867bd741bc59c13",
+  "python": "3.12.5",
+  "priorFilesSha256": {
+    "verify.py": "c31a860908168e63f605b21caec669d0969a68c92da79e1452c30abba78578df",
+    "fixtures.json": "5b214e3c5d63c7d5de25496612be265a840c1993e1a8ad22279e921548d10f6c"
+  },
+  "fixedFixtures": [
+    {
+      "id": "manifest-file-over-limit-before-read",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_BYTES_LIMIT",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-read-rejection",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_READ_FAILED",
+            "field": "manifest",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "manifest-duplicate-before-file-cap",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "MANIFEST_DUPLICATE",
+            "field": "manifest",
+            "line": 2,
+            "fileIndex": null,
+            "firstLine": 1,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "single-file-over-limit",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_SIZE_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": 2,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "selected-total-over-limit-before-name",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILES_TOTAL_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    {
+      "id": "read-error-continues",
+      "actual": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 1,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 1,
+              "read_error": 1
+            },
+            "rows": [
+              {
+                "name": "bad.txt",
+                "status": "read_error",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              },
+              {
+                "name": "notes.txt",
+                "status": "match",
+                "sizeBytes": 3,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+              },
+              {
+                "name": "extra.txt",
+                "status": "unexpected",
+                "sizeBytes": 5,
+                "expectedSha256": null,
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          3,
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":1,\"mismatch\":0,\"missing\":0,\"unexpected\":1,\"read_error\":1},\"rows\":[{\"name\":\"bad.txt\",\"status\":\"read_error\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null},{\"name\":\"notes.txt\",\"status\":\"match\",\"sizeBytes\":3,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"},{\"name\":\"extra.txt\",\"status\":\"unexpected\",\"sizeBytes\":5,\"expectedSha256\":null,\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "read-size-mismatch",
+      "actual": {
+        "result": {
+          "ok": true,
+          "report": {
+            "schemaVersion": 1,
+            "algorithm": "SHA-256",
+            "exactMatch": false,
+            "counts": {
+              "match": 0,
+              "mismatch": 0,
+              "missing": 0,
+              "unexpected": 0,
+              "read_error": 1
+            },
+            "rows": [
+              {
+                "name": "notes.txt",
+                "status": "read_error",
+                "sizeBytes": 4,
+                "expectedSha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "actualSha256": null
+              }
+            ]
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [],
+        "reportUtf8": "{\"schemaVersion\":1,\"algorithm\":\"SHA-256\",\"exactMatch\":false,\"counts\":{\"match\":0,\"mismatch\":0,\"missing\":0,\"unexpected\":0,\"read_error\":1},\"rows\":[{\"name\":\"notes.txt\",\"status\":\"read_error\",\"sizeBytes\":4,\"expectedSha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"actualSha256\":null}]}\n"
+      }
+    },
+    {
+      "id": "digest-rejects-batch",
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "DIGEST_FAILED",
+            "field": "files",
+            "line": null,
+            "fileIndex": 2,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": null
+      }
+    }
+  ],
+  "focusedCases": {
+    "fileManifestThenPreflightFailure": {
+      "input": {
+        "manifest": {
+          "kind": "file",
+          "name": "SHA256SUMS",
+          "sizeBytes": 67,
+          "bytesHex": "62613738313662663866303163666561343134313430646535646165323232336230303336316133393631373761396362343130666636316632303031356164202078"
+        },
+        "selected": [
+          {
+            "name": "x",
+            "sizeBytes": 33554433,
+            "readMode": "must-not-read"
+          }
+        ]
+      },
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "FILE_SIZE_LIMIT",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 1,
+        "readSelected": [],
+        "digestSelected": [],
+        "reportUtf8": null
+      }
+    },
+    "minimalDigestFailure": {
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  x"
+        },
+        "selected": [
+          {
+            "name": "x",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          }
+        ],
+        "faults": {
+          "digestRejectAtFileIndex": 1
+        }
+      },
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "DIGEST_FAILED",
+            "field": "files",
+            "line": null,
+            "fileIndex": 1,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1
+        ],
+        "digestSelected": [
+          1
+        ],
+        "reportUtf8": null
+      }
+    },
+    "readErrorThenDigestFailure": {
+      "input": {
+        "manifest": {
+          "kind": "text",
+          "text": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  bad\nba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  x\nba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad  later"
+        },
+        "selected": [
+          {
+            "name": "bad",
+            "sizeBytes": 3,
+            "readMode": "reject"
+          },
+          {
+            "name": "x",
+            "sizeBytes": 3,
+            "bytesHex": "616263"
+          },
+          {
+            "name": "later",
+            "sizeBytes": 3,
+            "readMode": "must-not-read"
+          }
+        ],
+        "faults": {
+          "digestRejectAtFileIndex": 2
+        }
+      },
+      "actual": {
+        "result": {
+          "ok": false,
+          "error": {
+            "code": "DIGEST_FAILED",
+            "field": "files",
+            "line": null,
+            "fileIndex": 2,
+            "firstLine": null,
+            "firstFileIndex": null
+          }
+        },
+        "readManifestCalls": 0,
+        "readSelected": [
+          1,
+          2
+        ],
+        "digestSelected": [
+          2
+        ],
+        "reportUtf8": null
+      }
+    },
+    "workerFailureAfterProgress": {
+      "before": {
+        "phase": "hashing",
+        "generation": 2,
+        "manifestSource": "text",
+        "textOrigin": "textarea",
+        "manifestBytes": 228,
+        "selectedCount": 3,
+        "selectedBytes": 11,
+        "progress": {
+          "completed": 1,
+          "total": 2
+        },
+        "filter": "all",
+        "reportReady": false,
+        "exactMatch": null,
+        "error": null,
+        "downloadNotice": null
+      },
+      "after": {
+        "snapshot": {
+          "phase": "error",
+          "generation": 2,
+          "manifestSource": "text",
+          "textOrigin": "textarea",
+          "manifestBytes": 228,
+          "selectedCount": 3,
+          "selectedBytes": 11,
+          "progress": null,
+          "filter": "all",
+          "reportReady": false,
+          "exactMatch": null,
+          "error": {
+            "code": "WORKER_FAILED",
+            "field": null,
+            "line": null,
+            "fileIndex": null,
+            "firstLine": null,
+            "firstFileIndex": null
+          },
+          "downloadNotice": null
+        },
+        "textDraft": {
+          "raw": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+          "display": "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD  notes.txt\n2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824 *agenda.txt\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  empty.txt",
+          "origin": "textarea"
+        },
+        "effects": {
+          "workersCreated": [
+            {
+              "worker": 1,
+              "runId": 2
+            }
+          ],
+          "workersTerminated": [
+            1
+          ],
+          "workerUrlsRevoked": [
+            "worker:1"
+          ],
+          "reportUrlsCreated": [],
+          "reportUrlsRevoked": [],
+          "downloads": [],
+          "uiNotices": []
+        }
+      },
+      "lateAndDownloadUnchanged": true
+    }
+  },
+  "totals": {
+    "fixedFixtures": 8,
+    "focusedCases": 4,
+    "fullPriorSuiteRerun": false
+  }
+}
