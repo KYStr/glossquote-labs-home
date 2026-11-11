@@ -30,3 +30,16 @@ node scripts/check-generated.mjs --mode preview
 
 [逐檔來源](SOURCE-MANIFEST.json) · [候選檔案與建置雜湊](CANDIDATE-MANIFEST.json) · [計算與報告逐案比對](REPORT-PARITY.json) · [引用負測](CITATION-NEGATIVE-CHECK.json)
 
+
+## 引用檢查退修 FH-COOK-CHECK-REPAIR-02
+
+原候選 `3fd8379427b1318ba65c1169f0256befc47ca93a` 的兩語頁原有引用可用。主統籌與 reviewer 在隔離副本把引用包進 HTML 註解，重現檢查器仍 exit 0。退修將例外限於兩語頁既有食材說明段落中的精確有效 anchor。註解和其他原始內容照常掃描。新增一組 CLI 回歸測試，包含一項有效正例及十一項負例，涵蓋兩語註解、重複、網址或查詢變更、template、textarea、屬性、隱藏內容、註解中的禁用 token，以及其他檔案的精確 anchor。
+
+引用檢查單獨修正時，Node v24.14.0 的完整測試 61/61、靜態檢查、預覽建置與生成驗證皆 exit 0。
+
+## Worker 世代隔離退修
+
+舊 callback 只比對自己捕捉的世代，新工作處於 busy 時仍可用舊成功或驗證錯誤結束它。用保留的 callback 重現八種反例，包含直接重跑、取消後重跑、編輯後重跑及重設後重跑。修正後，收到訊息和 Worker 錯誤都要確認目前世代與 Worker 身分。訊息仍須帶正確世代。八種晚到回覆均被拒絕，新 Worker 都能用自己的回覆完成。正常完成、錯誤的訊息世代及舊 onerror 對照通過。[主統籌的範圍修正](https://github.com/KYStr/glossquote-labs-home/blob/989119cb9530dd9d0fcb98c2953415b6c0baf9de/docs/reviews/five-hour-2026-11-11/dispatch/product-cooking-copy/AMENDMENT-CONTROLLER.md)
+
+合併兩項退修後 70/70 測試通過，靜態檢查、兩次可重現的預覽建置及生成驗證皆 exit 0。和上一候選逐檔比對後，僅 controller、生成 controller、預覽 manifest、兩組測試和引用檢查器有差異。兩語頁、引用、核心與固定 fixtures bytes 相同，沿用 20 筆換算及 14 份 UTF-8 報告相符的證據。Worker 測試是離線注入式驗證。瀏覽器、真機、Network/Storage 及原生下載仍為 `NOT_RUN_USER_FOCUS_INCIDENT`。
+

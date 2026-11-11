@@ -156,6 +156,72 @@ test("running while busy replaces the worker", () => {
   assert.equal(controller.getState().state, "success");
 });
 
+const replacementActions = {
+  "run again": () => {},
+  "cancel then run": (controller) => controller.cancel(),
+  "edit then run": (controller) => controller.edit({ amount: "3" }),
+  "reset then run": (controller) => controller.reset(),
+};
+
+for (const [transition, replace] of Object.entries(replacementActions)) {
+  for (const [outcome, amount] of [["success", "1"], ["validation error", "0"]]) {
+    test(`ignores old ${outcome} during a new run after ${transition}`, () => {
+      const { controller, workers } = setup();
+      controller.edit({ amount });
+      controller.run();
+      const [oldWorker] = workers;
+      const oldCallback = oldWorker.onmessage;
+      const oldRequest = oldWorker.posted[0];
+      const oldOutcome = run(oldRequest.snapshot);
+      assert.equal(oldOutcome.ok, outcome === "success");
+
+      replace(controller);
+      controller.run();
+      const currentWorker = workers[1];
+      const busy = controller.getState();
+      assert.equal(busy.state, "busy");
+      assert.equal(busy.reportAvailable, false);
+      assert.equal(oldWorker.terminated, true);
+
+      oldCallback({ data: { generation: oldRequest.generation, ...oldOutcome } });
+      assert.deepEqual(controller.getState(), busy);
+      assert.equal(currentWorker.terminated, false);
+
+      deliverCoreResult(currentWorker);
+      const finished = controller.getState();
+      const currentOutcome = run(currentWorker.posted[0].snapshot);
+      assert.equal(finished.state, currentOutcome.ok ? "success" : "error");
+      assert.equal(finished.reportAvailable, currentOutcome.ok);
+      assert.deepEqual(finished.result, currentOutcome.result ?? null);
+      assert.deepEqual(finished.error, currentOutcome.error ?? null);
+    });
+  }
+}
+
+test("ignores an old worker error and a mismatched generation on the current worker", () => {
+  const { controller, workers } = setup();
+  controller.edit({ amount: "3" });
+  controller.run();
+  const [oldWorker] = workers;
+  const oldError = oldWorker.onerror;
+  controller.run();
+  const currentWorker = workers[1];
+  const busy = controller.getState();
+
+  oldError(new Error("old worker error"));
+  assert.deepEqual(controller.getState(), busy);
+  assert.equal(currentWorker.terminated, false);
+
+  const { snapshot } = currentWorker.posted[0];
+  currentWorker.deliver({ generation: oldWorker.posted[0].generation, ...run(snapshot) });
+  assert.deepEqual(controller.getState(), busy);
+  assert.equal(currentWorker.terminated, false);
+
+  deliverCoreResult(currentWorker);
+  assert.equal(controller.getState().state, "success");
+  assert.equal(controller.getState().reportAvailable, true);
+});
+
 test("cancel when not busy is a no-op", () => {
   const { controller } = setup();
   assert.equal(controller.getState().state, "empty");

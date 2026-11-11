@@ -6,9 +6,8 @@
 //
 // States (SPEC userFlow): empty, dirty, busy, success, error, cancelled.
 // - run() invalidates any old result, bumps the generation, and posts
-//   the current draft snapshot to a fresh worker. Only a reply carrying
-//   the current generation while still busy is accepted; late replies
-//   are dropped, never resurrected.
+//   the current draft snapshot to a fresh worker. Only the active worker
+//   can settle its generation while the controller is busy.
 // - edit() during busy terminates the worker and goes dirty; after a
 //   result or error it clears the outcome and goes dirty; from empty it
 //   stays empty (nothing to revoke).
@@ -35,12 +34,13 @@ export function createController({ createWorker, onChange = () => {} }) {
 
   function terminateWorker() {
     if (worker !== null) {
+      const previousWorker = worker;
+      worker = null;
       try {
-        worker.terminate();
+        previousWorker.terminate();
       } catch {
         // Terminating a dead worker is not an error state for the UI.
       }
-      worker = null;
     }
   }
 
@@ -73,10 +73,12 @@ export function createController({ createWorker, onChange = () => {} }) {
       return getPublicState();
     }
     worker = nextWorker;
-    worker.onmessage = (event) => {
+    const isActive = () =>
+      state === "busy" && generation === postedGeneration && worker === nextWorker;
+    nextWorker.onmessage = (event) => {
       const data = event.data;
       if (data === null || typeof data !== "object") return;
-      if (data.generation !== postedGeneration || state !== "busy") return;
+      if (data.generation !== postedGeneration || !isActive()) return;
       terminateWorker();
       if (data.ok === true) {
         result = data.result;
@@ -89,8 +91,8 @@ export function createController({ createWorker, onChange = () => {} }) {
       }
       emit();
     };
-    worker.onerror = () => {
-      if (generation !== postedGeneration || state !== "busy") return;
+    nextWorker.onerror = () => {
+      if (!isActive()) return;
       terminateWorker();
       result = null;
       error = { ...WORKER_ERROR };
@@ -98,7 +100,7 @@ export function createController({ createWorker, onChange = () => {} }) {
       emit();
     };
     try {
-      worker.postMessage({ snapshot, generation: postedGeneration });
+      nextWorker.postMessage({ snapshot, generation: postedGeneration });
     } catch {
       terminateWorker();
       result = null;

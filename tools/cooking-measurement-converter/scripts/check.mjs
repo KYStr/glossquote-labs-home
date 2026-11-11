@@ -224,12 +224,78 @@ const localizedPages = new Set([
   resolve(PROJECT_ROOT, "public/index.html"),
   resolve(PROJECT_ROOT, "public/en/index.html"),
 ]);
+// Recognize the explicit tag structure used by these two static pages.
+const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input",
+  "link", "meta", "param", "source", "track", "wbr"]);
+const textTags = new Set(["iframe", "noembed", "noframes", "noscript", "script", "style", "textarea", "title", "xmp"]);
+
+function publisherAnchors(html, file) {
+  const tokens = /<!--[\s\S]*?(?:-->|$)|<!doctype html>|<(\/?)([a-z][a-z0-9-]*)(?=[\t\n\f\r />])(?:[^"'<>]|"[^"]*"|'[^']*')*>|</gi;
+  const citationPath = ["<body>", '<main class="layout">', '<details class="details">', "<p>"];
+  const parents = [];
+  const found = new Set();
+  for (let token; (token = tokens.exec(html));) {
+    const [markup, closing, name] = token;
+    if (markup.startsWith("<!")) continue;
+    if (!name) {
+      fail(file + ": unsupported HTML syntax in citation scan");
+      return new Set();
+    }
+    const tag = name.toLowerCase();
+    if (closing) {
+      if (parents.pop()?.tag !== tag) {
+        fail(file + ": mismatched HTML tags in citation scan");
+        return new Set();
+      }
+      continue;
+    }
+    if (tag === "plaintext") {
+      fail(file + ": unsupported HTML text element in citation scan");
+      return new Set();
+    }
+    if (textTags.has(tag)) {
+      const end = new RegExp("</" + tag + "[\\t\\n\\f\\r ]*>", "gi");
+      end.lastIndex = tokens.lastIndex;
+      const endTag = end.exec(html);
+      if (!endTag) {
+        fail(file + ": unterminated HTML text element in citation scan");
+        return new Set();
+      }
+      if (tag === "script" && html.slice(tokens.lastIndex, endTag.index).trim()) {
+        fail(file + ": unexpected inline script content in citation scan");
+        return new Set();
+      }
+      tokens.lastIndex = end.lastIndex;
+      continue;
+    }
+    const inCitationParagraph = parents.length === 5
+      && /^<html lang="(?:zh-Hant|en)">$/.test(parents[0].markup)
+      && citationPath.every((part, index) => parents[index + 1].markup === part);
+    if (tag === "a" && inCitationParagraph) {
+      const link = citationLinks.find(candidate => html.startsWith(candidate, token.index));
+      if (link) found.add(link);
+    }
+    if (!voidTags.has(tag)) parents.push({tag, markup});
+  }
+  if (parents.length) {
+    fail(file + ": unclosed HTML tags in citation scan");
+    return new Set();
+  }
+  return found;
+}
+
 for (const file of scannedFiles) {
   if (!SCANNED_EXTENSIONS.has(extname(file).toLowerCase())) continue;
-  let text = await readFile(file, "utf8");
+  const original = await readFile(file, "utf8");
+  let text = original;
   if (localizedPages.has(file)) {
+    const activeLinks = publisherAnchors(original, file);
     for (const link of citationLinks) {
-      if (text.split(link).length !== 2) fail("Expected one exact publisher citation in " + file);
+      if (!activeLinks.has(link) || original.split(link).length !== 2) {
+        fail(file + ": expected one active publisher citation");
+        continue;
+      }
+      // Remove only the exact, active anchor. Comments and other text stay in the scan.
       text = text.replace(link, "");
     }
   }

@@ -5,9 +5,11 @@
 // implementation.
 
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { appendFile, cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import test from "node:test";
-import path from "node:path";
+import path, { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DENSITY } from "../public/js/core/convert.mjs";
 
@@ -112,4 +114,64 @@ test("both locales link the same publisher references and explain the ingredient
   }
   assert.match(htmlByName.zh, /教材 <a [^>]+>Easy As Pie<\/a> 第 1 頁的無鹽奶油值，1 杯為 227 g/);
   assert.match(htmlByName.en, /page 1 of King Arthur Baking’s <a [^>]+>Easy As Pie<\/a> gives 227 g per cup of unsalted butter/);
+});
+
+test("checker exempts only active publisher citations and scans original comments", async () => {
+  const tempParent = resolve(tmpdir());
+  const copy = await mkdtemp(join(tempParent, "cooking-citation-test-"));
+  const page = join(copy, "public/index.html");
+  const style = join(copy, "public/styles/app.css");
+  const original = htmlByName.zh;
+  const chart = '<a href="https://www.kingarthurbaking.com/learn/ingredient-weight-chart" rel="noreferrer">Ingredient Weight Chart</a>';
+  const pie = '<a href="https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1" rel="noreferrer">Easy As Pie</a>';
+  assert.ok(original.includes(chart) && original.includes(pie));
+
+  const runChecker = () => spawnSync(process.execPath, ["scripts/check.mjs"], {
+    cwd: copy, encoding: "utf8", timeout: 20_000, windowsHide: true,
+  });
+  try {
+    for (const file of ["public", "scripts", "test", "package.json", "HANDOFF.md", "VERIFICATION.md"]) {
+      await cp(join(root, file), join(copy, file), {recursive: true});
+    }
+    await writeFile(page, original.replace(pie, () => "<!-- citation notes -->" + pie));
+    const positive = runChecker();
+    assert.ifError(positive.error);
+    assert.equal(positive.status, 0, positive.stderr);
+
+    const cases = [
+      ["commented", original.replace(pie, () => "<!-- " + pie + " -->"), /expected one active publisher citation/],
+      ["duplicate", original.replace(chart, () => chart + chart), /expected one active publisher citation/],
+      ["changed destination", original.replace(pie, () => pie.replace("shop.kingarthurbaking.com", "example.invalid")), /expected one active publisher citation/],
+      ["query", original.replace(pie, () => pie.replace("#page=1", "?extra=1#page=1")), /expected one active publisher citation/],
+      ["template", original.replace(pie, () => "<template>" + pie + "</template>"), /expected one active publisher citation/],
+      ["textarea", original.replace(pie, () => "<textarea>" + pie + "</textarea>"), /expected one active publisher citation/],
+      ["attribute", original.replace(pie, () => "<span data-quote='" + pie + "'></span>"), /expected one active publisher citation/],
+      ["hidden", original.replace(pie, () => "<span hidden>" + pie + "</span>"), /expected one active publisher citation/],
+      ["token in comment", original.replace(pie, () => "<!-- localStorage -->" + pie), /forbidden token present/],
+    ];
+    for (const [name, html, reason] of cases) {
+      await writeFile(page, html);
+      const result = runChecker();
+      assert.ifError(result.error);
+      assert.equal(result.status, 1, name);
+      assert.match(result.stderr, reason, name);
+    }
+    await writeFile(page, original);
+    const english = join(copy, "public/en/index.html");
+    await writeFile(english, htmlByName.en.replace(chart, () => "<!-- " + chart + " -->"));
+    const englishComment = runChecker();
+    assert.ifError(englishComment.error);
+    assert.equal(englishComment.status, 1);
+    assert.match(englishComment.stderr, /expected one active publisher citation/);
+    await writeFile(english, htmlByName.en);
+    await appendFile(style, "\n/* " + chart + " */\n");
+    const otherFile = runChecker();
+    assert.ifError(otherFile.error);
+    assert.equal(otherFile.status, 1);
+    assert.match(otherFile.stderr, /app\.css: forbidden token present/);
+  } finally {
+    assert.equal(dirname(copy), tempParent);
+    assert.match(basename(copy), /^cooking-citation-test-/);
+    await rm(copy, {recursive: true, force: true});
+  }
 });
