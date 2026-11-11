@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Age Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a birth date and a reference date (today by default) to get the exact age in years, months and days, total days lived, the weekday of birth, and a countdown to the next birthday.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Age Calculator</h1>
+  <p class="lede">Enter a birth date and a reference date to get the exact age in years, months and days, the total days lived, the weekday of birth, and the date of and countdown to the next birthday. Edge cases such as February 29 births and month-end birthdays follow one fixed set of rules, so the answer never depends on which tool you ask.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Birth date and reference date</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-birthDate">Birth date</label>
+          <p class="help" id="help-birthDate">Gregorian date in YYYY-MM-DD format, from 1900-01-01 to 2100-12-31.</p>
+          <input id="field-birthDate" name="birthDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-birthDate">
+          <p class="field-error" id="error-birthDate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-referenceDate">Reference date</label>
+          <p class="help" id="help-referenceDate">The age is calculated as of this day; same format and range as above. It is prefilled with your device's today and may be a future date — for example a school-entry day. Use “Use today” to return to today.</p>
+          <input id="field-referenceDate" name="referenceDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-referenceDate">
+          <p class="field-error" id="error-referenceDate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a birth date and a reference date, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate age</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="today-btn" class="button-secondary">Use today</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Age</h2>
+      <dl class="summary-list" id="age-rows"></dl>
+      <h3>Weekday of birth</h3>
+      <dl class="summary-list" id="weekday-rows"></dl>
+      <h3>Next birthday</h3>
+      <dl class="summary-list" id="next-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">This tool calculates age by fixed calendar rules only; it does not determine legal eligibility for school entry, voting, or military service.</p>
+      <p class="disclaimer">本工具依固定日曆規則推算年齡，不作入學、投票、兵役等法律資格判定。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>All arithmetic is integer calendar arithmetic (Julian day numbers) with no device clock or timezone involved: the same input always gives the same output. The total days are the difference of the two day numbers.</p>
+    <p>Years, months and days use a fixed borrow convention: when the days fall short they borrow the full length of the month before the reference month; when the months fall short they borrow twelve months from the years. A February 29 birth observes March 1 as its birthday in non-leap years; the next birthday is the first observed birthday on or after the reference date.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Born on February 29 — when is the birthday in a non-leap year?</dt>
+      <dd>This tool observes it on March 1 in non-leap years, and on February 29 in leap years.</dd>
+      <dt>How are the days counted?</dt>
+      <dd>When the days fall short, they borrow the full length of the month before the reference month — the fixed convention of this tool; other tools may differ.</dd>
+      <dt>Can the reference date be in the future?</dt>
+      <dd>Yes — for example, to find the age on a school-entry date or an anniversary; any valid date after the birth date works.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally on this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
