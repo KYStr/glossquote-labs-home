@@ -1,0 +1,2077 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-inflation-calculator-20261109",
+  "slug": "inflation-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "rate-basic",
+      "kind": "core",
+      "purpose": "固定利率基本例：2% 十年，未來值、購買力、累計與逐年表",
+      "input": {
+        "mode": "rate",
+        "amount": "100000",
+        "annualRatePercent": "2",
+        "years": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 21.9,
+          "futureValue": 121899.44,
+          "purchasingPower": 82034.83,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 100000,
+              "purchasingPower": 100000
+            },
+            {
+              "year": 1,
+              "nominalValue": 102000,
+              "purchasingPower": 98039.22
+            },
+            {
+              "year": 2,
+              "nominalValue": 104040,
+              "purchasingPower": 96116.88
+            },
+            {
+              "year": 3,
+              "nominalValue": 106120.8,
+              "purchasingPower": 94232.23
+            },
+            {
+              "year": 4,
+              "nominalValue": 108243.22,
+              "purchasingPower": 92384.54
+            },
+            {
+              "year": 5,
+              "nominalValue": 110408.08,
+              "purchasingPower": 90573.08
+            },
+            {
+              "year": 6,
+              "nominalValue": 112616.24,
+              "purchasingPower": 88797.14
+            },
+            {
+              "year": 7,
+              "nominalValue": 114868.57,
+              "purchasingPower": 87056.02
+            },
+            {
+              "year": 8,
+              "nominalValue": 117165.94,
+              "purchasingPower": 85349.04
+            },
+            {
+              "year": 9,
+              "nominalValue": 119509.26,
+              "purchasingPower": 83675.53
+            },
+            {
+              "year": 10,
+              "nominalValue": 121899.44,
+              "purchasingPower": 82034.83
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-zero-rate",
+      "kind": "core",
+      "purpose": "零通膨：所有輸出等於原金額，累計 0",
+      "input": {
+        "mode": "rate",
+        "amount": "50000",
+        "annualRatePercent": "0",
+        "years": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 0,
+          "futureValue": 50000,
+          "purchasingPower": 50000,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            },
+            {
+              "year": 1,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            },
+            {
+              "year": 2,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            },
+            {
+              "year": 3,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            },
+            {
+              "year": 4,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            },
+            {
+              "year": 5,
+              "nominalValue": 50000,
+              "purchasingPower": 50000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-deflation",
+      "kind": "core",
+      "purpose": "通縮 −1.5%：未來值縮小、購買力上升、累計為負",
+      "input": {
+        "mode": "rate",
+        "amount": "80000",
+        "annualRatePercent": "-1.5",
+        "years": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": -14.03,
+          "futureValue": 68778.44,
+          "purchasingPower": 93052.42,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 80000,
+              "purchasingPower": 80000
+            },
+            {
+              "year": 1,
+              "nominalValue": 78800,
+              "purchasingPower": 81218.27
+            },
+            {
+              "year": 2,
+              "nominalValue": 77618,
+              "purchasingPower": 82455.1
+            },
+            {
+              "year": 3,
+              "nominalValue": 76453.73,
+              "purchasingPower": 83710.76
+            },
+            {
+              "year": 4,
+              "nominalValue": 75306.92,
+              "purchasingPower": 84985.55
+            },
+            {
+              "year": 5,
+              "nominalValue": 74177.32,
+              "purchasingPower": 86279.74
+            },
+            {
+              "year": 6,
+              "nominalValue": 73064.66,
+              "purchasingPower": 87593.65
+            },
+            {
+              "year": 7,
+              "nominalValue": 71968.69,
+              "purchasingPower": 88927.56
+            },
+            {
+              "year": 8,
+              "nominalValue": 70889.16,
+              "purchasingPower": 90281.79
+            },
+            {
+              "year": 9,
+              "nominalValue": 69825.82,
+              "purchasingPower": 91656.64
+            },
+            {
+              "year": 10,
+              "nominalValue": 68778.44,
+              "purchasingPower": 93052.42
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-years-zero",
+      "kind": "core",
+      "purpose": "年數 0：因子 1，逐年表只有第 0 年一列",
+      "input": {
+        "mode": "rate",
+        "amount": "12345.67",
+        "annualRatePercent": "3.5",
+        "years": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 0,
+          "futureValue": 12345.67,
+          "purchasingPower": 12345.67,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 12345.67,
+              "purchasingPower": 12345.67
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-fractional",
+      "kind": "core",
+      "purpose": "小數金額與三位小數利率 2.375%",
+      "input": {
+        "mode": "rate",
+        "amount": "1234.56",
+        "annualRatePercent": "2.375",
+        "years": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 17.86,
+          "futureValue": 1455.02,
+          "purchasingPower": 1047.5,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 1234.56,
+              "purchasingPower": 1234.56
+            },
+            {
+              "year": 1,
+              "nominalValue": 1263.88,
+              "purchasingPower": 1205.92
+            },
+            {
+              "year": 2,
+              "nominalValue": 1293.9,
+              "purchasingPower": 1177.94
+            },
+            {
+              "year": 3,
+              "nominalValue": 1324.63,
+              "purchasingPower": 1150.62
+            },
+            {
+              "year": 4,
+              "nominalValue": 1356.09,
+              "purchasingPower": 1123.92
+            },
+            {
+              "year": 5,
+              "nominalValue": 1388.3,
+              "purchasingPower": 1097.85
+            },
+            {
+              "year": 6,
+              "nominalValue": 1421.27,
+              "purchasingPower": 1072.38
+            },
+            {
+              "year": 7,
+              "nominalValue": 1455.02,
+              "purchasingPower": 1047.5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-high",
+      "kind": "core",
+      "purpose": "高通膨 10% 三十年（金額避開 1.1^k 的半分tie）",
+      "input": {
+        "mode": "rate",
+        "amount": "50003",
+        "annualRatePercent": "10",
+        "years": "30"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 1644.94,
+          "futureValue": 872522.46,
+          "purchasingPower": 2865.6,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 50003,
+              "purchasingPower": 50003
+            },
+            {
+              "year": 1,
+              "nominalValue": 55003.3,
+              "purchasingPower": 45457.27
+            },
+            {
+              "year": 2,
+              "nominalValue": 60503.63,
+              "purchasingPower": 41324.79
+            },
+            {
+              "year": 3,
+              "nominalValue": 66553.99,
+              "purchasingPower": 37567.99
+            },
+            {
+              "year": 4,
+              "nominalValue": 73209.39,
+              "purchasingPower": 34152.72
+            },
+            {
+              "year": 5,
+              "nominalValue": 80530.33,
+              "purchasingPower": 31047.93
+            },
+            {
+              "year": 6,
+              "nominalValue": 88583.36,
+              "purchasingPower": 28225.39
+            },
+            {
+              "year": 7,
+              "nominalValue": 97441.7,
+              "purchasingPower": 25659.45
+            },
+            {
+              "year": 8,
+              "nominalValue": 107185.87,
+              "purchasingPower": 23326.77
+            },
+            {
+              "year": 9,
+              "nominalValue": 117904.46,
+              "purchasingPower": 21206.15
+            },
+            {
+              "year": 10,
+              "nominalValue": 129694.9,
+              "purchasingPower": 19278.32
+            },
+            {
+              "year": 11,
+              "nominalValue": 142664.39,
+              "purchasingPower": 17525.75
+            },
+            {
+              "year": 12,
+              "nominalValue": 156930.83,
+              "purchasingPower": 15932.5
+            },
+            {
+              "year": 13,
+              "nominalValue": 172623.92,
+              "purchasingPower": 14484.09
+            },
+            {
+              "year": 14,
+              "nominalValue": 189886.31,
+              "purchasingPower": 13167.35
+            },
+            {
+              "year": 15,
+              "nominalValue": 208874.94,
+              "purchasingPower": 11970.32
+            },
+            {
+              "year": 16,
+              "nominalValue": 229762.43,
+              "purchasingPower": 10882.11
+            },
+            {
+              "year": 17,
+              "nominalValue": 252738.68,
+              "purchasingPower": 9892.83
+            },
+            {
+              "year": 18,
+              "nominalValue": 278012.55,
+              "purchasingPower": 8993.48
+            },
+            {
+              "year": 19,
+              "nominalValue": 305813.8,
+              "purchasingPower": 8175.89
+            },
+            {
+              "year": 20,
+              "nominalValue": 336395.18,
+              "purchasingPower": 7432.63
+            },
+            {
+              "year": 21,
+              "nominalValue": 370034.7,
+              "purchasingPower": 6756.93
+            },
+            {
+              "year": 22,
+              "nominalValue": 407038.17,
+              "purchasingPower": 6142.67
+            },
+            {
+              "year": 23,
+              "nominalValue": 447741.98,
+              "purchasingPower": 5584.24
+            },
+            {
+              "year": 24,
+              "nominalValue": 492516.18,
+              "purchasingPower": 5076.58
+            },
+            {
+              "year": 25,
+              "nominalValue": 541767.8,
+              "purchasingPower": 4615.08
+            },
+            {
+              "year": 26,
+              "nominalValue": 595944.58,
+              "purchasingPower": 4195.52
+            },
+            {
+              "year": 27,
+              "nominalValue": 655539.04,
+              "purchasingPower": 3814.11
+            },
+            {
+              "year": 28,
+              "nominalValue": 721092.94,
+              "purchasingPower": 3467.38
+            },
+            {
+              "year": 29,
+              "nominalValue": 793202.24,
+              "purchasingPower": 3152.16
+            },
+            {
+              "year": 30,
+              "nominalValue": 872522.46,
+              "purchasingPower": 2865.6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-max-years",
+      "kind": "core",
+      "purpose": "年數上限 200、利率 0：201 列全等於原金額",
+      "input": {
+        "mode": "rate",
+        "amount": "777",
+        "annualRatePercent": "0",
+        "years": "200"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 0,
+          "futureValue": 777,
+          "purchasingPower": 777,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 1,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 2,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 3,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 4,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 5,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 6,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 7,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 8,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 9,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 10,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 11,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 12,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 13,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 14,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 15,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 16,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 17,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 18,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 19,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 20,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 21,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 22,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 23,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 24,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 25,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 26,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 27,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 28,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 29,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 30,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 31,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 32,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 33,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 34,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 35,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 36,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 37,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 38,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 39,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 40,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 41,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 42,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 43,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 44,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 45,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 46,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 47,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 48,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 49,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 50,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 51,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 52,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 53,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 54,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 55,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 56,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 57,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 58,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 59,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 60,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 61,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 62,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 63,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 64,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 65,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 66,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 67,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 68,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 69,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 70,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 71,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 72,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 73,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 74,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 75,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 76,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 77,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 78,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 79,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 80,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 81,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 82,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 83,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 84,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 85,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 86,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 87,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 88,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 89,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 90,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 91,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 92,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 93,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 94,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 95,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 96,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 97,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 98,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 99,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 100,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 101,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 102,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 103,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 104,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 105,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 106,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 107,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 108,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 109,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 110,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 111,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 112,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 113,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 114,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 115,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 116,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 117,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 118,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 119,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 120,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 121,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 122,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 123,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 124,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 125,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 126,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 127,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 128,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 129,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 130,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 131,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 132,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 133,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 134,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 135,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 136,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 137,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 138,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 139,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 140,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 141,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 142,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 143,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 144,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 145,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 146,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 147,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 148,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 149,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 150,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 151,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 152,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 153,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 154,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 155,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 156,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 157,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 158,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 159,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 160,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 161,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 162,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 163,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 164,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 165,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 166,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 167,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 168,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 169,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 170,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 171,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 172,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 173,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 174,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 175,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 176,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 177,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 178,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 179,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 180,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 181,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 182,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 183,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 184,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 185,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 186,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 187,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 188,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 189,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 190,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 191,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 192,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 193,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 194,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 195,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 196,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 197,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 198,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 199,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            },
+            {
+              "year": 200,
+              "nominalValue": 777,
+              "purchasingPower": 777
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-floor",
+      "kind": "core",
+      "purpose": "利率下限附近 −99.999%、一年：pow(x,1) 精確，累計四捨五入為 −100",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "-99.999",
+        "years": "1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": -100,
+          "futureValue": 0.01,
+          "purchasingPower": 100000000,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 1000,
+              "purchasingPower": 1000
+            },
+            {
+              "year": 1,
+              "nominalValue": 0.01,
+              "purchasingPower": 100000000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate-max-rate",
+      "kind": "core",
+      "purpose": "利率上限 1000%、兩年：因子 121",
+      "input": {
+        "mode": "rate",
+        "amount": "100",
+        "annualRatePercent": "1000",
+        "years": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cumulativePercent": 12000,
+          "futureValue": 12100,
+          "purchasingPower": 0.83,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 100,
+              "purchasingPower": 100
+            },
+            {
+              "year": 1,
+              "nominalValue": 1100,
+              "purchasingPower": 9.09
+            },
+            {
+              "year": 2,
+              "nominalValue": 12100,
+              "purchasingPower": 0.83
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpi-basic",
+      "kind": "core",
+      "purpose": "CPI 基本例：100.0 → 109.2，不給年數則等值年率為 null",
+      "input": {
+        "mode": "cpi",
+        "amount": "30000",
+        "cpiFrom": "100.0",
+        "cpiTo": "109.2",
+        "labelFrom": "2015",
+        "labelTo": "2025",
+        "yearsBetween": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "adjustedAmount": 32760,
+          "cumulativePercent": 9.2,
+          "equivalentAnnualRatePercent": null,
+          "fromLabel": "2015",
+          "toLabel": "2025"
+        }
+      }
+    },
+    {
+      "id": "cpi-with-years",
+      "kind": "core",
+      "purpose": "CPI 含相隔年數：等值年率 4 位小數",
+      "input": {
+        "mode": "cpi",
+        "amount": "1000",
+        "cpiFrom": "98.6",
+        "cpiTo": "112.4",
+        "labelFrom": "2014 年",
+        "labelTo": "2024 年",
+        "yearsBetween": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "adjustedAmount": 1139.96,
+          "cumulativePercent": 14,
+          "equivalentAnnualRatePercent": 1.3185,
+          "fromLabel": "2014 年",
+          "toLabel": "2024 年"
+        }
+      }
+    },
+    {
+      "id": "cpi-deflation",
+      "kind": "core",
+      "purpose": "CPI 下跌：換算金額縮小、累計與等值年率為負",
+      "input": {
+        "mode": "cpi",
+        "amount": "5000",
+        "cpiFrom": "105.3",
+        "cpiTo": "100.0",
+        "labelFrom": "2020",
+        "labelTo": "2021",
+        "yearsBetween": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "adjustedAmount": 4748.34,
+          "cumulativePercent": -5.03,
+          "equivalentAnnualRatePercent": -1.0275,
+          "fromLabel": "2020",
+          "toLabel": "2021"
+        }
+      }
+    },
+    {
+      "id": "cpi-same-index",
+      "kind": "core",
+      "purpose": "兩期指數相同：換算不變、累計與等值年率為 0",
+      "input": {
+        "mode": "cpi",
+        "amount": "8888.88",
+        "cpiFrom": "101.5",
+        "cpiTo": "101.5",
+        "labelFrom": "Q1",
+        "labelTo": "Q2",
+        "yearsBetween": "8"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "adjustedAmount": 8888.88,
+          "cumulativePercent": 0,
+          "equivalentAnnualRatePercent": 0,
+          "fromLabel": "Q1",
+          "toLabel": "Q2"
+        }
+      }
+    },
+    {
+      "id": "err-amount-format",
+      "kind": "core",
+      "purpose": "金額三位小數，文法先於範圍",
+      "input": {
+        "mode": "rate",
+        "amount": "12.345",
+        "annualRatePercent": "2",
+        "years": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-amount-limit",
+      "kind": "core",
+      "purpose": "金額 13 字元，容量先於文法",
+      "input": {
+        "mode": "rate",
+        "amount": "1234567890123",
+        "annualRatePercent": "2",
+        "years": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-rate-floor",
+      "kind": "core",
+      "purpose": "利率 −100 恰在界外（須嚴格大於 −100）",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "-100",
+        "years": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "annualRatePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-rate-format",
+      "kind": "core",
+      "purpose": "利率四位小數超過三位上限",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "2.3755",
+        "years": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "annualRatePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-years-range",
+      "kind": "core",
+      "purpose": "年數 201 超過上限 200",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "2",
+        "years": "201"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "years",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-years-format",
+      "kind": "core",
+      "purpose": "年數含小數點，非整數文法",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "2",
+        "years": "1.5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "years",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-cpi-zero",
+      "kind": "core",
+      "purpose": "起始 CPI 為 0（須嚴格大於 0）",
+      "input": {
+        "mode": "cpi",
+        "amount": "1000",
+        "cpiFrom": "0",
+        "cpiTo": "101.0",
+        "labelFrom": "A",
+        "labelTo": "B",
+        "yearsBetween": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "cpiFrom",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-label-empty",
+      "kind": "core",
+      "purpose": "標籤只有空白，去空白後為空",
+      "input": {
+        "mode": "cpi",
+        "amount": "1000",
+        "cpiFrom": "100.0",
+        "cpiTo": "101.0",
+        "labelFrom": "   ",
+        "labelTo": "B",
+        "yearsBetween": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "labelFrom",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-yearsbetween-zero",
+      "kind": "core",
+      "purpose": "相隔年數 0（給值時須 1–200）",
+      "input": {
+        "mode": "cpi",
+        "amount": "1000",
+        "cpiFrom": "100.0",
+        "cpiTo": "101.0",
+        "labelFrom": "A",
+        "labelTo": "B",
+        "yearsBetween": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "yearsBetween",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-field-order",
+      "kind": "core",
+      "purpose": "金額與利率同時錯誤，先報欄位順序在前的金額",
+      "input": {
+        "mode": "rate",
+        "amount": "abc",
+        "annualRatePercent": "-100",
+        "years": "10"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-schema-extra",
+      "kind": "core",
+      "purpose": "多出未知鍵，整份 SCHEMA",
+      "input": {
+        "mode": "rate",
+        "amount": "1000",
+        "annualRatePercent": "2",
+        "years": "10",
+        "foo": "1"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "mode": "rate",
+          "amount": "100000",
+          "annualRatePercent": "2",
+          "years": "10"
+        },
+        "edit": {
+          "mode": "rate",
+          "amount": "100000",
+          "annualRatePercent": "2",
+          "years": "201"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "years",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "mode": "cpi",
+          "amount": "30000",
+          "cpiFrom": "100.0",
+          "cpiTo": "109.2",
+          "labelFrom": "2015",
+          "labelTo": "2025",
+          "yearsBetween": null
+        },
+        "lateResult": {
+          "adjustedAmount": 32760,
+          "cumulativePercent": 9.2,
+          "equivalentAnnualRatePercent": null,
+          "fromLabel": "2015",
+          "toLabel": "2025"
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "cpi",
+            "amount": "30000",
+            "cpiFrom": "100.0",
+            "cpiTo": "109.2",
+            "labelFrom": "2015",
+            "labelTo": "2025",
+            "yearsBetween": null
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "rate",
+            "amount": "100000",
+            "annualRatePercent": "2",
+            "years": "10"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "mode": "rate",
+          "amount": "100000",
+          "annualRatePercent": "2",
+          "years": "10"
+        },
+        "newerDraft": {
+          "mode": "rate",
+          "amount": "100000",
+          "annualRatePercent": "2",
+          "years": "201"
+        },
+        "olderLateResult": {
+          "cumulativePercent": 21.9,
+          "futureValue": 121899.44,
+          "purchasingPower": 82034.83,
+          "yearTable": [
+            {
+              "year": 0,
+              "nominalValue": 100000,
+              "purchasingPower": 100000
+            },
+            {
+              "year": 1,
+              "nominalValue": 102000,
+              "purchasingPower": 98039.22
+            },
+            {
+              "year": 2,
+              "nominalValue": 104040,
+              "purchasingPower": 96116.88
+            },
+            {
+              "year": 3,
+              "nominalValue": 106120.8,
+              "purchasingPower": 94232.23
+            },
+            {
+              "year": 4,
+              "nominalValue": 108243.22,
+              "purchasingPower": 92384.54
+            },
+            {
+              "year": 5,
+              "nominalValue": 110408.08,
+              "purchasingPower": 90573.08
+            },
+            {
+              "year": 6,
+              "nominalValue": 112616.24,
+              "purchasingPower": 88797.14
+            },
+            {
+              "year": 7,
+              "nominalValue": 114868.57,
+              "purchasingPower": 87056.02
+            },
+            {
+              "year": 8,
+              "nominalValue": 117165.94,
+              "purchasingPower": 85349.04
+            },
+            {
+              "year": 9,
+              "nominalValue": 119509.26,
+              "purchasingPower": 83675.53
+            },
+            {
+              "year": 10,
+              "nominalValue": 121899.44,
+              "purchasingPower": 82034.83
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "years",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "years",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
