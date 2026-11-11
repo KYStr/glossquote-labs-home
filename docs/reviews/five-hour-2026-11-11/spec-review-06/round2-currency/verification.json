@@ -1,0 +1,5248 @@
+{
+  "result": "PASS",
+  "scope": "offline document and fixture consistency",
+  "productChecks": "NOT_RUN",
+  "inputFiles": {
+    "original": {
+      "utf8Bytes": 21379,
+      "sha256": "fe03d36865e7295f94a037dc306e756fa647972d57e6d5ff7030483410343463",
+      "gitBlob": "832cfe335942fe94ff605b5e38abf1cdfae4d47e"
+    },
+    "candidate": {
+      "utf8Bytes": 31216,
+      "sha256": "fa8df6e2561d494ba86e5bb0fad9191b4c68218db74bd0531f84c68ca9f2a98b",
+      "gitBlob": "87268e5b129eb9af403f37a682b2d84b8d2dfac6"
+    }
+  },
+  "counts": {
+    "core": {
+      "pass": 22,
+      "total": 22
+    },
+    "controller": {
+      "pass": 4,
+      "total": 4
+    },
+    "checkpoint": {
+      "pass": 29,
+      "total": 29
+    }
+  },
+  "core": [
+    {
+      "id": "default-forward",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 31500000,
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "reverse-exact",
+      "input": {
+        "amount": "3150",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "b-to-a",
+          "rateMicro": 31500000,
+          "amountCents": 315000,
+          "convertedCents": 10000,
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 315000,
+          "convertedCents": 10000,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "reverse-repeating",
+      "input": {
+        "amount": "100",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "b-to-a",
+          "rateMicro": 31500000,
+          "amountCents": 10000,
+          "convertedCents": 317,
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 317,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "reverse-display-rounding-regression",
+      "input": {
+        "amount": "30000",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "3",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "b-to-a",
+          "rateMicro": 3000000,
+          "amountCents": 3000000,
+          "convertedCents": 1000000,
+          "inverseRate": "0.333333",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 300
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 3000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 30000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 300000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 3000000,
+          "convertedCents": 1000000,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.333333",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 300
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 3000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 30000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 300000
+            }
+          ],
+          "rateMicro": 3000000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "small-rate-inverse",
+      "input": {
+        "amount": "1000",
+        "direction": "a-to-b",
+        "fromCode": "KRW",
+        "rate": "0.0066",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "KRW",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 6600,
+          "amountCents": 100000,
+          "convertedCents": 660,
+          "inverseRate": "151.515",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 1
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 7
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 66
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 660
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 100000,
+          "convertedCents": 660,
+          "direction": "a-to-b",
+          "fromCode": "KRW",
+          "inverseRate": "151.515",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 1
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 7
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 66
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 660
+            }
+          ],
+          "rateMicro": 6600,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "half-up-tie",
+      "input": {
+        "amount": "0.01",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "2.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 2500000,
+          "amountCents": 1,
+          "convertedCents": 3,
+          "inverseRate": "0.4",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 250
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 2500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 25000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 250000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 1,
+          "convertedCents": 3,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.4",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 250
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 2500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 25000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 250000
+            }
+          ],
+          "rateMicro": 2500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "lowercase-codes",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "usd",
+        "rate": "31.5",
+        "toCode": "twd"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 31500000,
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "zero-amount",
+      "input": {
+        "amount": "0",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 31500000,
+          "amountCents": 0,
+          "convertedCents": 0,
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 0,
+          "convertedCents": 0,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "yen-rate",
+      "input": {
+        "amount": "250.75",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "149.85",
+        "toCode": "JPY"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "JPY",
+          "direction": "a-to-b",
+          "rateMicro": 149850000,
+          "amountCents": 25075,
+          "convertedCents": 3757489,
+          "inverseRate": "0.00667334",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 14985
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 149850
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 1498500
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 14985000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 25075,
+          "convertedCents": 3757489,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.00667334",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 14985
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 149850
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 1498500
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 14985000
+            }
+          ],
+          "rateMicro": 149850000,
+          "toCode": "JPY"
+        }
+      }
+    },
+    {
+      "id": "min-rate-tie",
+      "input": {
+        "amount": "5000",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "0.000001",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 1,
+          "amountCents": 500000,
+          "convertedCents": 1,
+          "inverseRate": "1000000",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 0
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 500000,
+          "convertedCents": 1,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "1000000",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 0
+            }
+          ],
+          "rateMicro": 1,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "rate-cap-boundary",
+      "input": {
+        "amount": "0.01",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1000000",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "direction": "a-to-b",
+          "rateMicro": 1000000000000,
+          "amountCents": 1,
+          "convertedCents": 1000000,
+          "inverseRate": "0.000001",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100000000
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000000000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000000000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000000000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 1,
+          "convertedCents": 1000000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.000001",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100000000
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000000000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000000000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000000000
+            }
+          ],
+          "rateMicro": 1000000000000,
+          "toCode": "TWD"
+        }
+      }
+    },
+    {
+      "id": "same-codes",
+      "input": {
+        "amount": "50",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1",
+        "toCode": "USD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": true,
+        "result": {
+          "fromCode": "USD",
+          "toCode": "USD",
+          "direction": "a-to-b",
+          "rateMicro": 1000000,
+          "amountCents": 5000,
+          "convertedCents": 5000,
+          "inverseRate": "1",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 5000,
+          "convertedCents": 5000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "1",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000
+            }
+          ],
+          "rateMicro": 1000000,
+          "toCode": "USD"
+        }
+      }
+    },
+    {
+      "id": "rate-zero",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "0",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "rate-too-precise",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.1234567",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "rate",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "rate-over-cap",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1000000.000001",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "amount-format",
+      "input": {
+        "amount": "10.005",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "amount-over-limit",
+      "input": {
+        "amount": "1234567890123",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "amount-over-range",
+      "input": {
+        "amount": "99999999.99",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "code-format",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USDT",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "CODE_FORMAT",
+          "field": "fromCode",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "CODE_FORMAT",
+          "field": "fromCode",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "code-empty",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": ""
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "toCode",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "toCode",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "direction-enum",
+      "input": {
+        "amount": "100",
+        "direction": "both",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "direction",
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "ENUM",
+          "field": "direction",
+          "row": null
+        },
+        "ok": false
+      }
+    },
+    {
+      "id": "schema-extra-field",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "live": "true",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "expected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      }
+    }
+  ],
+  "controller": [
+    {
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "0",
+          "toCode": "TWD"
+        },
+        "initial": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        }
+      },
+      "pass": true,
+      "checkpoints": {
+        "afterRun": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "observed": {
+            "state": "success",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": "manual",
+            "reportAvailable": true,
+            "error": null,
+            "report": {
+              "rateSource": "manual",
+              "utf8Bytes": 362,
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+            },
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            }
+          }
+        },
+        "afterEdit": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "0",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterRerun": {
+          "pass": true,
+          "actual": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "expected": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "observed": {
+            "state": "error",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "0",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        }
+      },
+      "assertions": {
+        "acceptedReportSourceMatchesFormAndResult": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        },
+        "workerSeesOnlyFiveCoreFields": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        }
+      },
+      "deliveries": [
+        {
+          "job": "original",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": true
+        },
+        {
+          "job": "edited",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "0",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": false,
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            }
+          },
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        },
+        "lateResult": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "pass": true,
+      "checkpoints": {
+        "whilePending": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterCancel": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "cancelled"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "31.5",
+              "toCode": "TWD"
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "cancelled"
+          },
+          "observed": {
+            "state": "cancelled",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterLateResult": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "cancelled"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "cancelled"
+          },
+          "observed": {
+            "state": "cancelled",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterReset": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "",
+              "toCode": "TWD"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "observed": {
+            "state": "empty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        }
+      },
+      "assertions": {
+        "lateResultMatchesOriginalDraft": {
+          "pass": true,
+          "actual": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "expected": {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        },
+        "acceptedReportSourceMatchesFormAndResult": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        },
+        "workerSeesOnlyFiveCoreFields": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        }
+      },
+      "deliveries": [
+        {
+          "job": "pending",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "0",
+          "toCode": "TWD"
+        },
+        "olderDraft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        },
+        "olderLateResult": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "pass": true,
+      "checkpoints": {
+        "afterNewerResult": {
+          "pass": true,
+          "actual": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "expected": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "observed": {
+            "state": "error",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "0",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterOlderLateResult": {
+          "pass": true,
+          "actual": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "expected": {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "observed": {
+            "state": "error",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "0",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        }
+      },
+      "assertions": {
+        "olderLateResultMatchesOriginalDraft": {
+          "pass": true,
+          "actual": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "expected": {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        },
+        "acceptedReportSourceMatchesFormAndResult": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        },
+        "workerSeesOnlyFiveCoreFields": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        }
+      },
+      "deliveries": [
+        {
+          "job": "newer",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "0",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": false,
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            }
+          },
+          "accepted": true
+        },
+        {
+          "job": "older",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "id": "state-rate-source",
+      "input": {
+        "steps": [
+          {
+            "at": "initial",
+            "op": "initial"
+          },
+          {
+            "at": "initialPending",
+            "job": "empty",
+            "op": "start"
+          },
+          {
+            "at": "initialError",
+            "job": "empty",
+            "op": "finish"
+          },
+          {
+            "at": "exampleLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "examplePending",
+            "job": "example",
+            "op": "start"
+          },
+          {
+            "at": "exampleSuccess",
+            "job": "example",
+            "op": "finish"
+          },
+          {
+            "at": "amountChanged",
+            "field": "amount",
+            "op": "edit",
+            "value": "200"
+          },
+          {
+            "at": "exampleReloaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeEdit",
+            "job": "staleAfterEdit",
+            "op": "start"
+          },
+          {
+            "at": "sameRateEdited",
+            "field": "rate",
+            "op": "edit",
+            "value": "31.5"
+          },
+          {
+            "at": "manualPending",
+            "job": "manual",
+            "op": "start"
+          },
+          {
+            "at": "manualSuccess",
+            "job": "manual",
+            "op": "finish"
+          },
+          {
+            "at": "afterStaleEdit",
+            "job": "staleAfterEdit",
+            "op": "finish"
+          },
+          {
+            "at": "rateCleared",
+            "field": "rate",
+            "op": "edit",
+            "value": ""
+          },
+          {
+            "at": "exampleBeforeResetLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeReset",
+            "job": "staleAfterReset",
+            "op": "start"
+          },
+          {
+            "at": "afterReset",
+            "op": "reset"
+          },
+          {
+            "at": "afterStaleReset",
+            "job": "staleAfterReset",
+            "op": "finish"
+          },
+          {
+            "at": "resetPending",
+            "job": "resetEmpty",
+            "op": "start"
+          },
+          {
+            "at": "resetError",
+            "job": "resetEmpty",
+            "op": "finish"
+          }
+        ]
+      },
+      "pass": true,
+      "checkpoints": {
+        "initial": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "",
+              "toCode": "TWD"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "observed": {
+            "state": "empty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "initialPending": {
+          "pass": true,
+          "actual": {
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "initialError": {
+          "pass": true,
+          "actual": {
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "expected": {
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "observed": {
+            "state": "error",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleLoaded": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "31.5",
+              "toCode": "TWD"
+            },
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "examplePending": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleSuccess": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "report": {
+              "rateSource": "example",
+              "utf8Bytes": 363,
+              "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51"
+            },
+            "reportAvailable": true,
+            "resultRateSource": "example",
+            "state": "success"
+          },
+          "expected": {
+            "rateSource": "example",
+            "report": {
+              "rateSource": "example",
+              "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51",
+              "utf8Bytes": 363
+            },
+            "reportAvailable": true,
+            "resultRateSource": "example",
+            "state": "success"
+          },
+          "observed": {
+            "state": "success",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": "example",
+            "reportAvailable": true,
+            "error": null,
+            "report": {
+              "rateSource": "example",
+              "utf8Bytes": 363,
+              "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51"
+            },
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            }
+          }
+        },
+        "amountChanged": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "200",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "200",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "31.5",
+              "toCode": "TWD"
+            },
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "200",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleReloaded": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleBeforeEdit": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "sameRateEdited": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "31.5",
+              "toCode": "TWD"
+            },
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "manualPending": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "manualSuccess": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "report": {
+              "rateSource": "manual",
+              "utf8Bytes": 362,
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+            },
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "report": {
+              "rateSource": "manual",
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+              "utf8Bytes": 362
+            },
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "observed": {
+            "state": "success",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": "manual",
+            "reportAvailable": true,
+            "error": null,
+            "report": {
+              "rateSource": "manual",
+              "utf8Bytes": 362,
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+            },
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            }
+          }
+        },
+        "afterStaleEdit": {
+          "pass": true,
+          "actual": {
+            "rateSource": "manual",
+            "report": {
+              "rateSource": "manual",
+              "utf8Bytes": 362,
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+            },
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "expected": {
+            "rateSource": "manual",
+            "report": {
+              "rateSource": "manual",
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+              "utf8Bytes": 362
+            },
+            "reportAvailable": true,
+            "resultRateSource": "manual",
+            "state": "success"
+          },
+          "observed": {
+            "state": "success",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "manual",
+            "resultRateSource": "manual",
+            "reportAvailable": true,
+            "error": null,
+            "report": {
+              "rateSource": "manual",
+              "utf8Bytes": 362,
+              "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+            },
+            "formLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            },
+            "resultLabels": {
+              "zh-Hant": "\u624b\u586b\u532f\u7387",
+              "en": "Manually entered rate"
+            }
+          }
+        },
+        "rateCleared": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "",
+              "toCode": "TWD"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleBeforeResetLoaded": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "expected": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "dirty"
+          },
+          "observed": {
+            "state": "dirty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "exampleBeforeReset": {
+          "pass": true,
+          "actual": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": "example",
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "31.5",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": "example",
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u5408\u6210\u7bc4\u4f8b\u532f\u7387",
+              "en": "Synthetic example rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterReset": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "",
+              "toCode": "TWD"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "observed": {
+            "state": "empty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "afterStaleReset": {
+          "pass": true,
+          "actual": {
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "expected": {
+            "draft": {
+              "amount": "100",
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "rate": "",
+              "toCode": "TWD"
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "empty"
+          },
+          "observed": {
+            "state": "empty",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "resetPending": {
+          "pass": true,
+          "actual": {
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "expected": {
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "busy"
+          },
+          "observed": {
+            "state": "busy",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": null,
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        },
+        "resetError": {
+          "pass": true,
+          "actual": {
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "expected": {
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "rateSource": null,
+            "reportAvailable": false,
+            "resultRateSource": null,
+            "state": "error"
+          },
+          "observed": {
+            "state": "error",
+            "draft": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "rate": "",
+              "amount": "100",
+              "direction": "a-to-b"
+            },
+            "rateSource": null,
+            "resultRateSource": null,
+            "reportAvailable": false,
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            },
+            "report": null,
+            "formLabels": {
+              "zh-Hant": "\u8acb\u8f38\u5165\u532f\u7387",
+              "en": "Enter an exchange rate"
+            },
+            "resultLabels": null
+          }
+        }
+      },
+      "assertions": {
+        "acceptedReportSourceMatchesFormAndResult": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        },
+        "workerSeesOnlyFiveCoreFields": {
+          "pass": true,
+          "actual": true,
+          "expected": true
+        }
+      },
+      "deliveries": [
+        {
+          "job": "empty",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": null,
+          "reply": {
+            "ok": false,
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            }
+          },
+          "accepted": true
+        },
+        {
+          "job": "example",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "example",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": true
+        },
+        {
+          "job": "manual",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "manual",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": true
+        },
+        {
+          "job": "staleAfterEdit",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "example",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": false
+        },
+        {
+          "job": "staleAfterReset",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": "example",
+          "reply": {
+            "ok": true,
+            "result": {
+              "fromCode": "USD",
+              "toCode": "TWD",
+              "direction": "a-to-b",
+              "rateMicro": 31500000,
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ]
+            }
+          },
+          "accepted": false
+        },
+        {
+          "job": "resetEmpty",
+          "workerInput": {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "",
+            "amount": "100",
+            "direction": "a-to-b"
+          },
+          "snapshotSource": null,
+          "reply": {
+            "ok": false,
+            "error": {
+              "code": "EMPTY",
+              "field": "rate",
+              "row": null
+            }
+          },
+          "accepted": true
+        }
+      ]
+    }
+  ],
+  "originalFixtureComparison": {
+    "added": [
+      "reverse-display-rounding-regression",
+      "state-rate-source"
+    ],
+    "existingCore": [
+      {
+        "id": "default-forward",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "reverse-exact",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "3150",
+            "direction": "b-to-a",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 315000,
+              "convertedCents": 10000,
+              "direction": "b-to-a",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "3150",
+            "direction": "b-to-a",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 315000,
+              "convertedCents": 10000,
+              "direction": "b-to-a",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "reverse-repeating",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "b-to-a",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 317,
+              "direction": "b-to-a",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "b-to-a",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 317,
+              "direction": "b-to-a",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "small-rate-inverse",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "1000",
+            "direction": "a-to-b",
+            "fromCode": "KRW",
+            "rate": "0.0066",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 100000,
+              "convertedCents": 660,
+              "direction": "a-to-b",
+              "fromCode": "KRW",
+              "inverseRate": "151.515",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 1
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 7
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 66
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 660
+                }
+              ],
+              "rateMicro": 6600,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "1000",
+            "direction": "a-to-b",
+            "fromCode": "KRW",
+            "rate": "0.0066",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 100000,
+              "convertedCents": 660,
+              "direction": "a-to-b",
+              "fromCode": "KRW",
+              "inverseRate": "151.515",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 1
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 7
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 66
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 660
+                }
+              ],
+              "rateMicro": 6600,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "half-up-tie",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "0.01",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "2.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 1,
+              "convertedCents": 3,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.4",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 250
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 2500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 25000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 250000
+                }
+              ],
+              "rateMicro": 2500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "0.01",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "2.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 1,
+              "convertedCents": 3,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.4",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 250
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 2500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 25000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 250000
+                }
+              ],
+              "rateMicro": 2500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "lowercase-codes",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "usd",
+            "rate": "31.5",
+            "toCode": "twd"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "usd",
+            "rate": "31.5",
+            "toCode": "twd"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 10000,
+              "convertedCents": 315000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "zero-amount",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "0",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 0,
+              "convertedCents": 0,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "0",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 0,
+              "convertedCents": 0,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.031746",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 3150
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 31500
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 315000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 3150000
+                }
+              ],
+              "rateMicro": 31500000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "yen-rate",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "250.75",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "149.85",
+            "toCode": "JPY"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 25075,
+              "convertedCents": 3757489,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.00667334",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 14985
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 149850
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 1498500
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 14985000
+                }
+              ],
+              "rateMicro": 149850000,
+              "toCode": "JPY"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "250.75",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "149.85",
+            "toCode": "JPY"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 25075,
+              "convertedCents": 3757489,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.00667334",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 14985
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 149850
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 1498500
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 14985000
+                }
+              ],
+              "rateMicro": 149850000,
+              "toCode": "JPY"
+            }
+          }
+        ]
+      },
+      {
+        "id": "min-rate-tie",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "5000",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0.000001",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 500000,
+              "convertedCents": 1,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "1000000",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 0
+                }
+              ],
+              "rateMicro": 1,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "5000",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0.000001",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 500000,
+              "convertedCents": 1,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "1000000",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 0
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 0
+                }
+              ],
+              "rateMicro": 1,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "rate-cap-boundary",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "0.01",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1000000",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 1,
+              "convertedCents": 1000000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.000001",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 100000000
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 1000000000
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 10000000000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 100000000000
+                }
+              ],
+              "rateMicro": 1000000000000,
+              "toCode": "TWD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "0.01",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1000000",
+            "toCode": "TWD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 1,
+              "convertedCents": 1000000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "0.000001",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 100000000
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 1000000000
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 10000000000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 100000000000
+                }
+              ],
+              "rateMicro": 1000000000000,
+              "toCode": "TWD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "same-codes",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "50",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1",
+            "toCode": "USD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 5000,
+              "convertedCents": 5000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "1",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 100
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 1000
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 10000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 100000
+                }
+              ],
+              "rateMicro": 1000000,
+              "toCode": "USD"
+            }
+          }
+        ],
+        "expected": [
+          {
+            "amount": "50",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1",
+            "toCode": "USD"
+          },
+          {
+            "ok": true,
+            "result": {
+              "amountCents": 5000,
+              "convertedCents": 5000,
+              "direction": "a-to-b",
+              "fromCode": "USD",
+              "inverseRate": "1",
+              "quickTable": [
+                {
+                  "amountCents": 100,
+                  "convertedCents": 100
+                },
+                {
+                  "amountCents": 1000,
+                  "convertedCents": 1000
+                },
+                {
+                  "amountCents": 10000,
+                  "convertedCents": 10000
+                },
+                {
+                  "amountCents": 100000,
+                  "convertedCents": 100000
+                }
+              ],
+              "rateMicro": 1000000,
+              "toCode": "USD"
+            }
+          }
+        ]
+      },
+      {
+        "id": "rate-zero",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "rate-too-precise",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.1234567",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "DECIMAL_FORMAT",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.1234567",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "DECIMAL_FORMAT",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "rate-over-cap",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1000000.000001",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "1000000.000001",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "RANGE",
+              "field": "rate",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "amount-format",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "10.005",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "DECIMAL_FORMAT",
+              "field": "amount",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "10.005",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "DECIMAL_FORMAT",
+              "field": "amount",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "amount-over-limit",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "1234567890123",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "INPUT_LIMIT",
+              "field": "amount",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "1234567890123",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "INPUT_LIMIT",
+              "field": "amount",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "amount-over-range",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "99999999.99",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "RANGE",
+              "field": "amount",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "fromCode": "USD",
+            "toCode": "TWD",
+            "rate": "31.5",
+            "amount": "99999999.99",
+            "direction": "a-to-b"
+          },
+          {
+            "ok": false,
+            "error": {
+              "code": "RANGE",
+              "field": "amount",
+              "row": null
+            }
+          }
+        ]
+      },
+      {
+        "id": "code-format",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USDT",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "CODE_FORMAT",
+              "field": "fromCode",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USDT",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "CODE_FORMAT",
+              "field": "fromCode",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "code-empty",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": ""
+          },
+          {
+            "error": {
+              "code": "EMPTY",
+              "field": "toCode",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": ""
+          },
+          {
+            "error": {
+              "code": "EMPTY",
+              "field": "toCode",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "direction-enum",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "both",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "ENUM",
+              "field": "direction",
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "both",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "ENUM",
+              "field": "direction",
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      },
+      {
+        "id": "schema-extra-field",
+        "pass": true,
+        "actual": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "live": "true",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "SCHEMA",
+              "field": null,
+              "row": null
+            },
+            "ok": false
+          }
+        ],
+        "expected": [
+          {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "live": "true",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          {
+            "error": {
+              "code": "SCHEMA",
+              "field": null,
+              "row": null
+            },
+            "ok": false
+          }
+        ]
+      }
+    ],
+    "existingControllerInput": [
+      {
+        "id": "state-dirty-error",
+        "pass": true,
+        "actual": {
+          "edit": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          "initial": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          }
+        },
+        "expected": {
+          "edit": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          "initial": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          }
+        }
+      },
+      {
+        "id": "state-cancel-late",
+        "pass": true,
+        "actual": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "lateResult": {
+            "amountCents": 10000,
+            "convertedCents": 315000,
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "inverseRate": "0.031746",
+            "quickTable": [
+              {
+                "amountCents": 100,
+                "convertedCents": 3150
+              },
+              {
+                "amountCents": 1000,
+                "convertedCents": 31500
+              },
+              {
+                "amountCents": 10000,
+                "convertedCents": 315000
+              },
+              {
+                "amountCents": 100000,
+                "convertedCents": 3150000
+              }
+            ],
+            "rateMicro": 31500000,
+            "toCode": "TWD"
+          }
+        },
+        "expected": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "lateResult": {
+            "amountCents": 10000,
+            "convertedCents": 315000,
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "inverseRate": "0.031746",
+            "quickTable": [
+              {
+                "amountCents": 100,
+                "convertedCents": 3150
+              },
+              {
+                "amountCents": 1000,
+                "convertedCents": 31500
+              },
+              {
+                "amountCents": 10000,
+                "convertedCents": 315000
+              },
+              {
+                "amountCents": 100000,
+                "convertedCents": 3150000
+              }
+            ],
+            "rateMicro": 31500000,
+            "toCode": "TWD"
+          }
+        }
+      },
+      {
+        "id": "state-replace-late",
+        "pass": true,
+        "actual": {
+          "newerDraft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          "olderDraft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "olderLateResult": {
+            "amountCents": 10000,
+            "convertedCents": 315000,
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "inverseRate": "0.031746",
+            "quickTable": [
+              {
+                "amountCents": 100,
+                "convertedCents": 3150
+              },
+              {
+                "amountCents": 1000,
+                "convertedCents": 31500
+              },
+              {
+                "amountCents": 10000,
+                "convertedCents": 315000
+              },
+              {
+                "amountCents": 100000,
+                "convertedCents": 3150000
+              }
+            ],
+            "rateMicro": 31500000,
+            "toCode": "TWD"
+          }
+        },
+        "expected": {
+          "newerDraft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "0",
+            "toCode": "TWD"
+          },
+          "olderDraft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "olderLateResult": {
+            "amountCents": 10000,
+            "convertedCents": 315000,
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "inverseRate": "0.031746",
+            "quickTable": [
+              {
+                "amountCents": 100,
+                "convertedCents": 3150
+              },
+              {
+                "amountCents": 1000,
+                "convertedCents": 31500
+              },
+              {
+                "amountCents": 10000,
+                "convertedCents": 315000
+              },
+              {
+                "amountCents": 100000,
+                "convertedCents": 3150000
+              }
+            ],
+            "rateMicro": 31500000,
+            "toCode": "TWD"
+          }
+        }
+      }
+    ],
+    "existingCheckpointFields": [
+      {
+        "id": "state-dirty-error",
+        "at": "afterEdit",
+        "pass": true,
+        "actual": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "expected": {
+          "reportAvailable": false,
+          "state": "dirty"
+        }
+      },
+      {
+        "id": "state-dirty-error",
+        "at": "afterRerun",
+        "pass": true,
+        "actual": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "expected": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      {
+        "id": "state-dirty-error",
+        "at": "afterRun",
+        "pass": true,
+        "actual": {
+          "reportAvailable": true,
+          "state": "success"
+        },
+        "expected": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      {
+        "id": "state-cancel-late",
+        "at": "afterCancel",
+        "pass": true,
+        "actual": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "expected": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        }
+      },
+      {
+        "id": "state-cancel-late",
+        "at": "afterLateResult",
+        "pass": true,
+        "actual": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "expected": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        }
+      },
+      {
+        "id": "state-cancel-late",
+        "at": "afterReset",
+        "pass": true,
+        "actual": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "expected": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        }
+      },
+      {
+        "id": "state-cancel-late",
+        "at": "whilePending",
+        "pass": true,
+        "actual": {
+          "reportAvailable": false,
+          "state": "busy"
+        },
+        "expected": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      {
+        "id": "state-replace-late",
+        "at": "afterNewerResult",
+        "pass": true,
+        "actual": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "expected": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      {
+        "id": "state-replace-late",
+        "at": "afterOlderLateResult",
+        "pass": true,
+        "actual": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "expected": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      }
+    ],
+    "intendedDiff": [
+      {
+        "id": "state-cancel-late",
+        "at": "afterReset",
+        "old": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "new": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        }
+      }
+    ],
+    "pass": true
+  },
+  "downloadReports": {
+    "example": {
+      "artifact": "report-example.json",
+      "downloadName": "currency-converter-report.json",
+      "utf8Bytes": 363,
+      "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51"
+    },
+    "manual": {
+      "artifact": "report-manual.json",
+      "downloadName": "currency-converter-report.json",
+      "utf8Bytes": 362,
+      "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9"
+    }
+  },
+  "supplemental": {
+    "reverseDifferentByOneCent": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "3",
+        "amount": "30000",
+        "direction": "b-to-a"
+      },
+      "pass": true,
+      "actual": [
+        1000000,
+        "0.333333",
+        999999
+      ],
+      "expected": [
+        1000000,
+        "0.333333",
+        999999
+      ]
+    },
+    "oldRepeatingCaseBothRoundTo317": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "31.5",
+        "amount": "100",
+        "direction": "b-to-a"
+      },
+      "pass": true,
+      "actual": [
+        317,
+        "0.031746",
+        317
+      ],
+      "expected": [
+        317,
+        "0.031746",
+        317
+      ]
+    },
+    "coreRejectsRateSourceMetadata": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "31.5",
+        "amount": "100",
+        "direction": "a-to-b",
+        "rateSource": "example"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    "firstInvalidFieldPrecedesBlankRate": {
+      "input": {
+        "fromCode": "USDT",
+        "toCode": "TWD",
+        "rate": "",
+        "amount": "100",
+        "direction": "a-to-b"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "CODE_FORMAT",
+          "field": "fromCode",
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CODE_FORMAT",
+          "field": "fromCode",
+          "row": null
+        }
+      }
+    },
+    "unpairedSurrogate": {
+      "input": {
+        "fromCode": "\ud800",
+        "toCode": "TWD",
+        "rate": "31.5",
+        "amount": "100",
+        "direction": "a-to-b"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "fromCode",
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "fromCode",
+          "row": null
+        }
+      }
+    },
+    "capacityBeforeUnicode": {
+      "input": {
+        "fromCode": "12345678\ud800",
+        "toCode": "TWD",
+        "rate": "31.5",
+        "amount": "100",
+        "direction": "a-to-b"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "fromCode",
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "fromCode",
+          "row": null
+        }
+      }
+    },
+    "rawAmountOneCentAboveMaximum": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "31.5",
+        "amount": "10000000.00",
+        "direction": "a-to-b"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    "schemaRejectsNonStringRate": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": 31.5,
+        "amount": "100",
+        "direction": "a-to-b"
+      },
+      "pass": true,
+      "actual": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    "maxForward": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "1000000",
+        "amount": "9999999.99",
+        "direction": "a-to-b"
+      },
+      "resultField": "convertedCents",
+      "pass": true,
+      "actual": 999999999000000,
+      "expected": 999999999000000
+    },
+    "maxReverse": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "0.000001",
+        "amount": "9999999.99",
+        "direction": "b-to-a"
+      },
+      "resultField": "convertedCents",
+      "pass": true,
+      "actual": 999999999000000,
+      "expected": 999999999000000
+    },
+    "sixSignificantDigitsRoundAcrossPowerOfTen": {
+      "input": {
+        "fromCode": "USD",
+        "toCode": "TWD",
+        "rate": "10.000001",
+        "amount": "100",
+        "direction": "a-to-b"
+      },
+      "resultField": "inverseRate",
+      "pass": true,
+      "actual": "0.1",
+      "expected": "0.1"
+    },
+    "lateExampleDuringNewManualJob": {
+      "pass": true,
+      "actual": [
+        "busy",
+        "manual",
+        "newManual",
+        true,
+        false
+      ],
+      "expected": [
+        "busy",
+        "manual",
+        "newManual",
+        true,
+        false
+      ]
+    },
+    "manualResultAfterLateExample": {
+      "pass": true,
+      "actual": [
+        640000,
+        "manual"
+      ],
+      "expected": [
+        640000,
+        "manual"
+      ]
+    },
+    "directionEditRetainsExampleSource": {
+      "pass": true,
+      "actual": [
+        317,
+        "example"
+      ],
+      "expected": [
+        317,
+        "example"
+      ]
+    },
+    "resetAfterSuccessfulReport": {
+      "pass": true,
+      "actual": [
+        "empty",
+        {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "rate": "",
+          "amount": "100",
+          "direction": "a-to-b"
+        },
+        null,
+        true
+      ],
+      "expected": [
+        "empty",
+        {
+          "fromCode": "USD",
+          "toCode": "TWD",
+          "rate": "",
+          "amount": "100",
+          "direction": "a-to-b"
+        },
+        null,
+        true
+      ]
+    },
+    "reportsDifferOnlyInSource": {
+      "pass": true,
+      "actual": [
+        "example",
+        "manual",
+        true
+      ],
+      "expected": [
+        "example",
+        "manual",
+        true
+      ]
+    },
+    "legacyReportWithoutSource": {
+      "pass": true,
+      "actual": {
+        "utf8Bytes": 340,
+        "sha256": "bfa30bc8083bcd1e072745e3c0182823da2fa6bc7627f3ac9a14cd9e1e742547"
+      },
+      "expected": {
+        "utf8Bytes": 340,
+        "sha256": "bfa30bc8083bcd1e072745e3c0182823da2fa6bc7627f3ac9a14cd9e1e742547"
+      }
+    }
+  }
+}
