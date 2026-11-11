@@ -1,0 +1,4385 @@
+{
+  "schemaVersion": 1,
+  "product": "workshop-preference-allocation",
+  "fixtureProtocol": {
+    "textInput": "Pass text unchanged. For kind=bytes convert lower-case hex pairs to a Uint8Array; replace hex with bytes. Extra source-envelope fields stay present for negative cases.",
+    "coreCase": "Validate the pair then allocate on success. Collect batch artifact first and every class roster in original workshop order. Compare the exact artifact text and bytes in each locale.",
+    "generatedBoundary": "literal copies text; repeat is prefix + unit repeated count times + suffix; numbered is header + LF + joined records with LF, replacing {n} by decimal integers from first through last padded to width. Compare specified literal result fields. Bytes counts include UTF-8 content and any BOM.",
+    "controllerCase": "New controller per case; INIT inspects initial state without dispatch. LOAD converts hex to bytes. fixtureThrow configures the fake adapter for that event and is removed before dispatch. Check every full expected snapshot and ordered effect list after the event. Fake create returns blob:fixture/N starting at N=1 per case; increment N even after failed download."
+  },
+  "coreCases": [
+    {
+      "id": "standard",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 5,
+            "assigned": 3,
+            "choicesFull": 1,
+            "noPreference": 1,
+            "capacity": 3,
+            "remaining": 0
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "手縫",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "W2",
+              "title": "木工",
+              "capacity": 2,
+              "assigned": 2,
+              "remaining": 0
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "R01",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "R02",
+              "workshopId": "W2",
+              "status": "assigned",
+              "preferenceRank": 2
+            },
+            {
+              "participantId": "R03",
+              "workshopId": null,
+              "status": "choices_full",
+              "preferenceRank": null
+            },
+            {
+              "participantId": "R04",
+              "workshopId": "W2",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "R05",
+              "workshopId": null,
+              "status": "no_preference",
+              "preferenceRank": null
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1\r\nR02,W2,assigned,2\r\nR03,,choices_full,\r\nR04,W2,assigned,1\r\nR05,,no_preference,"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-02-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR02,W2,assigned,2\r\nR04,W2,assigned,1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "standard-reordered",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\r\nR03,W1,,\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR04,W2,,\r\nR05,,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 5,
+            "assigned": 3,
+            "choicesFull": 1,
+            "noPreference": 1,
+            "capacity": 3,
+            "remaining": 0
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "手縫",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "W2",
+              "title": "木工",
+              "capacity": 2,
+              "assigned": 2,
+              "remaining": 0
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "R03",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "R01",
+              "workshopId": "W2",
+              "status": "assigned",
+              "preferenceRank": 2
+            },
+            {
+              "participantId": "R02",
+              "workshopId": "W2",
+              "status": "assigned",
+              "preferenceRank": 2
+            },
+            {
+              "participantId": "R04",
+              "workshopId": null,
+              "status": "choices_full",
+              "preferenceRank": null
+            },
+            {
+              "participantId": "R05",
+              "workshopId": null,
+              "status": "no_preference",
+              "preferenceRank": null
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR03,W1,assigned,1\r\nR01,W2,assigned,2\r\nR02,W2,assigned,2\r\nR04,,choices_full,\r\nR05,,no_preference,"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR03,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-02-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W2,assigned,2\r\nR02,W2,assigned,2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "two-person-order-lower-fill",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 2,
+            "assigned": 1,
+            "choicesFull": 1,
+            "noPreference": 0,
+            "capacity": 2,
+            "remaining": 1
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "A",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "W2",
+              "title": "B",
+              "capacity": 1,
+              "assigned": 0,
+              "remaining": 1
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "R01",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "R03",
+              "workshopId": null,
+              "status": "choices_full",
+              "preferenceRank": null
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1\r\nR03,,choices_full,"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-02-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "two-person-order-higher-fill",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR03,W1,,\nR01,W1,W2,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 2,
+            "assigned": 2,
+            "choicesFull": 0,
+            "noPreference": 0,
+            "capacity": 2,
+            "remaining": 0
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "A",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "W2",
+              "title": "B",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "R03",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "R01",
+              "workshopId": "W2",
+              "status": "assigned",
+              "preferenceRank": 2
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR03,W1,assigned,1\r\nR01,W2,assigned,2"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR03,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-02-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W2,assigned,2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "third-choice-ids-and-quoted-title",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nA,\"木, \"\"工\"\"\",1\r\na, 標題 ,1\n001,🪵,2\r\nX,=1,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\r\n0001,A,,\n0002,a,,\r\n0003,A,a,001"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 3,
+            "assigned": 3,
+            "choicesFull": 0,
+            "noPreference": 0,
+            "capacity": 6,
+            "remaining": 3
+          },
+          "workshops": [
+            {
+              "workshopId": "A",
+              "title": "木, \"工\"",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "a",
+              "title": " 標題 ",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            },
+            {
+              "workshopId": "001",
+              "title": "🪵",
+              "capacity": 2,
+              "assigned": 1,
+              "remaining": 1
+            },
+            {
+              "workshopId": "X",
+              "title": "=1",
+              "capacity": 2,
+              "assigned": 0,
+              "remaining": 2
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "0001",
+              "workshopId": "A",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "0002",
+              "workshopId": "a",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "0003",
+              "workshopId": "001",
+              "status": "assigned",
+              "preferenceRank": 3
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\n0001,A,assigned,1\r\n0002,a,assigned,1\r\n0003,001,assigned,3"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\n0001,A,assigned,1"
+          },
+          {
+            "filename": "workshop-02-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\n0002,a,assigned,1"
+          },
+          {
+            "filename": "workshop-03-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\n0003,001,assigned,3"
+          },
+          {
+            "filename": "workshop-04-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-two",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,\nB,W1,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 2,
+            "assigned": 2,
+            "choicesFull": 0,
+            "noPreference": 0,
+            "capacity": 2,
+            "remaining": 0
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "甲",
+              "capacity": 2,
+              "assigned": 2,
+              "remaining": 0
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "A",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "B",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1\r\nB,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1\r\nB,W1,assigned,1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-one",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,1"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,\nB,W1,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 2,
+            "assigned": 1,
+            "choicesFull": 1,
+            "noPreference": 0,
+            "capacity": 1,
+            "remaining": 0
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "甲",
+              "capacity": 1,
+              "assigned": 1,
+              "remaining": 0
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "A",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            },
+            {
+              "participantId": "B",
+              "workshopId": null,
+              "status": "choices_full",
+              "preferenceRank": null
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1\r\nB,,choices_full,"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-preference-all",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,\"\",,\nB,,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 2,
+            "assigned": 0,
+            "choicesFull": 0,
+            "noPreference": 2,
+            "capacity": 2,
+            "remaining": 2
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "甲",
+              "capacity": 2,
+              "assigned": 0,
+              "remaining": 2
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "A",
+              "workshopId": null,
+              "status": "no_preference",
+              "preferenceRank": null
+            },
+            {
+              "participantId": "B",
+              "workshopId": null,
+              "status": "no_preference",
+              "preferenceRank": null
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,,no_preference,\r\nB,,no_preference,"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "utf8-single-bom-quoted-header",
+      "input": {
+        "workshops": {
+          "kind": "bytes",
+          "hex": "efbbbf22776f726b73686f705f6964222c7469746c652c63617061636974790d0a57312c22e794b2222c320d0a"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,\n"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totals": {
+            "participants": 1,
+            "assigned": 1,
+            "choicesFull": 0,
+            "noPreference": 0,
+            "capacity": 2,
+            "remaining": 1
+          },
+          "workshops": [
+            {
+              "workshopId": "W1",
+              "title": "甲",
+              "capacity": 2,
+              "assigned": 1,
+              "remaining": 1
+            }
+          ],
+          "rows": [
+            {
+              "participantId": "A",
+              "workshopId": "W1",
+              "status": "assigned",
+              "preferenceRank": 1
+            }
+          ]
+        },
+        "downloads": [
+          {
+            "filename": "workshop-assignments.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1"
+          },
+          {
+            "filename": "workshop-01-roster.csv",
+            "mime": "text/csv;charset=utf-8",
+            "text": "participant_id,workshop_id,status,preference_rank\r\nA,W1,assigned,1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "workshops-before-preferences",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,0"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_FORMAT",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "later-structure-before-earlier-semantic",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,0\nW2,乙"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "COLUMN_COUNT",
+          "record": 3,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "header-order",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "title,workshop_id,capacity\n甲,W1,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "HEADER_MISMATCH",
+          "record": 1,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "header-extra-column",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity,extra\nW1,甲,2,x"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "COLUMN_COUNT",
+          "record": 1,
+          "column": 4
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "bad-source-envelope",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2",
+          "extra": true
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "SOURCE_SCHEMA",
+          "record": null,
+          "column": null
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "empty-source",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": ""
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "SOURCE_EMPTY",
+          "record": 1,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "bom-only",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "﻿"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "SOURCE_EMPTY",
+          "record": 1,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "only-header",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\n"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "DATA_ROWS_REQUIRED",
+          "record": 2,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "missing-pref-column",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "COLUMN_COUNT",
+          "record": 2,
+          "column": 4
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "extra-pref-column",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "COLUMN_COUNT",
+          "record": 2,
+          "column": 5
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "explicit-empty-record",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,\n\n"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "COLUMN_COUNT",
+          "record": 3,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "unterminated-quote",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,\"甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CSV_SYNTAX",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "after-quote-character",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,\"甲\" ,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CSV_SYNTAX",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "quote-in-unquoted-value",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲\"乙,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CSV_SYNTAX",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "lone-cr",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\rW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CSV_SYNTAX",
+          "record": 1,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "newline-inside-quote",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,\"甲\n乙\",2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CONTROL_CHARACTER",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "tab-in-value",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲\t乙,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CONTROL_CHARACTER",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "unicode-line-separator",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲 乙,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CONTROL_CHARACTER",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "double-bom",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "﻿﻿workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "UNEXPECTED_BOM",
+          "record": 1,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "interior-bom",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲﻿乙,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "UNEXPECTED_BOM",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "bad-utf8-at-field",
+      "input": {
+        "workshops": {
+          "kind": "bytes",
+          "hex": "776f726b73686f705f69642c7469746c652c63617061636974790d0a57312cc3282c31"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "INVALID_UTF8",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "truncated-utf8-in-quote",
+      "input": {
+        "workshops": {
+          "kind": "bytes",
+          "hex": "776f726b73686f705f69642c7469746c652c63617061636974790a57312c22f09f"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "INVALID_UTF8",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "valid-prefix-earlier-syntax",
+      "input": {
+        "workshops": {
+          "kind": "bytes",
+          "hex": "776f726b73686f705f69642c7469746c652c63617061636974790a57312ce794b2222cc328"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CSV_SYNTAX",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "unpaired-surrogate",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲\ud800乙,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "INVALID_UNICODE",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "duplicate-workshop",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2\nW1,乙,1"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "DUPLICATE_ID",
+          "record": 3,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "duplicate-participant",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,\nA,,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "DUPLICATE_ID",
+          "record": 3,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "formula-shaped-id",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\n=1,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "ID_FORMAT",
+          "record": 2,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "leading-whitespace-id",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\n A,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "ID_FORMAT",
+          "record": 2,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "empty-title",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "TITLE_LENGTH",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "blank-title",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1, 　,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "TITLE_BLANK",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "capacity-leading-zero",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,01"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_FORMAT",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "capacity-zero",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,0"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_FORMAT",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "capacity-decimal",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,1.0"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_FORMAT",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "capacity-fullwidth",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,１"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_FORMAT",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "capacity-over-limit",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,501"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "CAPACITY_RANGE",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "priority-gap",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "PREFERENCE_GAP",
+          "record": 2,
+          "column": 4
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "gap-before-id-format",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,,=1,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "PREFERENCE_GAP",
+          "record": 2,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "duplicate-preference",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR02,W1,W1,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "DUPLICATE_PREFERENCE",
+          "record": 3,
+          "column": 3
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "unknown-workshop",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR02,W9,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "UNKNOWN_WORKSHOP",
+          "record": 3,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "case-sensitive-reference",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,w1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "UNKNOWN_WORKSHOP",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "unknown-before-later-repeat",
+      "input": {
+        "workshops": {
+          "kind": "text",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "kind": "text",
+          "text": "participant_id,pref1,pref2,pref3\nA,W9,W9,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "UNKNOWN_WORKSHOP",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    }
+  ],
+  "generatedBoundaries": [
+    {
+      "id": "thirty-workshops",
+      "input": {
+        "workshops": {
+          "form": "numbered",
+          "header": "workshop_id,title,capacity",
+          "pattern": "W{n},Room {n},1",
+          "first": 1,
+          "last": 30,
+          "width": 2
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nR,W30,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "totals": {
+          "participants": 1,
+          "assigned": 1,
+          "choicesFull": 0,
+          "noPreference": 0,
+          "capacity": 30,
+          "remaining": 29
+        },
+        "workshopCount": 30,
+        "firstRow": {
+          "participantId": "R",
+          "workshopId": "W30",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "lastRow": {
+          "participantId": "R",
+          "workshopId": "W30",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "lastRoster": {
+          "filename": "workshop-30-roster.csv",
+          "mime": "text/csv;charset=utf-8",
+          "text": "participant_id,workshop_id,status,preference_rank\r\nR,W30,assigned,1"
+        }
+      }
+    },
+    {
+      "id": "thirty-one-workshops",
+      "input": {
+        "workshops": {
+          "form": "numbered",
+          "header": "workshop_id,title,capacity",
+          "pattern": "W{n},Room {n},1",
+          "first": 1,
+          "last": 31,
+          "width": 2
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "ROW_LIMIT",
+          "record": 32,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "five-hundred-registrations",
+      "input": {
+        "workshops": {
+          "form": "literal",
+          "text": "workshop_id,title,capacity\nW1,甲,500"
+        },
+        "preferences": {
+          "form": "numbered",
+          "header": "participant_id,pref1,pref2,pref3",
+          "pattern": "R{n},W1,,",
+          "first": 1,
+          "last": 500,
+          "width": 3
+        }
+      },
+      "expected": {
+        "ok": true,
+        "totals": {
+          "participants": 500,
+          "assigned": 500,
+          "choicesFull": 0,
+          "noPreference": 0,
+          "capacity": 500,
+          "remaining": 0
+        },
+        "workshopCount": 1,
+        "firstRow": {
+          "participantId": "R001",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "lastRow": {
+          "participantId": "R500",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "batchLineCount": 501,
+        "rosterLineCount": 501
+      }
+    },
+    {
+      "id": "five-hundred-one-registrations",
+      "input": {
+        "workshops": {
+          "form": "literal",
+          "text": "workshop_id,title,capacity\nW1,甲,500"
+        },
+        "preferences": {
+          "form": "numbered",
+          "header": "participant_id,pref1,pref2,pref3",
+          "pattern": "R{n},W1,,",
+          "first": 1,
+          "last": 501,
+          "width": 3
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "ROW_LIMIT",
+          "record": 502,
+          "column": 1
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "eighty-code-points",
+      "input": {
+        "workshops": {
+          "form": "repeat",
+          "prefix": "workshop_id,title,capacity\nW1,",
+          "unit": "🪵",
+          "count": 80,
+          "suffix": ",2"
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "totals": {
+          "participants": 1,
+          "assigned": 1,
+          "choicesFull": 0,
+          "noPreference": 0,
+          "capacity": 2,
+          "remaining": 1
+        },
+        "workshopCount": 1,
+        "firstRow": {
+          "participantId": "A",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "lastRow": {
+          "participantId": "A",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "titleCodePoints": 80,
+        "titleUtf16Units": 160
+      }
+    },
+    {
+      "id": "eighty-one-code-points",
+      "input": {
+        "workshops": {
+          "form": "repeat",
+          "prefix": "workshop_id,title,capacity\nW1,",
+          "unit": "🪵",
+          "count": 81,
+          "suffix": ",2"
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "TITLE_LENGTH",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": []
+      }
+    },
+    {
+      "id": "exact-source-size",
+      "input": {
+        "workshops": {
+          "form": "repeat",
+          "prefix": "workshop_id,title,capacity\nW1,",
+          "unit": "a",
+          "count": 131040,
+          "suffix": ",1"
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "TITLE_LENGTH",
+          "record": 2,
+          "column": 2
+        },
+        "downloads": [],
+        "workshopsBytes": 131072
+      }
+    },
+    {
+      "id": "source-size-plus-one",
+      "input": {
+        "workshops": {
+          "form": "repeat",
+          "prefix": "workshop_id,title,capacity\nW1,",
+          "unit": "a",
+          "count": 131041,
+          "suffix": ",1"
+        },
+        "preferences": {
+          "form": "literal",
+          "text": "participant_id,pref1,pref2,pref3\nA,W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "workshops",
+          "code": "INPUT_TOO_LARGE",
+          "record": null,
+          "column": null
+        },
+        "downloads": [],
+        "workshopsBytes": 131073
+      }
+    },
+    {
+      "id": "id-32-characters",
+      "input": {
+        "workshops": {
+          "form": "literal",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "form": "repeat",
+          "prefix": "participant_id,pref1,pref2,pref3\n",
+          "unit": "A",
+          "count": 32,
+          "suffix": ",W1,,"
+        }
+      },
+      "expected": {
+        "ok": true,
+        "totals": {
+          "participants": 1,
+          "assigned": 1,
+          "choicesFull": 0,
+          "noPreference": 0,
+          "capacity": 2,
+          "remaining": 1
+        },
+        "workshopCount": 1,
+        "firstRow": {
+          "participantId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        },
+        "lastRow": {
+          "participantId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "workshopId": "W1",
+          "status": "assigned",
+          "preferenceRank": 1
+        }
+      }
+    },
+    {
+      "id": "id-33-characters",
+      "input": {
+        "workshops": {
+          "form": "literal",
+          "text": "workshop_id,title,capacity\nW1,甲,2"
+        },
+        "preferences": {
+          "form": "repeat",
+          "prefix": "participant_id,pref1,pref2,pref3\n",
+          "unit": "A",
+          "count": 33,
+          "suffix": ",W1,,"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "source": "preferences",
+          "code": "ID_FORMAT",
+          "record": 2,
+          "column": 1
+        },
+        "downloads": []
+      }
+    }
+  ],
+  "controllerCases": [
+    {
+      "id": "desktop-to-class-handoff",
+      "steps": [
+        {
+          "event": {
+            "type": "INIT"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 0,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "workshops",
+            "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "partial",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 52
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 1
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 1,
+            "hex": "7061727469636970616e745f69642c70726566312c70726566322c70726566330a5230312c57312c57322c0a5230332c57312c2c"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "ALLOCATE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-assignments.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1\r\nR03,,choices_full,"
+                },
+                "url": "blob:fixture/1"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-assignments.csv",
+                "url": "blob:fixture/1"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "download",
+                "filename": "workshop-assignments.csv",
+                "url": "blob:fixture/1"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "SELECT",
+            "view": "W2"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "W2",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "roster"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "W2",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv",
+                "workshop-02-roster.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-02-roster.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank"
+                },
+                "url": "blob:fixture/2"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-02-roster.csv",
+                "url": "blob:fixture/2"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "SELECT",
+            "view": "@unassigned"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "@unassigned",
+              "downloads": {
+                "batch": true,
+                "roster": false
+              },
+              "activeExports": [
+                "workshop-assignments.csv",
+                "workshop-02-roster.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "roster"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,1\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 1,
+                "choicesFull": 1,
+                "noPreference": 0,
+                "capacity": 2,
+                "remaining": 1
+              },
+              "selected": "@unassigned",
+              "downloads": {
+                "batch": true,
+                "roster": false
+              },
+              "activeExports": [
+                "workshop-assignments.csv",
+                "workshop-02-roster.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "workshops",
+            "text": "workshop_id,title,capacity\nW1,A,2\nW2,B,1"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "dirty",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,2\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "revoke",
+                "url": "blob:fixture/1"
+              },
+              {
+                "type": "revoke",
+                "url": "blob:fixture/2"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "ALLOCATE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nW1,A,2\nW2,B,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,W2,\nR03,W1,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 2
+              },
+              "result": {
+                "participants": 2,
+                "assigned": 2,
+                "choicesFull": 0,
+                "noPreference": 0,
+                "capacity": 3,
+                "remaining": 1
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "RESET"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 3,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "dirty-and-late-read",
+      "steps": [
+        {
+          "event": {
+            "type": "EXAMPLE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "ALLOCATE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-assignments.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1\r\nR02,W2,assigned,2\r\nR03,,choices_full,\r\nR04,W2,assigned,1\r\nR05,,no_preference,"
+                },
+                "url": "blob:fixture/1"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-assignments.csv",
+                "url": "blob:fixture/1"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 84
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "revoke",
+                "url": "blob:fixture/1"
+              },
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 2
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "preferences",
+            "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": {
+                "source": "preferences",
+                "code": "PREFERENCE_GAP",
+                "record": 2,
+                "column": 4
+              },
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "abort",
+                "source": "preferences",
+                "generation": 2
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 2,
+            "hex": "7061727469636970616e745f69642c70726566312c70726566322c70726566330d0a5230332c57312c2c0d0a5230312c57312c57322c0d0a5230322c57312c57322c0d0a5230342c57322c2c0d0a5230352c2c2c"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": {
+                "source": "preferences",
+                "code": "PREFERENCE_GAP",
+                "record": 2,
+                "column": 4
+              },
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\nR01,W1,,W2",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": {
+                "source": "preferences",
+                "code": "PREFERENCE_GAP",
+                "record": 2,
+                "column": 4
+              },
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "preferences",
+            "text": "participant_id,pref1,pref2,pref3\r\nR03,W1,,\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR04,W2,,\r\nR05,,,"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "dirty",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR03,W1,,\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": true,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "ALLOCATE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR03,W1,,\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR03,W1,,\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-assignments.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-assignments.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank\r\nR03,W1,assigned,1\r\nR01,W2,assigned,2\r\nR02,W2,assigned,2\r\nR04,,choices_full,\r\nR05,,no_preference,"
+                },
+                "url": "blob:fixture/2"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-assignments.csv",
+                "url": "blob:fixture/2"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "two-readers-cancel-retain-bfcache",
+      "steps": [
+        {
+          "event": {
+            "type": "EXAMPLE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "workshops",
+            "size": 52
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": true,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "workshops",
+                "generation": 2
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 84
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": true,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 2
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "CANCEL",
+            "source": "workshops"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": {
+                    "source": "workshops",
+                    "code": "READ_CANCELLED",
+                    "record": null,
+                    "column": null
+                  }
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "abort",
+                "source": "workshops",
+                "generation": 2
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "workshops",
+            "generation": 2,
+            "hex": "776f726b73686f705f69642c7469746c652c63617061636974790d0a57312ce6898be7b8ab2c310d0a57322ce69ca8e5b7a52c32"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": {
+                    "source": "workshops",
+                    "code": "READ_CANCELLED",
+                    "record": null,
+                    "column": null
+                  }
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 2,
+            "hex": "7061727469636970616e745f69642c70726566312c70726566322c70726566330d0a5230312c57312c57322c0d0a5230322c57312c57322c0d0a5230332c57312c2c0d0a5230342c57322c2c0d0a5230352c2c2c"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "cancelled",
+              "sources": {
+                "workshops": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": {
+                    "source": "workshops",
+                    "code": "READ_CANCELLED",
+                    "record": null,
+                    "column": null
+                  }
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "RETAIN",
+            "source": "workshops"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 5,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 84
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 6,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 3
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "READ_ERROR",
+            "source": "preferences",
+            "generation": 3
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 6,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": {
+                    "source": "preferences",
+                    "code": "READ_FAILED",
+                    "record": null,
+                    "column": null
+                  }
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "RETAIN",
+            "source": "preferences"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 7,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 4,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 84
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 8,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 5,
+                  "origin": "file",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 5
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LEAVE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 9,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 5,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 6,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "abort",
+                "source": "preferences",
+                "generation": 5
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "RESTORE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 10,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 6,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 7,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 5,
+            "hex": "7061727469636970616e745f69642c70726566312c70726566322c70726566330d0a5230332c57312c2c0d0a5230312c57312c57322c0d0a5230322c57312c57322c0d0a5230342c57322c2c0d0a5230352c2c2c"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 10,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 6,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 7,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-preflight-and-invalid-utf8-retention",
+      "steps": [
+        {
+          "event": {
+            "type": "EXAMPLE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "workshops",
+            "size": 131073
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": {
+                    "source": "workshops",
+                    "code": "INPUT_TOO_LARGE",
+                    "record": null,
+                    "column": null
+                  }
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "RETAIN",
+            "source": "workshops"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "workshops",
+            "size": 35
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": true,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "workshops",
+                "generation": 4
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "workshops",
+            "generation": 4,
+            "hex": "776f726b73686f705f69642c7469746c652c63617061636974790d0a57312cc3282c31"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 4,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": {
+                    "source": "workshops",
+                    "code": "INVALID_UTF8",
+                    "record": 2,
+                    "column": 2
+                  }
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "RETAIN",
+            "source": "workshops"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 5,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 5,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "download-failure-retry-and-leave",
+      "steps": [
+        {
+          "event": {
+            "type": "EXAMPLE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "ALLOCATE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "roster",
+            "fixtureThrow": "download"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": "DOWNLOAD_FAILED"
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-01-roster.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1"
+                },
+                "url": "blob:fixture/1"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-01-roster.csv",
+                "url": "blob:fixture/1",
+                "throws": true
+              },
+              {
+                "type": "revoke",
+                "url": "blob:fixture/1"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "roster"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "complete",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\r\nW1,手縫,1\r\nW2,木工,2",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\r\nR01,W1,W2,\r\nR02,W1,W2,\r\nR03,W1,,\r\nR04,W2,,\r\nR05,,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 2,
+                "participantCount": 5
+              },
+              "result": {
+                "participants": 5,
+                "assigned": 3,
+                "choicesFull": 1,
+                "noPreference": 1,
+                "capacity": 3,
+                "remaining": 0
+              },
+              "selected": "W1",
+              "downloads": {
+                "batch": true,
+                "roster": true
+              },
+              "activeExports": [
+                "workshop-01-roster.csv"
+              ],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "createURL",
+                "artifact": {
+                  "filename": "workshop-01-roster.csv",
+                  "mime": "text/csv;charset=utf-8",
+                  "text": "participant_id,workshop_id,status,preference_rank\r\nR01,W1,assigned,1"
+                },
+                "url": "blob:fixture/2"
+              },
+              {
+                "type": "download",
+                "filename": "workshop-01-roster.csv",
+                "url": "blob:fixture/2"
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LEAVE"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 2,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "revoke",
+                "url": "blob:fixture/2"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
