@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>服飾尺寸換算｜Gloss Tools</title>
+<meta name="description" content="男裝與女裝上衣尺寸對照：輸入胸圍量測（公分）或任一制尺寸，立即查出 US、UK、EU、JP 的字母與數字尺寸。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>服飾尺寸換算</h1>
+  <p class="lede">男裝與女裝上衣尺寸對照：輸入胸圍量測（公分）或任一制尺寸，立即查出 US、UK、EU、JP 的字母與數字尺寸。跨境網購或在店內結帳前，先用手邊的量測或標籤尺寸核對同一列的四制對照，再決定要不要下單。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">類別、輸入方式</h2>
+      <form id="size-form" novalidate>
+        <div class="field">
+          <label for="field-garment">類別</label>
+          <p class="help" id="help-garment">女裝以胸圍（bust）、男裝以胸圍（chest）查表，只對照上衣。</p>
+          <select id="field-garment" name="garment" aria-describedby="help-garment">
+            <option value="women" selected>女裝上衣</option>
+            <option value="men">男裝上衣</option>
+          </select>
+          <p class="field-error" id="error-garment" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mode">輸入方式</label>
+          <p class="help" id="help-mode">用量測值查表，或用某一制的尺寸代碼查同一列。</p>
+          <select id="field-mode" name="mode" aria-describedby="help-mode">
+            <option value="measurement" selected>量測（公分）</option>
+            <option value="size">尺寸代碼</option>
+          </select>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div id="group-measurement">
+          <div class="field">
+            <label for="field-measurementCm">胸圍量測（公分）</label>
+            <p class="help" id="help-measurementCm">胸圍量測，50.0–200.0 cm，最多一位小數。</p>
+            <input id="field-measurementCm" name="measurementCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-measurementCm">
+            <p class="field-error" id="error-measurementCm" role="alert"></p>
+          </div>
+        </div>
+        <div id="group-size" hidden>
+          <div class="field">
+            <label for="field-fromSystem">來源尺寸制</label>
+            <p class="help" id="help-fromSystem">手邊標籤上的尺寸屬於哪一制。</p>
+            <select id="field-fromSystem" name="fromSystem" aria-describedby="help-fromSystem">
+              <option value="us" selected>美國（US）</option>
+              <option value="uk">英國（UK）</option>
+              <option value="eu">歐洲（EU）</option>
+              <option value="jp">日本（JP）</option>
+            </select>
+            <p class="field-error" id="error-fromSystem" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sizeValue">來源尺寸</label>
+            <p class="help" id="help-sizeValue">輸入該制的字母或數字尺寸代碼，例如 M、38、LL。</p>
+            <input id="field-sizeValue" name="sizeValue" type="text" autocomplete="off" value="" aria-describedby="help-sizeValue">
+            <p class="field-error" id="error-sizeValue" role="alert"></p>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。請輸入胸圍量測或任一制尺寸，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算尺寸</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">對照結果</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="對照結果" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數值</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note">「—」表示該制在這一列沒有對應標示。</p>
+      <p class="result-note" id="result-note"></p>
+      <p class="result-note" id="disclaimer">尺寸表因品牌而異：本工具使用單一固定對照表，不同品牌的版型與標示可能不同，請以該品牌官方尺寸表與實際試穿為準。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>完整對照表（固定）</summary>
+    <p>兩張表都是固定對照，逐格照表查，不用公式或插值推算：女裝以胸圍（bust）為鍵共 8 列，男裝以胸圍（chest）為鍵共 7 列。區間為半開：量測等於某列下界時屬於該列；等於全表最高上界時視為超出對照表範圍。「—」的格子表示該制在該列沒有對應標示，查表時不參與。男裝的 UK 數字與 US 數字同值（兩者都是胸圍英吋標示），JP 數字欄在男裝表恆為空白。下載的報告檔名固定為 clothing-size-report.json。</p>
+    <h3>女裝上衣</h3>
+    <div class="table-scroll" role="region" aria-label="女裝上衣對照表" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">列</th><th scope="col">胸圍 cm</th><th scope="col">US 字母</th><th scope="col">US 數字</th><th scope="col">UK 數字</th><th scope="col">EU 數字</th><th scope="col">JP 字母</th><th scope="col">JP 數字</th></tr>
+        </thead>
+        <tbody id="women-table-rows"></tbody>
+      </table>
+    </div>
+    <h3>男裝上衣</h3>
+    <div class="table-scroll" role="region" aria-label="男裝上衣對照表" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">列</th><th scope="col">胸圍 cm</th><th scope="col">US 字母</th><th scope="col">US 數字</th><th scope="col">UK 數字</th><th scope="col">EU 數字</th><th scope="col">JP 字母</th><th scope="col">JP 數字</th></tr>
+        </thead>
+        <tbody id="men-table-rows"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼同一個尺寸，不同品牌穿起來不一樣？</dt>
+      <dd>尺寸表因品牌而異，本工具使用單一固定對照表，請以該品牌官方尺寸表與實際試穿為準。</dd>
+      <dt>量測剛好等於尺寸表的邊界值時算哪一邊？</dt>
+      <dd>區間為半開：量測等於某列下界時屬於該列；等於全表最高上界時視為超出對照表範圍。</dd>
+      <dt>可以查鞋碼或褲子尺寸嗎？</dt>
+      <dd>不行。本工具只對照上衣；鞋碼請用專門的鞋碼換算工具，下身尺寸不在範圍內。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部查表都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

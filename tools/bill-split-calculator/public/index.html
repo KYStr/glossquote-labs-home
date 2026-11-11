@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>餐費均分（含稅與小費）｜Gloss Tools</title>
+<meta name="description" content="把帳單加上稅額與小費後精確分攤到每個人：小費可選以稅前或稅後金額為基數，餘數由排前面的人逐分吸收，每人金額加總與總額分毫不差。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>餐費均分（含稅與小費）</h1>
+  <p class="lede">把帳單加上稅額與小費後精確分攤到每個人：小費可選以稅前或稅後金額為基數，餘數由排前面的人逐分吸收，每人金額加總與總額分毫不差。</p>
+  <p class="help">本工具算單張餐費的每人應付額。有人已墊款、需要算誰付誰時，請使用「分帳與墊款結算」。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">帳單金額、稅率與小費比例</h2>
+      <form id="bill-form" novalidate>
+        <div class="field">
+          <label for="field-bill">帳單金額</label>
+          <p class="help" id="help-bill">稅前金額：整數加最多兩位小數，範圍 0–999,999.99。金額不限幣別，輸入與輸出使用同一單位。</p>
+          <input id="field-bill" name="bill" type="text" inputmode="decimal" autocomplete="off" value="100.00" aria-describedby="help-bill">
+          <p class="field-error" id="error-bill" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxPercent">稅率 %</label>
+          <p class="help" id="help-taxPercent">對帳單金額計稅。百分比最多三位小數，範圍 0–100。稅率由你輸入，本工具不提供任何法定稅率表。</p>
+          <input id="field-taxPercent" name="taxPercent" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-taxPercent">
+          <p class="field-error" id="error-taxPercent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-tipPercent">小費比例 %</label>
+          <p class="help" id="help-tipPercent">對下方所選基數計算。百分比最多三位小數，範圍 0–100。</p>
+          <input id="field-tipPercent" name="tipPercent" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-tipPercent">
+          <p class="field-error" id="error-tipPercent" role="alert"></p>
+        </div>
+        <h2>小費計算基數與人數</h2>
+        <fieldset class="field radio-group">
+          <legend>小費計算基數</legend>
+          <p class="help" id="help-tipBase">小費以稅前或稅後金額為基數，各地習慣不同；稅額本身永遠以帳單金額計算。</p>
+          <label class="radio-option">
+            <input id="field-tipBase-pre-tax" name="tipBase" type="radio" value="pre-tax" checked aria-describedby="help-tipBase">
+            稅前金額
+          </label>
+          <label class="radio-option">
+            <input id="field-tipBase-post-tax" name="tipBase" type="radio" value="post-tax" aria-describedby="help-tipBase">
+            稅後金額
+          </label>
+          <p class="field-error" id="error-tipBase" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-people">人數</label>
+          <p class="help" id="help-people">整數，範圍 1–100。總額平均分攤，除不盡的餘分由排前面的人依序多付一分。</p>
+          <input id="field-people" name="people" type="text" inputmode="numeric" autocomplete="off" value="3" aria-describedby="help-people">
+          <p class="field-error" id="error-people" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入帳單，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算每人應付</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">帳單明細與每人應付</h2>
+      <p id="summary"></p>
+      <p id="check-line"></p>
+      <div class="table-scroll" role="region" aria-label="每人應付金額" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">人</th><th scope="col">應付金額</th></tr>
+          </thead>
+          <tbody id="share-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>計算順序固定：先以帳單金額乘稅率算稅額，再以所選基數（稅前金額，或帳單加已捨入的稅額）乘小費比例算小費，最後三者相加為總計。金額一律以整數分、百分比以千分之一百分比的整數運算，全程不用浮點數；稅額與小費各只四捨五入（half-up）一次，總計與分攤不再捨入。</p>
+    <p>分攤方式：總計除以人數，商為每人基本額，餘下的每一分依序分給排前面的人，所以每人金額差距最多一分，加總永遠與總計完全相等。切換小費基數只會改變小費與總計，不改變稅額。</p>
+    <p>輸入只接受 ASCII 數字與一個小數點：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。金額顯示固定為整數加兩位小數，不加千分位與幣別符號。下載的報告檔名固定為 bill-split-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>小費要用稅前還是稅後金額算？</dt>
+      <dd>各地習慣不同，美國多以稅前金額為準；本工具把基數做成選項，稅額本身永遠以帳單金額計算。</dd>
+      <dt>為什麼前面的人多付一分錢？</dt>
+      <dd>總額除以人數常除不盡，餘下的每一分依序分給排前面的人，確保每人金額加總與總額完全相等，差距最多一分。</dd>
+      <dt>金額是什麼幣別？</dt>
+      <dd>不限幣別，輸入與輸出使用同一金額單位，小數固定兩位。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
