@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Period Cycle Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate your next three period start dates, ovulation day and fertile window from your last period start and average cycle length.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Period Cycle Calculator</h1>
+  <p class="lede">Estimate your next three period start dates, ovulation day and fertile window from your last period start and average cycle length. Every date is an estimate from averages, not a measurement.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Your dates</h2>
+      <form id="period-form" novalidate>
+        <div class="field">
+          <label for="field-lastPeriodStart">Last period start date</label>
+          <p class="help" id="help-lastPeriodStart">Format YYYY-MM-DD, for example 2026-10-26. Range 1900-01-01 to 2100-12-31.</p>
+          <input id="field-lastPeriodStart" name="lastPeriodStart" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-lastPeriodStart">
+          <p class="field-error" id="error-lastPeriodStart" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-cycleLength">Average cycle length (days)</label>
+          <p class="help" id="help-cycleLength">21–35 days</p>
+          <input id="field-cycleLength" name="cycleLength" type="text" inputmode="numeric" autocomplete="off" value="28" aria-describedby="help-cycleLength">
+          <p class="field-error" id="error-cycleLength" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-periodLength">Period length (days)</label>
+          <p class="help" id="help-periodLength">1–10 days</p>
+          <input id="field-periodLength" name="periodLength" type="text" inputmode="numeric" autocomplete="off" value="5" aria-describedby="help-periodLength">
+          <p class="field-error" id="error-periodLength" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your last period start and average cycle, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate cycle predictions</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimated dates</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Estimated dates" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Cycle</th><th scope="col">Cycle start</th><th scope="col">Period ends</th><th scope="col">Ovulation (est.)</th><th scope="col">Fertile window (est.)</th></tr>
+          </thead>
+          <tbody id="cycle-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel disclaimer" aria-labelledby="disclaimer-heading">
+    <h2 id="disclaimer-heading">Important notice</h2>
+    <p>This tool estimates dates from the average cycle length you enter. All dates are estimates; actual cycles vary with stress, routine, illness, medication and other factors. This tool must not be relied on for contraception and is not medical advice. If your cycles are persistently irregular, your bleeding is abnormal, or you have any concern, please consult an obstetrician-gynaecologist.</p>
+  </section>
+
+  <details class="details">
+    <summary>How it is calculated, and the report format</summary>
+    <p>The model is pinned: it assumes a fixed 14-day luteal phase, so ovulation = cycle start + (cycle length − 14); the fertile window runs from ovulation − 5 days through ovulation + 1 day inclusive (7 days); the period end is cycle start + period length − 1. Four cycles are listed — this one and the next three — each spaced by the average cycle length you enter. This is a common estimation convention for consumer cycle tools; actual ovulation and period start days vary.</p>
+    <p>Dates are computed with integer Julian Day Number arithmetic. The calculator never reads your device clock or time zone, and results are identical in every time zone. Input must be a YYYY-MM-DD date made of ASCII digits and hyphens, and whole-day counts with no decimals, signs, or leading zeros; the tool never guesses a format for you.</p>
+    <p>The downloaded report is always named period-cycle-report.json. Its content is the result as compact JSON with object keys sorted by UTF-16 code units, recursively, and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is the ovulation day estimated?</dt>
+      <dd>The tool assumes a fixed 14-day luteal phase: ovulation = cycle start + (cycle length − 14). This is a common estimation convention; the actual ovulation day varies.</dd>
+      <dt>Can I use this for contraception?</dt>
+      <dd>No. The fertile window is only an estimate from averages and must not be relied on for contraception; for contraception, consult a clinician and use a reliable method.</dd>
+      <dt>What if my cycle is outside 21–35 days?</dt>
+      <dd>This tool accepts 21–35 days only. FIGO lists 24–38 days as the normal frequency range; if your cycles are persistently outside the accepted range or irregular, consult an obstetrician-gynaecologist — this tool's estimates do not apply.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

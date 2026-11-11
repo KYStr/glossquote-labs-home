@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>體感溫度計算｜Gloss Tools</title>
+<meta name="description" content="輸入氣溫、風速與相對濕度，依官方定義域自動選用風寒或熱指數模型，算出體感溫度；兩者皆不適用時回報實際氣溫。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>體感溫度計算</h1>
+  <p class="lede">出門或安排戶外活動前，輸入氣溫、風速與相對濕度：冷天用風寒、熱天用熱指數，兩個模型各有官方定義域；兩者皆不適用時，誠實回報實際氣溫，不做任何調整。體感溫度是模型估算，不是醫療或安全建議。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">氣溫（°C）</h2>
+      <form id="feels-form" novalidate>
+        <div class="field">
+          <label for="field-temperature">氣溫（°C）</label>
+          <p class="help" id="help-temperature">攝氏溫度，可為負數，最多一位小數，範圍 −60–60。</p>
+          <input id="field-temperature" name="temperature" type="text" inputmode="decimal" autocomplete="off" value="22" aria-describedby="help-temperature">
+          <p class="field-error" id="error-temperature" role="alert"></p>
+        </div>
+        <h2>風速（km/h，10 公尺高度）</h2>
+        <div class="field">
+          <label for="field-windSpeed">風速（km/h，10 公尺高度）</label>
+          <p class="help" id="help-windSpeed">10 公尺高度測量的風速，不可為負數，最多一位小數，範圍 0–300。</p>
+          <input id="field-windSpeed" name="windSpeed" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-windSpeed">
+          <p class="field-error" id="error-windSpeed" role="alert"></p>
+        </div>
+        <h2>相對濕度（%）</h2>
+        <div class="field">
+          <label for="field-humidity">相對濕度（%）</label>
+          <p class="help" id="help-humidity">相對濕度百分比，最多一位小數，範圍 0–100。</p>
+          <input id="field-humidity" name="humidity" type="text" inputmode="decimal" autocomplete="off" value="60" aria-describedby="help-humidity">
+          <p class="field-error" id="error-humidity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入氣溫、風速與相對濕度，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算體感溫度</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">體感溫度與所用模型</h2>
+      <p id="summary"></p>
+      <dl class="result-list">
+        <div class="result-row">
+          <dt>體感溫度</dt>
+          <dd id="result-feels-like"></dd>
+        </div>
+        <div class="result-row">
+          <dt>所用模型</dt>
+          <dd id="result-model"></dd>
+        </div>
+        <div class="result-row">
+          <dt>與實際氣溫的差值</dt>
+          <dd id="result-delta"></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>模型依定義域自動選用，順序固定：先判定風寒（Environment Canada 與美國 NWS 2001 年共同公式，定義域為氣溫 ≤ 10 °C 且風速 &gt; 4.8 km/h，風速恰 4.8 不入風寒），再判定熱指數（Rothfusz 迴歸加 NWS 兩項標準調整，本工具定義域為氣溫 ≥ 27 °C 且相對濕度 ≥ 40%）。兩者皆不適用時回報實際氣溫本身，並標示超出兩模型定義域。澳洲 apparent temperature 不納入，避免同一輸入出現兩個體感數字。</p>
+    <p>捨入只在輸出時套用一次：floor(x×10＋0.5)／10，四捨五入至 1 位小數。本工具不做任何夾擠：熱指數在定義域角落（27 °C、相對濕度 40%）的迴歸值可略低於氣溫（約 −0.1 °C），照公式回報。風寒在定義域內恆低於氣溫。</p>
+    <p>輸入只接受 ASCII 數字與一個小數點：氣溫可帶負號，風速與濕度不可；不接受正號、空白、指數或全形數字，工具不會替你猜。下載的報告檔名固定為 feels-like-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>兩個模型都不適用時會怎樣？</dt>
+      <dd>回報實際氣溫並標示超出兩模型定義域，不做任何調整。</dd>
+      <dt>風寒的風速門檻為何是 4.8 km/h？</dt>
+      <dd>那是 NWS 與加拿大環境部公式的官方定義域下限（3 mph）；公式假設風速在 10 公尺高度測量。</dd>
+      <dt>熱指數在定義域邊緣為何可能略低於氣溫？</dt>
+      <dd>Rothfusz 迴歸在 27 °C、濕度 40% 附近的擬合值可略低於氣溫（約 −0.1 °C），本工具照公式回報、不做夾擠。</dd>
+      <dt>為什麼不用澳洲的 apparent temperature？</dt>
+      <dd>本工具只採用風寒與熱指數兩個北美官方模型，避免同一輸入出現兩個不同的體感數字。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

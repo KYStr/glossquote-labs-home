@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workdays Calculator | Gloss Tools</title>
+<meta name="description" content="Count business days between two dates (excluding weekends and your own holidays), or add and subtract business days from a date. The start date is excluded and the end date is included.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../en/index.html">Gloss Tools</a>
+  <span class="topbar-title">Workdays Calculator</span>
+  <span class="lang-switch">
+    <a href="../index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+    <span class="draft-warning">Switching language or leaving this page discards the current draft.</span>
+  </span>
+</header>
+<main class="layout">
+  <section class="panel input-panel" aria-labelledby="page-title">
+    <h1 id="page-title">Workdays Calculator</h1>
+    <p class="lede">Count business days between two dates (excluding weekends and your own holidays), or add and subtract business days from a date. The start date is excluded and the end date is included. Your input stays in this page's draft and is never sent or stored.</p>
+    <form id="workdays-form" novalidate>
+      <fieldset class="mode-toggle">
+        <legend>Mode</legend>
+        <label class="mode-option"><input type="radio" name="mode" id="mode-count" value="count" checked> Count business days</label>
+        <label class="mode-option"><input type="radio" name="mode" id="mode-shift" value="shift"> Add or subtract business days</label>
+      </fieldset>
+      <div class="field">
+        <label for="start-date">Start date</label>
+        <input id="start-date" name="startDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="start-date-error">
+        <p class="field-error" id="start-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field" id="end-date-field">
+        <label for="end-date">End date</label>
+        <input id="end-date" name="endDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="end-date-error">
+        <p class="field-error" id="end-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field" id="days-field" hidden>
+        <label for="days">Business days (may be negative)</label>
+        <input id="days" name="days" type="text" inputmode="numeric" autocomplete="off" placeholder="5" aria-describedby="days-hint days-error">
+        <p class="field-hint" id="days-hint">A whole number from -3660 to 3660; positive moves forward, negative backward, and 0 leaves the start date unchanged.</p>
+        <p class="field-error" id="days-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="holidays">Custom holidays (one date per line, may be empty)</label>
+        <textarea id="holidays" name="holidays" rows="6" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="holidays-hint holidays-error"></textarea>
+        <p class="field-hint" id="holidays-hint">One YYYY-MM-DD per line, up to 400 lines; duplicate lines are deduplicated, and holidays outside the range are only reported, never counted.</p>
+        <p class="field-error" id="holidays-error" role="alert" hidden></p>
+      </div>
+      <div class="actions">
+        <button type="submit" class="button primary" id="run-btn">Count business days</button>
+        <button type="button" class="button" id="cancel-btn" hidden>Cancel</button>
+        <button type="button" class="button" id="example-btn">Load example</button>
+        <button type="button" class="button quiet" id="reset-btn">Reset</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <section class="panel result-panel" id="result-panel" aria-labelledby="result-heading" aria-busy="false">
+    <h2 id="result-heading">Result</h2>
+    <p class="result-empty" id="result-empty">No result yet. Enter dates, then select “Count business days” or “Find target date”.</p>
+    <div id="result-count" hidden>
+      <h3>Business days in range</h3>
+      <p class="remaining"><span class="remaining-label">Business days</span> <span class="remaining-value" id="business-days-value">0</span> <span class="remaining-unit">days</span></p>
+      <dl class="details">
+        <div class="detail-row"><dt>Start date</dt><dd id="count-start">—</dd></div>
+        <div class="detail-row"><dt>End date</dt><dd id="count-end">—</dd></div>
+        <div class="detail-row"><dt>Calendar days</dt><dd id="count-calendar">0</dd></div>
+        <div class="detail-row"><dt>Weekend days</dt><dd id="count-weekend">0</dd></div>
+        <div class="detail-row"><dt>Holidays subtracted</dt><dd id="count-subtracted">0</dd></div>
+        <div class="detail-row"><dt>Holidays on weekends</dt><dd id="count-on-weekends">0</dd></div>
+        <div class="detail-row"><dt>Holidays outside the range</dt><dd id="count-out-of-range">0</dd></div>
+        <div class="detail-row"><dt>Duplicate holiday lines</dt><dd id="count-duplicates">0</dd></div>
+      </dl>
+    </div>
+    <div id="result-shift" hidden>
+      <h3>Target date</h3>
+      <p class="remaining"><span class="remaining-value" id="result-date-value">—</span> <span class="remaining-unit" id="result-weekday-name"></span></p>
+      <dl class="details">
+        <div class="detail-row"><dt>Business days</dt><dd id="shift-days">0</dd></div>
+        <div class="detail-row"><dt>Calendar days moved</dt><dd id="shift-moved">0</dd></div>
+        <div class="detail-row"><dt>Result is a business day</dt><dd id="shift-is-business">—</dd></div>
+      </dl>
+    </div>
+    <div class="actions">
+      <button type="button" class="button" id="download-btn" hidden>Download report</button>
+    </div>
+  </section>
+  <section class="panel info-panel" aria-labelledby="info-heading">
+    <h2 id="info-heading">Rules and limits</h2>
+    <p>A business day is a Monday to Friday that is not in your custom holiday list; weekends are always Saturday and Sunday. Counting excludes the start date and includes the end date: swapping the two dates only negates the business-day count, while the breakdown is always computed on the forward range. No national holidays are built in.</p>
+    <p>Dates must be between 1900-01-01 and 2100-12-31. You can shift by -3660 to 3660 business days. Enter up to 400 holiday dates and 8192 UTF-16 code units of holiday text.</p>
+    <p>If the count is within the shift limit, shifting forward by that count reaches the end date when it is a business day. Shifting backward is guaranteed to reach the end date when both endpoints are business days.</p>
+    <h3>Frequently asked questions</h3>
+    <dl class="faq">
+      <div class="faq-item"><dt>How are the endpoints counted?</dt><dd>The start date is excluded and the end date is included: Monday to Friday counts 4 business days (Tue–Fri), and adding 4 business days to that Monday lands back on the Friday.</dd></div>
+      <div class="faq-item"><dt>Is a holiday on a weekend subtracted twice?</dt><dd>No. Weekend days are never business days; such holidays are reported separately and never double-counted.</dd></div>
+      <div class="faq-item"><dt>Are national holidays built in?</dt><dd>No. Holidays are the dates you enter yourself, one per line; no official calendar is included.</dd></div>
+    </dl>
+  </section>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

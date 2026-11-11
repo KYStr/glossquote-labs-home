@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>生理週期計算｜Gloss Tools</title>
+<meta name="description" content="輸入上次月經開始日與平均週期，推算接下來三次月經、排卵日與易孕期的估計日期。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>生理週期計算</h1>
+  <p class="lede">輸入上次月經開始日與平均週期，推算接下來三次月經、排卵日與易孕期的估計日期。所有日期都是依平均值推算的估計，不是量測結果。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="period-form" novalidate>
+        <div class="field">
+          <label for="field-lastPeriodStart">上次月經開始日</label>
+          <p class="help" id="help-lastPeriodStart">格式 YYYY-MM-DD，例如 2026-10-26。範圍 1900-01-01 至 2100-12-31。</p>
+          <input id="field-lastPeriodStart" name="lastPeriodStart" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="" aria-describedby="help-lastPeriodStart">
+          <p class="field-error" id="error-lastPeriodStart" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-cycleLength">平均週期長度（天）</label>
+          <p class="help" id="help-cycleLength">21–35 天</p>
+          <input id="field-cycleLength" name="cycleLength" type="text" inputmode="numeric" autocomplete="off" value="28" aria-describedby="help-cycleLength">
+          <p class="field-error" id="error-cycleLength" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-periodLength">經期長度（天）</label>
+          <p class="help" id="help-periodLength">1–10 天</p>
+          <input id="field-periodLength" name="periodLength" type="text" inputmode="numeric" autocomplete="off" value="5" aria-describedby="help-periodLength">
+          <p class="field-error" id="error-periodLength" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入上次月經開始日與平均週期，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算週期預測</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估計日期</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="估計日期" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">週期</th><th scope="col">週期開始日</th><th scope="col">經期結束日</th><th scope="col">排卵日（估計）</th><th scope="col">易孕期（估計）</th></tr>
+          </thead>
+          <tbody id="cycle-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel disclaimer" aria-labelledby="disclaimer-heading">
+    <h2 id="disclaimer-heading">重要聲明</h2>
+    <p>本工具依你輸入的平均週期長度推算，所有日期都是估計，實際週期會受壓力、作息、疾病、藥物等因素影響而變動。本工具不能作為避孕依據，也不是醫療建議；若週期長期不規則、經血量異常或有任何疑慮，請諮詢婦產科醫師。</p>
+  </section>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>模型釘版：假設黃體期固定 14 天，排卵日 = 週期開始日 +（週期長度 − 14）；易孕期 = 排卵日 −5 天至排卵日 +1 天（含頭尾，共 7 天）；經期結束日 = 週期開始日 + 經期長度 − 1。一次列出四個週期：本次與接下來三次，間隔固定為你輸入的平均週期長度。這是消費型週期工具的常見估算慣例，實際排卵日與來潮日都會變動。</p>
+    <p>日期以整數 Julian Day Number 運算，不讀裝置時鐘或時區，四種時區環境下結果相同。輸入只接受 ASCII 數字與連字號組成的 YYYY-MM-DD 日期，以及不帶小數、符號或前導零的整數天數；工具不會替你猜格式。</p>
+    <p>下載的報告檔名固定為 period-cycle-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>排卵日怎麼算？</dt>
+      <dd>本工具假設黃體期固定 14 天，排卵日 = 週期開始日 +（週期長度 − 14）。這是常見的估算慣例，實際排卵日會變動。</dd>
+      <dt>可以用來避孕嗎？</dt>
+      <dd>不可以。易孕期只是依平均值推算的估計，不能作為避孕依據；需要避孕請諮詢醫師並使用可靠的避孕方法。</dd>
+      <dt>我的週期不在 21–35 天怎麼辦？</dt>
+      <dd>本工具只接受 21–35 天。FIGO 將 24–38 天列為正常頻率範圍；週期長期落在接受範圍外或不規則時，請諮詢婦產科醫師，本工具的估計不適用。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
