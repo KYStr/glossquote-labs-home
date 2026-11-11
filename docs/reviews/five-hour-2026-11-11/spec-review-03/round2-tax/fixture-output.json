@@ -1,0 +1,3166 @@
+{
+  "summary": {
+    "pass": 58,
+    "total": 58,
+    "core": 48,
+    "controller": 7,
+    "export": 3,
+    "legacy": 25,
+    "oldExpectedPreserved": 21,
+    "legacyGrossExtended": 4,
+    "grossSweep": 27775,
+    "forwardSweep": 27775,
+    "extraProbes": 7
+  },
+  "docs": {
+    "sections": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "priorSections": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs"
+    ],
+    "productAspects": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "original": {
+      "BRIEF.md": {
+        "bytes": 1492,
+        "blob": "469eea98e05c5ed6cc366b43c44bf2e5d9c58008",
+        "sha256": "dee172953b44f4c02d9a0d3e50f9240e966123e5ab9a3c746a5e033ddfaf383e"
+      },
+      "SPEC.md": {
+        "bytes": 7626,
+        "blob": "c3df531a322a7dbf13979fdced0a1e9711ff2897",
+        "sha256": "b7280f6287b017806a1c110cc23c97da967d6dcab95f18d1778c45ee3079e127"
+      },
+      "fixtures.json": {
+        "bytes": 8927,
+        "blob": "cf3af0af32669698725e52f4b1c921b4503b610a",
+        "sha256": "6e15f67484f6fabadf1049e231c992a9720b66609782f79b320cdbd3f69e850b"
+      },
+      "AUTHOR-CHECK.md": {
+        "bytes": 4306,
+        "blob": "ec1cd95c2883e39ab59397c8799b5904c88b1946",
+        "sha256": "0b631002cfecc361c7644f40156aa9797144e16679d9347e4e3cfde21df99b39"
+      }
+    },
+    "candidate": {
+      "BRIEF.md": {
+        "bytes": 1733,
+        "blob": "e0a92bbcd9364ae0367baa2560a36cc4828f7daa",
+        "sha256": "53805442c9b9badd6f7caa464b2928f0428f360de9d8ee68b253f0f8c3a34e28"
+      },
+      "SPEC.md": {
+        "bytes": 25598,
+        "blob": "04f4d4d1c4d2091acb9a2dad6df73cabdff64858",
+        "sha256": "38ebee6ca11ae29a524b57776a578a229239eacc3c45ea00b6ef3c450622c18c"
+      },
+      "fixtures.json": {
+        "bytes": 45353,
+        "blob": "b7f46427e219a9a6eaa5080cfca57954eea5370b",
+        "sha256": "2e23c652e92618e044fc642095c0be6f13d7dea1d72f2dc1217869ea3eda175a"
+      },
+      "AUTHOR-CHECK.md": {
+        "bytes": 4179,
+        "blob": "52896a0e303ecb0083b07dc9b00e561f46066067",
+        "sha256": "103b48e4a66810f14f1874e29c47793a29bf763e3b82111171ff7464f71b1929"
+      }
+    }
+  },
+  "priorCases": [
+    {
+      "id": "net-basic",
+      "fieldsAdded": []
+    },
+    {
+      "id": "gross-basic",
+      "fieldsAdded": [
+        "forwardGross",
+        "forwardDifference"
+      ]
+    },
+    {
+      "id": "net-round-down",
+      "fieldsAdded": []
+    },
+    {
+      "id": "net-half-tie-up",
+      "fieldsAdded": []
+    },
+    {
+      "id": "gross-round-up",
+      "fieldsAdded": [
+        "forwardGross",
+        "forwardDifference"
+      ]
+    },
+    {
+      "id": "gross-one-dollar",
+      "fieldsAdded": [
+        "forwardGross",
+        "forwardDifference"
+      ]
+    },
+    {
+      "id": "zero-amount",
+      "fieldsAdded": []
+    },
+    {
+      "id": "rate-ten",
+      "fieldsAdded": []
+    },
+    {
+      "id": "rate-decimal-gross",
+      "fieldsAdded": [
+        "forwardGross",
+        "forwardDifference"
+      ]
+    },
+    {
+      "id": "rate-tiny",
+      "fieldsAdded": []
+    },
+    {
+      "id": "rate-canonical",
+      "fieldsAdded": []
+    },
+    {
+      "id": "lines-difference",
+      "fieldsAdded": []
+    },
+    {
+      "id": "lines-agree",
+      "fieldsAdded": []
+    },
+    {
+      "id": "lines-single-row",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-rate-zero",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-rate-format",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-amount-format",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-amount-empty",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-schema-extra",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-lines-empty",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-lines-limit",
+      "fieldsAdded": []
+    },
+    {
+      "id": "error-line-format",
+      "fieldsAdded": []
+    },
+    {
+      "id": "state-dirty-error",
+      "fieldsAdded": []
+    },
+    {
+      "id": "state-cancel-late",
+      "fieldsAdded": []
+    },
+    {
+      "id": "state-replace-late",
+      "fieldsAdded": []
+    }
+  ],
+  "cases": [
+    {
+      "id": "net-basic",
+      "kind": "core",
+      "input": {
+        "amount": "100000",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "5",
+          "net": 100000,
+          "tax": 5000,
+          "gross": 105000
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-basic",
+      "kind": "core",
+      "input": {
+        "amount": "105000",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000,
+          "forwardGross": 105000,
+          "forwardDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 100000,
+          "tax": 5000,
+          "gross": 105000,
+          "forwardGross": 105000,
+          "forwardDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "net-round-down",
+      "kind": "core",
+      "input": {
+        "amount": "12345",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 12962,
+          "mode": "single",
+          "net": 12345,
+          "ratePercent": "5",
+          "tax": 617
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "5",
+          "net": 12345,
+          "tax": 617,
+          "gross": 12962
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "net-half-tie-up",
+      "kind": "core",
+      "input": {
+        "amount": "10",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 11,
+          "mode": "single",
+          "net": 10,
+          "ratePercent": "5",
+          "tax": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 1,
+          "gross": 11
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-round-up",
+      "kind": "core",
+      "input": {
+        "amount": "9999",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 9999,
+          "mode": "single",
+          "net": 9523,
+          "ratePercent": "5",
+          "tax": 476,
+          "forwardGross": 9999,
+          "forwardDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 9523,
+          "tax": 476,
+          "gross": 9999,
+          "forwardGross": 9999,
+          "forwardDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-one-dollar",
+      "kind": "core",
+      "input": {
+        "amount": "1",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 1,
+          "mode": "single",
+          "net": 1,
+          "ratePercent": "5",
+          "tax": 0,
+          "forwardGross": 1,
+          "forwardDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 1,
+          "tax": 0,
+          "gross": 1,
+          "forwardGross": 1,
+          "forwardDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "zero-amount",
+      "kind": "core",
+      "input": {
+        "amount": "0",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 0,
+          "mode": "single",
+          "net": 0,
+          "ratePercent": "5",
+          "tax": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "5",
+          "net": 0,
+          "tax": 0,
+          "gross": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-ten",
+      "kind": "core",
+      "input": {
+        "amount": "1000",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 1100,
+          "mode": "single",
+          "net": 1000,
+          "ratePercent": "10",
+          "tax": 100
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "10",
+          "net": 1000,
+          "tax": 100,
+          "gross": 1100
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-decimal-gross",
+      "kind": "core",
+      "input": {
+        "amount": "1000",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "8.25"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 1000,
+          "mode": "single",
+          "net": 924,
+          "ratePercent": "8.25",
+          "tax": 76,
+          "forwardGross": 1000,
+          "forwardDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "8.25",
+          "net": 924,
+          "tax": 76,
+          "gross": 1000,
+          "forwardGross": 1000,
+          "forwardDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-tiny",
+      "kind": "core",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "0.01"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 100,
+          "mode": "single",
+          "net": 100,
+          "ratePercent": "0.01",
+          "tax": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "0.01",
+          "net": 100,
+          "tax": 0,
+          "gross": 100
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-canonical",
+      "kind": "core",
+      "input": {
+        "amount": "200",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5.50"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 211,
+          "mode": "single",
+          "net": 200,
+          "ratePercent": "5.5",
+          "tax": 11
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "5.5",
+          "net": 200,
+          "tax": 11,
+          "gross": 211
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-difference",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "10"
+          },
+          {
+            "amount": "10"
+          },
+          {
+            "amount": "10"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 32,
+          "lines": [
+            {
+              "net": 10,
+              "row": 1
+            },
+            {
+              "net": 10,
+              "row": 2
+            },
+            {
+              "net": 10,
+              "row": 3
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 3,
+          "ratePercent": "5",
+          "roundingDifference": -1,
+          "subtotalNet": 30,
+          "tax": 2
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 10
+            },
+            {
+              "row": 2,
+              "net": 10
+            },
+            {
+              "row": 3,
+              "net": 10
+            }
+          ],
+          "subtotalNet": 30,
+          "tax": 2,
+          "gross": 32,
+          "perLineTaxSum": 3,
+          "roundingDifference": -1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-agree",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "100000"
+          },
+          {
+            "amount": "12345"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 117962,
+          "lines": [
+            {
+              "net": 100000,
+              "row": 1
+            },
+            {
+              "net": 12345,
+              "row": 2
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 5617,
+          "ratePercent": "5",
+          "roundingDifference": 0,
+          "subtotalNet": 112345,
+          "tax": 5617
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 100000
+            },
+            {
+              "row": 2,
+              "net": 12345
+            }
+          ],
+          "subtotalNet": 112345,
+          "tax": 5617,
+          "gross": 117962,
+          "perLineTaxSum": 5617,
+          "roundingDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-single-row",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "10500"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 11025,
+          "lines": [
+            {
+              "net": 10500,
+              "row": 1
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 525,
+          "ratePercent": "5",
+          "roundingDifference": 0,
+          "subtotalNet": 10500,
+          "tax": 525
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 10500
+            }
+          ],
+          "subtotalNet": 10500,
+          "tax": 525,
+          "gross": 11025,
+          "perLineTaxSum": 525,
+          "roundingDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-rate-zero",
+      "kind": "core",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "0"
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-rate-format",
+      "kind": "core",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5.555"
+      },
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-amount-format",
+      "kind": "core",
+      "input": {
+        "amount": "100.5",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-amount-empty",
+      "kind": "core",
+      "input": {
+        "amount": "",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-schema-extra",
+      "kind": "core",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "note": "x",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-lines-empty",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-lines-limit",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-line-format",
+      "kind": "core",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "100"
+          },
+          {
+            "amount": "1,000"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 2
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 2
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "amount": "9522.5",
+          "basis": "gross",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "initial": {
+          "amount": "9999",
+          "basis": "gross",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        }
+      },
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "INTEGER_FORMAT",
+            "field": "amount",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "INTEGER_FORMAT",
+            "field": "amount",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "amount": "12345",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "lateResult": {
+          "basis": "net",
+          "gross": 12962,
+          "mode": "single",
+          "net": 12345,
+          "ratePercent": "5",
+          "tax": 617
+        }
+      },
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "amount": "12345",
+            "basis": "net",
+            "lines": null,
+            "mode": "single",
+            "ratePercent": "5"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "amount": "10000",
+            "basis": "net",
+            "lines": null,
+            "mode": "single",
+            "ratePercent": "5"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "amount": "12345",
+            "basis": "net",
+            "lines": null,
+            "mode": "single",
+            "ratePercent": "5"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "amount": "100000",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "0"
+        },
+        "olderDraft": {
+          "amount": "100000",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "olderLateResult": {
+          "basis": "net",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-10-no-forward-preimage",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "gross",
+        "amount": "10",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 0,
+          "gross": 10,
+          "forwardGross": 11,
+          "forwardDifference": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 0,
+          "gross": 10,
+          "forwardGross": 11,
+          "forwardDifference": 1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-13-half-tie",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "4",
+        "basis": "gross",
+        "amount": "13",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "4",
+          "net": 13,
+          "tax": 0,
+          "gross": 13,
+          "forwardGross": 14,
+          "forwardDifference": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "4",
+          "net": 13,
+          "tax": 0,
+          "gross": 13,
+          "forwardGross": 14,
+          "forwardDifference": 1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "gross-99-forward-lower",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0.51",
+        "basis": "gross",
+        "amount": "99",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "0.51",
+          "net": 98,
+          "tax": 1,
+          "gross": 99,
+          "forwardGross": 98,
+          "forwardDifference": -1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "0.51",
+          "net": 98,
+          "tax": 1,
+          "gross": 99,
+          "forwardGross": 98,
+          "forwardDifference": -1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "net-max-rate-max-amount",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "100.00",
+        "basis": "net",
+        "amount": "999999999999",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "100",
+          "net": 999999999999,
+          "tax": 999999999999,
+          "gross": 1999999999998
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "100",
+          "net": 999999999999,
+          "tax": 999999999999,
+          "gross": 1999999999998
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-20-valid",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 1
+            },
+            {
+              "row": 2,
+              "net": 1
+            },
+            {
+              "row": 3,
+              "net": 1
+            },
+            {
+              "row": 4,
+              "net": 1
+            },
+            {
+              "row": 5,
+              "net": 1
+            },
+            {
+              "row": 6,
+              "net": 1
+            },
+            {
+              "row": 7,
+              "net": 1
+            },
+            {
+              "row": 8,
+              "net": 1
+            },
+            {
+              "row": 9,
+              "net": 1
+            },
+            {
+              "row": 10,
+              "net": 1
+            },
+            {
+              "row": 11,
+              "net": 1
+            },
+            {
+              "row": 12,
+              "net": 1
+            },
+            {
+              "row": 13,
+              "net": 1
+            },
+            {
+              "row": 14,
+              "net": 1
+            },
+            {
+              "row": 15,
+              "net": 1
+            },
+            {
+              "row": 16,
+              "net": 1
+            },
+            {
+              "row": 17,
+              "net": 1
+            },
+            {
+              "row": 18,
+              "net": 1
+            },
+            {
+              "row": 19,
+              "net": 1
+            },
+            {
+              "row": 20,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 20,
+          "tax": 1,
+          "gross": 21,
+          "perLineTaxSum": 0,
+          "roundingDifference": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 1
+            },
+            {
+              "row": 2,
+              "net": 1
+            },
+            {
+              "row": 3,
+              "net": 1
+            },
+            {
+              "row": 4,
+              "net": 1
+            },
+            {
+              "row": 5,
+              "net": 1
+            },
+            {
+              "row": 6,
+              "net": 1
+            },
+            {
+              "row": 7,
+              "net": 1
+            },
+            {
+              "row": 8,
+              "net": 1
+            },
+            {
+              "row": 9,
+              "net": 1
+            },
+            {
+              "row": 10,
+              "net": 1
+            },
+            {
+              "row": 11,
+              "net": 1
+            },
+            {
+              "row": 12,
+              "net": 1
+            },
+            {
+              "row": 13,
+              "net": 1
+            },
+            {
+              "row": 14,
+              "net": 1
+            },
+            {
+              "row": 15,
+              "net": 1
+            },
+            {
+              "row": 16,
+              "net": 1
+            },
+            {
+              "row": 17,
+              "net": 1
+            },
+            {
+              "row": 18,
+              "net": 1
+            },
+            {
+              "row": 19,
+              "net": 1
+            },
+            {
+              "row": 20,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 20,
+          "tax": 1,
+          "gross": 21,
+          "perLineTaxSum": 0,
+          "roundingDifference": 1
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-total-at-limit",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999998"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 999999999998
+            },
+            {
+              "row": 2,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 999999999999,
+          "tax": 50000000000,
+          "gross": 1049999999999,
+          "perLineTaxSum": 50000000000,
+          "roundingDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 999999999998
+            },
+            {
+              "row": 2,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 999999999999,
+          "tax": 50000000000,
+          "gross": 1049999999999,
+          "perLineTaxSum": 50000000000,
+          "roundingDifference": 0
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "shape-precedes-mode",
+      "kind": "core",
+      "input": {
+        "mode": "unknown",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "1",
+            "extra": 0
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "mode-precedes-rate",
+      "kind": "core",
+      "input": {
+        "mode": "unknown",
+        "ratePercent": "0",
+        "basis": "net",
+        "amount": "bad",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "mode-limit-precedes-unicode",
+      "kind": "core",
+      "input": {
+        "mode": "xxxxxxxxxxxxxxxx\ud800",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-unpaired-surrogate",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5\ud800",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-empty",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "",
+        "basis": null,
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-over-limit",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "100.01",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-trailing-line-feed",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5\n",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "rate-precedes-basis",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0",
+        "basis": null,
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "basis-precedes-inactive-lines",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": "100",
+        "lines": [
+          {
+            "amount": "3"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "basis",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "basis",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "single-inactive-lines",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "bad",
+        "lines": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "single-amount-over-limit",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "1000000000000",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "line-inactive-order",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "10",
+        "lines": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "basis",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "basis",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "line-inactive-amount",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": "1",
+        "lines": [
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-null",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-oversize-with-bad-row",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          null,
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "lines-total-over-limit",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999999"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TOTAL_RANGE",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "TOTAL_RANGE",
+          "field": "lines",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "line-error-before-total",
+      "kind": "core",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999999"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "oops"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 3
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 3
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "amount-fullwidth",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "１２",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "amount-leading-zero",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "01",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "amount-raw-limit",
+      "kind": "core",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "999999999999999999999999999999999",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "state-reset-discards-late",
+      "kind": "controller",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "before",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "reset"
+          },
+          {
+            "op": "resolve",
+            "token": "before",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ],
+      "derived": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "state-new-success-wins",
+      "kind": "controller",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "older",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "convert",
+            "token": "newer",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "4",
+              "basis": "gross",
+              "amount": "13",
+              "lines": null
+            }
+          },
+          {
+            "op": "resolve",
+            "token": "newer",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "4",
+                "net": 13,
+                "tax": 0,
+                "gross": 13,
+                "forwardGross": 14,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "resolve",
+            "token": "older",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        }
+      ],
+      "derived": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "state-timeout-late-retry",
+      "kind": "controller",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "old",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "timeout",
+            "token": "old"
+          },
+          {
+            "op": "resolve",
+            "token": "old",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "convert",
+            "token": "retry"
+          },
+          {
+            "op": "resolve",
+            "token": "retry",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "5",
+            "net": 10,
+            "tax": 0,
+            "gross": 10,
+            "forwardGross": 11,
+            "forwardDifference": 1
+          }
+        }
+      ],
+      "derived": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "5",
+            "net": 10,
+            "tax": 0,
+            "gross": 10,
+            "forwardGross": 11,
+            "forwardDifference": 1
+          }
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "state-pagehide-clears",
+      "kind": "controller",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "before",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "4",
+              "basis": "gross",
+              "amount": "13",
+              "lines": null
+            }
+          },
+          {
+            "op": "pagehide"
+          },
+          {
+            "op": "resolve",
+            "token": "before",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "4",
+                "net": 13,
+                "tax": 0,
+                "gross": 13,
+                "forwardGross": 14,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "pageshow"
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ],
+      "derived": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "export-gross-10",
+      "kind": "export",
+      "input": {
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 0,
+          "gross": 10,
+          "forwardGross": 11,
+          "forwardDifference": 1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"5\",\n    \"net\": 10,\n    \"tax\": 0,\n    \"gross\": 10,\n    \"forwardGross\": 11,\n    \"forwardDifference\": 1\n  }\n}\n"
+      },
+      "derived": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"5\",\n    \"net\": 10,\n    \"tax\": 0,\n    \"gross\": 10,\n    \"forwardGross\": 11,\n    \"forwardDifference\": 1\n  }\n}\n"
+      },
+      "status": "PASS",
+      "download": {
+        "bytes": 291,
+        "sha256": "a0ccf20ca1ed1aecb0fdd55d0fc5f28530e611ec4ffac77696bf724a0f165f16"
+      }
+    },
+    {
+      "id": "export-gross-13",
+      "kind": "export",
+      "input": {
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "4",
+          "net": 13,
+          "tax": 0,
+          "gross": 13,
+          "forwardGross": 14,
+          "forwardDifference": 1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"4\",\n    \"net\": 13,\n    \"tax\": 0,\n    \"gross\": 13,\n    \"forwardGross\": 14,\n    \"forwardDifference\": 1\n  }\n}\n"
+      },
+      "derived": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"4\",\n    \"net\": 13,\n    \"tax\": 0,\n    \"gross\": 13,\n    \"forwardGross\": 14,\n    \"forwardDifference\": 1\n  }\n}\n"
+      },
+      "status": "PASS",
+      "download": {
+        "bytes": 291,
+        "sha256": "f914a17f6812dc46ce7daf501ed3adb4b678526a8e00fa43cb6dba1b3f40d586"
+      }
+    },
+    {
+      "id": "export-lines-difference",
+      "kind": "export",
+      "input": {
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 10
+            },
+            {
+              "row": 2,
+              "net": 10
+            },
+            {
+              "row": 3,
+              "net": 10
+            }
+          ],
+          "subtotalNet": 30,
+          "tax": 2,
+          "gross": 32,
+          "perLineTaxSum": 3,
+          "roundingDifference": -1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"lines\",\n    \"ratePercent\": \"5\",\n    \"lines\": [\n      {\n        \"row\": 1,\n        \"net\": 10\n      },\n      {\n        \"row\": 2,\n        \"net\": 10\n      },\n      {\n        \"row\": 3,\n        \"net\": 10\n      }\n    ],\n    \"subtotalNet\": 30,\n    \"tax\": 2,\n    \"gross\": 32,\n    \"perLineTaxSum\": 3,\n    \"roundingDifference\": -1\n  }\n}\n"
+      },
+      "derived": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"lines\",\n    \"ratePercent\": \"5\",\n    \"lines\": [\n      {\n        \"row\": 1,\n        \"net\": 10\n      },\n      {\n        \"row\": 2,\n        \"net\": 10\n      },\n      {\n        \"row\": 3,\n        \"net\": 10\n      }\n    ],\n    \"subtotalNet\": 30,\n    \"tax\": 2,\n    \"gross\": 32,\n    \"perLineTaxSum\": 3,\n    \"roundingDifference\": -1\n  }\n}\n"
+      },
+      "status": "PASS",
+      "download": {
+        "bytes": 458,
+        "sha256": "9b73c5bfc922673877856184a283b2bba9da5e170af6f5a57f0f6391b55660f9"
+      }
+    }
+  ],
+  "probes": [
+    {
+      "id": "max-gross-rate",
+      "input": {
+        "mode": "single",
+        "ratePercent": "100",
+        "basis": "gross",
+        "amount": "999999999999",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "100",
+          "net": 500000000000,
+          "tax": 499999999999,
+          "gross": 999999999999,
+          "forwardGross": 1000000000000,
+          "forwardDifference": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "100",
+          "net": 500000000000,
+          "tax": 499999999999,
+          "gross": 999999999999,
+          "forwardGross": 1000000000000,
+          "forwardDifference": 1
+        }
+      }
+    },
+    {
+      "id": "gross-zero-rate-minimum",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0.01",
+        "basis": "gross",
+        "amount": "0",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "0.01",
+          "net": 0,
+          "tax": 0,
+          "gross": 0,
+          "forwardGross": 0,
+          "forwardDifference": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "0.01",
+          "net": 0,
+          "tax": 0,
+          "gross": 0,
+          "forwardGross": 0,
+          "forwardDifference": 0
+        }
+      }
+    },
+    {
+      "id": "subcent-rate",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0.001",
+        "basis": "gross",
+        "amount": "1",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "basis-before-inactive",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": "10000",
+        "lines": [
+          {
+            "amount": "10"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "basis",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "basis",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "getter-not-invoked",
+      "getterCalls": 0,
+      "expected": "SCHEMA"
+    },
+    {
+      "id": "sparse-array",
+      "expected": "SCHEMA"
+    },
+    {
+      "id": "unknown-symbol",
+      "expected": "SCHEMA"
+    }
+  ],
+  "exactProbes": [
+    {
+      "input": "10 at 5%",
+      "net": 10,
+      "netBefore": "200/21",
+      "forwardBefore": 9,
+      "forwardAfter": 11
+    },
+    {
+      "input": "13 at 4%",
+      "net": 13,
+      "netBefore": "25/2",
+      "taxFirst": 1,
+      "forwardBefore": 12,
+      "forwardAfter": 14
+    },
+    {
+      "input": "99 at 0.51%",
+      "net": 98,
+      "netBefore": "990000/10051",
+      "forwardBefore": 98,
+      "forwardAfter": 100
+    }
+  ]
+}
