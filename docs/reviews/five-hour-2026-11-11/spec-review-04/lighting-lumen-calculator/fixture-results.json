@@ -1,0 +1,596 @@
+{
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "3119dccbc0c684ef07ef46aadb30e1b600f9544f",
+    "path": "docs/specs/lighting-lumen-calculator/SPEC.md"
+  },
+  "fixtureBlob": "4b1cf31c2cf81210d4dfa7ac8b82a622431675bb",
+  "method": "Independent offline derivation and exact deep comparison of the complete outputs. Controller cases use a state model.",
+  "node": "v24.14.0",
+  "passed": 17,
+  "total": 17,
+  "exitCode": 0,
+  "cases": [
+    {
+      "id": "living-dimensions-basic",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "dimensions",
+        "roomType": "living",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 14,
+          "targetLux": 100,
+          "totalLumens": 1400,
+          "bulbCount": 2,
+          "installedLumens": 1600,
+          "achievedLux": 114.3
+        }
+      }
+    },
+    {
+      "id": "bedroom-area-m2",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "12.50",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "area",
+        "roomType": "bedroom",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 12.5,
+          "targetLux": 75,
+          "totalLumens": 938,
+          "bulbCount": 2,
+          "installedLumens": 1600,
+          "achievedLux": 128
+        }
+      }
+    },
+    {
+      "id": "study-ping-area",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "ping",
+        "areaValue": "6.00",
+        "bulbLumens": "1600",
+        "lengthM": "4.0",
+        "mode": "area",
+        "roomType": "study",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 19.83,
+          "targetLux": 300,
+          "totalLumens": 5950,
+          "bulbCount": 4,
+          "installedLumens": 6400,
+          "achievedLux": 322.7
+        }
+      }
+    },
+    {
+      "id": "kitchen-exact-bulb-multiple",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "1000",
+        "lengthM": "5.0",
+        "mode": "dimensions",
+        "roomType": "kitchen",
+        "widthM": "4.0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 20,
+          "targetLux": 100,
+          "totalLumens": 2000,
+          "bulbCount": 2,
+          "installedLumens": 2000,
+          "achievedLux": 100
+        }
+      }
+    },
+    {
+      "id": "bedroom-half-up-tie",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "60",
+        "lengthM": "1.5",
+        "mode": "dimensions",
+        "roomType": "bedroom",
+        "widthM": "1.0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 1.5,
+          "targetLux": 75,
+          "totalLumens": 113,
+          "bulbCount": 2,
+          "installedLumens": 120,
+          "achievedLux": 80
+        }
+      }
+    },
+    {
+      "id": "bathroom-min-dimensions",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "800",
+        "lengthM": "0.5",
+        "mode": "dimensions",
+        "roomType": "bathroom",
+        "widthM": "0.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 0.25,
+          "targetLux": 100,
+          "totalLumens": 25,
+          "bulbCount": 1,
+          "installedLumens": 800,
+          "achievedLux": 3200
+        }
+      }
+    },
+    {
+      "id": "study-max-area",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "10000.00",
+        "bulbLumens": "100000",
+        "lengthM": "4.0",
+        "mode": "area",
+        "roomType": "study",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 10000,
+          "targetLux": 300,
+          "totalLumens": 3000000,
+          "bulbCount": 30,
+          "installedLumens": 3000000,
+          "achievedLux": 300
+        }
+      }
+    },
+    {
+      "id": "corridor-ping-min",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "ping",
+        "areaValue": "0.08",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "area",
+        "roomType": "corridor",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "areaM2": 0.26,
+          "targetLux": 100,
+          "totalLumens": 26,
+          "bulbCount": 1,
+          "installedLumens": 800,
+          "achievedLux": 3025
+        }
+      }
+    },
+    {
+      "id": "length-decimal-format",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "800",
+        "lengthM": "4.25",
+        "mode": "dimensions",
+        "roomType": "living",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "lengthM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "width-empty",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "dimensions",
+        "roomType": "living",
+        "widthM": ""
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "widthM",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "area-below-min",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "0.10",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "area",
+        "roomType": "living",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "areaValue",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "room-type-enum",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "dimensions",
+        "roomType": "garage",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "roomType",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "bulb-lumens-zero",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "bulbLumens": "0",
+        "lengthM": "4.0",
+        "mode": "dimensions",
+        "roomType": "living",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "bulbLumens",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "inactive-field-over-limit",
+      "kind": "core",
+      "status": "PASS",
+      "input": {
+        "areaUnit": "m2",
+        "areaValue": "123456789",
+        "bulbLumens": "800",
+        "lengthM": "4.0",
+        "mode": "dimensions",
+        "roomType": "living",
+        "widthM": "3.5"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "areaValue",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "edit": {
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "bulbLumens": "0",
+          "lengthM": "4.0",
+          "mode": "dimensions",
+          "roomType": "living",
+          "widthM": "3.5"
+        },
+        "initial": {
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "bulbLumens": "800",
+          "lengthM": "4.0",
+          "mode": "dimensions",
+          "roomType": "living",
+          "widthM": "3.5"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "bulbLumens",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "draft": {
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "bulbLumens": "800",
+          "lengthM": "4.0",
+          "mode": "dimensions",
+          "roomType": "living",
+          "widthM": "3.5"
+        },
+        "lateResult": {
+          "achievedLux": 114.3,
+          "areaM2": 14,
+          "bulbCount": 2,
+          "installedLumens": 1600,
+          "targetLux": 100,
+          "totalLumens": 1400
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "areaUnit": "m2",
+            "areaValue": "20.00",
+            "bulbLumens": "800",
+            "lengthM": "4.0",
+            "mode": "dimensions",
+            "roomType": "living",
+            "widthM": "3.5"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "dimensions",
+            "lengthM": "4.0",
+            "widthM": "3.5",
+            "areaUnit": "m2",
+            "areaValue": "20.00",
+            "roomType": "living",
+            "bulbLumens": "800"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "status": "PASS",
+      "input": {
+        "newerDraft": {
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "bulbLumens": "0",
+          "lengthM": "4.0",
+          "mode": "dimensions",
+          "roomType": "living",
+          "widthM": "3.5"
+        },
+        "olderDraft": {
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "bulbLumens": "800",
+          "lengthM": "4.0",
+          "mode": "dimensions",
+          "roomType": "living",
+          "widthM": "3.5"
+        },
+        "olderLateResult": {
+          "achievedLux": 114.3,
+          "areaM2": 14,
+          "bulbCount": 2,
+          "installedLumens": 1600,
+          "targetLux": 100,
+          "totalLumens": 1400
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "bulbLumens",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "bulbLumens",
+            "row": null
+          }
+        }
+      }
+    }
+  ],
+  "probes": [
+    {
+      "id": "LIGHT-01",
+      "input": {
+        "mode": "area",
+        "lengthM": "4.0",
+        "widthM": "3.5",
+        "areaUnit": "ping",
+        "areaValue": "1.09",
+        "roomType": "kitchen",
+        "bulbLumens": "360"
+      },
+      "exactArea": "436/121",
+      "exactLumens": "43600/121",
+      "stated": {
+        "areaM2": 3.6,
+        "targetLux": 100,
+        "totalLumens": 360,
+        "bulbCount": 1,
+        "installedLumens": 360,
+        "achievedLux": 99.9
+      },
+      "countFromExactRequirement": 2,
+      "estimateFromExactCount": 199.8,
+      "exactBulbMultiple": {
+        "input": {
+          "mode": "dimensions",
+          "lengthM": "5.0",
+          "widthM": "4.0",
+          "areaUnit": "m2",
+          "areaValue": "20.00",
+          "roomType": "kitchen",
+          "bulbLumens": "1000"
+        },
+        "output": {
+          "areaM2": 20,
+          "targetLux": 100,
+          "totalLumens": 2000,
+          "bulbCount": 2,
+          "installedLumens": 2000,
+          "achievedLux": 100
+        }
+      }
+    },
+    {
+      "id": "LIGHT-02",
+      "input": {
+        "mode": "dimensions",
+        "lengthM": "4.0",
+        "widthM": "3.5",
+        "areaUnit": "m2",
+        "areaValue": "20.00",
+        "roomType": "corridor",
+        "bulbLumens": "800"
+      },
+      "pinnedAndGb2024": {
+        "areaM2": 14,
+        "targetLux": 100,
+        "totalLumens": 1400,
+        "bulbCount": 2,
+        "installedLumens": 1600,
+        "achievedLux": 114.3
+      },
+      "oldGb2013Corridor": {
+        "targetLux": 50,
+        "lumens": 700,
+        "bulbCount": 1
+      }
+    },
+    {
+      "id": "LIGHT-04",
+      "input": {
+        "mode": "dimensions",
+        "lengthM": "4.0",
+        "widthM": "3.5",
+        "areaUnit": "m2",
+        "areaValue": "123456789",
+        "roomType": "living",
+        "bulbLumens": "800"
+      },
+      "output": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "areaValue",
+          "row": null
+        }
+      },
+      "note": "areaValue is inactive in dimensions mode under the stated UI rules."
+    }
+  ],
+  "productChecks": "NOT_RUN"
+}

@@ -1,0 +1,834 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-taiwan-water-bill-20261109",
+  "slug": "taiwan-water-bill",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "monthly-zero-usage",
+      "kind": "core",
+      "purpose": "每月抄表、零度數：只收基本費，總額四捨五入",
+      "input": {
+        "cycle": "monthly",
+        "diameterMm": "20",
+        "usageM3": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "monthly",
+          "diameterMm": "20",
+          "usageM3": 0,
+          "tiers": [],
+          "basicFeeMilliNt": 35700,
+          "usageChargeMilliNt": 0,
+          "waterSubtotalMilliNt": 35700,
+          "wrccMilliNt": 0,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 1700,
+          "totalPayableMilliNt": 36000
+        }
+      }
+    },
+    {
+      "id": "monthly-first-tier-top",
+      "kind": "core",
+      "purpose": "每月抄表、第一段上界 10 度",
+      "input": {
+        "cycle": "monthly",
+        "diameterMm": "13",
+        "usageM3": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "monthly",
+          "diameterMm": "13",
+          "usageM3": 10,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 10,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 73500
+            }
+          ],
+          "basicFeeMilliNt": 17850,
+          "usageChargeMilliNt": 73500,
+          "waterSubtotalMilliNt": 91350,
+          "wrccMilliNt": 4000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 4400,
+          "totalPayableMilliNt": 95000
+        }
+      }
+    },
+    {
+      "id": "monthly-second-tier-top-sewer",
+      "kind": "core",
+      "purpose": "每月抄表、第二段上界 30 度，加污水費率",
+      "input": {
+        "cycle": "monthly",
+        "diameterMm": "20",
+        "usageM3": "30",
+        "sewerRateNt": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "monthly",
+          "diameterMm": "20",
+          "usageM3": 30,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 10,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 73500
+            },
+            {
+              "tier": 2,
+              "degrees": 20,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 189000
+            }
+          ],
+          "basicFeeMilliNt": 35700,
+          "usageChargeMilliNt": 262500,
+          "waterSubtotalMilliNt": 298200,
+          "wrccMilliNt": 13000,
+          "sewerRateNt": "5",
+          "sewerFeeMilliNt": 150000,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 14200,
+          "totalPayableMilliNt": 461000
+        }
+      }
+    },
+    {
+      "id": "monthly-fourth-tier-waste",
+      "kind": "core",
+      "purpose": "每月抄表、51 度進入第四段，加清除處理費率",
+      "input": {
+        "cycle": "monthly",
+        "diameterMm": "25",
+        "usageM3": "51",
+        "wasteRateNt": "3.7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "monthly",
+          "diameterMm": "25",
+          "usageM3": 51,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 10,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 73500
+            },
+            {
+              "tier": 2,
+              "degrees": 20,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 189000
+            },
+            {
+              "tier": 3,
+              "degrees": 20,
+              "unitPriceMilliNt": 11550,
+              "subtotalMilliNt": 231000
+            },
+            {
+              "tier": 4,
+              "degrees": 1,
+              "unitPriceMilliNt": 12075,
+              "subtotalMilliNt": 12075
+            }
+          ],
+          "basicFeeMilliNt": 66150,
+          "usageChargeMilliNt": 505575,
+          "waterSubtotalMilliNt": 571725,
+          "wrccMilliNt": 24000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": "3.7",
+          "wasteFeeMilliNt": 189000,
+          "businessTaxMilliNt": 27200,
+          "totalPayableMilliNt": 785000
+        }
+      }
+    },
+    {
+      "id": "monthly-third-tier-top",
+      "kind": "core",
+      "purpose": "每月抄表、第三段上界 50 度",
+      "input": {
+        "cycle": "monthly",
+        "diameterMm": "40",
+        "usageM3": "50"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "monthly",
+          "diameterMm": "40",
+          "usageM3": 50,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 10,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 73500
+            },
+            {
+              "tier": 2,
+              "degrees": 20,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 189000
+            },
+            {
+              "tier": 3,
+              "degrees": 20,
+              "unitPriceMilliNt": 11550,
+              "subtotalMilliNt": 231000
+            }
+          ],
+          "basicFeeMilliNt": 196350,
+          "usageChargeMilliNt": 493500,
+          "waterSubtotalMilliNt": 689850,
+          "wrccMilliNt": 24000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 32900,
+          "totalPayableMilliNt": 714000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-typical",
+      "kind": "core",
+      "purpose": "隔月抄表、一般家庭 30 度（範例）",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "30"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": 30,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 10,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 94500
+            }
+          ],
+          "basicFeeMilliNt": 71400,
+          "usageChargeMilliNt": 241500,
+          "waterSubtotalMilliNt": 312900,
+          "wrccMilliNt": 12000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 14900,
+          "totalPayableMilliNt": 325000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-full-levies",
+      "kind": "core",
+      "purpose": "隔月抄表、60 度，三項代徵齊全",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "60",
+        "sewerRateNt": "5",
+        "wasteRateNt": "3.7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": 60,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            }
+          ],
+          "basicFeeMilliNt": 71400,
+          "usageChargeMilliNt": 525000,
+          "waterSubtotalMilliNt": 596400,
+          "wrccMilliNt": 25000,
+          "sewerRateNt": "5",
+          "sewerFeeMilliNt": 300000,
+          "wasteRateNt": "3.7",
+          "wasteFeeMilliNt": 222000,
+          "businessTaxMilliNt": 28400,
+          "totalPayableMilliNt": 1143000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-first-tier-top",
+      "kind": "core",
+      "purpose": "隔月抄表、第一段上界 20 度",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "13",
+        "usageM3": "20"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "13",
+          "usageM3": 20,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            }
+          ],
+          "basicFeeMilliNt": 35700,
+          "usageChargeMilliNt": 147000,
+          "waterSubtotalMilliNt": 182700,
+          "wrccMilliNt": 7000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 8700,
+          "totalPayableMilliNt": 190000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-official-example",
+      "kind": "core",
+      "purpose": "隔月抄表、110 度：用水費與台水官方範例一致（1,107.75 元）",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "25",
+        "usageM3": "110"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "25",
+          "usageM3": 110,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            },
+            {
+              "tier": 3,
+              "degrees": 40,
+              "unitPriceMilliNt": 11550,
+              "subtotalMilliNt": 462000
+            },
+            {
+              "tier": 4,
+              "degrees": 10,
+              "unitPriceMilliNt": 12075,
+              "subtotalMilliNt": 120750
+            }
+          ],
+          "basicFeeMilliNt": 132300,
+          "usageChargeMilliNt": 1107750,
+          "waterSubtotalMilliNt": 1240050,
+          "wrccMilliNt": 53000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 59100,
+          "totalPayableMilliNt": 1293000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-large-meter",
+      "kind": "core",
+      "purpose": "隔月抄表、100 公厘、101 度進入第四段第一度",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "100",
+        "usageM3": "101"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "100",
+          "usageM3": 101,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            },
+            {
+              "tier": 3,
+              "degrees": 40,
+              "unitPriceMilliNt": 11550,
+              "subtotalMilliNt": 462000
+            },
+            {
+              "tier": 4,
+              "degrees": 1,
+              "unitPriceMilliNt": 12075,
+              "subtotalMilliNt": 12075
+            }
+          ],
+          "basicFeeMilliNt": 3819900,
+          "usageChargeMilliNt": 999075,
+          "waterSubtotalMilliNt": 4818975,
+          "wrccMilliNt": 48000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 229500,
+          "totalPayableMilliNt": 4867000
+        }
+      }
+    },
+    {
+      "id": "bimonthly-max-caliber",
+      "kind": "core",
+      "purpose": "隔月抄表、400 公厘以上、1,000 度",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "400+",
+        "usageM3": "1000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycle": "bimonthly",
+          "diameterMm": "400+",
+          "usageM3": 1000,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            },
+            {
+              "tier": 3,
+              "degrees": 40,
+              "unitPriceMilliNt": 11550,
+              "subtotalMilliNt": 462000
+            },
+            {
+              "tier": 4,
+              "degrees": 900,
+              "unitPriceMilliNt": 12075,
+              "subtotalMilliNt": 10867500
+            }
+          ],
+          "basicFeeMilliNt": 116239200,
+          "usageChargeMilliNt": 11854500,
+          "waterSubtotalMilliNt": 128093700,
+          "wrccMilliNt": 565000,
+          "sewerRateNt": null,
+          "sewerFeeMilliNt": null,
+          "wasteRateNt": null,
+          "wasteFeeMilliNt": null,
+          "businessTaxMilliNt": 6099700,
+          "totalPayableMilliNt": 128659000
+        }
+      }
+    },
+    {
+      "id": "error-cycle-enum",
+      "kind": "core",
+      "purpose": "抄表週期不在列舉",
+      "input": {
+        "cycle": "quarterly",
+        "diameterMm": "20",
+        "usageM3": "30"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "cycle",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-diameter-enum",
+      "kind": "core",
+      "purpose": "口徑 30 公厘不在官方表列",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "30",
+        "usageM3": "30"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "diameterMm",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-usage-empty",
+      "kind": "core",
+      "purpose": "度數必填",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "usageM3",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-usage-decimal",
+      "kind": "core",
+      "purpose": "度數必須是整數",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "30.5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "usageM3",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-usage-input-limit",
+      "kind": "core",
+      "purpose": "度數原始字串超過 8 單元",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "123456789"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "usageM3",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-usage-range",
+      "kind": "core",
+      "purpose": "度數超過上限 999,999",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "1000000"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "usageM3",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-sewer-rate-format",
+      "kind": "core",
+      "purpose": "污水費率小數超過兩位",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "30",
+        "sewerRateNt": "5.005"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "sewerRateNt",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "error-waste-rate-range",
+      "kind": "core",
+      "purpose": "清除處理費率超過上限 99.99",
+      "input": {
+        "cycle": "bimonthly",
+        "diameterMm": "20",
+        "usageM3": "30",
+        "wasteRateNt": "100"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "wasteRateNt",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": "30",
+          "sewerRateNt": "",
+          "wasteRateNt": ""
+        },
+        "edit": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": "1000000",
+          "sewerRateNt": "",
+          "wasteRateNt": ""
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "usageM3",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": "60",
+          "sewerRateNt": "5",
+          "wasteRateNt": "3.7"
+        },
+        "lateResult": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": 60,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            }
+          ],
+          "basicFeeMilliNt": 71400,
+          "usageChargeMilliNt": 525000,
+          "waterSubtotalMilliNt": 596400,
+          "wrccMilliNt": 25000,
+          "sewerRateNt": "5",
+          "sewerFeeMilliNt": 300000,
+          "wasteRateNt": "3.7",
+          "wasteFeeMilliNt": 222000,
+          "businessTaxMilliNt": 28400,
+          "totalPayableMilliNt": 1143000
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "cycle": "bimonthly",
+            "diameterMm": "20",
+            "usageM3": "60",
+            "sewerRateNt": "5",
+            "wasteRateNt": "3.7"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "cycle": "bimonthly",
+            "diameterMm": "20",
+            "usageM3": "30",
+            "sewerRateNt": "",
+            "wasteRateNt": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": "60",
+          "sewerRateNt": "5",
+          "wasteRateNt": "3.7"
+        },
+        "newerDraft": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": "1000000",
+          "sewerRateNt": "5",
+          "wasteRateNt": "3.7"
+        },
+        "olderLateResult": {
+          "cycle": "bimonthly",
+          "diameterMm": "20",
+          "usageM3": 60,
+          "tiers": [
+            {
+              "tier": 1,
+              "degrees": 20,
+              "unitPriceMilliNt": 7350,
+              "subtotalMilliNt": 147000
+            },
+            {
+              "tier": 2,
+              "degrees": 40,
+              "unitPriceMilliNt": 9450,
+              "subtotalMilliNt": 378000
+            }
+          ],
+          "basicFeeMilliNt": 71400,
+          "usageChargeMilliNt": 525000,
+          "waterSubtotalMilliNt": 596400,
+          "wrccMilliNt": 25000,
+          "sewerRateNt": "5",
+          "sewerFeeMilliNt": 300000,
+          "wasteRateNt": "3.7",
+          "wasteFeeMilliNt": 222000,
+          "businessTaxMilliNt": 28400,
+          "totalPayableMilliNt": 1143000
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "usageM3",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "usageM3",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}

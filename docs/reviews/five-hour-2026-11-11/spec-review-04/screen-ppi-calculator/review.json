@@ -1,0 +1,357 @@
+{
+  "title": "螢幕 PPI 計算",
+  "reviewedAt": "2026-11-11T03:15:52Z",
+  "productAspectIds": [
+    "functionality",
+    "boundaries",
+    "privacy",
+    "security",
+    "usability",
+    "accessibility",
+    "localization-seo",
+    "toolchain-provenance",
+    "compatibility"
+  ],
+  "sectionAssessments": {
+    "goal": {
+      "score": 97,
+      "evidence": "§goal 說明桌面逐一比較原廠表格、手機以可視對角線與原生解析度換算。輸出密度、面板尺寸及點距可帶走。"
+    },
+    "scope": {
+      "score": 97,
+      "evidence": "§scope 鎖定三入、無缺邊求解、無著名比例對照、排除非方形與子像素修正。獨立讀比例與沖印兩份固定規格，使用情境及產出有別。"
+    },
+    "userFlow": {
+      "score": 96,
+      "evidence": "§userFlow 首屏輸入、獨立下載、可視比例標籤、錯誤首欄、重設及取消均有固定行為。"
+    },
+    "inputsOutputs": {
+      "score": 83,
+      "evidence": "§inputsOutputs 有可重算公式、精度、欄位首錯和固定報告。`6.10` 的結果段反例與前段 ASCII 文法衝突（PPI-02）。"
+    },
+    "implementation": {
+      "score": 96,
+      "evidence": "§implementation 原生 ESM、固定 Worker、世代取消、禁用儲存與連線及兩語可在瀏覽器實作。運算只含三數、平方根及 gcd。"
+    },
+    "acceptance": {
+      "score": 95,
+      "evidence": "§acceptance 九項必要產品面向對應數值、各上限、兩語、重建、隔離互動、無工作連線及可及性。產品均 NOT_RUN。"
+    },
+    "tests": {
+      "score": 74,
+      "evidence": "18 核心與 3 controller 逐值相符，成功數值另用精確整數界線核對。§tests 指定勾稽式比較不同量綱，24 吋 FHD 即可反證（PPI-01）。"
+    },
+    "handoff": {
+      "score": 97,
+      "evidence": "§handoff 固定四檔與開啟 PR，列出製作另領 claim、階段順序、命令、失敗重審及外部驗收責任。"
+    }
+  },
+  "blockers": [
+    {
+      "id": "PPI-01",
+      "title": "驗收勾稽式把對角線英寸當成 PPI",
+      "observed": "`{diagonalIn:'24',widthPx:'1920',heightPx:'1080'}`。未捨入寬 `53.1312447431 cm`、高 `29.8863251680 cm`。依 §tests 算 `sqrt(widthCm²+heightCm²)/2.54` 恰為 `24`，實際 `ppiRaw=91.7877987534`。",
+      "expected": "前式應與輸入對角線 `d` 在指定容差內一致。PPI 另以 `sqrt(widthPx²+heightPx²)/d` 或 `widthPx/(widthCm/2.54)` 交叉核對，本例為 `91.7877987534`。補帶單位的規格與測試。",
+      "impact": "正確實作仍會敗在文件要求的性質測試。"
+    },
+    {
+      "id": "PPI-02",
+      "title": "兩位小數尾零的合法性矛盾",
+      "observed": "`{diagonalIn:'6.10',widthPx:'1179',heightPx:'2556'}`。文法允許小數部 1–2 位，輸入長度與值域都合格，獨立重算成功，`diagonalIn=6.1`、`ppi=461.4`。結果段卻寫 `6.10` 不合文法。",
+      "expected": "按既有文法讓 `6.10` 和 `6.1` 得同一數值結果，或把尾零拒絕規則明寫在驗證契約並配一致的錯誤案。補兩個字面輸入及結果。",
+      "impact": "同一份規格讓實作者可能產生接受或拒絕兩種行為，影響匯出與兩語可重現性。"
+    }
+  ],
+  "nonblocking": [
+    "半分探針 `1000×1005` 的 1.005 MP，釘版 binary64 公式得 1.00，精確十進半進位得 1.01。現行規則明定 binary64，建議把該邊界結果放進例子，避免日後兩種捨入被混用。",
+    "「點距」可在主要欄位註明按方形像素及未捨入 PPI 推導。合法 `200″`、`1×1` 會顯示 `0.0 PPI`，點距仍由正的原值計算。",
+    "將 16384 上限說成計算契約即可。規格的「現行最高解析度」無需成為持續更新的宣告。"
+  ],
+  "sources": [
+    {
+      "label": "NIST SI Units – Length",
+      "url": "https://www.nist.gov/pml/owm/si-units-length",
+      "evidence": "實讀 1 in 精確為 25.4 mm，等於 2.54 cm。"
+    },
+    {
+      "label": "Dell S2722DC 原廠技術規格",
+      "url": "https://www.dell.com/en-us/shop/dell-27-usb-c-monitor-s2722dc/apd/210-bbqs/monitors-monitor-accessories",
+      "evidence": "原廠以 27 吋、2560×1440、109 PPI（整數）與 0.2331 mm 分列。規格樣例以同數字推導 108.8 PPI、0.233 mm，與原廠呈現精度可互相核對。"
+    },
+    {
+      "label": "ECMAScript Math.sqrt",
+      "url": "https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-math.sqrt",
+      "evidence": "讀現行草案的 Number 平方根步驟。這次以 Node 24 實算及整數界線核對固定樣例。"
+    },
+    {
+      "label": "長寬比固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/617030612c3525b3d78db008b4d5e700331d66dc/docs/specs/aspect-ratio-calculator/SPEC.md",
+      "evidence": "有比例輸入、求缺邊、預設與近似提示，沒有面板密度。"
+    },
+    {
+      "label": "照片沖印固定規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/58edaa0d845256b1eb4cb772d8f7d7d80811e4d8/docs/specs/photo-print-size-calculator/SPEC.md",
+      "evidence": "有紙尺寸與 DPI 判定，沒有可視對角線、面板尺寸或點距。"
+    }
+  ],
+  "scope": "independent specification review",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f580-7382-b037-3b6d83eee0f7",
+    "participatedInCandidate": false
+  },
+  "registrySnapshot": {
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "inventoryComplete": true,
+    "readyUnconsumed": 2,
+    "branch": "codex/initial-publication",
+    "head": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "baseline": "26525d5f6380915ea95dde879dec769442db0d95"
+  },
+  "taskId": "labs-screen-ppi-calculator-spec-20261109",
+  "specId": "spec-screen-ppi-calculator-20261109",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "c8c11e12d1ee9cc684956fc0103a088cc2a0984a",
+    "path": "docs/specs/screen-ppi-calculator/SPEC.md"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/252",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-screen-ppi-calcula-claim-20261109T153849Z-e8baa",
+    "claimedAt": "2026-11-09T15:38:49.057Z"
+  },
+  "contributors": [
+    "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  ],
+  "reviewedFiles": [
+    {
+      "pr": 252,
+      "ref": "c8c11e12d1ee9cc684956fc0103a088cc2a0984a",
+      "path": "docs/specs/screen-ppi-calculator/AUTHOR-CHECK.md",
+      "blob": "1c90d49c806603f8ad2d91cda8a97e2c47c28fe1",
+      "bytes": 3801,
+      "sha256": "995f4dd642861ee737eaadd6f6d56bbc54d444cfe719b17369fbdb856e141d36"
+    },
+    {
+      "pr": 252,
+      "ref": "c8c11e12d1ee9cc684956fc0103a088cc2a0984a",
+      "path": "docs/specs/screen-ppi-calculator/BRIEF.md",
+      "blob": "cbabc137acd84a8c4eebdf02f6c554df1e5e048c",
+      "bytes": 1459,
+      "sha256": "1fc02208728c0d15d303db7778a3ef2706534eed14ea0ebe85061409aa2dae69"
+    },
+    {
+      "pr": 252,
+      "ref": "c8c11e12d1ee9cc684956fc0103a088cc2a0984a",
+      "path": "docs/specs/screen-ppi-calculator/SPEC.md",
+      "blob": "e4100692ea51a458b5110d4c7b2e53e5c5ceb06c",
+      "bytes": 20257,
+      "sha256": "5cb45ba373a9b6c794d368b815e11b4a559754656d453eba4a2e38420e544e27"
+    },
+    {
+      "pr": 252,
+      "ref": "c8c11e12d1ee9cc684956fc0103a088cc2a0984a",
+      "path": "docs/specs/screen-ppi-calculator/fixtures.json",
+      "blob": "5daa554e5bfe496885b6ed4317856ec1657e4d35",
+      "bytes": 7519,
+      "sha256": "bccbc7d42443fffbd9589c1182c1148205ba7c542eee6e94f0f89967cd52bef6"
+    }
+  ],
+  "observedTaskStatus": "reviewing",
+  "observedSpecStatus": "draft",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": true,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 97,
+      "evidence": "§goal 說明桌面逐一比較原廠表格、手機以可視對角線與原生解析度換算。輸出密度、面板尺寸及點距可帶走。",
+      "status": "PASS"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 97,
+      "evidence": "§scope 鎖定三入、無缺邊求解、無著名比例對照、排除非方形與子像素修正。獨立讀比例與沖印兩份固定規格，使用情境及產出有別。",
+      "status": "PASS"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 96,
+      "evidence": "§userFlow 首屏輸入、獨立下載、可視比例標籤、錯誤首欄、重設及取消均有固定行為。",
+      "status": "PASS"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 83,
+      "evidence": "§inputsOutputs 有可重算公式、精度、欄位首錯和固定報告。`6.10` 的結果段反例與前段 ASCII 文法衝突（PPI-02）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 96,
+      "evidence": "§implementation 原生 ESM、固定 Worker、世代取消、禁用儲存與連線及兩語可在瀏覽器實作。運算只含三數、平方根及 gcd。",
+      "status": "PASS"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 95,
+      "evidence": "§acceptance 九項必要產品面向對應數值、各上限、兩語、重建、隔離互動、無工作連線及可及性。產品均 NOT_RUN。",
+      "status": "PASS"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 74,
+      "evidence": "18 核心與 3 controller 逐值相符，成功數值另用精確整數界線核對。§tests 指定勾稽式比較不同量綱，24 吋 FHD 即可反證（PPI-01）。",
+      "status": "FAIL"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 97,
+      "evidence": "§handoff 固定四檔與開啟 PR，列出製作另領 claim、階段順序、命令、失敗重審及外部驗收責任。",
+      "status": "PASS"
+    }
+  ],
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "evidence": "固定候選為文件包，未執行產品驗收。"
+    }
+  ],
+  "documentStatus": "FAIL",
+  "productionInheritance": {
+    "status": "FAIL",
+    "blockerId": "REG-01",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "requiredProductIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missingIds": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "extraIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blocksReady": true
+  },
+  "readyRecommendation": false,
+  "recommendedTaskVerdict": "revision",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "commands": [
+    {
+      "command": "node verify-sources.mjs",
+      "exitCode": 0,
+      "evidence": "../source-check.json"
+    },
+    {
+      "command": "node screen-ppi-calculator/verify.mjs",
+      "node": "v24.14.0",
+      "exitCode": 0,
+      "fixturesPassed": 21,
+      "fixturesTotal": 21,
+      "evidence": "fixture-results.json",
+      "log": "fixture-run.txt"
+    }
+  ]
+}
