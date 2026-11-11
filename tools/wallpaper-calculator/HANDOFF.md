@@ -1,5 +1,7 @@
 # Wallpaper Calculator — production handoff
 
+Current maintenance: [wallpaper and ping product follow-up](../../docs/reviews/five-hour-2026-11-11/product-wallpaper-ping/HANDOFF.md). The sections below record the original build and its historical evidence.
+
 ## Fixed source
 
 - Spec: `spec-wallpaper-calculator-20261109`, fixed at candidate commit

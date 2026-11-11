@@ -2,8 +2,8 @@
 // fixtures, vendored verbatim in test/fixtures.json (a byte-
 // identical copy of the fixed spec candidate fixtures,
 // spec-ping-area-converter-20261109, spec candidate commit
-// 6d7cc4cd18a273b0d386b19b85b883573d097cba, SHA-256
-// 9181883367eee444ef119af360a13a0c13c746966a668e6c15bc59e74508b550).
+// c2c3f7715023990b1427e052a25c52f1987eaca9, SHA-256
+// 8d8c00c25b78a564574666cef43b458530edf9722fc85055b4180b1bea4badf9).
 // Every literal case is asserted with a full deep equal of the
 // complete result or the complete error triple, and the quick-table
 // case compares all 100 rows literally. The cross-check below
@@ -25,7 +25,7 @@ const fixtures = JSON.parse(
 
 const coreCases = fixtures.cases.filter((entry) => entry.kind === "core");
 assert.equal(fixtures.specId, "spec-ping-area-converter-20261109");
-assert.equal(coreCases.length, 23);
+assert.equal(coreCases.length, 24);
 
 for (const fixture of coreCases) {
   test(`fixture ${fixture.id}`, () => {
@@ -43,6 +43,15 @@ assert.equal(tableCase.id, "quick-table-1-100");
 
 test("fixture quick-table-1-100: all 100 rows literal", () => {
   assert.deepEqual(buildQuickTable(), { rows: tableCase.expected.rows });
+});
+
+test("100 ping exposes the 3.3058 approximation and matches the quick table", () => {
+  const exact = run({ amount: "100", unit: "ping" });
+  assert.equal(exact.ok, true);
+  assert.equal(exact.result.ft2, 3558.32);
+  assert.equal((100 * 3.3058 / 0.09290304).toFixed(2), "3558.33");
+  const { ping, m2, ft2 } = exact.result;
+  assert.deepEqual(buildQuickTable().rows[99], { ping, m2, ft2 });
 });
 
 // --- Independent recomputation -------------------------------------

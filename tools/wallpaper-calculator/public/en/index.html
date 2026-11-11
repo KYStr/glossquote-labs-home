@@ -86,15 +86,15 @@
           <p class="field-error" id="error-patternRepeatCm" role="alert"></p>
         </div>
 
-        <h2>Doors and windows deduction</h2>
+        <h2>Doors and windows</h2>
         <fieldset class="choice-group">
-          <legend>Openings deduction</legend>
+          <legend>How to enter opening area</legend>
           <label class="choice"><input type="radio" name="openingsMode" value="none" checked> No deduction</label>
           <label class="choice"><input type="radio" name="openingsMode" value="area"> Total area only</label>
           <label class="choice"><input type="radio" name="openingsMode" value="list"> Dimension list</label>
         </fieldset>
         <p class="field-error" id="error-openingsMode" role="alert"></p>
-        <p class="help">With a dimension list, opening widths remove the strips they fully cover, and strip length never shortens; with a total area only, there is no position, so only the net area is reduced — strips and rolls are unchanged. The dimension list is available in perimeter mode only.</p>
+        <p class="help">Door and window areas are used to calculate net wall area. Strip count, cut length and rolls to buy are estimated from the full wall dimensions. The dimension list is available in perimeter mode only.</p>
         <div id="openings-area-fields" hidden>
           <div class="field">
             <label for="field-openingsAreaM2">Total openings area (m²)</label>
@@ -104,7 +104,7 @@
           </div>
         </div>
         <div id="openings-list-fields" hidden>
-          <p class="help">Enter each opening's width and height, up to 20 openings.</p>
+          <p class="help">Enter each opening's width and height, up to 20 openings. An opening can be as tall as the wall.</p>
           <div id="openings-rows">
             <div class="data-row" data-kind="opening">
               <div class="field">
@@ -150,28 +150,29 @@
       <div class="table-scroll" role="region" aria-label="Per-wall breakdown" tabindex="0">
         <table>
           <thead>
-            <tr><th scope="col">Wall</th><th scope="col">Width (cm)</th><th scope="col">Openings deducted (cm)</th><th scope="col">Effective width (cm)</th><th scope="col">Strips</th><th scope="col">Strip length (cm)</th><th scope="col">Drops per roll</th><th scope="col">Strips incl. waste</th><th scope="col">Rolls</th></tr>
+            <tr><th scope="col">Wall</th><th scope="col">Width (cm)</th><th scope="col">Total opening width (cm)</th><th scope="col">Width used for roll estimate (cm)</th><th scope="col">Strips</th><th scope="col">Strip length (cm)</th><th scope="col">Drops per roll</th><th scope="col">Strips incl. waste</th><th scope="col">Rolls</th></tr>
           </thead>
           <tbody id="wall-rows"></tbody>
         </table>
       </div>
       <p id="totals"></p>
+      <p class="help">Door and window areas are used to calculate net wall area. The roll estimate uses the full wall dimensions.</p>
       <p class="estimate-note">Results are a conservative estimate, not a construction or returns guarantee. Each strip includes a fixed 10 cm trim allowance (5 cm at the top and bottom).</p>
     </section>
   </div>
 
   <details class="details">
     <summary>How it is calculated, and the input format</summary>
-    <p>The order is fixed: each wall's effective width is divided by the roll width and rounded up to get its strip count; each strip's length is the wall height plus a fixed 10 cm trim allowance (5 cm at the top and bottom), rounded up to whole pattern repeats; drops per roll are the roll length divided by the strip length, rounded down; the waste percentage inflates each wall's strip count (rounded up) before that wall's rolls are counted. Leftovers are never shared between walls — per-wall rolls are counted separately and then added.</p>
-    <p>Openings semantics: a strip is one full floor-to-ceiling length. In dimension-list mode, opening widths are deducted from the perimeter — horizontal positions fully covered by an opening need no strip — but strip length never shortens, and the material above and below an opening is conservatively treated as used. With a total area only, no opening position is known, so strips and rolls are unchanged and only the reported net area is reduced. Areas are computed exactly in square centimetres, then rounded half up to 0.01 m² for display; they are for reference only and never feed the strip or roll counts (beyond the area deduction itself).</p>
+    <p>The order is fixed: each wall's full width is divided by the roll width and rounded up to get its strip count; each strip's length is the wall height plus a fixed 10 cm trim allowance (5 cm at the top and bottom), rounded up to whole pattern repeats; drops per roll are the roll length divided by the strip length, rounded down; the waste percentage inflates each wall's strip count (rounded up) before that wall's rolls are counted. Leftovers are never shared between walls — per-wall rolls are counted separately and then added.</p>
+    <p>A strip is one full floor-to-ceiling length. Both the dimension list and the total area are used to subtract the opening area from the gross wall area. Areas are calculated in square centimetres and rounded half up to 0.01 m² for display.</p>
     <p>Inputs accept ASCII digits and one decimal point only: metres allow at most two decimal places, and the pattern repeat and waste percent are whole numbers; commas, spaces, signs and full-width digits are format errors, and the tool never guesses. The downloaded report is always named wallpaper-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
   </details>
 
   <section class="panel faq" aria-labelledby="faq-heading">
     <h2 id="faq-heading">Frequently asked questions</h2>
     <dl>
-      <dt>Why doesn't the openings area always reduce the roll count?</dt>
-      <dd>Strips are counted by width: dimension-list openings remove the strips they fully cover, while an area-only figure has no position, so it only reduces the reported net area.</dd>
+      <dt>Why does the roll count stay the same after I enter door or window dimensions?</dt>
+      <dd>The calculator deducts the opening area to show the net wall area. It estimates strips from the full wall width because any savings depend on where the openings sit, how you cut the strips and which offcuts you can reuse.</dd>
       <dt>Why does each strip get 10 cm extra?</dt>
       <dd>A fixed 5 cm trim allowance at the top and bottom, then the length is rounded up to whole pattern repeats.</dd>
       <dt>Where does the waste percentage apply?</dt>

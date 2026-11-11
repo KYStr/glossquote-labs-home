@@ -86,15 +86,15 @@
           <p class="field-error" id="error-patternRepeatCm" role="alert"></p>
         </div>
 
-        <h2>門窗開口扣除</h2>
+        <h2>門窗開口</h2>
         <fieldset class="choice-group">
-          <legend>開口扣除方式</legend>
+          <legend>開口面積輸入方式</legend>
           <label class="choice"><input type="radio" name="openingsMode" value="none" checked> 不扣除</label>
           <label class="choice"><input type="radio" name="openingsMode" value="area"> 只給總面積</label>
           <label class="choice"><input type="radio" name="openingsMode" value="list"> 尺寸清單</label>
         </fieldset>
         <p class="field-error" id="error-openingsMode" role="alert"></p>
-        <p class="help">以尺寸清單輸入時，開口寬度會扣掉不需貼的幅數，但幅長不縮短；只給總面積時無法知道開口落在哪一幅，只扣淨面積，不扣幅數與捲數。尺寸清單僅周長模式可用。</p>
+        <p class="help">門窗面積用於計算淨牆面積。幅數、每幅裁切長度與採購捲數按完整牆面尺寸估算。尺寸清單僅周長模式可用。</p>
         <div id="openings-area-fields" hidden>
           <div class="field">
             <label for="field-openingsAreaM2">開口總面積（平方公尺）</label>
@@ -104,7 +104,7 @@
           </div>
         </div>
         <div id="openings-list-fields" hidden>
-          <p class="help">逐個開口填寬與高，最多 20 個。</p>
+          <p class="help">逐個開口填寬與高，最多 20 個。開口高度可等於牆高。</p>
           <div id="openings-rows">
             <div class="data-row" data-kind="opening">
               <div class="field">
@@ -150,28 +150,29 @@
       <div class="table-scroll" role="region" aria-label="逐牆明細" tabindex="0">
         <table>
           <thead>
-            <tr><th scope="col">牆</th><th scope="col">寬（cm）</th><th scope="col">開口扣除寬（cm）</th><th scope="col">有效寬（cm）</th><th scope="col">幅數</th><th scope="col">每幅長（cm）</th><th scope="col">每捲可裁</th><th scope="col">含損耗幅數</th><th scope="col">捲數</th></tr>
+            <tr><th scope="col">牆</th><th scope="col">寬（cm）</th><th scope="col">開口寬度合計（cm）</th><th scope="col">採購估算寬度（cm）</th><th scope="col">幅數</th><th scope="col">每幅長（cm）</th><th scope="col">每捲可裁</th><th scope="col">含損耗幅數</th><th scope="col">捲數</th></tr>
           </thead>
           <tbody id="wall-rows"></tbody>
         </table>
       </div>
       <p id="totals"></p>
+      <p class="help">門窗面積用於計算淨牆面積。採購量按完整牆面尺寸估算。</p>
       <p class="estimate-note">結果是保守估算，不是施工或退換貨保證。每幅已含固定 10 公分修剪裕度（上下各 5 公分）。</p>
     </section>
   </div>
 
   <details class="details">
     <summary>計算方式與格式說明</summary>
-    <p>計算順序固定：先由每面牆的有效寬度除以捲寬、向上取整得到幅數；每幅長度是牆高加固定 10 公分修剪裕度（上下各 5 公分），再向上取整到完整的圖案重複；每捲可裁幅數是捲長除以幅長、向下取整；損耗百分比先膨脹每面牆的幅數（向上取整），再換算該牆的捲數。不同牆的剩料不互相流用，逐牆捲數各自計算後加總。</p>
-    <p>開口語意：一幅壁紙是整幅由天花板貼到地板的長條。尺寸清單模式下，開口寬度會從周長扣除，被開口完全佔住的水平位置不需要掛幅；但幅長永遠不縮短，開口上下方的餘料保守地視為已用。只給總面積時無法知道開口落在哪一幅，因此不扣幅數與捲數，只扣報告的淨面積。面積以平方公分精確計算後四捨五入到 0.01 平方公尺顯示，只供參考，不參與幅數與捲數計算。</p>
+    <p>計算順序固定：先由每面牆的完整寬度除以捲寬、向上取整得到幅數；每幅長度是牆高加固定 10 公分修剪裕度（上下各 5 公分），再向上取整到完整的圖案重複；每捲可裁幅數是捲長除以幅長、向下取整；損耗百分比先膨脹每面牆的幅數（向上取整），再換算該牆的捲數。不同牆的剩料不互相流用，逐牆捲數各自計算後加總。</p>
+    <p>一幅壁紙是從地板到天花板的整條。尺寸清單或總面積都用來從毛牆面積扣除門窗，得到淨牆面積。面積以平方公分精確計算，顯示時四捨五入至 0.01 平方公尺。</p>
     <p>輸入只接受 ASCII 數字與一個小數點：公尺最多兩位小數，圖案重複與損耗為整數；逗號、空白、正負號與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 wallpaper-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
   </details>
 
   <section class="panel faq" aria-labelledby="faq-heading">
     <h2 id="faq-heading">常見問題</h2>
     <dl>
-      <dt>為什麼開口面積不一定減少捲數？</dt>
-      <dd>幅數由寬度決定：以尺寸清單輸入時，開口寬度會扣掉不需貼的幅；只輸入面積時無法知道開口在哪一幅，只能扣淨面積。</dd>
+      <dt>為什麼填了門窗尺寸，捲數還是一樣？</dt>
+      <dd>門窗面積會從毛牆面積扣除，得到淨牆面積。工具按完整牆寬估算幅數，因為門窗的位置、裁切方式和可用餘料會影響實際節省。</dd>
       <dt>每幅為什麼多留 10 公分？</dt>
       <dd>上下各 5 公分修剪裕度是固定常數，另再向上取整到完整圖案重複。</dd>
       <dt>損耗百分比加在哪裡？</dt>

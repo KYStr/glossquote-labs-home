@@ -1,5 +1,7 @@
 # Verification: Ping Area Converter
 
+Current maintenance: [wallpaper and ping product follow-up](../../docs/reviews/five-hour-2026-11-11/product-wallpaper-ping/HANDOFF.md). The sections below record the original build and its historical evidence.
+
 Candidate state: production candidate only. Nothing in this file is
 an acceptance, a merge, or a deployment approval; the independent
 nine-aspect review has not run (NOT_RUN, see below).

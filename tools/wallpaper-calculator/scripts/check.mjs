@@ -8,6 +8,7 @@
 // forbidden-capability scan. Exits non-zero on the first failure list.
 
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, lstat, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { extname, resolve, join } from "node:path";
@@ -152,15 +153,20 @@ if (core.REPORT_FILENAME !== "wallpaper-report.json") {
 }
 // The vendored fixtures are a byte-identical copy of the spec candidate's
 // fixtures.json (see VERIFICATION.md for the SHA-256).
-const fixtures = JSON.parse(await readFile(resolve(PROJECT_ROOT, "test/fixtures.json"), "utf8"));
+const FIXTURES_SHA256 = "e3b30a07cac0547afd15d33a82b635eb21e6bf40af21ec07c33db9bef70def97";
+const fixturesBytes = await readFile(resolve(PROJECT_ROOT, "test/fixtures.json"));
+if (createHash("sha256").update(fixturesBytes).digest("hex") !== FIXTURES_SHA256) {
+  fail("test/fixtures.json: bytes differ from the fixed spec fixtures");
+}
+const fixtures = JSON.parse(fixturesBytes.toString("utf8"));
 if (fixtures.slug !== "wallpaper-calculator" || fixtures.specId !== "spec-wallpaper-calculator-20261109") {
   fail("test/fixtures.json: not the wallpaper-calculator spec fixtures");
 }
 if (canonical(core.EXAMPLE) !== canonical(fixtures.cases[0].input)) {
   fail("core: EXAMPLE must equal fixtures.json case 1 input");
 }
-if (fixtures.cases.filter((entry) => entry.kind === "core").length !== 14) {
-  fail("test/fixtures.json: expected 14 core cases");
+if (fixtures.cases.filter((entry) => entry.kind === "core").length !== 19) {
+  fail("test/fixtures.json: expected 19 core cases");
 }
 if (fixtures.cases.filter((entry) => entry.kind === "controller").length !== 3) {
   fail("test/fixtures.json: expected 3 controller cases");
@@ -178,6 +184,7 @@ const PINNED_APP_STRINGS = [
   "請輸入整數",
   "超出允許範圍",
   "逐牆模式不能用開口尺寸清單，請改用面積扣除",
+  "開口高度不可超過牆高。",
   "開口合計不小於牆面，請檢查開口尺寸",
   "每幅長度超過一捲長度，這款捲長不夠",
   "計算失敗，請重試",
@@ -189,6 +196,7 @@ const PINNED_APP_STRINGS = [
   "Enter a whole number.",
   "Out of range.",
   "Per-wall mode cannot use an openings dimension list; use the area deduction instead.",
+  "Enter an opening height at or below the wall height.",
   "The openings add up to at least the wall size; check the opening dimensions.",
   "One strip is longer than a whole roll; this roll is too short.",
   "Something went wrong. Try again.",
@@ -227,13 +235,13 @@ const PAGES = [
     langLink: 'href="./en/index.html"',
     home: 'href="../../"',
     draftNote: "切換語言或離開頁面會失去目前草稿。",
-    sections: ["牆面量法與尺寸", "壁紙捲規格與圖案重複", "門窗開口扣除", "損耗百分比", "需要幾捲"],
-    openingsNote: "以尺寸清單輸入時，開口寬度會扣掉不需貼的幅數，但幅長不縮短；只給總面積時無法知道開口落在哪一幅，只扣淨面積，不扣幅數與捲數。尺寸清單僅周長模式可用。",
+    sections: ["牆面量法與尺寸", "壁紙捲規格與圖案重複", "門窗開口", "損耗百分比", "需要幾捲"],
+    openingsNote: "門窗面積用於計算淨牆面積。幅數、每幅裁切長度與採購捲數按完整牆面尺寸估算。尺寸清單僅周長模式可用。",
     estimateNote: "結果是保守估算，不是施工或退換貨保證。",
     runLabel: "計算壁紙用量",
     faq: [
-      "為什麼開口面積不一定減少捲數？",
-      "幅數由寬度決定：以尺寸清單輸入時，開口寬度會扣掉不需貼的幅；只輸入面積時無法知道開口在哪一幅，只能扣淨面積。",
+      "為什麼填了門窗尺寸，捲數還是一樣？",
+      "門窗面積會從毛牆面積扣除，得到淨牆面積。工具按完整牆寬估算幅數，因為門窗的位置、裁切方式和可用餘料會影響實際節省。",
       "每幅為什麼多留 10 公分？",
       "上下各 5 公分修剪裕度是固定常數，另再向上取整到完整圖案重複。",
       "損耗百分比加在哪裡？",
@@ -254,16 +262,16 @@ const PAGES = [
     sections: [
       "Wall measurement mode and dimensions",
       "Roll size and pattern repeat",
-      "Doors and windows deduction",
+      "Doors and windows",
       "Waste percent",
       "Rolls to buy",
     ],
-    openingsNote: "With a dimension list, opening widths remove the strips they fully cover, and strip length never shortens; with a total area only, there is no position, so only the net area is reduced — strips and rolls are unchanged. The dimension list is available in perimeter mode only.",
+    openingsNote: "Door and window areas are used to calculate net wall area. Strip count, cut length and rolls to buy are estimated from the full wall dimensions. The dimension list is available in perimeter mode only.",
     estimateNote: "Results are a conservative estimate, not a construction or returns guarantee.",
     runLabel: "Calculate wallpaper needed",
     faq: [
-      "Why doesn't the openings area always reduce the roll count?",
-      "Strips are counted by width: dimension-list openings remove the strips they fully cover, while an area-only figure has no position, so it only reduces the reported net area.",
+      "Why does the roll count stay the same after I enter door or window dimensions?",
+      "The calculator deducts the opening area to show the net wall area. It estimates strips from the full wall width because any savings depend on where the openings sit, how you cut the strips and which offcuts you can reuse.",
       "Why does each strip get 10 cm extra?",
       "A fixed 5 cm trim allowance at the top and bottom, then the length is rounded up to whole pattern repeats.",
       "Where does the waste percentage apply?",

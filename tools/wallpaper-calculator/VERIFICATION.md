@@ -1,5 +1,7 @@
 # Wallpaper Calculator — verification record
 
+Current maintenance: [wallpaper and ping product follow-up](../../docs/reviews/five-hour-2026-11-11/product-wallpaper-ping/HANDOFF.md). The sections below record the original build and its historical evidence.
+
 Environment: Node v24.22.1, Linux, zero dependencies. All commands run in
 `tools/wallpaper-calculator/`.
 

@@ -11,7 +11,7 @@
 // forbidden-capability scan. Exits non-zero on the first failure
 // list. The vendored test/fixtures.json is a verbatim copy of the
 // fixed spec's fixtures (spec-ping-area-converter-20261109, spec
-// candidate commit 6d7cc4cd18a273b0d386b19b85b883573d097cba, draft
+// candidate commit c2c3f7715023990b1427e052a25c52f1987eaca9, reviewed
 // spec PR #227); the spec PR is not merged into this branch's base,
 // so the check reads the vendored copy rather than a repo-level
 // docs path.
@@ -135,7 +135,7 @@ for (const key of ["dependencies", "devDependencies", "peerDependencies"]) {
 
 // Fixtures provenance: the vendored copy must be byte-identical to
 // the fixed spec candidate's fixtures file.
-const FIXTURES_SHA256 = "9181883367eee444ef119af360a13a0c13c746966a668e6c15bc59e74508b550";
+const FIXTURES_SHA256 = "8d8c00c25b78a564574666cef43b458530edf9722fc85055b4180b1bea4badf9";
 const fixturesBytes = await readFile(resolve(PROJECT_ROOT, "test/fixtures.json"));
 if (createHash("sha256").update(fixturesBytes).digest("hex") !== FIXTURES_SHA256) {
   fail("test/fixtures.json: bytes differ from the fixed spec fixtures");
@@ -162,8 +162,8 @@ if (fixtures.specId !== "spec-ping-area-converter-20261109") {
 if (!deepEqual(core.EXAMPLE, fixtures.cases[0].input)) {
   fail("core: EXAMPLE must equal fixtures.json case 1 input");
 }
-if (fixtures.cases.filter((entry) => entry.kind === "core").length !== 23) {
-  fail("test/fixtures.json: expected 23 core cases");
+if (fixtures.cases.filter((entry) => entry.kind === "core").length !== 24) {
+  fail("test/fixtures.json: expected 24 core cases");
 }
 if (fixtures.cases.filter((entry) => entry.kind === "table").length !== 1) {
   fail("test/fixtures.json: expected 1 table case");

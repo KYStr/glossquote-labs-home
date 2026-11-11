@@ -143,7 +143,7 @@
     {
       "id": "openings-list-deduction",
       "kind": "core",
-      "purpose": "開口尺寸清單：寬度扣幅數、面積扣淨面積",
+      "purpose": "開口尺寸清單：面積扣淨面積，完整牆寬用於估算幅數與採購捲數",
       "input": {
         "wallMode": "perimeter",
         "perimeterM": "12",
@@ -172,17 +172,17 @@
               "index": 1,
               "widthCm": 1200,
               "openingsWidthCm": 240,
-              "effectiveWidthCm": 960,
-              "strips": 19,
+              "effectiveWidthCm": 1200,
+              "strips": 23,
               "stripLengthCm": 260,
               "dropsPerRoll": 3,
-              "stripsWithWaste": 19,
-              "rolls": 7
+              "stripsWithWaste": 23,
+              "rolls": 8
             }
           ],
-          "strips": 19,
-          "stripsWithWaste": 19,
-          "rolls": 7,
+          "strips": 23,
+          "stripsWithWaste": 23,
+          "rolls": 8,
           "grossWallAreaM2": "30.00",
           "openingsAreaM2": "3.69",
           "netWallAreaM2": "26.31"
@@ -226,6 +226,195 @@
           "grossWallAreaM2": "30.00",
           "openingsAreaM2": "3.69",
           "netWallAreaM2": "26.31"
+        }
+      }
+    },
+    {
+      "id": "partial-height-opening-full-strips",
+      "kind": "core",
+      "purpose": "WALL-01：部分高度開口的材料下界反例",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "1.59",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 159,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "1.91",
+          "netWallAreaM2": "6.04"
+        }
+      }
+    },
+    {
+      "id": "opening-height-exceeds-wall",
+      "kind": "core",
+      "purpose": "WALL-02：指出第 1 列開口高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "opening-height-equals-wall",
+      "kind": "core",
+      "purpose": "開口與牆同高合法，採購量依完整牆寬",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "2.5"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "walls": [
+            {
+              "index": 1,
+              "widthCm": 318,
+              "openingsWidthCm": 90,
+              "effectiveWidthCm": 318,
+              "strips": 6,
+              "stripLengthCm": 260,
+              "dropsPerRoll": 3,
+              "stripsWithWaste": 6,
+              "rolls": 2
+            }
+          ],
+          "strips": 6,
+          "stripsWithWaste": 6,
+          "rolls": 2,
+          "grossWallAreaM2": "7.95",
+          "openingsAreaM2": "2.25",
+          "netWallAreaM2": "5.70"
+        }
+      }
+    },
+    {
+      "id": "first-opening-height-before-aggregate-and-roll",
+      "kind": "core",
+      "purpose": "兩列超高，且總寬超限與捲長不足；優先報第 2 列開口高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "2.5",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "1"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.5",
+            "heightM": "4"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
+          "field": "heightM",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "opening-width-format-before-height-cross-check",
+      "kind": "core",
+      "purpose": "逐欄格式檢查完成後才檢查開口與牆的高度",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "wastePercent": "0",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          },
+          {
+            "widthM": "1.255",
+            "heightM": "1.2"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "widthM",
+          "row": 2
         }
       }
     },

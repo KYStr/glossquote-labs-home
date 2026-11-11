@@ -275,7 +275,7 @@ export function run(input) {
   if (!checkModeKeySet(values)) return schemaError();
 
   // 3. MODE_COMBINATION: an openings list cannot say which wall each
-  // opening belongs to, so list deduction is perimeter-mode only.
+  // opening belongs to, so the dimension list is perimeter-mode only.
   if (values.wallMode === "walls" && values.openingsMode === "list") {
     return fail("MODE_COMBINATION", "openingsMode", null);
   }
@@ -316,6 +316,15 @@ export function run(input) {
   const waste = checkField("wastePercent", values.wastePercent, null);
   if (waste.ok === false) return waste;
 
+  // 5a. Check the first over-height opening after all per-field checks.
+  if (openingsRowsCm !== null) {
+    const wallHeightCm = wallRowsCm[0].heightCm;
+    const firstOverHeight = openingsRowsCm.findIndex((opening) => opening.heightCm > wallHeightCm);
+    if (firstOverHeight !== -1) {
+      return fail("OPENING_HEIGHT_EXCEEDS_WALL", "heightM", firstOverHeight + 1);
+    }
+  }
+
   // Areas (exact cm²): gross from the full wall dimensions, openings from
   // the area input or the list's own dimensions.
   const grossAreaCm2 = wallRowsCm.reduce((sum, wall) => sum + wall.widthCm * wall.heightCm, 0);
@@ -326,7 +335,7 @@ export function run(input) {
       ? openingsAreaInputCm2
       : openingsRowsCm.reduce((sum, row) => sum + row.widthCm * row.heightCm, 0);
 
-  // 5a. OPENINGS_EXCEED_WALL (list mode: total width first, then area).
+  // 5b. OPENINGS_EXCEED_WALL (list mode: total width first, then area).
   if (openingsRowsCm !== null) {
     if (openingsWidthSumCm >= wallRowsCm[0].widthCm) {
       return fail("OPENINGS_EXCEED_WALL", "openings", null);
@@ -338,13 +347,10 @@ export function run(input) {
     return fail("OPENINGS_EXCEED_WALL", "openingsAreaM2", null);
   }
 
-  // Per-wall computation. Openings width is deducted only in perimeter +
-  // list mode; strip length never shortens. Leftovers never flow between
-  // walls: each wall's rolls are counted independently.
+  // Estimate full strips from the whole wall. Opening widths are a summary,
+  // and leftovers are counted independently for each wall.
   const walls = wallRowsCm.map((wall, index) => {
-    const openingsWidthCm = openingsRowsCm === null ? 0 : openingsWidthSumCm;
-    const effectiveWidthCm = wall.widthCm - openingsWidthCm;
-    const strips = ceilDiv(effectiveWidthCm, rollWidth.value);
+    const strips = ceilDiv(wall.widthCm, rollWidth.value);
     const stripLengthCm =
       repeat.value === 0
         ? wall.heightCm + TRIM_CM
@@ -355,8 +361,8 @@ export function run(input) {
     return {
       index: index + 1,
       widthCm: wall.widthCm,
-      openingsWidthCm,
-      effectiveWidthCm,
+      openingsWidthCm: openingsWidthSumCm,
+      effectiveWidthCm: wall.widthCm,
       strips,
       stripLengthCm,
       dropsPerRoll,
@@ -365,7 +371,7 @@ export function run(input) {
     };
   });
 
-  // 5b. STRIP_TOO_LONG: a strip longer than the roll yields zero drops.
+  // 5c. STRIP_TOO_LONG: a strip longer than the roll yields zero drops.
   for (const wall of walls) {
     if (wall.dropsPerRoll === 0) {
       return fail("STRIP_TOO_LONG", "rollLengthM", values.wallMode === "walls" ? wall.index : null);

@@ -1,6 +1,6 @@
 // Controller tests. The three fixture flows are the SPEC's literal
 // controller fixtures, vendored verbatim in test/fixtures.json
-// (spec candidate commit 6d7cc4cd18a273b0d386b19b85b883573d097cba),
+// (spec candidate commit c2c3f7715023990b1427e052a25c52f1987eaca9),
 // driven by a fake worker whose completion is controllable, in the
 // exact driving order the SPEC's tests section prescribes:
 // state-dirty-error runs the initial draft, edits, and reruns;

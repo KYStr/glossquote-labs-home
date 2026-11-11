@@ -37,7 +37,7 @@ const STRINGS = {
       wastePercent: "損耗百分比 %",
       walls: "牆面清單",
       openings: "開口清單",
-      openingsMode: "開口扣除方式",
+      openingsMode: "開口面積輸入方式",
     },
     rowLabel: (kind, row, field) =>
       `${kind === "wall" ? "牆" : "開口"} ${row} ${field === "widthM" ? "寬" : "高"}`,
@@ -51,6 +51,7 @@ const STRINGS = {
       RANGE: "超出允許範圍",
       ENUM: "選項不正確",
       MODE_COMBINATION: "逐牆模式不能用開口尺寸清單，請改用面積扣除",
+      OPENING_HEIGHT_EXCEEDS_WALL: "開口高度不可超過牆高。",
       OPENINGS_EXCEED_WALL: "開口合計不小於牆面，請檢查開口尺寸",
       STRIP_TOO_LONG: "每幅長度超過一捲長度，這款捲長不夠",
       ROW_LIMIT: "列數超過上限",
@@ -82,7 +83,7 @@ const STRINGS = {
       wastePercent: "Waste percent %",
       walls: "Wall list",
       openings: "Openings list",
-      openingsMode: "Openings deduction",
+      openingsMode: "How to enter opening area",
     },
     rowLabel: (kind, row, field) =>
       `${kind === "wall" ? "Wall" : "Opening"} ${row} ${field === "widthM" ? "width" : "height"}`,
@@ -97,6 +98,7 @@ const STRINGS = {
       ENUM: "Invalid option.",
       MODE_COMBINATION:
         "Per-wall mode cannot use an openings dimension list; use the area deduction instead.",
+      OPENING_HEIGHT_EXCEEDS_WALL: "Enter an opening height at or below the wall height.",
       OPENINGS_EXCEED_WALL: "The openings add up to at least the wall size; check the opening dimensions.",
       STRIP_TOO_LONG: "One strip is longer than a whole roll; this roll is too short.",
       ROW_LIMIT: "Too many rows.",
@@ -328,6 +330,13 @@ function clearErrors() {
 // error has no field (status line only).
 function errorTarget(error, draft) {
   if (error.field === null) return null;
+  if ((error.field === "widthM" || error.field === "heightM") && error.row !== null) {
+    const kind = draft.wallMode === "walls" ? "wall" : "opening";
+    const input = document.getElementById(`field-${kind}-${error.row}-${error.field}`);
+    const errorEl = document.getElementById(`error-${kind}-${error.row}-${error.field}`);
+    if (input === null || errorEl === null) return null;
+    return { input, errorEl, label: t.rowLabel(kind, error.row, error.field) };
+  }
   if (SCALAR_FIELDS.includes(error.field)) {
     return {
       input: inputs[error.field],
@@ -341,13 +350,6 @@ function errorTarget(error, draft) {
   }
   if (error.field === "openingsMode") {
     return { input: null, errorEl: openingsModeErrorEl, label: t.fieldLabel.openingsMode };
-  }
-  if ((error.field === "widthM" || error.field === "heightM") && error.row !== null) {
-    const kind = draft.wallMode === "walls" ? "wall" : "opening";
-    const input = document.getElementById(`field-${kind}-${error.row}-${error.field}`);
-    const errorEl = document.getElementById(`error-${kind}-${error.row}-${error.field}`);
-    if (input === null || errorEl === null) return null;
-    return { input, errorEl, label: t.rowLabel(kind, error.row, error.field) };
   }
   return null;
 }

@@ -1,5 +1,7 @@
 # Handoff: Ping Area Converter
 
+Current maintenance: [wallpaper and ping product follow-up](../../docs/reviews/five-hour-2026-11-11/product-wallpaper-ping/HANDOFF.md). The sections below record the original build and its historical evidence.
+
 Status: production candidate only. Not accepted, not published, and
 not a deployment approval.
 
