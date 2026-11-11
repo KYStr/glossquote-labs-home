@@ -1,29 +1,30 @@
-# 股票損益計算 — 作者檢查
+# 股票損益計算｜文件維護驗算
 
-作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`（build5 spec 作者），候選分支 `muse/spec-stock-profit-calculator-20261109`。作者文件核對，待非作者 readiness；本文不是獨立審查。
+原作者為 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`。原 [PR #244](https://github.com/KYStr/glossquote-labs-home/pull/244)、候選 `5849c1ff1a6403e9261de07e0c4e7d506935629e`、owner 與 claim 均保留。原作者的檢查及 13 核心、3 狀態案例結果保存於固定來源。 [原作者檢查](https://github.com/KYStr/glossquote-labs-home/blob/5849c1ff1a6403e9261de07e0c4e7d506935629e/docs/specs/stock-profit-calculator/AUTHOR-CHECK.md)
 
-- 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+本次文件維護者為 `local-codex:01a1c8a3-8a4e-7e31-a219-8ef84cf9e8a5`，任務 `labs-five-hour-repair-stock-20261111`，依固定簡報修正 ST-01～04。本文件記錄維護者離線驗算，待非作者依三個約定面向獨立審查。 [維護簡報](https://github.com/KYStr/glossquote-labs-home/blob/418aee70f60a04cbe19e339597c91a056bcad0c4/docs/reviews/five-hour-2026-11-11/dispatch/repair-stock/TASK.md)
 
-- 已比對 checkout 內 101 份既有預案，無股票／投資／損益／交易類規格（以 stock、invest、profit、trade、dividend、broker 檢索 slug 皆無）。最相近者 compound-interest-calculator（複利成長）與同批 tax-included-converter（營業稅含稅換算）的實質差異見 SPEC scope。
+## 字面驗算與變更
 
-## 參數查證（2026-11-09，官方來源）
+- **ST-01 當沖。** 100 股的 day 回 `DAY_TRADE_ROUND_LOT_REQUIRED`，standard 同資料賣出毛額 11,000 元，0.3% 稅為 33.00 元。合格 1000 股以股或張表示，110,000 元的賣出毛額乘 0.15%，稅皆為 165.00 元。買進 2 張、賣出 1000 股時仍只對賣出量計算，剩餘 1000 股。未確認、確認缺欄及錯型別各有獨立案例，並驗證交易腿變更會撤銷確認。
+- **ST-02 理論價。** 預設案例成本 100,143 元。100.59 元時淨額為 100,145 元，首次達標。100.50 元時淨額為 100,055 元，101.00 元時為 100,553 元。這兩個 TWSE 格點供比較；100.59 元依舊是模型的每分理論門檻。結果與報告以 `breakevenPriceIsOrderQuote:false` 標示其用途。
+- **ST-03 全域最小。** 1 股、買價 49 元、費率及稅率各 1%、最低費 0 元時，保本搜尋閉區間為 4898～5103 分，共 206 分位。49 元與 51 元的淨額皆 49 元，但 50 元時兩項費用各進位到 1 元，淨額下跌至 48 元。自第 1 分直接枚舉的首個達標分位為 4900。價格及最低費極值案例的保本值為 1,212,118.99 元，區間共 203 分位。
+- **ST-04 精確金額。** 買價 999,999.99 元、買進 999,999 張、賣出 999,998 張時，成本分攤為 `333807328570927626160/333333` 元，輸出 `"1001422987135770.01"`。binary64 會把該值與 `"1001422987135770.00"` 映射成同一個數。另一例的成本 103/300 元，顯示 0.34 元。1.34 元的賣出價淨額為 0.34 元，低於未捨入的成本，首個達標為 1.35 元。
+- **舊測例。** 九個成功核心 expected 與兩個晚到結果 payload 的 10 個金額字段改成兩位小數字串，並加固定 false 的理論價標記。既有百分比、股數、數值大小及四個錯誤回應保持原樣。所有完整草稿加上布林確認。既有 day 案例為 2000 股，明確確認後維持原稅額。取消與重設的草稿快照隨 schema 更新。新增案例詳見 [fixtures.json](fixtures.json)。
 
-- 手續費率 0.1425%：臺灣證券交易所法規分享知識庫「營業細則」第 94 條原文（2026-11-09 讀取）——證券商得自訂費率標準、折讓與每筆最低費用，經申報單一窗口向證交所備查後實施；所訂費率逾成交金額 0.1425% 者，應於受託前通知客戶並留存紀錄。費率標準之核定依據為證券交易法第 85 條。結論：0.1425% 為條文基準費率（實務牌告原價），非每位客戶的固定實收率，故釘為可改輸入預設。
-- 最低費 NT$20：**概念備註原寫「Minimum fee NT$20 per trade pinned (verify)」，查證後修正其性質**——同條第 94 條只授權券商自訂「每筆最低費用」並申報備查，金額無法定統一數字。NT$20 為整股市場普遍慣例（例：元大證券牌告「每筆手續費若不足 20 元，最低以 20 元計收」，司法判決書附表引述該牌告）；零股各家常為 NT$1，部分券商有 1 元優惠。SPEC 已標明「券商慣例、非法定」，釘為可改輸入、預設 20。
-- 證交稅 0.3%：財政部主管法規共用系統「證券交易稅條例」第 2 條第 1 款，公司發行股票按成交金額千分之 3，由賣方負擔（英文版同值 0.3% for shares）；財政部賦稅署「證券交易稅稅率表」（資料更新截止 2026-05-31）同列股票 3‰。釘為可改輸入預設（股票型 ETF 千分之 1 走自訂路徑，案例 `custom-tax-rate`）。
-- 現股當沖 0.15%：同條例第 2 條之 2——同一證券商受託買賣、同一帳戶、同日、同種同量現股沖銷，賣出稅率千分之 1.5；期間自 2017-04-28 起至 2027-12-31（116 年 12 月 31 日），最近一次修正由總統令 2025-01-02 公布延長。資券當沖不適用（仍 3‰），SPEC scope 已註明開關只模型化現股當沖。到期日只作揭露文字、不進計算分支，核心結果不隨日期漂移。
-- 尾數處理：各券商對手續費／稅額的小數處理未見統一法規明文，故本工具自行釘定「精確有理數運算，費用與稅各在單一步驟四捨五入（floor(x+1/2)）至整數元，最低費於折讓與進位之後適用」，並在 SPEC 與 FAQ 揭露以券商對帳單為準。此為設計決定，非宣稱法規。
+官方來源於 2026-11-11 重讀。第 2、2-2 條確認標準稅率、適格當沖與 2027-12-31 期限。交易所列明零股排除及適格帳戶、標的與成交時段，第 62 條釘定例示價位的格點，第 94 條規範券商自訂費率與通知門檻。 [證交稅條例](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340078) · [證交所當日沖銷交易專區](https://www.twse.com.tw/zh/products/system/day-trading.html) · [證交所第 62 條](https://twse-regulation.twse.com.tw/TW/law/DOC01_print.aspx?FLCODE=FL007304&FLNO=62) · [證交所第 94 條](https://twse-regulation.twse.com.tw/TW/law/DOC01.aspx?FLCODE=fl007304&FLNO=94)
 
-## 案例雙重推導
+## 離線結果
 
-13 筆核心案例先由作者依 SPEC 公式手算（逐步列出毛額、未進位費用、進位後費用、最低費比較、稅、淨額、成本分攤、損益、報酬率；兩平點以代回費用模型逐分驗證「該價達標、低 1 分不達標」），再以獨立 Python 實作（fractions.Fraction 精確有理數，兩平點由低分起逐分掃描取首個達標價，不假設單調性）重算，寫入 fixtures 後第三次以另一支驗證腳本載入 fixtures.json 重跑全部核心案例逐欄比對。
+Windows / Python 3.12.5 標準函式庫，用 `Fraction` 與獨立整數分進位核對 29 核心、4 狀態、2 組價格反證與 2 份完整匯出，exit 0。對 16 個較小的成功案例再從第一分枚舉核對全域最小。高價案例以未捨入的上下界及區間內每個分位核對。狀態測試為規格狀態模型。驗算未使用產品程式。
 
-- 雙方法一致：round-lot-profit（手續費 142.5 → 143 為 half-up 判別點）、odd-lot-loss-min-fee（稅 16.5 → 17）、day-trade（稅 151.5 → 152）、partial-sell（賣費 370.5 → 371）、lot-units、min-fee-applies、zero-tax-rate（買費 28.5 → 29 對比銀行家捨入的 28）、custom-tax-rate、prorata-basis、sell-exceeds-buy、price-too-precise、zero-discount、empty-sell-price。
-- 一處手算誤差經重算糾正並保留紀錄：prorata-basis 報酬率手算初估 19.24%，精確分數為 1927/10019 = 19.2335…%，正確值 19.23%，fixtures 採 19.23。
-- 一處轉寫誤差經 fixtures 重跑驗證抓出並修正：custom-tax-rate 的 buyGross/buyFee 初寫 38000/54，正確為 40000/57（buyTotal 40057 與其餘欄位原本即正確）。修正後 13/13 核心案例全數與獨立實作逐欄相同。
-- 3 筆 controller 案例沿用本批制式（dirty/cancel-late/replace-late），草稿與 lateResult 即 round-lot-profit 的輸入與結果，edit 以 sellQty 2000 觸發 SELL_EXCEEDS_BUY。
+| 匯出樣本 | UTF-8 bytes（含 LF） | SHA-256 |
+| --- | ---: | --- |
+| round-lot-profit | 363 | `888c4bf269ee0126b477c87fe4830b3993b39e80b6697a700516ed2bfa5b2999` |
+| large-precision | 468 | `cc35fb9e47cc63324b7929ea1ea9a8a2403d086027bcd834e458400437fcdaf1` |
 
-## 未驗與界線
+舊 round-lot-profit 報告樣本為 296 bytes，SHA-256 `a8340e2a3639672a85fd44d66abb3d1e5fa4f8998ca6e0e3abe78b54053b7658`。新樣本保留 10 個金額的字面精度，且加入理論價標記。
 
-- 產品交驗、Chrome/Edge、正式 HTTPS/SEO、Network/Storage、原生對話及部署皆 NOT_RUN，分數 null。未固定候選或未獨評前不計 ready。
-- 費率參數為 2026-11-09 查證值；當沖減半稅率 2027-12-31 到期後是否延長，非本文件能保證，頁面揭露以官方公告為準。
+## 未驗項
+
+維護候選尚待非作者審查。八節正式文件 readiness、REG-01 登記修復及產品九面向另行驗收。產品執行、瀏覽器、真實下載、Network/Storage、正式站、合併與部署皆 NOT_RUN。
