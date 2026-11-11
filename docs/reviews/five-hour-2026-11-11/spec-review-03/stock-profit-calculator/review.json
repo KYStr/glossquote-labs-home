@@ -1,0 +1,368 @@
+{
+  "schemaVersion": 1,
+  "reviewTask": "FH-spec-review-03",
+  "kind": "independent-document-review",
+  "observedAt": "2026-11-11T02:59:13Z",
+  "reviewer": {
+    "id": "local-codex:01a1c87c-f22f-76f1-9e00-dcb0b0b55486",
+    "executor": "local-codex",
+    "chatTitle": "成本與財務工具預案驗收",
+    "participatedInCandidate": false,
+    "checkedAuthorOwnerAndContributors": true
+  },
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "contractVersion": "2026-10-29.1",
+    "homepage": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "26525d5f6380915ea95dde879dec769442db0d95",
+      "path": "README.md"
+    },
+    "writeStatus": "NOT_RUN_AWAITING_SERIAL_SLOT"
+  },
+  "taskId": "labs-stock-profit-calculator-spec-20261109",
+  "specId": "spec-stock-profit-calculator-20261109",
+  "currentTaskStatus": "reviewing",
+  "owner": {
+    "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "executor": "cloud-dot",
+    "claimId": "muse-r4-stock-profit-calcu-claim-20261109T152701Z-f51ac",
+    "claimedAt": "2026-11-09T15:27:01.271Z"
+  },
+  "submission": {
+    "candidate": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "5849c1ff1a6403e9261de07e0c4e7d506935629e",
+      "path": "docs/specs/stock-profit-calculator/SPEC.md"
+    },
+    "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/244",
+    "evidence": "Complete eight-section specification and author check fixed at PR head 5849c1ff1a6403e9261de07e0c4e7d506935629e; SPEC.md 24951 bytes SHA256 47ed6749f469daa2f23634787612e55d66c0c42d1c3420a611ef7d3af3a4778d; AUTHOR-CHECK.md SHA256 a6dd0cea0150944219a2d0df6553f44b254bb0f35cfc31e989ce728fdf539c22. Product checks NOT_RUN; no self-review; independent eight-section review requested.",
+    "evidenceRef": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "5849c1ff1a6403e9261de07e0c4e7d506935629e",
+      "path": "docs/specs/stock-profit-calculator/AUTHOR-CHECK.md"
+    },
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "claimId": "muse-r4-stock-profit-calcu-claim-20261109T152701Z-f51ac",
+    "submittedAt": "2026-11-09T15:27:43.688Z"
+  },
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/244",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "5849c1ff1a6403e9261de07e0c4e7d506935629e",
+    "path": "docs/specs/stock-profit-calculator/SPEC.md"
+  },
+  "gitBlobs": {
+    "BRIEF.md": {
+      "remoteBlob": "2a0c254006c90db8f8e7aca7b02eef909c5d8c4e",
+      "localBlob": "2a0c254006c90db8f8e7aca7b02eef909c5d8c4e",
+      "match": true,
+      "bytes": 1383,
+      "sha256": "0545a4570af4c373db41dd333c9943571a19a7e17f96f2a32dfa67f941fc47ad"
+    },
+    "SPEC.md": {
+      "remoteBlob": "e0bf680d283fdb3cb4eb184dbe26940c3e4a7b3c",
+      "localBlob": "e0bf680d283fdb3cb4eb184dbe26940c3e4a7b3c",
+      "match": true,
+      "bytes": 24951,
+      "sha256": "47ed6749f469daa2f23634787612e55d66c0c42d1c3420a611ef7d3af3a4778d"
+    },
+    "fixtures.json": {
+      "remoteBlob": "e790c0757780c2da7f920acc92700e69309fc71f",
+      "localBlob": "e790c0757780c2da7f920acc92700e69309fc71f",
+      "match": true,
+      "bytes": 17698,
+      "sha256": "3eab7f7389355403a26547a2cfae6cd588924a11f664c6439e3f07642a5cfb95"
+    },
+    "AUTHOR-CHECK.md": {
+      "remoteBlob": "070b5fa4f9efefca010fa1b8747475f62ce47d99",
+      "localBlob": "070b5fa4f9efefca010fa1b8747475f62ce47d99",
+      "match": true,
+      "bytes": 5085,
+      "sha256": "a6dd0cea0150944219a2d0df6553f44b254bb0f35cfc31e989ce728fdf539c22"
+    }
+  },
+  "sections": {
+    "goal": true,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": false,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 96,
+      "complete": true,
+      "evidence": "§goal：台股單次費稅、淨損益與保本價；桌面核對券商、手機盤中估算，無帳戶／投資建議。"
+    },
+    {
+      "id": "scope",
+      "score": 84,
+      "complete": false,
+      "evidence": "§scope：單次及部分賣出，和既有多筆 FIFO 平均成本有可辨別價值；但聲稱法定現股當沖而未排除零股，保本價的報價跳動限制未定（ST-01/02）。"
+    },
+    {
+      "id": "userFlow",
+      "score": 84,
+      "complete": false,
+      "evidence": "§userFlow：預設、模式、dirty、取消、reset、離頁和雙語揭露可行；開關對不合資格交易仍給減半率，盤中主結果未區別模型價與可委託價（ST-01/02）。"
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 82,
+      "complete": false,
+      "evidence": "§inputsOutputs：欄位語法／首錯和費稅／分攤公式明確；缺當沖 eligibility 及精確分值跨 Worker/JSON 的型別契約（ST-01/04）。"
+    },
+    {
+      "id": "implementation",
+      "score": 85,
+      "complete": false,
+      "evidence": "§implementation 的純核心、固定 Blob Worker、世代與 CSP 可用；合法上限需要全域最小保本價的有界算法，鄰點不是充分證據（ST-03），精確分值不可轉 Number（ST-04）。"
+    },
+    {
+      "id": "acceptance",
+      "score": 95,
+      "complete": true,
+      "evidence": "九必要面向固定，方法包括真兩語 Chrome/Edge、隔離、0 network/storage、320px、200% zoom、預覽 noindex／正式站另核。產品未跑。"
+    },
+    {
+      "id": "tests",
+      "score": 85,
+      "complete": false,
+      "evidence": "13 核心+3 controller 全數符合字面值，但未驗零股 day、合法報價 tick、重複穿越保本線和有效金額上限的分值（ST-01 至 04）。"
+    },
+    {
+      "id": "handoff",
+      "score": 96,
+      "complete": true,
+      "evidence": "工具目標、原 owner、另 claim、離線命令與真實隔離驗收、版本／部署分開及停止條件均有列。"
+    }
+  ],
+  "verdict": "revision",
+  "readyRecommendation": "do-not-mark-ready",
+  "rubricComplete": true,
+  "requiredChecksComplete": false,
+  "documentStatus": "FAIL",
+  "checks": {
+    "sourceIntegrity": "PASS",
+    "authorIndependence": "PASS",
+    "literalFixtures": "PASS",
+    "product": "NOT_RUN"
+  },
+  "fixture": {
+    "script": "verify.py",
+    "output": "fixture-output.json",
+    "command": "python -B -X utf8 verify.py <fixed-candidate>/docs/specs/stock-profit-calculator/fixtures.json",
+    "runtime": "Windows / Python 3.12 stdlib",
+    "exit": 0,
+    "signal": null,
+    "stderr": "",
+    "error": null,
+    "pass": 16,
+    "total": 16
+  },
+  "productAspects": [
+    {
+      "id": "functionality",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "boundaries",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "privacy",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "security",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "usability",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "accessibility",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "localization-seo",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "toolchain-provenance",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "compatibility",
+      "status": "NOT_RUN",
+      "score": null
+    }
+  ],
+  "scope": "Windows 背景離線獨立驗算；controller 是規格狀態模型。候選只含文件；產品程式、Chrome/Edge、真下載、Network/Storage、正式 SEO 或部署均未執行。",
+  "officialSources": [
+    {
+      "label": "證券交易稅條例第 2、2-2 條",
+      "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340078",
+      "supports": "股票賣出 3‰；合格現股當日沖銷賣出 1.5‰ 至 2027-12-31，須按交易所適用規定。"
+    },
+    {
+      "label": "證交所：當日沖銷交易專區",
+      "url": "https://www.twse.com.tw/zh/products/system/day-trading.html",
+      "supports": "相同數量部分可互抵，須合格交易時段與標的；明文排除零股。"
+    },
+    {
+      "label": "證交所營業細則第 62 條",
+      "url": "https://twse-regulation.twse.com.tw/TW/law/DOC01_print.aspx?FLCODE=FL007304&FLNO=62",
+      "supports": "一般股票在 NT$100 至未滿 500 的申報升降單位為 NT$0.50。"
+    },
+    {
+      "label": "證交所營業細則第 94 條",
+      "url": "https://twse-regulation.twse.com.tw/TW/law/DOC01.aspx?FLCODE=fl007304&FLNO=94",
+      "supports": "券商自訂並備查費率、折讓與每筆最低費；高於 0.1425% 有通知義務，不是統一強制費率或上限。"
+    },
+    {
+      "label": "元大證券：台股現股手續費說明",
+      "url": "https://www.yuanta.com.tw/eYuanta/securiti/Node/Index?C1=2021102007380647&C2=2021102008672547&ID=2021102008672547&Level=2&MainId=00415",
+      "supports": "券商自身費率與一般每筆最低 20 元、特定零股最低 1 元的公開例子；不得外推所有券商。"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "ST-01",
+      "location": "§scope 及 §inputsOutputs 第 2 步現股當沖，§userFlow 模式",
+      "input": {
+        "buyPrice": "100",
+        "buyQty": "100",
+        "buyUnit": "share",
+        "sellPrice": "110",
+        "sellQty": "100",
+        "sellUnit": "share",
+        "feeRatePct": "0.1425",
+        "feeDiscount": "1",
+        "minFeeTwd": "20",
+        "taxMode": "day",
+        "taxRatePct": "0.3"
+      },
+      "actual": "day 無條件套 0.15%，算賣稅 17 元，即使這是 100 股零股。",
+      "expected": "證交所規定零股不適用現股當沖。當沖模式應只套到使用者確認具資格的現股沖銷部分；零股 day 不得當作法定減半，明示錯誤或要求改 standard，此筆以 0.3% 模型為 33 元。單位 share 也可輸入 1000 股，不能用單位字串單獨判定。明示資格與期限，對不明資格保留試算限制。",
+      "recheck": "新增零股 day、同 100 股 standard、1000 股以 share/lot 表示與合格的部分沖銷字面案例，核對兩語資格提示。"
+    },
+    {
+      "id": "ST-02",
+      "location": "§goal 下單前用途及 §inputsOutputs 第 5 步 breakevenPrice",
+      "input": {
+        "fixture": "round-lot-profit",
+        "buyPrice": "100",
+        "buyQty": "1000",
+        "sellPrice": "110",
+        "sellQty": "1000"
+      },
+      "actual": "模型每分掃描得 100.59，現有 UI 只標為『損益兩平賣出價』。",
+      "expected": "一般股票在 100–未滿 500 的報價跳動為 0.50；100.59 不是可委託價。同一費用模型下 100.50 淨額 100055.00 < 成本 100143.00，101.00 淨額 100553.00 ≥ 成本。可保留每分理論值，但須在結果及報告標明不可直接用來下單；若新增可委託價，釘明 tick 及適用市場。",
+      "recheck": "保留 100.59 算術結果作理論門檻，新增 100.50／101.00 的驗算與兩語標籤契約；明示規格輸入上限之外的理論價。"
+    },
+    {
+      "id": "ST-03",
+      "location": "§inputsOutputs 第 5 步最小值、§implementation、§tests 鄰點條件",
+      "input": {
+        "buyPrice": "49",
+        "buyQty": "1",
+        "buyUnit": "share",
+        "sellPrice": "51",
+        "sellQty": "1",
+        "sellUnit": "share",
+        "feeRatePct": "1",
+        "feeDiscount": "1",
+        "minFeeTwd": "0",
+        "taxMode": "standard",
+        "taxRatePct": "1"
+      },
+      "actual": "成本 49 元。P=49.00 與 P=51.00 均符合『P 達標、P−0.01 不達標』，因 P=50.00 時兩筆費用同時跳 1 元、淨額從 49.99 降至 48.00；鄰點無法證明全域最小。直接逐分遍歷在合法極值需要超過一億次。",
+      "expected": "答案是 49.00，證明全域最小且明定負載上限。可用未捨入淨額 L(G)=min((1−a−b)G,(1−b)G−minFee)，實際淨額距 L 不超過 1 元；反解成本 ±1 再升序掃描，所有合法輸入最多 206 個候選分位。此方法已用獨立腳本重算全部字面保本價。",
+      "recheck": "新增非單調雙穿越與極值，驗第一次交叉、搜尋上限和對應成本；不能只驗相鄰分位。"
+    },
+    {
+      "id": "ST-04",
+      "location": "§inputsOutputs 2 位金額、結果與序列化；§implementation core/Worker/DOM",
+      "input": {
+        "buyPrice": "999999.99",
+        "buyQty": "999999",
+        "buyUnit": "lot",
+        "sellPrice": "999999.99",
+        "sellQty": "999998",
+        "sellUnit": "lot",
+        "feeRatePct": "0.1425",
+        "feeDiscount": "1",
+        "minFeeTwd": "20",
+        "taxMode": "standard",
+        "taxRatePct": "0.3"
+      },
+      "actual": "固定字面結果的金額用 JSON numbers；精確成本分攤按分應為 1001422987135770.01，若核心輸出 binary64 Number 再格式化只能得到 1001422987135770.00。",
+      "expected": "釘定能從純核心、Worker、UI 到匯出保存精確分值的表示法，如分值或定點字串；若匯出仍承諾數字 token，從精確值序列化並說明 JS Number 讀取精度限制。也可另訂仍涵蓋目標用途的安全上限。",
+      "recheck": "在新候選以此合法上限案例核對精確 UI 與下載字面 bytes，並釘清金額型別。"
+    }
+  ],
+  "improvements": [
+    "把同 repo 固定 `stock-average-cost`（多筆 FIFO，無證交稅或可委託保本門檻）加到 scope 的實際相近工具比對。",
+    "將 0.1425% 明確稱為自訂費率的通知門檻／示例預設，不暗示它是法定費率。"
+  ],
+  "productionInheritance": {
+    "status": "FAIL",
+    "id": "REG-01",
+    "slug": "stock-profit-calculator",
+    "specId": "spec-stock-profit-calculator-20261109",
+    "docStatus": "draft",
+    "actualTaskCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "actualProductionCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "referencingProductionTasks": [],
+    "specAuthor": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "coreBlob": "4782dd1f249995ceeec00b2d0a89b57d9b9bbb7d",
+    "expectedNinePredeclaredInCandidate": true,
+    "expectedProductCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "effect": "Do not mark this specification ready or register production using the current inheritance contract.",
+    "evidence": "coordination-core.mjs register-task checks exact spec.acceptanceCriteria for production; current spec inherits the spec-authoring task's eight section criteria."
+  }
+}

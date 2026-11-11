@@ -1,0 +1,1175 @@
+{
+  "fixtureSha256": "b4115210a148532133b2ec728ed87772b59ca3af98a76adc28cccaa014405979",
+  "summary": {
+    "pass": 21,
+    "total": 21
+  },
+  "cases": [
+    {
+      "id": "payment-basic-zero-rate",
+      "kind": "core",
+      "input": {
+        "annualRate": "0",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "100000.00",
+          "mode": "payment",
+          "monthlyPayment": "7500.00",
+          "months": 12,
+          "status": "ok",
+          "totalDeposits": "90000.00",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 12,
+          "monthlyPayment": "7500.00",
+          "totalDeposits": "90000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "100000.00"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-zero-rate-ceiling",
+      "kind": "core",
+      "input": {
+        "annualRate": "0",
+        "initialAmount": "0",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "3",
+        "targetAmount": "1000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "1000.02",
+          "mode": "payment",
+          "monthlyPayment": "333.34",
+          "months": 3,
+          "status": "ok",
+          "totalDeposits": "1000.02",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 3,
+          "monthlyPayment": "333.34",
+          "totalDeposits": "1000.02",
+          "totalInterest": "0.00",
+          "finalBalance": "1000.02"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-with-interest",
+      "kind": "core",
+      "input": {
+        "annualRate": "6",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "100000.02",
+          "mode": "payment",
+          "monthlyPayment": "7245.98",
+          "months": 12,
+          "status": "ok",
+          "totalDeposits": "86951.76",
+          "totalInterest": "3048.26"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 12,
+          "monthlyPayment": "7245.98",
+          "totalDeposits": "86951.76",
+          "totalInterest": "3048.26",
+          "finalBalance": "100000.02"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-one-month-timing",
+      "kind": "core",
+      "input": {
+        "annualRate": "12",
+        "initialAmount": "0",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "1",
+        "targetAmount": "1000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "1000.00",
+          "mode": "payment",
+          "monthlyPayment": "1000.00",
+          "months": 1,
+          "status": "ok",
+          "totalDeposits": "1000.00",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 1,
+          "monthlyPayment": "1000.00",
+          "totalDeposits": "1000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "1000.00"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-long-horizon",
+      "kind": "core",
+      "input": {
+        "annualRate": "5",
+        "initialAmount": "0",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "360",
+        "targetAmount": "1000000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "1000000.36",
+          "mode": "payment",
+          "monthlyPayment": "1201.55",
+          "months": 360,
+          "status": "ok",
+          "totalDeposits": "432558.00",
+          "totalInterest": "567442.36"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 360,
+          "monthlyPayment": "1201.55",
+          "totalDeposits": "432558.00",
+          "totalInterest": "567442.36",
+          "finalBalance": "1000000.36"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-already-funded",
+      "kind": "core",
+      "input": {
+        "annualRate": "3",
+        "initialAmount": "60000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "24",
+        "targetAmount": "50000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "63705.42",
+          "mode": "payment",
+          "monthlyPayment": "0.00",
+          "months": 24,
+          "status": "already-funded",
+          "totalDeposits": "0.00",
+          "totalInterest": "3705.42"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "already-funded",
+          "months": 24,
+          "monthlyPayment": "0.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "3705.42",
+          "finalBalance": "63705.42"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "payment-growth-sufficient",
+      "kind": "core",
+      "input": {
+        "annualRate": "12",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "11000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "finalBalance": "11268.25",
+          "mode": "payment",
+          "monthlyPayment": "0.00",
+          "months": 12,
+          "status": "growth-sufficient",
+          "totalDeposits": "0.00",
+          "totalInterest": "1268.25"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "growth-sufficient",
+          "months": 12,
+          "monthlyPayment": "0.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "1268.25",
+          "finalBalance": "11268.25"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "months-exact-zero-rate",
+      "kind": "core",
+      "input": {
+        "annualRate": "0",
+        "initialAmount": "2000",
+        "mode": "months",
+        "monthlyPayment": "500",
+        "months": "60",
+        "targetAmount": "12000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": "12000.00",
+          "finalBalance": "12000.00",
+          "finalMonthPayment": "500.00",
+          "mode": "months",
+          "monthsRequired": 20,
+          "reason": null,
+          "status": "ok",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 20,
+          "finalMonthPayment": "500.00",
+          "balanceIfFullPayment": "12000.00",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "12000.00"
+        }
+      },
+      "planProof": {
+        "balanceAtPriorMonth": "11500.00",
+        "balanceBeforeTail": "11500.00",
+        "actualFinalBalanceAfterDisplayedTail": "12000.00",
+        "actualInterestAfterDisplayedTail": "0.00",
+        "differenceFromReportedFinalCents": 0,
+        "planSemantics": "PASS"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "months-ceiling-boundary",
+      "kind": "core",
+      "input": {
+        "annualRate": "0",
+        "initialAmount": "0",
+        "mode": "months",
+        "monthlyPayment": "333",
+        "months": "60",
+        "targetAmount": "10000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": "10323.00",
+          "finalBalance": "10000.00",
+          "finalMonthPayment": "10.00",
+          "mode": "months",
+          "monthsRequired": 31,
+          "reason": null,
+          "status": "ok",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 31,
+          "finalMonthPayment": "10.00",
+          "balanceIfFullPayment": "10323.00",
+          "totalDeposits": "10000.00",
+          "totalInterest": "0.00",
+          "finalBalance": "10000.00"
+        }
+      },
+      "planProof": {
+        "balanceAtPriorMonth": "9990.00",
+        "balanceBeforeTail": "9990.00",
+        "actualFinalBalanceAfterDisplayedTail": "10000.00",
+        "actualInterestAfterDisplayedTail": "0.00",
+        "differenceFromReportedFinalCents": 0,
+        "planSemantics": "PASS"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "months-with-interest",
+      "kind": "core",
+      "input": {
+        "annualRate": "6",
+        "initialAmount": "5000",
+        "mode": "months",
+        "monthlyPayment": "300",
+        "months": "60",
+        "targetAmount": "20000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": "20147.13",
+          "finalBalance": "20000.00",
+          "finalMonthPayment": "152.88",
+          "mode": "months",
+          "monthsRequired": 42,
+          "reason": null,
+          "status": "ok",
+          "totalDeposits": "12452.88",
+          "totalInterest": "2547.12"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 42,
+          "finalMonthPayment": "152.88",
+          "balanceIfFullPayment": "20147.13",
+          "totalDeposits": "12452.88",
+          "totalInterest": "2547.12",
+          "finalBalance": "20000.00"
+        }
+      },
+      "planProof": {
+        "balanceAtPriorMonth": "19748.38",
+        "balanceBeforeTail": "19847.13",
+        "actualFinalBalanceAfterDisplayedTail": "20000.01",
+        "actualInterestAfterDisplayedTail": "2547.13",
+        "differenceFromReportedFinalCents": 1,
+        "planSemantics": "FAIL"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "months-growth-only-crossing",
+      "kind": "core",
+      "input": {
+        "annualRate": "12",
+        "initialAmount": "10000",
+        "mode": "months",
+        "monthlyPayment": "0",
+        "months": "60",
+        "targetAmount": "11000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": "11046.22",
+          "finalBalance": "11000.00",
+          "finalMonthPayment": "0.00",
+          "mode": "months",
+          "monthsRequired": 10,
+          "reason": null,
+          "status": "ok",
+          "totalDeposits": "0.00",
+          "totalInterest": "1000.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 10,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "11046.22",
+          "totalDeposits": "0.00",
+          "totalInterest": "1000.00",
+          "finalBalance": "11000.00"
+        }
+      },
+      "planProof": {
+        "balanceAtPriorMonth": "10936.85",
+        "balanceBeforeTail": "11046.22",
+        "actualFinalBalanceAfterDisplayedTail": "11046.22",
+        "actualInterestAfterDisplayedTail": "1046.22",
+        "differenceFromReportedFinalCents": 4622,
+        "planSemantics": "FAIL"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "months-already-funded",
+      "kind": "core",
+      "input": {
+        "annualRate": "5",
+        "initialAmount": "5000",
+        "mode": "months",
+        "monthlyPayment": "100",
+        "months": "60",
+        "targetAmount": "5000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": "5000.00",
+          "finalBalance": "5000.00",
+          "finalMonthPayment": "0.00",
+          "mode": "months",
+          "monthsRequired": 0,
+          "reason": null,
+          "status": "already-funded",
+          "totalDeposits": "0.00",
+          "totalInterest": "0.00"
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "already-funded",
+          "reason": null,
+          "monthsRequired": 0,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "5000.00",
+          "totalDeposits": "0.00",
+          "totalInterest": "0.00",
+          "finalBalance": "5000.00"
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "months-unreachable-no-growth",
+      "kind": "core",
+      "input": {
+        "annualRate": "5",
+        "initialAmount": "0",
+        "mode": "months",
+        "monthlyPayment": "0",
+        "months": "60",
+        "targetAmount": "10000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": null,
+          "finalBalance": null,
+          "finalMonthPayment": null,
+          "mode": "months",
+          "monthsRequired": null,
+          "reason": "no-growth",
+          "status": "unreachable",
+          "totalDeposits": null,
+          "totalInterest": null
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "unreachable",
+          "reason": "no-growth",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "months-unreachable-horizon",
+      "kind": "core",
+      "input": {
+        "annualRate": "0",
+        "initialAmount": "0",
+        "mode": "months",
+        "monthlyPayment": "1",
+        "months": "60",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "ok": true,
+        "result": {
+          "balanceIfFullPayment": null,
+          "finalBalance": null,
+          "finalMonthPayment": null,
+          "mode": "months",
+          "monthsRequired": null,
+          "reason": "beyond-horizon",
+          "status": "unreachable",
+          "totalDeposits": null,
+          "totalInterest": null
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "unreachable",
+          "reason": "beyond-horizon",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      },
+      "planProof": {
+        "lastMonthChecked": 1200,
+        "balanceAtLastMonth": "1200.00"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "error-months-zero",
+      "kind": "core",
+      "input": {
+        "annualRate": "3",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "0",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "RANGE",
+          "field": "months",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "months",
+          "row": null
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "error-rate-format",
+      "kind": "core",
+      "input": {
+        "annualRate": "3.005",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "annualRate",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "annualRate",
+          "row": null
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "error-money-format",
+      "kind": "core",
+      "input": {
+        "annualRate": "3",
+        "initialAmount": "10000",
+        "mode": "payment",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "100,000"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "targetAmount",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "targetAmount",
+          "row": null
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "error-mode-enum",
+      "kind": "core",
+      "input": {
+        "annualRate": "3",
+        "initialAmount": "10000",
+        "mode": "weekly",
+        "monthlyPayment": "3000",
+        "months": "12",
+        "targetAmount": "100000"
+      },
+      "fixtureExpected": {
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "annualRate": "6",
+          "initialAmount": "10000",
+          "mode": "payment",
+          "monthlyPayment": "3000",
+          "months": "0",
+          "targetAmount": "100000"
+        },
+        "initial": {
+          "annualRate": "6",
+          "initialAmount": "10000",
+          "mode": "payment",
+          "monthlyPayment": "3000",
+          "months": "12",
+          "targetAmount": "100000"
+        }
+      },
+      "fixtureExpected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "annualRate": "6",
+          "initialAmount": "10000",
+          "mode": "payment",
+          "monthlyPayment": "3000",
+          "months": "12",
+          "targetAmount": "100000"
+        },
+        "lateResult": {
+          "finalBalance": "100000.02",
+          "mode": "payment",
+          "monthlyPayment": "7245.98",
+          "months": 12,
+          "status": "ok",
+          "totalDeposits": "86951.76",
+          "totalInterest": "3048.26"
+        }
+      },
+      "fixtureExpected": {
+        "afterCancel": {
+          "draft": {
+            "annualRate": "6",
+            "initialAmount": "10000",
+            "mode": "payment",
+            "monthlyPayment": "3000",
+            "months": "12",
+            "targetAmount": "100000"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "annualRate": "3",
+            "initialAmount": "10000",
+            "mode": "payment",
+            "monthlyPayment": "3000",
+            "months": "60",
+            "targetAmount": "100000"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "annualRate": "6",
+            "initialAmount": "10000",
+            "mode": "payment",
+            "monthlyPayment": "3000",
+            "months": "12",
+            "targetAmount": "100000"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "payment",
+            "targetAmount": "100000",
+            "initialAmount": "10000",
+            "annualRate": "3",
+            "months": "60",
+            "monthlyPayment": "3000"
+          }
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "annualRate": "6",
+          "initialAmount": "10000",
+          "mode": "payment",
+          "monthlyPayment": "3000",
+          "months": "0",
+          "targetAmount": "100000"
+        },
+        "olderDraft": {
+          "annualRate": "6",
+          "initialAmount": "10000",
+          "mode": "payment",
+          "monthlyPayment": "3000",
+          "months": "12",
+          "targetAmount": "100000"
+        },
+        "olderLateResult": {
+          "finalBalance": "100000.02",
+          "mode": "payment",
+          "monthlyPayment": "7245.98",
+          "months": 12,
+          "status": "ok",
+          "totalDeposits": "86951.76",
+          "totalInterest": "3048.26"
+        }
+      },
+      "fixtureExpected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "months",
+            "row": null
+          }
+        }
+      },
+      "planProof": null,
+      "status": "PASS"
+    }
+  ],
+  "probes": [
+    {
+      "id": "SG-01",
+      "input": {
+        "mode": "payment",
+        "targetAmount": "12000",
+        "initialAmount": "0",
+        "annualRate": "12",
+        "months": "12",
+        "monthlyPayment": "3000"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "payment",
+          "status": "ok",
+          "months": 12,
+          "monthlyPayment": "946.19",
+          "totalDeposits": "11354.28",
+          "totalInterest": "645.78",
+          "finalBalance": "12000.06"
+        }
+      },
+      "priorGoalAnswer": "946.19"
+    },
+    {
+      "id": "SG-01",
+      "input": {
+        "mode": "months",
+        "targetAmount": "1000",
+        "initialAmount": "0",
+        "annualRate": "12",
+        "months": "60",
+        "monthlyPayment": "100"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 10,
+          "finalMonthPayment": "53.78",
+          "balanceIfFullPayment": "1046.22",
+          "totalDeposits": "953.78",
+          "totalInterest": "46.22",
+          "finalBalance": "1000.00"
+        }
+      },
+      "priorGoalAnswer": 10
+    },
+    {
+      "id": "SG-01",
+      "input": {
+        "mode": "months",
+        "targetAmount": "0.02",
+        "initialAmount": "0.01",
+        "annualRate": "12",
+        "months": "60",
+        "monthlyPayment": "0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 70,
+          "finalMonthPayment": "0.00",
+          "balanceIfFullPayment": "0.02",
+          "totalDeposits": "0.00",
+          "totalInterest": "0.01",
+          "finalBalance": "0.02"
+        }
+      },
+      "priorGoalAnswer": "not-reached-within-600"
+    },
+    {
+      "id": "SG-02",
+      "case": "months-with-interest",
+      "input": {
+        "annualRate": "6",
+        "initialAmount": "5000",
+        "mode": "months",
+        "monthlyPayment": "300",
+        "months": "60",
+        "targetAmount": "20000"
+      },
+      "literalResult": {
+        "mode": "months",
+        "status": "ok",
+        "reason": null,
+        "monthsRequired": 42,
+        "finalMonthPayment": "152.88",
+        "balanceIfFullPayment": "20147.13",
+        "totalDeposits": "12452.88",
+        "totalInterest": "2547.12",
+        "finalBalance": "20000.00"
+      },
+      "independentPlan": {
+        "balanceAtPriorMonth": "19748.38",
+        "balanceBeforeTail": "19847.13",
+        "actualFinalBalanceAfterDisplayedTail": "20000.01",
+        "actualInterestAfterDisplayedTail": "2547.13",
+        "differenceFromReportedFinalCents": 1,
+        "planSemantics": "FAIL"
+      }
+    },
+    {
+      "id": "SG-02",
+      "case": "months-growth-only-crossing",
+      "input": {
+        "annualRate": "12",
+        "initialAmount": "10000",
+        "mode": "months",
+        "monthlyPayment": "0",
+        "months": "60",
+        "targetAmount": "11000"
+      },
+      "literalResult": {
+        "mode": "months",
+        "status": "ok",
+        "reason": null,
+        "monthsRequired": 10,
+        "finalMonthPayment": "0.00",
+        "balanceIfFullPayment": "11046.22",
+        "totalDeposits": "0.00",
+        "totalInterest": "1000.00",
+        "finalBalance": "11000.00"
+      },
+      "independentPlan": {
+        "balanceAtPriorMonth": "10936.85",
+        "balanceBeforeTail": "11046.22",
+        "actualFinalBalanceAfterDisplayedTail": "11046.22",
+        "actualInterestAfterDisplayedTail": "1046.22",
+        "differenceFromReportedFinalCents": 4622,
+        "planSemantics": "FAIL"
+      }
+    },
+    {
+      "id": "SG-03",
+      "input": {
+        "mode": "months",
+        "targetAmount": "999999999.99",
+        "initialAmount": "0.01",
+        "annualRate": "0.01",
+        "months": "60",
+        "monthlyPayment": "0"
+      },
+      "uncappedExponentEstimate": 3039424.99,
+      "unreducedNumeratorDigitsIfEvaluated": 15437802,
+      "boundedProof": {
+        "lastMonthChecked": 1200,
+        "balanceAtLastMonth": "0.01"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "unreachable",
+          "reason": "beyond-horizon",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      }
+    },
+    {
+      "id": "horizon",
+      "input": {
+        "mode": "months",
+        "targetAmount": "1200",
+        "initialAmount": "0",
+        "annualRate": "0",
+        "months": "60",
+        "monthlyPayment": "1"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "ok",
+          "reason": null,
+          "monthsRequired": 1200,
+          "finalMonthPayment": "1.00",
+          "balanceIfFullPayment": "1200.00",
+          "totalDeposits": "1200.00",
+          "totalInterest": "0.00",
+          "finalBalance": "1200.00"
+        }
+      }
+    },
+    {
+      "id": "horizon",
+      "input": {
+        "mode": "months",
+        "targetAmount": "1201",
+        "initialAmount": "0",
+        "annualRate": "0",
+        "months": "60",
+        "monthlyPayment": "1"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "mode": "months",
+          "status": "unreachable",
+          "reason": "beyond-horizon",
+          "monthsRequired": null,
+          "finalMonthPayment": null,
+          "balanceIfFullPayment": null,
+          "totalDeposits": null,
+          "totalInterest": null,
+          "finalBalance": null
+        }
+      }
+    }
+  ],
+  "reportSample": {
+    "name": "savings-goal-report.json",
+    "text": "{\"input\":{\"annualRate\":\"0\",\"initialAmount\":\"10000\",\"mode\":\"payment\",\"monthlyPayment\":\"3000\",\"months\":\"12\",\"targetAmount\":\"100000\"},\"result\":{\"finalBalance\":\"100000.00\",\"mode\":\"payment\",\"monthlyPayment\":\"7500.00\",\"months\":12,\"status\":\"ok\",\"totalDeposits\":\"90000.00\",\"totalInterest\":\"0.00\"}}\n",
+    "bytes": 290,
+    "sha256": "0894d8ebe7c8c1fef7d228ee91deb92e0772514927faa5e9877f6664064ac323"
+  }
+}
