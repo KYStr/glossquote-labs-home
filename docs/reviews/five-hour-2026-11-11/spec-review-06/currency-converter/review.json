@@ -1,0 +1,288 @@
+{
+  "taskId": "labs-currency-converter-spec-20261109",
+  "specId": "spec-currency-converter-20261109",
+  "slug": "currency-converter",
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/258",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "dcb21d0903006a708584edba8713e6117f8138a6",
+    "path": "docs/specs/currency-converter/SPEC.md"
+  },
+  "reviewer": {
+    "actorId": "local-codex:01a1c87c-fc33-75e3-9aee-09999e6d38b1",
+    "executor": "local-codex",
+    "participatedInCandidates": false
+  },
+  "observedAt": "2026-11-11T02:53:11Z",
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "commit": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "taskStatus": "reviewing",
+    "specStatus": "draft",
+    "claimId": "muse-r4-currency-converter-claim-20261109T155013Z-e6a82",
+    "owner": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "submissionAuthor": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  },
+  "sourceVerification": {
+    "intake": "../intake.json",
+    "prOpen": true,
+    "draft": true,
+    "exactHead": true,
+    "blobs": [
+      {
+        "path": "docs/specs/currency-converter/AUTHOR-CHECK.md",
+        "sha": "bf56a949a267c7515adf4e6660e9cef8af76a0e8",
+        "bytes": 7017
+      },
+      {
+        "path": "docs/specs/currency-converter/BRIEF.md",
+        "sha": "25fcfca228630d6dbe0c20059ed2839db7df3115",
+        "bytes": 1791
+      },
+      {
+        "path": "docs/specs/currency-converter/SPEC.md",
+        "sha": "90add0b05a76f975c6adccd518bb09e21a03c560",
+        "bytes": 26312
+      },
+      {
+        "path": "docs/specs/currency-converter/fixtures.json",
+        "sha": "832cfe335942fe94ff605b5e38abf1cdfae4d47e",
+        "bytes": 21379
+      }
+    ]
+  },
+  "result": "FAIL",
+  "verdict": "revision",
+  "readyRecommendation": false,
+  "documentResult": "FAIL",
+  "productionContract": {
+    "findingId": "REG-01",
+    "status": "FAIL",
+    "blocksReady": true,
+    "evidence": "../production-rubric-check.json",
+    "actual": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "expected": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ]
+  },
+  "formalReview": "NOT_RUN_WAITING_FOR_SERIAL_SLOT",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": false,
+    "inputsOutputs": true,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 96,
+      "pass": true,
+      "evidence": "§goal 說明手機比較外幣價格及桌面以服務商報價估算匯款。驗算 USD/TWD 範例 100 × 31.5 = 3150.00。"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 96,
+      "pass": true,
+      "evidence": "§scope 界定一組代碼與單一輸入率，排除即時報價、費用、歷史及多幣別。比對 source-index、catalog、r1530 與本輪 open PR，物理單位換算和同批稅率、毛利工具職責不同，未見同 slug 製作。"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 80,
+      "pass": false,
+      "evidence": "§userFlow 有空白、dirty、busy、success、error、cancelled。Reset 恢復 31.5，但僅 Load example 規定範例標記，與免責及作者的不預填承諾衝突。CUR-01。"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 96,
+      "pass": true,
+      "evidence": "§inputsOutputs 的 ASCII、UTF-16 容量與錯誤優先序可獨立推導。精確結果最大 999999999000000 分，正反向都低於 2^53，捨入進位可用 rate=10.000001 觸發。"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 95,
+      "pass": true,
+      "evidence": "原生雙語 HTML、純核心／controller／DOM、固定 Worker 程式與工作世代。規定 CSP、零工作網路、儲存禁用與 Blob 釋放，Node 24 零依賴可行。"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 94,
+      "pass": true,
+      "evidence": "§acceptance 的九面向有可判定證據及逐項 90 門檻。§tests 明列隔離實測、預覽 noindex、正式雙語 SEO 與工作期 Network/Storage，實作前全部 NOT_RUN。"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 84,
+      "pass": false,
+      "evidence": "21 個核心、3 個狀態 fixture 逐筆一致。現有兩個反向案例均無法抓到把六位顯示值回乘的錯誤。CUR-02。"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 96,
+      "pass": true,
+      "evidence": "§handoff 固定四檔、開啟 PR、中央目標路徑、另行 claim、受影響檢查與分階段發布責任。"
+    }
+  ],
+  "rubricComplete": true,
+  "requiredDocumentChecksComplete": true,
+  "productStatus": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "正反換算、方向、對照與 JSON 報告"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "端點、首錯與三個 controller 狀態"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "靜態載入後工作零請求與 URL／storage／log"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "CSP、敵意輸入 inert、固定報告、Worker/Blob 釋放"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語桌面手機主流程、取消與下載"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤焦點、狀態錯誤、320px、200% zoom、觸控與 reduced motion"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "同語首頁回鏈、雙語訊息與 noindex，正式另查互惠 hreflang/canonical"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、離線命令、重建 hash 與同 PR head"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome 與 Edge 兩語狀態、Worker、Blob 與 reflow"
+    }
+  ],
+  "fixtureCheck": {
+    "command": "python -B currency-converter/verify.py /path/to/fixtures/currency-converter.json",
+    "commandRole": "portable reproduction from the evidence directory",
+    "observedInvocation": "Python verifier with fixed candidate fixtures",
+    "exit": 0,
+    "pythonVersion": "3.12.5",
+    "counts": {
+      "core": {
+        "total": 21,
+        "matched": 21
+      },
+      "controller": {
+        "total": 3,
+        "matched": 3
+      }
+    },
+    "script": "verify.py",
+    "output": "verification.json",
+    "stderrBytes": 0,
+    "source": {
+      "slug": "currency-converter",
+      "path": "docs/specs/currency-converter/fixtures.json",
+      "commit": "dcb21d0903006a708584edba8713e6117f8138a6",
+      "gitBlobSha": "832cfe335942fe94ff605b5e38abf1cdfae4d47e",
+      "url": "https://raw.githubusercontent.com/KYStr/glossquote-labs-home/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter/fixtures.json",
+      "localName": "currency-converter.json"
+    }
+  },
+  "blockers": [
+    {
+      "id": "CUR-01",
+      "title": "重設會帶入未要求的範例匯率",
+      "reproduce": "依 `state-cancel-late` 重設，或將匯率改成 `32.1` 後按 Reset，再直接按 Convert。 [SPEC 的重設]( https://github.com/KYStr/glossquote-labs-home/blob/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter/SPEC.md#L52)",
+      "actual": "Reset 帶入 USD/TWD、31.5 與 100，`Convert` 可得 3150.00。只有 Load example 被要求顯示範例身分。常駐聲明稱計算只使用使用者輸入的匯率，作者查核亦稱不預填。 [作者查核](https://github.com/KYStr/glossquote-labs-home/blob/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter/AUTHOR-CHECK.md#L9)",
+      "expected": "讓初載和重設一致遵守使用者輸入匯率的承諾。可清空匯率並只在 Load example 帶入合成值，或明訂並持續標示範例模式，涵蓋表單、結果與報告的來源，並讓說明及 fixtures 一致。",
+      "impact": "輸入頁與報告可能把合成報價呈現成真實報價，影響預算及匯款判讀。",
+      "recheck": "更新 `BRIEF.md`、`SPEC.md`、`fixtures.json`、`AUTHOR-CHECK.md` 涉及此狀態的規則，再驗初載、重設、顯式範例與自行輸入。"
+    },
+    {
+      "id": "CUR-02",
+      "title": "既有反向 fixture 無法辨認反向顯示值被拿來回算",
+      "reproduce": "比較 `reverse-repeating` 的 `100 / 31.5` 與 `100 × 0.031746`，以及 `reverse-exact` 的 `3150 / 31.5` 與 `3150 × 0.031746`。 [反向算法](https://github.com/KYStr/glossquote-labs-home/blob/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter/SPEC.md#L70)",
+      "actual": "兩組經半分進位分別都得到 317、10000 分。規格把 `reverse-repeating` 當作可辨認兩種算法的例子。",
+      "expected": "增加能觀察差異的案例。`{fromCode:\"USD\",toCode:\"TWD\",rate:\"3\",amount:\"30000\",direction:\"b-to-a\"}` 應回 `convertedCents=1000000`、`inverseRate=\"0.333333\"`。錯誤回乘只會得 999999 分。",
+      "impact": "核心反向語義可能在現有 fixtures 全綠時仍出錯，合法大額出現可見差額。",
+      "recheck": "保留原循環小數案例或修正其用途說明。新增可區分的字面 input/expected 並重跑反向路徑。"
+    }
+  ],
+  "nonBlocking": [
+    "刪去與純文字表單無關的 File.arrayBuffer 和合成檔樣板措辭，讓零檔案輸入範圍更易讀。"
+  ],
+  "primarySources": [
+    {
+      "title": "CFPB Circular 2024-02",
+      "url": "https://www.consumerfinance.gov/compliance/circulars/consumer-financial-protection-circular-2024-02/",
+      "note": "核實匯款商報價可有匯差、費用與稅款，單一費率的乘除可用於估算。"
+    },
+    {
+      "title": "ECB 外匯參考匯率框架",
+      "url": "https://www.ecb.europa.eu/stats/pdf/exchange/Frameworkfortheeuroforeignexchangereferencerates.en.pdf",
+      "note": "核實央行參考匯率供資訊使用，實際交易應用交易服務商報價。"
+    },
+    {
+      "title": "SIX 資料標準",
+      "url": "https://www.six-group.com/en/products-services/financial-information/market-reference-data/data-standards.html",
+      "note": "ISO 4217 的維護資料有現行、歷史及修正版本。本規格只用代碼做顯示標籤。"
+    },
+    {
+      "title": "PR #258 固定 SPEC",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter/SPEC.md",
+      "note": "逐節讀取的固定候選。"
+    }
+  ],
+  "nextStep": "保留原 owner 與 claim。修正候選另核新 head、重算受影響 fixtures。正式 ACK／review／ready 仍待主統籌安排串行 slot。"
+}

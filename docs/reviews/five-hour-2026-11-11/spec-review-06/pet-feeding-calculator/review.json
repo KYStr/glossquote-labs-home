@@ -1,0 +1,300 @@
+{
+  "taskId": "labs-pet-feeding-calculator-spec-20261109",
+  "specId": "spec-pet-feeding-calculator-20261109",
+  "slug": "pet-feeding-calculator",
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/263",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "282fb18912c0435257c13b96b5562e410e3a2521",
+    "path": "docs/specs/pet-feeding-calculator/SPEC.md"
+  },
+  "reviewer": {
+    "actorId": "local-codex:01a1c87c-fc33-75e3-9aee-09999e6d38b1",
+    "executor": "local-codex",
+    "participatedInCandidates": false
+  },
+  "observedAt": "2026-11-11T03:10:54Z",
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "commit": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "taskStatus": "reviewing",
+    "specStatus": "draft",
+    "claimId": "muse-r4-pet-feeding-calcul-claim-20261109T155737Z-5b1f1",
+    "owner": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "submissionAuthor": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  },
+  "sourceVerification": {
+    "intake": "../intake.json",
+    "prOpen": true,
+    "draft": true,
+    "exactHead": true,
+    "blobs": [
+      {
+        "path": "docs/specs/pet-feeding-calculator/AUTHOR-CHECK.md",
+        "sha": "c2072430020d5aa7849a605260de006ad224ac9d",
+        "bytes": 5740
+      },
+      {
+        "path": "docs/specs/pet-feeding-calculator/BRIEF.md",
+        "sha": "4e672be2ccb0dc1a4cd7bb9752e78b4232f6f897",
+        "bytes": 1888
+      },
+      {
+        "path": "docs/specs/pet-feeding-calculator/SPEC.md",
+        "sha": "e01b8deca96f40eda0a999b06b9bcc78e8c9ef90",
+        "bytes": 24843
+      },
+      {
+        "path": "docs/specs/pet-feeding-calculator/fixtures.json",
+        "sha": "110f99a47f179f988482c124b1af3d7827732c8f",
+        "bytes": 20470
+      }
+    ]
+  },
+  "result": "FAIL",
+  "verdict": "revision",
+  "readyRecommendation": false,
+  "documentResult": "FAIL",
+  "productionContract": {
+    "findingId": "REG-01",
+    "status": "FAIL",
+    "blocksReady": true,
+    "actual": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "expected": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "evidence": "../production-rubric-check.json"
+  },
+  "formalReview": "NOT_RUN_WAITING_FOR_SERIAL_SLOT",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": false,
+    "tests": true,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 94,
+      "pass": true,
+      "evidence": "桌面比較飼料與店內手機查包裝的場景明確，首例結果可驗。只印 kcal/cup 的包裝無法完成必填欄，宜縮準情境文字。"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 95,
+      "pass": true,
+      "evidence": "犬貓、單一飼料熱量、11 固定倍率、1–6 餐，排除孕哺、臨床照護、特殊飲食。比對 r1530、source-index、catalog 與 open PR，與成人 TDEE 和嬰兒配方奶有不同族群、算法及輸出，未見同 slug 製作。"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 81,
+      "pass": false,
+      "evidence": "物種連動、取消、回復、離頁、估算說明與結果可及性有規則。減重體重的欄位標籤仍通用，重要前提只保證在結果顯示。PET-01。"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 82,
+      "pass": false,
+      "evidence": "11 個倍率與來源吻合，雙精度與 60 位 Decimal 驗算一致。允許組合可讓實際為正的餐量呈現 0 g、0 杯，卻仍呈現正熱量。PET-02。"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 96,
+      "pass": true,
+      "evidence": "Node 24／原生 ESM 零依賴，固定 Worker、離線、CSP、無工作資料傳輸及清理明確。倍率為固定字面資料。"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 85,
+      "pass": false,
+      "evidence": "九個產品證據及門檻明確，11 列 fixture 都覆蓋。沒有減重目標體重先行提示與低於輸出精度的可用性 gate。PET-01、PET-02。"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 93,
+      "pass": true,
+      "evidence": "21 核心與 3 controller cases 深比對全吻合。獨立補例證明目標體重語義、非零份量捨為零及整數 DER 順序的可驗差異。"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 96,
+      "pass": true,
+      "evidence": "四檔、固定來源追查、中央工具路徑、另領 claim、交驗與發布責任均明文。"
+    }
+  ],
+  "rubricComplete": true,
+  "requiredDocumentChecksComplete": true,
+  "productStatus": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "11 列與真表單輸入、完整報告"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩物種端點、密度、餐數、首錯與世代"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "零工作網路、storage、URL 和 log"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意輸入 inert、CSP、上限、Worker 與 Blob dispose"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語手機與桌面、物種連動、取消、重設、下載"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、狀態與錯誤、320px、200% zoom、觸控"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "雙語標籤及估算聲明、同語首頁和預覽 noindex，正式另驗 SEO"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、離線命令、重建 hash、同一 PR head"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Chrome/Edge 隔離實際表單、Worker、Blob、reflow"
+    }
+  ],
+  "fixtureCheck": {
+    "command": "python -B pet-feeding-calculator/verify.py /path/to/fixtures/pet-feeding-calculator.json",
+    "commandRole": "portable reproduction from the evidence directory",
+    "observedInvocation": "Python verifier with fixed candidate fixtures",
+    "exit": 0,
+    "pythonVersion": "3.12.5",
+    "counts": {
+      "core": {
+        "total": 21,
+        "matched": 21
+      },
+      "controller": {
+        "total": 3,
+        "matched": 3
+      }
+    },
+    "script": "verify.py",
+    "output": "verification.json",
+    "stderrBytes": 0,
+    "source": {
+      "slug": "pet-feeding-calculator",
+      "path": "docs/specs/pet-feeding-calculator/fixtures.json",
+      "commit": "282fb18912c0435257c13b96b5562e410e3a2521",
+      "gitBlobSha": "110f99a47f179f988482c124b1af3d7827732c8f",
+      "url": "https://raw.githubusercontent.com/KYStr/glossquote-labs-home/282fb18912c0435257c13b96b5562e410e3a2521/docs/specs/pet-feeding-calculator/fixtures.json",
+      "localName": "pet-feeding-calculator.json"
+    }
+  },
+  "blockers": [
+    {
+      "id": "PET-01",
+      "title": "減重目標體重未在輸入時明確區隔",
+      "reproduce": "在合成貓減重案例選 `species=\"cat\"`、`lifeStage=\"weight-loss\"`，在通用 `Weight (kg)` 欄輸入 `12` 或 `6`。其餘為每 100g `330` kcal、每天 `2` 餐。 [體重欄與結果](https://github.com/KYStr/glossquote-labs-home/blob/282fb18912c0435257c13b96b5562e410e3a2521/docs/specs/pet-feeding-calculator/SPEC.md#L34)",
+      "actual": "兩個數字都通過同一欄位驗證，合成輸出分別為 361 kcal／109 g 與 215 kcal／65 g。規格在選項文字提及理想體重，附註只保證在結果，未規定切換時如何處理已輸入的當前體重。報告也省去體重及其基準。 [下載格式](https://github.com/KYStr/glossquote-labs-home/blob/282fb18912c0435257c13b96b5562e410e3a2521/docs/specs/pet-feeding-calculator/SPEC.md#L99)",
+      "expected": "減重列應在輸入與送出前明示使用獸醫確認的理想／目標體重。規定從一般列切入時清空或重新確認目前值，保留可復原草稿。報告應辨識體重基準及估算用途，讓合成結果可追溯。",
+      "impact": "拿飼主手上的當前體重代入即可得到另一份看似有效的減重份量。AAHA 減重段明確採理想體重。 [AAHA 指引](https://www.aaha.org/wp-content/uploads/globalassets/02-guidelines/2021-nutrition-and-weight-management/resourcepdfs/new-2021-aaha-nutrition-and-weight-management-guidelines-with-ref.pdf)",
+      "recheck": "重核犬與貓減重、選項切換、送出前可見提示、舊輸出失效與獨立報告。保持現有源係數與有效數值的算術不變。"
+    },
+    {
+      "id": "PET-02",
+      "title": "合法端點的逐餐克數與杯數把非零份量顯示為零",
+      "reproduce": "合成邊界 `species=\"cat\", lifeStage=\"weight-loss\", weightKg=\"0.5\", foodKcalPer100g=\"900\", foodKcalPerCup=\"1500\", mealsPerDay=\"6\"`。全數位於 SPEC 數值範圍。 [捨入與分餐](https://github.com/KYStr/glossquote-labs-home/blob/282fb18912c0435257c13b96b5562e410e3a2521/docs/specs/pet-feeding-calculator/SPEC.md#L94)",
+      "actual": "日量 33 kcal、4 g、0.02 杯。克數列表為 `[1,1,1,1,0,0]`，杯數六餐皆 0，熱量六餐皆正值。頁面只要求標示杯數捨入差，仍將零值列為各餐餵食量。",
+      "expected": "定義低於測量精度的呈現與機器語義，讓正熱量的餐可辨為低於目前顯示單位或無法用此精度分餐。保留可追溯日量與原始計算。適當調整精度時仍驗分餐合計規則。",
+      "impact": "量杯與克數同時顯示零會被讀成該餐不用餵，與同列熱量互相衝突。",
+      "recheck": "加入全端點組合的字面 UI／JSON expected，以及既有 24 cases 和一般有／無杯數兩路的重驗。"
+    }
+  ],
+  "nonBlocking": [
+    "把只知道 kcal/cup 的情境改為需要包裝上的 kcal/100g，與必填限制一致。",
+    "把重症排除理由明訂為臨床監護。PNA 與 SACN 皆列有單值，屬適用範圍問題。",
+    "可補 `10 kg` 已絕育犬與 `400 kcal/100 g` 的字面案例。依已捨入 DER 得 158 g，直接用未捨入 DER 會得 157 g。"
+  ],
+  "primarySources": [
+    {
+      "title": "MSD Veterinary Manual 犬貓每日維持能量表",
+      "url": "https://www.msdvetmanual.com/multimedia/table/daily-maintenance-energy-requirements-for-dogs-and-cats",
+      "note": "2026-11-11 逐格核對九列固定倍率與僅供估算起點的註記。"
+    },
+    {
+      "title": "MSD 小動物營養需求",
+      "url": "https://www.msdvetmanual.com/management-and-nutrition/nutrition-small-animals/nutritional-requirements-of-small-animals",
+      "note": "核實 RER 指數公式及維持量用途。"
+    },
+    {
+      "title": "AAHA 2021 營養與體重管理指引",
+      "url": "https://www.aaha.org/wp-content/uploads/globalassets/02-guidelines/2021-nutrition-and-weight-management/resourcepdfs/new-2021-aaha-nutrition-and-weight-management-guidelines-with-ref.pdf",
+      "note": "查讀 Weight Reduction in the Obese Pet 與 Box 1，核實理想體重、犬貓各自減重倍率與四個月邊界。"
+    },
+    {
+      "title": "Pet Nutrition Alliance 能量估算表",
+      "url": "https://petnutritionalliance.org/wp-content/uploads/2023/03/MER.RER_.PNA_.pdf",
+      "note": "查讀 RER、低活動範圍、兩物種減重、個體差異與 BCS 調整。"
+    },
+    {
+      "title": "Ohio State VMC 伴侶動物營養支援",
+      "url": "https://vmc.vet.osu.edu/services/companion-animal-nutrition-support-service",
+      "note": "讀 Basic Calorie Calculator 原文和 Table 1 原始圖，核對犬減重須用理想體重、幼犬兩段與犬維持倍率。"
+    },
+    {
+      "title": "SACN 5th ed. 第 5 章 Table 5-2",
+      "url": "https://s3.amazonaws.com/mmi_sacn5/2019/SACN5_5.pdf#page=13",
+      "note": "讀原書表格，核對犬貓減重、維持和生長倍率，並區分重症與其他非目標的來源情境。"
+    }
+  ],
+  "nextStep": "保留原 owner 與 claim。修正 PET-01、PET-02、REG-01 後重核新 head、來源、雙語輸入與報告。正式登記等主統籌安排。"
+}
