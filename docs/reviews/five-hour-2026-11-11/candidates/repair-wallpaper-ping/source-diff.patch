@@ -1,0 +1,577 @@
+--- a/docs/specs/wallpaper-calculator/AUTHOR-CHECK.md
++++ b/docs/specs/wallpaper-calculator/AUTHOR-CHECK.md
+@@ -1,18 +1,20 @@
+ # 壁紙用量計算 — 作者檢查
+ 
+-[原作者與工作環境資訊見固定來源]
++原作者見 [固定來源](https://github.com/KYStr/glossquote-labs-home/blob/f8939291d2e283f1e6496d3a9cc802a054732200/docs/specs/wallpaper-calculator/AUTHOR-CHECK.md)。WALL-01／02 由本次維護修訂，候選文件待非作者審查。
+ 
+ - 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+ - 已比對本 repo 預案庫：無 wallpaper／壁紙 既有預案。最相近者 paint-coverage-calculator（油漆以面積換算公升數，無「幅」、無圖案重複、無每捲可裁幅數），實質差異已寫入 SPEC scope 節。
+-- 14 筆字面核心案例、3 筆 controller 案例。每個 expected 先以手算由釘版規則推導，再以一份獨立 Python 整數／分數運算腳本（未共用任何產品程式碼）重算，兩者全數一致才寫入 fixtures。
++- 19 筆字面核心案例（11 筆成功、8 筆錯誤）及 3 筆 controller 案例。原作者以手算與 Python 整數／分數重算原稿。修訂字面值由維護者以整數算式與離線文件驗證器推導。
+ 
+ ## 手算推導（第一推導）
+ 
+ - `basic-perimeter`：周長 1200 cm ÷ 捲寬 53 → ceil = 23 幅；幅長 250 + 10 = 260；每捲 floor(1005 / 260) = 3 幅；捲數 ceil(23 / 3) = 8；面積 1200 × 250 = 300,000 cm² = 30.00 m²。
+ - `pattern-repeat-roundup`：幅長 ceil(260 / 32) × 32 = 9 × 32 = 288；幅數 ceil(1000 / 53) = 19；每捲 floor(1005 / 288) = 3；捲數 ceil(19 / 3) = 7；面積 25.00。
+ - `walls-mode-two-walls`：牆一 ceil(400 / 53) = 8 幅 → ceil(8 / 3) = 3 捲；牆二 ceil(300 / 53) = 6 幅 → 2 捲；合計 14 幅、5 捲；面積 (100,000 + 75,000) cm² = 17.50。
+-- `openings-list-deduction`：開口寬 90 + 150 = 240 cm，有效寬 960 → ceil(960 / 53) = 19 幅 → 7 捲；開口面積 90 × 210 + 150 × 120 = 36,900 cm² = 3.69；淨面積 30.00 − 3.69 = 26.31。
+-- `openings-area-only`：同一 3.69 m² 只扣淨面積 → 26.31；幅數 23、捲數 8 不變（與上一案對照，釘住兩種扣除的差異）。
++- `openings-list-deduction`：開口寬度合計 90 + 150 = 240 cm。採購估算寬度為 1200 cm，ceil(1200 / 53) = 23 幅、8 捲。原結果為 19 幅、7 捲。開口面積 90 × 210 + 150 × 120 = 36,900 cm²，淨面積 26.31 m²。
++- `openings-area-only`：同一開口面積 3.69 m² 得淨面積 26.31 m²，與尺寸清單同為 23 幅、8 捲。
++- WALL-01：ceil(318 / 53) = 6 幅，floor(780 / 260) = 3 幅／捲，合計 2 捲。淨面積 318 × 250 − 159 × 120 = 60,420 cm²，顯示 6.04 m²。原估算 1 捲只有 41,340 cm²。
++- WALL-02：300 cm > 250 cm，回第 1 列開口的 `heightM`。等高案例 250 cm 合法，淨面積為 57,000 cm²，顯示 5.70 m²。另以字面案例固定逐欄格式優先、跨欄首個超高列優先。
+ - `waste-ten-percent`：ceil(23 × 110 / 100) = ceil(25.3) = 26 幅 → ceil(26 / 3) = 9 捲。
+ - `repeat-exact-multiple`：240 + 10 = 250，恰為 25 的 10 倍 → 幅長 250；幅數 ceil(530 / 53) = 10；每捲 floor(1005 / 250) = 4；捲數 ceil(10 / 4) = 3；面積 530 × 240 = 127,200 cm² = 12.72。
+ - `walls-mixed-heights`：牆一 ceil(250 / 32) × 32 = 256、ceil(300 / 53) = 6 幅、floor(1005 / 256) = 3、2 捲；牆二 ceil(270 / 32) × 32 = 288、ceil(200 / 53) = 4 幅、3、2 捲；合計 10 幅、4 捲；面積 12.40。
+@@ -21,13 +23,13 @@
+ 
+ ## 獨立重算（第二推導）
+ 
+-- 以 Python（整數運算 + `fractions.Fraction` 驗證公尺字串換算為整數公分精確成立）另寫一份與 SPEC 公式一一對應的計算，逐案比對全部成功案的逐牆明細與總計：9 個成功核心案全數與手算一致。
+-- 重算過程中確認一項必須釘版的細節：cm² 換算 m² 不一定是恰好兩位小數（例如 101 cm² = 0.0101 m²），因此 SPEC 將面積輸出釘為「以 exact cm² 值 round half up 到 0.01 m² 的兩位小數字串」，公式 `floor((cm2 + 50) / 100)` 百分位，並以 101／150／50／49 cm² 四個邊界值驗證過（0.01／0.02／0.01／0.00）。本批 fixtures 的面積恰皆為兩位小數整值，不影響上述釘版。
++- 原稿 9 個成功核心案例曾經 Python 獨立重算。維護者以離線 Node 整數驗證器對照修訂後的 19 個核心與 3 個 controller 字面案例，並核對 SPEC 中兩份固定下載的完整 bytes 和 SHA-256。
++- 重算過程中確認一項必須釘版的細節：cm² 換算 m² 不一定是恰好兩位小數（例如 101 cm² = 0.0101 m²），因此 SPEC 將面積輸出釘為「以 exact cm² 值 round half up 到 0.01 m² 的兩位小數字串」，公式 `floor((cm2 + 50) / 100)` 百分位，並以 101／150／50／49 cm² 四個邊界值驗證過（0.01／0.02／0.01／0.00）。修訂後 WALL-01 的 60,420 cm² 也涵蓋小數位進位。
+ 
+ ## 設計決定記錄
+ 
+-- 開口語意採「寬度扣幅、長度不縮短」：一幅是天花板到地板的整條；清單模式以開口寬度扣掉不需掛幅的位置，開口上下餘料保守視為已用。只給面積時無位置資訊，只扣淨面積。此為估算工具的保守慣例，SPEC 已明文釘版並要求介面揭露，不承諾餘料拼貼的節省。
+-- 逐牆模式不支援清單扣除（MODE_COMBINATION）：清單無法表達開口屬於哪面牆；逐牆模式改用面積模式。拒絕以「扣第一面牆」等任意歸屬冒充精確。
++- 尺寸清單和總面積都只從毛面積扣除開口面積。整幅採購以全牆寬及牆高估算，因本版沒有開口位置、裁切配置或餘料可重用資料。結果與報告保留寬度摘要欄位。
++- 逐牆模式使用總面積。尺寸清單目前限定周長模式，可用共同牆高檢查每列開口高度。
+ - 損耗套用順序釘為「先膨脹逐牆幅數、再換算逐牆捲數」，且剩料不跨牆流用——這是保守估算，與逐牆明細的揭露一致。
+ - 修剪裕度為固定常數 TRIM = 10 cm（上下各 5 cm），不做成輸入欄位，避免與圖案重複取整的先後順序產生第二種解讀；取整順序釘為「先加裕度、再向上取整到完整重複」。
+ - 概念筆記（brief #6）的 `rolls = ceil(total length / roll length adjusted)` 是概略式；本 SPEC 依委派要求改採逐幅 drops 法（`drops = floor(rollLength / stripLength)`、`rolls = ceil(strips / drops)`），因為總長法會默認捲尾剩料可跨幅拼湊、與逐幅裁切的實務不符。差異在此記錄，公式以 SPEC 為準。
+--- a/docs/specs/wallpaper-calculator/BRIEF.md
++++ b/docs/specs/wallpaper-calculator/BRIEF.md
+@@ -4,7 +4,7 @@
+ 
+ 自己貼壁紙的人量好房間周長（或逐面牆寬高）、手上有一款壁紙的捲寬、捲長與圖案重複長度，要先算清楚需要幾幅、每幅裁多長、共買幾捲才夠，才不會買少跑第二趟或買多浪費。
+ 
+-MVP 範圍。公制輸入、整數公分運算：周長模式或逐牆模式、幅數由寬度覆蓋向上取整、幅長加固定修剪裕度後向上取整到完整圖案重複、每捲可裁幅數取下限、捲數向上取整；門窗開口可選（尺寸清單扣寬度、面積只扣淨面積）、損耗百分比可選。非目標為實際排版模擬、斜牆／挑高／壁龕造型、橫貼或特殊對花方式、價格試算、品牌捲型資料庫、把估算當施工保證。
++MVP 範圍。公制輸入、整數公分運算：周長模式或逐牆模式、幅數由寬度覆蓋向上取整、幅長加固定修剪裕度後向上取整到完整圖案重複、每捲可裁幅數取下限、捲數向上取整；門窗開口可選（尺寸清單或總面積皆用於顯示淨牆面積；採購量按全牆寬估算）、損耗百分比可選。非目標為實際排版模擬、斜牆／挑高／壁龕造型、橫貼或特殊對花方式、價格試算、品牌捲型資料庫、把估算當施工保證。
+ 
+ 首個可觀察案例。周長 12 m、高 2.5 m、捲 0.53 × 10.05 m、無圖案重複：23 幅、每幅 260 cm、每捲裁 3 幅、共 8 捲（`basic-perimeter`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
+ 
+--- a/docs/specs/wallpaper-calculator/SPEC.md
++++ b/docs/specs/wallpaper-calculator/SPEC.md
+@@ -8,14 +8,14 @@
+ 
+ 自己貼壁紙的人在購買前要先回答三個問題：這個房間要貼幾幅、每幅要裁多長、總共要買幾捲。用錯估算方式（例如只用面積除以一捲面積）會忽略圖案重複必須對花的浪費與每捲能裁出的完整幅數，結果買不夠。
+ 
+-- 桌面。裝修前在電腦上逐面牆輸入寬高、或只量周長與天花板高，選好一款捲的規格後核對捲數，並試門窗扣除與損耗百分比的影響。
++- 桌面。裝修前在電腦上逐面牆輸入寬高、或只量周長與天花板高，選好一款捲的規格後核對捲數，並核對門窗扣除後的淨牆面積和損耗百分比對採購量的影響。
+ - 行動。在賣場用手機輸入捲上標示的寬、長與圖案重複，立即確認要拿幾捲。
+ 
+ 使用情境為購買估算。資料只保留在目前頁面草稿；結果是保守估算，不是施工或退換貨保證，頁面固定揭露此語意。
+ 
+ ## scope
+ 
+-MVP 必做：周長模式（單一周長 × 天花板高）與逐牆模式（1–12 面牆，各自寬 × 高）；捲寬、捲長、圖案重複（0 表示不用對花）；開口扣除三種模式（不扣、只給總面積、給尺寸清單）；損耗百分比 0–50；逐牆明細加總計的結果；固定報告下載。
++MVP 必做：周長模式（單一周長 × 天花板高）與逐牆模式（1–12 面牆，各自寬 × 高）；捲寬、捲長、圖案重複（0 表示不用對花）；淨牆面積的開口輸入三種模式（不扣、只給總面積、給尺寸清單）；損耗百分比 0–50；逐牆明細加總計的結果；固定報告下載。
+ 
+ 非目標：實際排版／對花位置模擬、斜頂、挑高、轉角柱、壁龕與非矩形牆、橫貼（railroading）、拼貼或特殊材質、價格與預算、品牌或店家捲型資料庫、施工教學、把估算當購買保證。
+ 
+@@ -32,7 +32,7 @@
+ 
+ - 欄位或說明「牆面量法與尺寸 / Wall measurement mode and dimensions」：先選周長模式或逐牆模式；周長模式填周長與天花板高，逐牆模式逐列填每面牆的寬與高，可增刪列（1–12 列）。
+ - 欄位或說明「壁紙捲規格與圖案重複 / Roll size and pattern repeat」：捲寬、捲長（公尺），圖案重複（公分，0 表示不用對花）。
+-- 欄位或說明「門窗開口扣除 / Doors and windows deduction」：不扣、只給總面積、或給尺寸清單（逐列寬 × 高，最多 20 列；尺寸清單僅周長模式可用）。介面旁固定說明兩種扣除的差異（見 inputsOutputs 的開口語意）。
++- 欄位或說明「門窗開口 / Doors and windows」：不扣、只給總面積、或給尺寸清單（逐列寬 × 高，最多 20 列；尺寸清單僅周長模式可用）。介面及結果旁說明：「門窗面積用於計算淨牆面積。幅數、每幅裁切長度與採購捲數按完整牆面尺寸估算。 / Door and window areas are used to calculate net wall area. Strip count, cut length and rolls to buy are estimated from the full wall dimensions.」
+ - 欄位或說明「損耗百分比 / Waste percent」。
+ - 「計算壁紙用量 / Calculate wallpaper needed」是主要操作。「載入範例 / Load example」填入 [fixtures.json](fixtures.json) 第一個合成案例，明示範例並等待手動執行。
+ - 「需要幾捲 / Rolls to buy」先摘要（總幅數、每幅長度、總捲數）再列逐牆明細，長表在有 label 的區域捲動。成功才顯示「下載報告 / Download report」。文字可手動選取。
+@@ -42,7 +42,7 @@
+ | empty | 初載／重設，無結果，提示輸入或載入範例。 |
+ | dirty | 任一輸入、選項、來源或範例改變，立即撤銷舊結果和下載。顯示「輸入已變更，請重新執行 / Input changed. Run again.」。 |
+ | busy | 明確執行時處理快照，顯示「處理中 / Working」及「取消 / Cancel」。無下載。編輯終止舊工作並回 dirty。 |
+-| success | 報告對應目前快照。逐牆明細與總計同列。若含待修列，以文字及符號提示。 |
++| success | 報告對應目前快照。逐牆明細與總計同列。 |
+ | error | 保留草稿，沒有結果。顯示本地化錯誤、欄位及適用列號。只有提交失敗才移焦首錯欄。 |
+ | cancelled | 保留草稿，終止並告知「已取消，可重新執行 / Cancelled. You can run again.」。舊結果仍無效。 |
+ 
+@@ -63,9 +63,9 @@
+ 
+ 1. SCHEMA：頂層與元素形狀、鍵集合、值型別（字串欄位必須是 string、陣列欄位必須是 array）。
+ 2. ENUM：`wallMode` 先、`openingsMode` 後；是 string 但不在枚舉集合 → `{code:"ENUM",field}`。
+-3. MODE_COMBINATION：`wallMode="walls"` 且 `openingsMode="list"` → `{code:"MODE_COMBINATION",field:"openingsMode",row:null}`。逐牆模式下開口歸屬哪面牆無法由清單表達，故清單扣除只支援周長模式；逐牆模式改用面積模式（只扣淨面積）。
+-4. 逐欄檢查，欄位順序固定：周長模式為 `perimeterM`、`heightM`；逐牆模式為 `walls`（先陣列長度：0 列 → EMPTY、超過 12 列 → ROW_LIMIT，field=`walls`；再逐列 row 升序，列內 `widthM` 後 `heightM`）；接著 `rollWidthM`、`rollLengthM`、`patternRepeatCm`；接著 `openingsAreaM2` 或 `openings`（先陣列長度：0 列 → EMPTY、超過 20 列 → ROW_LIMIT，field=`openings`；再逐列檢查）；最後 `wastePercent`。每個字串欄位依序：raw 長度（UTF-16 code units）超過 8 → INPUT_LIMIT；不成對 surrogate → UNICODE；空字串 → EMPTY；文法不符 → DECIMAL_FORMAT 或 INTEGER_FORMAT；超出範圍 → RANGE。錯誤的 field 為欄位名，陣列元素錯誤另帶 row。
+-5. 跨欄檢查（順序固定）：(a) OPENINGS_EXCEED_WALL — 清單模式先比寬度：開口寬度總和（cm）≥ 周長（cm）→ field=`openings`；再比面積：開口面積總和 > 牆面總面積 → field=`openings`；面積模式：`openingsAreaM2` > 牆面總面積 → field=`openingsAreaM2`。row 皆 null。(b) STRIP_TOO_LONG — 任一牆的每捲可裁幅數為 0（幅長 > 捲長）→ field=`rollLengthM`，周長模式 row=null、逐牆模式 row 為第一面出問題的牆序號。
++3. MODE_COMBINATION：`wallMode="walls"` 且 `openingsMode="list"` → `{code:"MODE_COMBINATION",field:"openingsMode",row:null}`。逐牆模式下開口歸屬哪面牆無法由清單表達，本版尺寸清單僅支援周長模式，逐牆模式可輸入開口總面積。
++4. 逐欄檢查，欄位順序固定：周長模式為 `perimeterM`、`heightM`；逐牆模式為 `walls`（先陣列長度：0 列 → EMPTY、超過 12 列 → ROW_LIMIT，field=`walls`；再逐列 row 升序，列內 `widthM` 後 `heightM`）；接著 `rollWidthM`、`rollLengthM`、`patternRepeatCm`；接著 `openingsAreaM2` 或 `openings`（先陣列長度：0 列 → EMPTY、超過 20 列 → ROW_LIMIT，field=`openings`；再按列序檢查，列內 `widthM` 先於 `heightM`）；最後 `wastePercent`。每個字串欄位依序：raw 長度（UTF-16 code units）超過 8 → INPUT_LIMIT；不成對 surrogate → UNICODE；空字串 → EMPTY；文法不符 → DECIMAL_FORMAT 或 INTEGER_FORMAT；超出範圍 → RANGE。錯誤的 field 為欄位名，陣列元素錯誤另帶 row。
++5. 全部逐欄檢查通過後執行跨欄檢查，順序固定。(a) OPENING_HEIGHT_EXCEEDS_WALL — 尺寸清單模式按列順序找第一個開口高度大於周長模式牆高的開口；等高合法。回傳 `{ok:false,error:{code:"OPENING_HEIGHT_EXCEEDS_WALL",field:"heightM",row}}`，`row` 是該開口 1-based 列號。錯誤連到該列的開口高度輸入。`field="heightM",row=null` 才指周長模式的牆高輸入，`wallMode="walls"` 時非 null 的 `row` 指牆列。(b) OPENINGS_EXCEED_WALL — 清單模式先比寬度：開口寬度總和（cm）≥ 周長（cm）→ field=`openings`；再比面積：開口面積總和 > 牆面總面積 → field=`openings`；面積模式：`openingsAreaM2` > 牆面總面積 → field=`openingsAreaM2`。row 皆 null。(c) STRIP_TOO_LONG — 任一牆的每捲可裁幅數為 0（幅長 > 捲長）→ field=`rollLengthM`，周長模式 row=null、逐牆模式 row 為第一面出問題的牆序號。
+ 
+ 文法與範圍（raw 字串先通過文法才換算）：
+ 
+@@ -77,20 +77,22 @@
+ 
+ - 固定常數 TRIM = 10 cm（每幅上下各 5 cm 修剪裕度，介面固定揭露）。
+ - 每一「牆列」獨立計算（周長模式只有一列，寬 = 周長、高 = 天花板高；不同牆的剩料不互相流用，逐牆明細即此保守假設的揭露）：
+-  - `effectiveWidthCm = widthCm − openingsWidthCm`。`openingsWidthCm` 只在周長模式＋清單模式時為開口寬度總和，其餘情形為 0。
+-  - `strips = ceil(effectiveWidthCm / rollWidthCm)`。
++  - `strips = ceil(widthCm / rollWidthCm)`，以完整牆寬計算。
++  - 逐牆明細的 `effectiveWidthCm = widthCm`。`openingsWidthCm` 為周長模式使用尺寸清單時的開口寬度總和，其餘情形為 0，僅供尺寸摘要。
+   - `stripLengthCm`：重複 = 0 時為 `heightCm + TRIM`；重複 > 0 時為 `ceil((heightCm + TRIM) / repeat) × repeat`（先加裕度再向上取整到完整重複，固定順序）。
+   - `dropsPerRoll = floor(rollLengthCm / stripLengthCm)`。
+   - `stripsWithWaste = ceil(strips × (100 + wastePercent) / 100)`（損耗先膨脹幅數、再換算捲數；損耗 0 時等於 strips）。
+   - `rolls = ceil(stripsWithWaste / dropsPerRoll)`。
+ - 總計為各牆列的 `strips`、`stripsWithWaste`、`rolls` 分別加總。
+-- 面積：`grossAreaCm2 = Σ widthCm × heightCm`；`openingsAreaCm2` 為面積模式的輸入換算值、清單模式的 Σ 開口寬 × 高、或 0；`netAreaCm2 = grossAreaCm2 − openingsAreaCm2`。三個面積輸出為字串，恰兩位小數，以 exact cm² 值四捨五入（round half up）到 0.01 m²：百分位 = `floor((cm2 + 50) / 100)` 後格式化。面積只供參考與淨面積揭露，不參與幅數／捲數（面積模式）以外的計算。
++- 面積：`grossAreaCm2 = Σ widthCm × heightCm`；`openingsAreaCm2` 為面積模式的輸入換算值、清單模式的 Σ 開口寬 × 高、或 0；`netAreaCm2 = grossAreaCm2 − openingsAreaCm2`。三個面積輸出為字串，恰兩位小數，以 exact cm² 值四捨五入（round half up）到 0.01 m²：百分位 = `floor((cm2 + 50) / 100)` 後格式化。開口面積用於計算淨牆面積。採購量與每幅裁切長度皆依完整牆面尺寸估算。
+ 
+-開口語意（固定，介面與結果旁揭露）：一幅壁紙是整幅由天花板貼到地板的長條。尺寸清單模式下，開口寬度會從周長扣除——被開口完全佔住的水平位置不需要掛幅，所以扣的是「幅數」；但幅長永遠不縮短（開口上下方的餘料保守地視為已用，不承諾用餘料拼貼）。只給總面積時無法知道開口落在哪一幅，因此不扣幅數與捲數、只扣報告的淨面積。
++開口語意（固定，介面與結果旁揭露）：一幅壁紙是整幅由天花板貼到地板的長條。尺寸清單與總面積兩種輸入都只從毛面積扣除開口面積。缺少開口位置、裁切配置及餘料可重用資訊時，以全牆寬及牆高估算整幅與採購捲數。結果明細使用「開口寬度合計 / Total opening width」及「採購估算寬度 / Width used for roll estimate」標示保留的兩個寬度欄位。
+ 
+ 結果物件：`{walls:[{index,widthCm,openingsWidthCm,effectiveWidthCm,strips,stripLengthCm,dropsPerRoll,stripsWithWaste,rolls}],strips,stripsWithWaste,rolls,grossWallAreaM2,openingsAreaM2,netWallAreaM2}`，`walls` 依輸入順序、index 為 1-based；面積為上述兩位小數字串，其餘皆整數。機器值不隨 locale 改。
+ 
+ 固定下載 `wallpaper-report.json`。內容為 result 的 compact JSON、object own keys 按 UTF-16 code units 升序遞迴排列，array 順序不改，末尾一個 LF、UTF-8 無 BOM。字串用 JSON 字面轉義，不呼叫輸入的 toJSON。報告上限 2,097,152 bytes，超過 OUTPUT_LIMIT 並停用所有產物。
++
++開口高度超過牆高的欄位錯誤使用「開口高度不可超過牆高。 / Enter an opening height at or below the wall height.」，並標示開口列號。
+ 
+ ## implementation
+ 
+@@ -119,15 +121,20 @@
+ 
+ ## tests
+ 
+-驗收輸入見 [fixtures.json](fixtures.json)。14 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
++驗收輸入見 [fixtures.json](fixtures.json)。19 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+ 
+ | 案例 ID | 驗證行為 |
+ | --- | --- |
+ | `basic-perimeter` | 周長模式基本計算：23 幅、幅長 260、每捲 3 幅、8 捲 |
+ | `pattern-repeat-roundup` | 幅長 250+10 向上取整到 32 的倍數 = 288 |
+ | `walls-mode-two-walls` | 逐牆分別算捲數（3+2）再加總，不共用剩料 |
+-| `openings-list-deduction` | 開口寬度 240 cm 扣幅數（23→19）、面積扣淨面積 |
+-| `openings-area-only` | 同一面積只扣淨面積，幅數與捲數不變 |
++| `openings-list-deduction` | 開口寬度摘要 240 cm，完整 1200 cm 估算 23 幅、8 捲，淨面積 26.31 m² |
++| `openings-area-only` | 同一開口面積得同一淨面積、幅數及捲數 |
++| `partial-height-opening-full-strips` | WALL-01：3.18 × 2.50 m 的牆與 1.59 × 1.20 m 的窗，6 幅、2 捲、淨面積 6.04 m² |
++| `opening-height-exceeds-wall` | WALL-02：3.00 m 開口超過 2.50 m 牆高，指出第 1 列開口高度 |
++| `opening-height-equals-wall` | 2.50 m 開口等於牆高，6 幅、2 捲、淨面積 5.70 m² |
++| `first-opening-height-before-aggregate-and-roll` | 第 2、3 列開口超高，且開口寬超限、捲長不足。回第 2 列開口高度 |
++| `opening-width-format-before-height-cross-check` | 第 1 列開口超高、第 2 列寬格式錯，先回第 2 列寬格式錯 |
+ | `waste-ten-percent` | 損耗先膨脹幅數 23→26，再換算 9 捲 |
+ | `repeat-exact-multiple` | 裕度後幅長恰為重複整數倍，不多取一格 |
+ | `walls-mixed-heights` | 兩牆高度不同，幅長 256 與 288 各自計算 |
+@@ -141,9 +148,16 @@
+ | `state-cancel-late` | 延遲成功後取消，舊回傳不能復活，重設回預設值。 |
+ | `state-replace-late` | 新工作失敗後收到上一份工作的成功，保留目前錯誤。 |
+ 
++下載字面基準如下。
++
++- `openings-list-deduction` 的報告為下列 compact JSON 加一個 LF，共 282 bytes，SHA-256 `3facdec2e1314b5bd4272078dec67888a1e859dfa20e599bf15213b58d020131`。
++  `{"grossWallAreaM2":"30.00","netWallAreaM2":"26.31","openingsAreaM2":"3.69","rolls":8,"strips":23,"stripsWithWaste":23,"walls":[{"dropsPerRoll":3,"effectiveWidthCm":1200,"index":1,"openingsWidthCm":240,"rolls":8,"stripLengthCm":260,"strips":23,"stripsWithWaste":23,"widthCm":1200}]}`
++- `partial-height-opening-full-strips` 的報告為下列 compact JSON 加一個 LF，共 274 bytes，SHA-256 `0d1185f13fcc13cf89e3f96e35fd6485ad062d88f112a1a0a04ffee6a8a73d8f`。
++  `{"grossWallAreaM2":"7.95","netWallAreaM2":"6.04","openingsAreaM2":"1.91","rolls":2,"strips":6,"stripsWithWaste":6,"walls":[{"dropsPerRoll":3,"effectiveWidthCm":318,"index":1,"openingsWidthCm":159,"rolls":2,"stripLengthCm":260,"strips":6,"stripsWithWaste":6,"widthCm":318}]}`
++
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測合法上限（周長 200 m、牆 12 列、開口 20 列、重複 200、損耗 50）、剛好超限、錯型別、額外欄、缺欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證不變量：每面牆 `strips × rollWidthCm ≥ effectiveWidthCm` 且 `(strips−1) × rollWidthCm < effectiveWidthCm`；`stripLengthCm` 為重複的倍數（重複 > 0 時）且 `stripLengthCm − repeat < heightCm + TRIM ≤ stripLengthCm`；`dropsPerRoll × stripLengthCm ≤ rollLengthCm < (dropsPerRoll+1) × stripLengthCm`；總計等於逐牆加總；淨面積 = 總面積 − 開口面積（以 cm² 精確值比對後再格式化）。
++另測合法上限（周長 200 m、牆 12 列、開口 20 列、重複 200、損耗 50）、剛好超限、錯型別、額外欄、缺欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證不變量：每面牆 `strips × rollWidthCm ≥ widthCm` 且 `(strips−1) × rollWidthCm < widthCm`；`stripLengthCm` 為重複的倍數（重複 > 0 時）且 `stripLengthCm − repeat < heightCm + TRIM ≤ stripLengthCm`；`dropsPerRoll × stripLengthCm ≤ rollLengthCm < (dropsPerRoll+1) × stripLengthCm`；總計等於逐牆加總；淨面積 = 總面積 − 開口面積（以 cm² 精確值比對後再格式化）。
+ 
+ 候選 gate（均 NOT_RUN）
+ 
+@@ -156,7 +170,7 @@
+ 兩語靜態內容與正式 gate（目前 NOT_RUN）
+ 
+ - 繁中 lang=zh-Hant，H1「壁紙用量計算」，title「壁紙用量計算｜Gloss Tools」，description「依房間周長或逐面牆尺寸、壁紙捲的寬與長、圖案重複長度，計算需要幾幅壁紙、每幅裁多長、共要買幾捲。」。英文 lang=en，H1 “Wallpaper Calculator”，title “Wallpaper Calculator | Gloss Tools”，description “Work out how many wallpaper strips you need, how long to cut each strip, and how many rolls to buy, from your room size, roll size and pattern repeat.”。兩頁靜態呈現操作、限制、FAQ。全部狀態及錯誤使用對等本地化訊息。
+-- FAQ。為什麼開口面積不一定減少捲數？幅數由寬度決定：以尺寸清單輸入時，開口寬度會扣掉不需貼的幅；只輸入面積時無法知道開口在哪一幅，只能扣淨面積。 / Why doesn't the openings area always reduce the roll count? Strips are counted by width: dimension-list openings remove the strips they fully cover, while an area-only figure has no position, so it only reduces the reported net area.
++- FAQ。為什麼填了門窗尺寸，捲數還是一樣？門窗面積會從毛牆面積扣除，得到淨牆面積。工具按完整牆寬估算幅數，因為門窗的位置、裁切方式和可用餘料會影響實際節省。 / Why does the roll count stay the same after I enter door or window dimensions? The calculator deducts the opening area to show the net wall area. It estimates strips from the full wall width because any savings depend on where the openings sit, how you cut the strips and which offcuts you can reuse.
+ - FAQ。每幅為什麼多留 10 公分？上下各 5 公分修剪裕度是固定常數，另再向上取整到完整圖案重複。 / Why does each strip get 10 cm extra? A fixed 5 cm trim allowance at the top and bottom, then the length is rounded up to whole pattern repeats.
+ - FAQ。損耗百分比加在哪裡？先把每面牆的幅數按損耗向上取整，再換算捲數；不同牆的剩料不互相流用。 / Where does the waste percentage apply? It inflates each wall's strip count (rounded up) before rolls are counted; leftovers are not shared between walls.
+ - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
+--- a/docs/specs/wallpaper-calculator/fixtures.json
++++ b/docs/specs/wallpaper-calculator/fixtures.json
+@@ -143,7 +143,7 @@
+     {
+       "id": "openings-list-deduction",
+       "kind": "core",
+-      "purpose": "開口尺寸清單：寬度扣幅數、面積扣淨面積",
++      "purpose": "開口尺寸清單：面積扣淨面積，完整牆寬用於估算幅數與採購捲數",
+       "input": {
+         "wallMode": "perimeter",
+         "perimeterM": "12",
+@@ -172,46 +172,6 @@
+               "index": 1,
+               "widthCm": 1200,
+               "openingsWidthCm": 240,
+-              "effectiveWidthCm": 960,
+-              "strips": 19,
+-              "stripLengthCm": 260,
+-              "dropsPerRoll": 3,
+-              "stripsWithWaste": 19,
+-              "rolls": 7
+-            }
+-          ],
+-          "strips": 19,
+-          "stripsWithWaste": 19,
+-          "rolls": 7,
+-          "grossWallAreaM2": "30.00",
+-          "openingsAreaM2": "3.69",
+-          "netWallAreaM2": "26.31"
+-        }
+-      }
+-    },
+-    {
+-      "id": "openings-area-only",
+-      "kind": "core",
+-      "purpose": "只給開口面積：不扣幅數與捲數、只扣淨面積",
+-      "input": {
+-        "wallMode": "perimeter",
+-        "perimeterM": "12",
+-        "heightM": "2.5",
+-        "rollWidthM": "0.53",
+-        "rollLengthM": "10.05",
+-        "patternRepeatCm": "0",
+-        "openingsMode": "area",
+-        "wastePercent": "0",
+-        "openingsAreaM2": "3.69"
+-      },
+-      "expected": {
+-        "ok": true,
+-        "result": {
+-          "walls": [
+-            {
+-              "index": 1,
+-              "widthCm": 1200,
+-              "openingsWidthCm": 0,
+               "effectiveWidthCm": 1200,
+               "strips": 23,
+               "stripLengthCm": 260,
+@@ -226,6 +186,235 @@
+           "grossWallAreaM2": "30.00",
+           "openingsAreaM2": "3.69",
+           "netWallAreaM2": "26.31"
++        }
++      }
++    },
++    {
++      "id": "openings-area-only",
++      "kind": "core",
++      "purpose": "只給開口面積：不扣幅數與捲數、只扣淨面積",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "12",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "10.05",
++        "patternRepeatCm": "0",
++        "openingsMode": "area",
++        "wastePercent": "0",
++        "openingsAreaM2": "3.69"
++      },
++      "expected": {
++        "ok": true,
++        "result": {
++          "walls": [
++            {
++              "index": 1,
++              "widthCm": 1200,
++              "openingsWidthCm": 0,
++              "effectiveWidthCm": 1200,
++              "strips": 23,
++              "stripLengthCm": 260,
++              "dropsPerRoll": 3,
++              "stripsWithWaste": 23,
++              "rolls": 8
++            }
++          ],
++          "strips": 23,
++          "stripsWithWaste": 23,
++          "rolls": 8,
++          "grossWallAreaM2": "30.00",
++          "openingsAreaM2": "3.69",
++          "netWallAreaM2": "26.31"
++        }
++      }
++    },
++    {
++      "id": "partial-height-opening-full-strips",
++      "kind": "core",
++      "purpose": "WALL-01：部分高度開口的材料下界反例",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "3.18",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "7.8",
++        "patternRepeatCm": "0",
++        "openingsMode": "list",
++        "wastePercent": "0",
++        "openings": [
++          {
++            "widthM": "1.59",
++            "heightM": "1.2"
++          }
++        ]
++      },
++      "expected": {
++        "ok": true,
++        "result": {
++          "walls": [
++            {
++              "index": 1,
++              "widthCm": 318,
++              "openingsWidthCm": 159,
++              "effectiveWidthCm": 318,
++              "strips": 6,
++              "stripLengthCm": 260,
++              "dropsPerRoll": 3,
++              "stripsWithWaste": 6,
++              "rolls": 2
++            }
++          ],
++          "strips": 6,
++          "stripsWithWaste": 6,
++          "rolls": 2,
++          "grossWallAreaM2": "7.95",
++          "openingsAreaM2": "1.91",
++          "netWallAreaM2": "6.04"
++        }
++      }
++    },
++    {
++      "id": "opening-height-exceeds-wall",
++      "kind": "core",
++      "purpose": "WALL-02：指出第 1 列開口高度",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "3.18",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "7.8",
++        "patternRepeatCm": "0",
++        "openingsMode": "list",
++        "wastePercent": "0",
++        "openings": [
++          {
++            "widthM": "0.9",
++            "heightM": "3"
++          }
++        ]
++      },
++      "expected": {
++        "ok": false,
++        "error": {
++          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
++          "field": "heightM",
++          "row": 1
++        }
++      }
++    },
++    {
++      "id": "opening-height-equals-wall",
++      "kind": "core",
++      "purpose": "開口與牆同高合法，採購量依完整牆寬",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "3.18",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "7.8",
++        "patternRepeatCm": "0",
++        "openingsMode": "list",
++        "wastePercent": "0",
++        "openings": [
++          {
++            "widthM": "0.9",
++            "heightM": "2.5"
++          }
++        ]
++      },
++      "expected": {
++        "ok": true,
++        "result": {
++          "walls": [
++            {
++              "index": 1,
++              "widthCm": 318,
++              "openingsWidthCm": 90,
++              "effectiveWidthCm": 318,
++              "strips": 6,
++              "stripLengthCm": 260,
++              "dropsPerRoll": 3,
++              "stripsWithWaste": 6,
++              "rolls": 2
++            }
++          ],
++          "strips": 6,
++          "stripsWithWaste": 6,
++          "rolls": 2,
++          "grossWallAreaM2": "7.95",
++          "openingsAreaM2": "2.25",
++          "netWallAreaM2": "5.70"
++        }
++      }
++    },
++    {
++      "id": "first-opening-height-before-aggregate-and-roll",
++      "kind": "core",
++      "purpose": "兩列超高，且總寬超限與捲長不足；優先報第 2 列開口高度",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "3.18",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "2.5",
++        "patternRepeatCm": "0",
++        "openingsMode": "list",
++        "wastePercent": "0",
++        "openings": [
++          {
++            "widthM": "0.9",
++            "heightM": "1"
++          },
++          {
++            "widthM": "1.5",
++            "heightM": "3"
++          },
++          {
++            "widthM": "1.5",
++            "heightM": "4"
++          }
++        ]
++      },
++      "expected": {
++        "ok": false,
++        "error": {
++          "code": "OPENING_HEIGHT_EXCEEDS_WALL",
++          "field": "heightM",
++          "row": 2
++        }
++      }
++    },
++    {
++      "id": "opening-width-format-before-height-cross-check",
++      "kind": "core",
++      "purpose": "逐欄格式檢查完成後才檢查開口與牆的高度",
++      "input": {
++        "wallMode": "perimeter",
++        "perimeterM": "3.18",
++        "heightM": "2.5",
++        "rollWidthM": "0.53",
++        "rollLengthM": "7.8",
++        "patternRepeatCm": "0",
++        "openingsMode": "list",
++        "wastePercent": "0",
++        "openings": [
++          {
++            "widthM": "0.9",
++            "heightM": "3"
++          },
++          {
++            "widthM": "1.255",
++            "heightM": "1.2"
++          }
++        ]
++      },
++      "expected": {
++        "ok": false,
++        "error": {
++          "code": "DECIMAL_FORMAT",
++          "field": "widthM",
++          "row": 2
+         }
+       }
+     },
+--- a/docs/specs/ping-area-converter/AUTHOR-CHECK.md
++++ b/docs/specs/ping-area-converter/AUTHOR-CHECK.md
+@@ -1,6 +1,6 @@
+ # 坪數換算 — 作者檢查
+ 
+-[原作者與工作環境資訊見固定來源]
++原作者見 [固定來源](https://github.com/KYStr/glossquote-labs-home/blob/6d7cc4cd18a273b0d386b19b85b883573d097cba/docs/specs/ping-area-converter/AUTHOR-CHECK.md)。PING-01 由本次維護修訂，候選文件待非作者審查。
+ 
+ - 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+ - 去重：比對 checkout 內 `docs/specs/` 既有 102 個目錄，無面積單位換算規格；最相近者為冷氣噸數計算（規格 PR #154，把坪當輸入估冷房能力），實質差異已寫入 SPEC 的 scope 節。最終去重仍由統籌與 reviewer 核對。
+@@ -13,21 +13,22 @@
+ 
+ ## Fixture 數值雙重推導
+ 
+-每筆 expected 先由作者依 SPEC 釘版規則以分數手算，再以 Python `fractions.Fraction` 精確運算獨立重算；兩者在全部欄位一致後才寫入 fixtures。
++原稿的字面值由作者以分數手算與 Python `fractions.Fraction` 獨立重算。維護者用相同精確常數推導新增的 100 坪案例。
+ 
+ 手算要點（分數化簡＋長除法）：
+ 
+ - 1 坪 =(6×10/33)² =(20/11)² = 400/121 m²。
+-- 30 坪 m²：12000/121 = 99 + 21/121 = 99.17355… → 99.17。ft²：12000/121 × 1562500/145161 = 18,750,000,000/17,564,481 ≈ 1067.49524 → 1067.5（注意：以 3.3058 近似係數手算會得 1067.45 上下，此正為 SPEC 禁用近似係數的原因）。畳：12000/121 × 50/81 = 600000/9801 ≈ 61.2188 → 61.2。
++- 30 坪 m²：12000/121 = 99 + 21/121 = 99.17355… → 99.17。ft²：12000/121 × 1562500/145161 = 18,750,000,000/17,564,481 ≈ 1067.49524 → 1067.50。用 3.3058 作係數亦顯示 1067.50。畳：12000/121 × 50/81 = 600000/9801 ≈ 61.2188 → 61.2。
++- 100 坪精度案例：40,000/121 m² 乘 1,562,500/145,161，得到 3558.31749… ft²，顯示 3558.32。若以 100 × 3.3058 m² 換算，則為 3558.33350… ft²，顯示 3558.33。其餘精確結果為 330.58 m² 與 204.1 畳。
+ - 100 m² → 坪：100 × 121/400 = 121/4 = 30.25（整數，無捨入）。
+ - tie 兩案：2 m² → 坪 = 242/400 = 0.605 整數 → half-up 0.61；1.701 m² → 畳 = 1701/1620 = 1.05 整數 → half-up 1.1。兩案皆為精確 .5 尾，能區分 half-up 與銀行家捨入／截斷。
+ - 1000 ft² → m²：1000 × 0.09290304 = 92.90304 → 92.9；→ 坪：92.90304 × 121/400 = 28.1031696 → 28.1。
+-- 速查表抽查列（手算）：2 坪 = 800/121 ≈ 6.6116 → 6.61；3 坪 = 1200/121 ≈ 9.9174 → 9.92；10 坪 = 4000/121 ≈ 33.0579 → 33.06；100 坪 = 40000/121 ≈ 330.5785 → 330.58；第 30 列與 example-thirty-ping 的 m2／ft2 相同（99.17／1067.5），已交叉核對。
++- 速查表抽查列（手算）：2 坪 = 800/121 ≈ 6.6116 → 6.61；3 坪 = 1200/121 ≈ 9.9174 → 9.92；10 坪 = 4000/121 ≈ 33.0579 → 33.06；100 坪 = 40000/121 ≈ 330.5785 → 330.58；第 30 列與 `example-thirty-ping` 的 m2／ft2 一致（99.17／1067.50），第 100 列與 `hundred-ping-precision` 一致（330.58／3558.32）。
+ 
+-腳本重算：以 Python `fractions` 依同一組分數常數與 half-up 規則（`floor(x·10^dp + 1/2)`）重算 23 筆核心案例全部輸出與速查表全 100 列，與手算抽查點全數一致；速查表 100 列即以此獨立腳本產出字面值（未用任何產品程式）。
++原稿的 23 筆核心及 100 列速查表由 Python 分數運算重算。維護者用離線 Node 整數驗證器重算修訂後全部案例，含 100 坪精確與近似比較、速查表交叉比對及 30 坪下載。
+ 
+ - 報告字面值由作者依 canonical 規則手工組字串後以程式驗算：99 bytes，SHA-256 `2363e57e7570dae35a9830eaa3d86b003ca73be825cabeebd297d24f3f14dc20`，已釘入 SPEC 的 tests 節。
+-- fixtures 共 27 筆：核心 23（成功 10、錯誤 13）、table 1（100 列）、controller 3。`error-unicode` 的未成對 surrogate 在檔案中以 JSON 轉義 `\ud800` 表示，讀回驗證其值為 2 個 UTF-16 code units 的字串（`1` 加單一高 surrogate）。
++- fixtures 共 28 筆：核心 24（成功 11、錯誤 13）、table 1（100 列）、controller 3。`error-unicode` 的未成對 surrogate 在檔案中以 JSON 轉義 `\ud800` 表示，讀回驗證其值為 2 個 UTF-16 code units 的字串（`1` 加單一高 surrogate）。
+ 
+ ## NOT_RUN
+ 
+--- a/docs/specs/ping-area-converter/SPEC.md
++++ b/docs/specs/ping-area-converter/SPEC.md
+@@ -94,7 +94,7 @@
+ 
+ 使用原生 HTML/CSS/ESM 與 Node 24 built-ins，零 runtime／建置依賴。候選目標 `tools/ping-area-converter/`。src/core.mjs 放純驗證、推導、格式化。src/controller.mjs 管草稿、工作世代及資源。src/app.mjs 用安全 DOM API 綁表單。public/index.html 和 public/en/index.html 為兩個靜態入口。Node scripts 只建置工具 allowlist，不取線上檔、不發布。
+ 
+-- 精確運算：核心以 BigInt 分子／分母表示分數；amount 字串直接拆成整數與 10^k，不經 Number 解析小數。四捨五入以整數算術完成 `floor((2·n·10^dp + d) / (2d))`（n/d ≥ 0），結果數字再以十進字串組出，避免二進浮點誤差改動進位（0.605 類 tie 必須進位，見 fixtures）。禁止先把常數取成 3.3058、0.3025 以外的近似小數再算——0.3025 本身是精確值可用，但 ft² 與坪係數必須用分數。
++- 精確運算：核心以 BigInt 分子／分母表示分數；amount 字串直接拆成整數與 10^k，不經 Number 解析小數。四捨五入以整數算術完成 `floor((2·n·10^dp + d) / (2d))`（n/d ≥ 0），結果數字再以十進字串組出，避免二進浮點誤差改動進位（0.605 類 tie 必須進位，見 fixtures）。換算使用表列精確分數。0.3025 是 121/400 的精確有限小數。坪轉平方公尺採 400/121，避免以 3.3058 近似。
+ - 工作開始先使舊結果失效並遞增世代號。Node 建置時從固定 source bytes 嵌入純核心及固定訊息處理器，頁面載入後從該固定字串建立 module Worker Blob URL。禁止使用者內容參與程式、eval、new Function 或動態 import。測試 import 同一份核心。
+ - Worker 每次只收目前快照及世代號。取消、換來源、重設、替換或 pagehide 時 terminate 並釋放結果及 URL。只收目前世代且 busy 的結果。成功後也停止 Worker。bfcache 回來重設。不能取消的 File.arrayBuffer 晚到也丟棄。明確點下載才建 Blob URL，30 秒內撤銷，結果失效即提早撤銷。
+ - 表格與預覽用 textContent/value。輸入不當標記、style、selector、href、src 或檔名。禁 fetch、XHR、WebSocket、beacon、analytics、遠端字型、上傳、帳號、剪貼簿、持久 storage、service worker。工作內容不進 URL、history、console、日誌或執行證據。離頁丟棄引用，無安全抹除承諾。
+@@ -118,11 +118,12 @@
+ 
+ ## tests
+ 
+-驗收輸入見 [fixtures.json](fixtures.json)。23 個字面核心案例、1 個 table 案例（速查表全 100 列）與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
++驗收輸入見 [fixtures.json](fixtures.json)。24 個字面核心案例、1 個 table 案例（速查表全 100 列）與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+ 
+ | 案例 ID | 驗證行為 |
+ | --- | --- |
+ | `example-thirty-ping` | 範例：30 坪 → 99.17 m²／1067.5 ft²／61.2 畳 |
++| `hundred-ping-precision` | PING-01：100 坪 → 330.58 m²／3558.32 ft²／204.1 畳，ft² 與 3.3058 近似值的 3558.33 不同 |
+ | `one-ping` | 1 坪基準 400/121 m² |
+ | `hundred-m2` | 100 m² → 坪恰 30.25 |
+ | `thousand-ft2` | 1000 ft² → 92.9 m²／28.1 坪 |
+@@ -152,7 +153,7 @@
+ 
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證 tie 值 0.605／1.05 的進位方向、以 3.3058 近似係數計算會得出不同結果的案例（30 坪 ft²）、畳概略標示不缺漏、速查表與單次換算同值（表格第 30 列等於 example 的 m2／ft2）。
++另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證 tie 值 0.605／1.05 的進位方向、用 `hundred-ping-precision` 驗證 100 坪以 400/121 換算為 3558.32 ft²，將該係數替換為 3.3058 再按同一規則四捨五入得 3558.33 ft²。另驗畳概略標示、速查表第 30 列與 `example-thirty-ping` 及第 100 列與 `hundred-ping-precision` 的 m2／ft2 一致。
+ 
+ 報告字面釘版：example-thirty-ping 的報告 bytes 為 `{"input":{"amount":"30","unit":"ping"},"result":{"ft2":1067.5,"m2":99.17,"ping":30,"tatami":61.2}}` 加一個 LF，共 99 bytes，SHA-256 `2363e57e7570dae35a9830eaa3d86b003ca73be825cabeebd297d24f3f14dc20`。
+ 
+--- a/docs/specs/ping-area-converter/fixtures.json
++++ b/docs/specs/ping-area-converter/fixtures.json
+@@ -19,6 +19,24 @@
+           "m2": 99.17,
+           "ft2": 1067.5,
+           "tatami": 61.2
++        }
++      }
++    },
++    {
++      "id": "hundred-ping-precision",
++      "kind": "core",
++      "purpose": "PING-01：100 坪以精確係數換算為 3558.32 ft²，近似係數會顯示 3558.33 ft²",
++      "input": {
++        "amount": "100",
++        "unit": "ping"
++      },
++      "expected": {
++        "ok": true,
++        "result": {
++          "ping": 100,
++          "m2": 330.58,
++          "ft2": 3558.32,
++          "tatami": 204.1
+         }
+       }
+     },
