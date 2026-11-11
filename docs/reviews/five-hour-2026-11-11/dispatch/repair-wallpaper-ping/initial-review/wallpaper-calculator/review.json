@@ -1,0 +1,240 @@
+{
+  "reviewId": "FH-spec-review-01",
+  "observedAt": "2026-11-11T02:50:58Z",
+  "reviewer": "local-codex:01a1c87c-ec1d-7003-89ce-ca75c4084135",
+  "independence": {
+    "authored": false,
+    "ownerOrContributor": false,
+    "otherParticipation": false
+  },
+  "taskId": "labs-wallpaper-calculator-spec-20261109",
+  "specId": "spec-wallpaper-calculator-20261109",
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "owner": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "claimId": "muse-r4-wallpaper-calculat-claim-20261109T144903Z-fc62e",
+    "taskStatus": "reviewing",
+    "specStatus": "draft",
+    "consumedBy": null
+  },
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "f8939291d2e283f1e6496d3a9cc802a054732200",
+    "path": "docs/specs/wallpaper-calculator/SPEC.md",
+    "pr": "https://github.com/KYStr/glossquote-labs-home/pull/226",
+    "openDraft": true,
+    "verifiedHead": "f8939291d2e283f1e6496d3a9cc802a054732200"
+  },
+  "existingBuild": {
+    "pr": "https://github.com/KYStr/glossquote-labs-home/pull/270",
+    "head": "6be517b99651d23d082e7ad9b84a288583068d56",
+    "productionTaskInObservedRegistry": false,
+    "scope": "Collision only; unreviewed product."
+  },
+  "verdict": "revision",
+  "documentStatus": "FAIL",
+  "readyRecommendation": "DO_NOT_MARK_READY",
+  "rubricComplete": true,
+  "requiredChecksComplete": true,
+  "fixtureResults": {
+    "status": "PASS",
+    "literalCount": 17,
+    "matched": 17,
+    "core": 14,
+    "controller": 3
+  },
+  "productStatus": "NOT_RUN",
+  "formalRegistryAction": "NOT_RUN_WAITING_FOR_PRIMARY_SERIAL_SLOT",
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": true,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 95,
+      "evidence": "SPEC 9–14: home prep + store/mobile input, drops/length/rolls output and declared estimate boundary. Method conflict scored below."
+    },
+    {
+      "id": "scope",
+      "score": 95,
+      "evidence": "SPEC 18–27: bounded 12 walls/20 openings, no half-drop layouts or price service; unlike paint/tiles, needs discrete drop/repeat. Existing Build PR #270 identified."
+    },
+    {
+      "id": "userFlow",
+      "score": 94,
+      "evidence": "SPEC 31–49: discoverable forms, explicit example/run, mode/row edit, first error, cancel/reset and draft lost on language navigation."
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 75,
+      "evidence": "SPEC 68–93 gives exact integer rules and report bytes; WALL-01 underbuys against a material-area lower bound, WALL-02 accepts a window taller than its room."
+    },
+    {
+      "id": "implementation",
+      "score": 94,
+      "evidence": "SPEC 97–102,150–151: bounded BigInt-compatible core, bundled fixed Worker, generation cancellation, CSP and offline build, privacy; no implementation executed."
+    },
+    {
+      "id": "acceptance",
+      "score": 95,
+      "evidence": "SPEC 106–118,148–163: nine IDs with per-item observed results, isolated actual Chrome/Edge, trace/bytes/SEO and NOT_RUN policy."
+    },
+    {
+      "id": "tests",
+      "score": 84,
+      "evidence": "17/17 literals independently derived including cancel and stale-result checkpoints; no case prevents partial-height openings dropping required wallpaper. WALL-01/02 reproduced."
+    },
+    {
+      "id": "handoff",
+      "score": 96,
+      "evidence": "SPEC 167–173 and fixed PR #226: paths, commands, claims, PR evidence, separate release gates and independent reviewer; #270 no duplicate dispatch."
+    }
+  ],
+  "blockingIssues": [
+    {
+      "id": "WALL-01",
+      "location": "SPEC.md:68,79–89,159; BRIEF.md:7",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "openings": [
+          {
+            "widthM": "1.59",
+            "heightM": "1.2"
+          }
+        ],
+        "wastePercent": "0"
+      },
+      "observed": "3 strips / 1 roll; a roll is 4.134 m², while exact net wall area is 6.042 m².",
+      "expected": "For a conservative purchase estimate, do not deduct a partial-height opening from drop count without a cutting/placement model. Retain 6 strips, 2 rolls, net area 6.04 m² under the MVP method."
+    },
+    {
+      "id": "WALL-02",
+      "location": "SPEC.md:68,74,89",
+      "input": {
+        "wallMode": "perimeter",
+        "perimeterM": "3.18",
+        "heightM": "2.5",
+        "rollWidthM": "0.53",
+        "rollLengthM": "7.8",
+        "patternRepeatCm": "0",
+        "openingsMode": "list",
+        "openings": [
+          {
+            "widthM": "0.9",
+            "heightM": "3"
+          }
+        ],
+        "wastePercent": "0"
+      },
+      "observed": "Successful output; it deducts a 3.00 m tall opening from a 2.50 m high wall.",
+      "expected": "Reject this opening at row 1, name its height field, and pin the first-error code/order and literal test."
+    }
+  ],
+  "nonBlocking": [
+    "Clarify precedence when mode strings are invalid and the mode-specific shape cannot be resolved; pin exact enum/shape examples.",
+    "Remove mentions of success with repair rows and File.arrayBuffer; inputs fail atomically and there is no file input."
+  ],
+  "primarySources": [
+    {
+      "url": "https://cole-and-son.com/pages/frequently-asked-questions",
+      "observation": "Manufacturer's drop method and material/pattern-specific caveats."
+    },
+    {
+      "url": "https://www.theinside.co.nz/blogs/wallpaper/should-i-deduct-doors-and-windows-when-measuring-for-wallpaper",
+      "observation": "Supplier's own quantity method does not deduct windows/doors because openings can interrupt rather than remove drops."
+    }
+  ],
+  "sourceIdentity": [
+    {
+      "name": "BRIEF.md",
+      "bytes": 1320,
+      "gitBlob": "4e4b0a4a4653a7775bcf5c4a4f50fcb18160938a",
+      "remoteBlob": "4e4b0a4a4653a7775bcf5c4a4f50fcb18160938a",
+      "sha256": "547243e095a76486533aa59aa6d575e7dc0d87603c6564bc3317d0bbade9d3bf",
+      "match": true
+    },
+    {
+      "name": "AUTHOR-CHECK.md",
+      "bytes": 5096,
+      "gitBlob": "4bf4315594adabb0d0ad5a8658a101c6a7e29ca6",
+      "remoteBlob": "4bf4315594adabb0d0ad5a8658a101c6a7e29ca6",
+      "sha256": "17ad3c35e9d3c48c01c3d0f41fdd8835bd2f8a2057d936afaa0a91e2ac405aa0",
+      "match": true
+    },
+    {
+      "name": "SPEC.md",
+      "bytes": 23180,
+      "gitBlob": "44f7da9269c327b56f24981da7808750a0484eb5",
+      "remoteBlob": "44f7da9269c327b56f24981da7808750a0484eb5",
+      "sha256": "a986dd03acc90eb1c4535ec423dd2aea6af0e17d9af58b06d5d34466b4d86ffd",
+      "match": true
+    },
+    {
+      "name": "fixtures.json",
+      "bytes": 18811,
+      "gitBlob": "3f447869344420e32ba2272414bf3a169b3c24be",
+      "remoteBlob": "3f447869344420e32ba2272414bf3a169b3c24be",
+      "sha256": "794c3fed08ddfc05c61e240c370a9c849909f4135f07ec5b5a9af52588c8f5cc",
+      "match": true
+    }
+  ],
+  "productionRubric": {
+    "status": "draft",
+    "revision": 1537,
+    "sha": "73e05eb696e26d943c8eb1fed2e7f5e2bdc89c50",
+    "specId": "spec-wallpaper-calculator-20261109",
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "sourceMatches": true,
+    "candidateMatches": true,
+    "ownerMatches": true,
+    "taskStatus": "reviewing",
+    "taskDocumentCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "inheritedRegisteredCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "intendedProductionCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "productionTasks": [],
+    "coreBlobSha": "4782dd1f249995ceeec00b2d0a89b57d9b9bbb7d",
+    "mismatchId": "REG-RUBRIC-226"
+  }
+}
