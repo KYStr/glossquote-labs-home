@@ -38,7 +38,7 @@ Task ID：`labs-five-hour-eight-spec-mapping-20261111`。預定實際承接者 `
 
 先唯讀最新 registry、規則、八份來源、Astra 的 `.runs/five-hour-2026-11-11/astra-review/next-nine-preflight/`。該資料夾名稱沿用舊名，實際只有八份。它是預審而非正式 mapping acceptance；provided 算術紀錄不能改稱自己執行。
 
-先在自己的 `.runs/five-hour-2026-11-11/dispatch/eight-spec-mapping/evidence/READY-TO-CLAIM.md` 整理設計、目前 expected spec snapshots、來源維護 accepted 狀態與 makers。尚未收到串行時段前，不寫 registry 或正式候選。收到時段後由本人 ACK/register/claim/start，最新版本 CAS，精確讀回同 operationId/requestHash/owner/claim 才製作。
+先在自己的 `.runs/five-hour-2026-11-11/dispatch/eight-spec-mapping/evidence/READY-TO-CLAIM.md` 整理設計、目前 expected spec snapshots、來源維護 accepted 狀態與 makers。尚未收到串行時段前，不寫 registry 或正式候選。核心在登記映射時就要求已公開的固定候選，故主統籌以其已有效承接的 `labs-five-hour-coordination-20261111-v2` 工作先做逐位元來源整合，保留主統籌為 assembler/contributor。這不授權本任務作者先行製作。候選固定、MAP9 完成、收到串行時段後，本任務實際承接者再以該候選 ACK/register/claim/start，最新版本 CAS，精確讀回同 operationId/requestHash/owner/claim，核對主統籌已整合的來源後 submit。不得冒稱主統籌的來源整合是本人的製作。
 
 工作目錄限定本 dispatch 的 `work/`、`evidence/`、HANDOFF 和必要唯讀驗證腳本。公開僅允許八份 `docs/specs/<slug>/` 的 32 個相同來源檔，以及 `docs/reviews/five-hour-2026-11-11/eight-spec-mapping/`。不可改主工作區原稿、其他對話檔案、共用 core、registry 手寫或首頁。
 
