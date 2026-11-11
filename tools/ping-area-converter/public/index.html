@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>坪數換算｜Gloss Tools</title>
+<meta name="description" content="在坪、平方公尺、平方英尺與畳之間換算：精確有理數運算、只在最後一步四捨五入，附 1–100 坪固定速查表；畳採 1.62 m² 廣告慣例值，為概略換算。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>坪數換算</h1>
+  <p class="lede">看房、裝潢估價或比對日本房源時，面積數字混用坪、平方公尺、平方英尺與畳。輸入一個數量和它的單位，一次得到四個單位的換算：全部用精確分數運算，只在最後一步四捨五入，不用 3.3、0.3 之類的湊算係數。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">數量與單位</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-amount">數量</label>
+          <p class="help" id="help-amount">最多三位小數的數字，數值須大於 0 且不超過 1,000,000（以所選單位計）。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="30" value="" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-unit">單位</label>
+          <p class="help" id="help-unit">選擇上面數量所用的單位。畳採日本不動產廣告慣例值，是概略換算。</p>
+          <select id="field-unit" name="unit" aria-describedby="help-unit">
+            <option value="ping" selected>坪</option>
+            <option value="m2">平方公尺</option>
+            <option value="ft2">平方英尺</option>
+            <option value="tatami">畳（概略，1 畳 = 1.62 m² 廣告慣例）</option>
+          </select>
+          <p class="field-error" id="error-unit" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。輸入數量並選擇單位，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <dl class="summary-list" id="result-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel quick-table" aria-labelledby="quick-table-heading">
+    <h2 id="quick-table-heading">常見坪數速查表</h2>
+    <div class="table-scroll" role="region" aria-labelledby="quick-table-heading" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">坪</th><th scope="col">平方公尺 (m²)</th><th scope="col">平方英尺 (ft²)</th></tr>
+        </thead>
+        <tbody id="quick-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details class="details">
+    <summary>換算方式與固定常數</summary>
+    <p>全部換算都是精確有理數運算：1 坪 = 400/121 m²（1 尺 = 10/33 m，1 坪是邊長 6 尺的正方形）；1 ft² = 0.09290304 m²（1 ft = 0.3048 m 的精確定義平方）；1 畳 = 1.62 m² 是日本不動產廣告慣例值。每個輸出只在最後一步四捨五入一次（四捨五入，恰好 .5 時進位）：坪、m²、ft² 取 2 位小數，畳取 1 位。</p>
+    <p>畳的實物尺寸因地區而異：京間約 1.824 m²、中京間約 1.656 m²、江戸間約 1.549 m²、団地間約 1.445 m²；本工具一律以 1.62 m² 概略換算。換算結果只供日常估算，不是登記或簽約依據。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼 1 坪大約是 2 畳，畳卻寫 1.62 m²？</dt>
+      <dd>畳的實際尺寸因地區而異（京間約 1.824 m²、江戸間約 1.549 m²）；本工具的畳採日本不動產廣告慣例 1 畳 = 1.62 m²，是概略換算，1 坪 = 400/121 m² ÷ 1.62 ≈ 2.04 畳。</dd>
+      <dt>結果可以拿去簽約或登記嗎？</dt>
+      <dd>不可以。建物登記以平方公尺為準，坪是民間慣用單位；本工具只供日常估算，正式文件請以權狀或謄本的平方公尺為準。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
