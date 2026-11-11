@@ -1,6 +1,21 @@
 # 匯率換算 — 作者檢查
 
-作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`，run 5 補庫概念 #35。本文件是作者本人對文件的核對，明確不是獨立審查；ready 與否由非作者 reviewer 決定。
+原作者 `cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory`，run 5 補庫概念 #35。原作者的自查與固定四檔保留於 [PR #258 的原候選](https://github.com/KYStr/glossquote-labs-home/tree/dcb21d0903006a708584edba8713e6117f8138a6/docs/specs/currency-converter)。
+
+## 2026-11-11 維護者查核
+
+維護任務 `labs-five-hour-repair-currency-20261111`，維護者 `local-codex:01a1c8a3-97f3-7ef1-a9c6-c33ad79facfd`。依 [固定派工簡報](https://github.com/KYStr/glossquote-labs-home/blob/418aee70f60a04cbe19e339597c91a056bcad0c4/docs/reviews/five-hour-2026-11-11/dispatch/repair-currency/TASK.md) 處理 CUR-01、CUR-02。下方的歷史自查由原作者撰寫，維護章節由本次維護者撰寫，正式獨評待非作者執行。
+
+- **CUR-01**。初載、Reset 與 bfcache 恢復改為空匯率。只有「載入範例 / Load example」會帶入合成的 31.5。成功結果和 JSON 報告沿用該次快照的來源。匯率編輯會撤銷舊產物，手填 31.5 也切換為 `manual`。清空為 `null`。核心維持五欄輸入與八欄成功結果，controller 負責來源與報告。
+- **CUR-02**。`reverse-display-rounding-regression` 的匯率 3、金額 30000，反向精確計算為 30000 ÷ 3 × 100＝1000000 分，顯示逆率為 0.333333。若以顯示值回乘，30000 × 0.333333 × 100＝999999 分。對照表仍依正向匯率逐列計算為 300、3000、30000、300000 分。原循環小數案例的 317 分不變，該案不能區分精確除法與顯示逆率回乘。
+- **既有預期差異**。原 21 個核心案例的輸入及結果均維持原值。`state-cancel-late` 的 `afterReset.draft.rate` 由 `"31.5"` 改為 `""`，來源為 `null`，因重設要求重新輸入。原三個狀態案例的非空匯率均以手填設定，checkpoint 補上表單與結果的來源欄位，其他既有狀態預期維持原值。
+- **新增狀態案例**。`state-rate-source` 覆蓋初載、兩次空匯率提交、範例成功、編輯其他欄位保留來源、手填同值、清空、重設，以及晚到範例結果無法覆蓋手填結果或空白畫面。22 個核心案例、4 個狀態案例的 29 個 checkpoint 以獨立有理數及狀態模型驗算。
+- **報告契約差異**。同一 31.5 數值的舊報告為 340 bytes，SHA-256 為 `bfa30bc8083bcd1e072745e3c0182823da2fa6bc7627f3ac9a14cd9e1e742547`。增加 `rateSource` 後，手填報告為 362 bytes，SHA-256 為 `68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9`。合成範例報告為 363 bytes，SHA-256 為 `6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51`。兩者的八個核心結果欄位相同。
+- **本次交驗範圍**。三項維護面向為 `spec-corrections`、`exact-fixtures`、`provenance-and-scope`。八節獨評、登記修正 REG-01 及產品九面向仍待各自的流程。產品交驗、Chrome／Edge、正式 HTTPS／SEO、Network／Storage、原生對話及部署為 NOT_RUN。
+
+## 原作者歷史自查（固定 v1）
+
+以下保留 v1 自查的歷史記錄。匯率來源、reset、反向案例鑑別與現行報告，以本維護章節及 [SPEC.md](SPEC.md) 為準。
 
 - 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
 - §6 已預宣告九個產品面向與必要證據；本文只提供文件，九項產品分數皆 null、狀態均 NOT_RUN。
@@ -15,7 +30,7 @@
   7. **金額上限 9,999,999.99 與匯率上限 1,000,000 的搭配**使所有結果整數 < 2^53：convertedCents 最大為 999,999,999 × 1,000,000 ＝ 999,999,999,000,000（正向）或 999,999,999 × 10^6 ÷ 1（反向、rateMicro＝1），皆為精確安全整數；中間乘積走 BigInt。
 - 本案無外部匯率或法規來源可依（設計上即不取即時資料）；ISO 4217 僅作為「不採用」的比對對象並已述明理由。概念說明（brief #35）與本規格無衝突；兩處具體化（對照表由 optional 改為固定四列常駐、反向精度定為 6 位有效數字）已記於上。
 
-## Fixture 雙重推導（手算＋獨立重算）
+### Fixture 雙重推導（v1 手算＋獨立重算）
 
 每個計算案例先以手算依 SPEC 規則推出，再以兩支獨立腳本重算：Python `fractions.Fraction` 精確有理數實作（含完整驗證順序）對 fixtures.json 全部 21 個核心案例逐一深度相等（21/21）；Node.js BigInt 整數實作對 11 個成功案例的 convertedCents／inverseRate／quickTable 逐值一致（11/11）；3 個 controller 案例的 draft／edit／lateResult 與 `default-forward` 的 input／result 逐字對應亦經腳本核對。手算如下（金額單位：分；micro 為匯率×10^6）。
 

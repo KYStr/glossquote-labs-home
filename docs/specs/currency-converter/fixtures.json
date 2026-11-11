@@ -40,7 +40,7 @@
         "toCode": "TWD"
       },
       "kind": "core",
-      "purpose": "預設範例：正向換算 amount × rate，含反向匯率與快速對照表"
+      "purpose": "明確載入合成範例所用的純核心輸入，正向乘匯率並顯示反向匯率與對照表。"
     },
     {
       "expected": {
@@ -124,7 +124,49 @@
         "toCode": "TWD"
       },
       "kind": "core",
-      "purpose": "反向換算為無限循環小數：100 ÷ 31.5 精確有理數，只在輸出捨入一次"
+      "purpose": "反向為循環小數，捨入至 317 分。誤用顯示逆率回乘在本案也得到 317 分。"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 3000000,
+          "convertedCents": 1000000,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.333333",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 300
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 3000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 30000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 300000
+            }
+          ],
+          "rateMicro": 3000000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "reverse-display-rounding-regression",
+      "input": {
+        "amount": "30000",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "3",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "精確相除為 1000000 分，顯示逆率 0.333333 回乘僅為 999999 分。"
     },
     {
       "expected": {
@@ -563,24 +605,24 @@
       "purpose": "金額 13 單元超過 12 單元容量，先於文法與範圍"
     },
     {
-      "id": "amount-over-range",
-      "kind": "core",
-      "purpose": "金額 99999999.99 在 12 單元容量內、文法通過，超過 9999999.99 上限 → RANGE",
-      "input": {
-        "fromCode": "USD",
-        "toCode": "TWD",
-        "rate": "31.5",
-        "amount": "99999999.99",
-        "direction": "a-to-b"
-      },
       "expected": {
-        "ok": false,
         "error": {
           "code": "RANGE",
           "field": "amount",
           "row": null
-        }
-      }
+        },
+        "ok": false
+      },
+      "id": "amount-over-range",
+      "input": {
+        "amount": "99999999.99",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "金額 99999999.99 在 12 單元容量內、文法通過，超過 9999999.99 上限 → RANGE"
     },
     {
       "expected": {
@@ -666,7 +708,9 @@
     {
       "expected": {
         "afterEdit": {
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "dirty"
         },
         "afterRerun": {
@@ -675,11 +719,15 @@
             "field": "rate",
             "row": null
           },
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "error"
         },
         "afterRun": {
+          "rateSource": "manual",
           "reportAvailable": true,
+          "resultRateSource": "manual",
           "state": "success"
         }
       },
@@ -713,11 +761,15 @@
             "rate": "31.5",
             "toCode": "TWD"
           },
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "cancelled"
         },
         "afterLateResult": {
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "cancelled"
         },
         "afterReset": {
@@ -725,14 +777,18 @@
             "amount": "100",
             "direction": "a-to-b",
             "fromCode": "USD",
-            "rate": "31.5",
+            "rate": "",
             "toCode": "TWD"
           },
+          "rateSource": null,
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "empty"
         },
         "whilePending": {
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "busy"
         }
       },
@@ -774,7 +830,7 @@
         }
       },
       "kind": "controller",
-      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+      "purpose": "取消手填換算後丟棄舊回傳，重設回空匯率且無來源。"
     },
     {
       "expected": {
@@ -784,7 +840,9 @@
             "field": "rate",
             "row": null
           },
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "error"
         },
         "afterOlderLateResult": {
@@ -793,7 +851,9 @@
             "field": "rate",
             "row": null
           },
+          "rateSource": "manual",
           "reportAvailable": false,
+          "resultRateSource": null,
           "state": "error"
         }
       },
@@ -843,6 +903,309 @@
       },
       "kind": "controller",
       "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    },
+    {
+      "expected": {
+        "afterReset": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "afterStaleEdit": {
+          "rateSource": "manual",
+          "report": {
+            "rateSource": "manual",
+            "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+            "utf8Bytes": 362
+          },
+          "reportAvailable": true,
+          "resultRateSource": "manual",
+          "state": "success"
+        },
+        "afterStaleReset": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "amountChanged": {
+          "draft": {
+            "amount": "200",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleBeforeEdit": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleBeforeReset": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleBeforeResetLoaded": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleLoaded": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "examplePending": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleReloaded": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleSuccess": {
+          "rateSource": "example",
+          "report": {
+            "rateSource": "example",
+            "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51",
+            "utf8Bytes": 363
+          },
+          "reportAvailable": true,
+          "resultRateSource": "example",
+          "state": "success"
+        },
+        "initial": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "initialError": {
+          "error": {
+            "code": "EMPTY",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "initialPending": {
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "manualPending": {
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "manualSuccess": {
+          "rateSource": "manual",
+          "report": {
+            "rateSource": "manual",
+            "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+            "utf8Bytes": 362
+          },
+          "reportAvailable": true,
+          "resultRateSource": "manual",
+          "state": "success"
+        },
+        "rateCleared": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "resetError": {
+          "error": {
+            "code": "EMPTY",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "resetPending": {
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "sameRateEdited": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        }
+      },
+      "id": "state-rate-source",
+      "input": {
+        "steps": [
+          {
+            "at": "initial",
+            "op": "initial"
+          },
+          {
+            "at": "initialPending",
+            "job": "empty",
+            "op": "start"
+          },
+          {
+            "at": "initialError",
+            "job": "empty",
+            "op": "finish"
+          },
+          {
+            "at": "exampleLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "examplePending",
+            "job": "example",
+            "op": "start"
+          },
+          {
+            "at": "exampleSuccess",
+            "job": "example",
+            "op": "finish"
+          },
+          {
+            "at": "amountChanged",
+            "field": "amount",
+            "op": "edit",
+            "value": "200"
+          },
+          {
+            "at": "exampleReloaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeEdit",
+            "job": "staleAfterEdit",
+            "op": "start"
+          },
+          {
+            "at": "sameRateEdited",
+            "field": "rate",
+            "op": "edit",
+            "value": "31.5"
+          },
+          {
+            "at": "manualPending",
+            "job": "manual",
+            "op": "start"
+          },
+          {
+            "at": "manualSuccess",
+            "job": "manual",
+            "op": "finish"
+          },
+          {
+            "at": "afterStaleEdit",
+            "job": "staleAfterEdit",
+            "op": "finish"
+          },
+          {
+            "at": "rateCleared",
+            "field": "rate",
+            "op": "edit",
+            "value": ""
+          },
+          {
+            "at": "exampleBeforeResetLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeReset",
+            "job": "staleAfterReset",
+            "op": "start"
+          },
+          {
+            "at": "afterReset",
+            "op": "reset"
+          },
+          {
+            "at": "afterStaleReset",
+            "job": "staleAfterReset",
+            "op": "finish"
+          },
+          {
+            "at": "resetPending",
+            "job": "resetEmpty",
+            "op": "start"
+          },
+          {
+            "at": "resetError",
+            "job": "resetEmpty",
+            "op": "finish"
+          }
+        ]
+      },
+      "kind": "controller",
+      "purpose": "空匯率、顯式合成來源、手填同值、清空、重設與丟棄舊範例回覆。"
     }
   ],
   "productChecks": "NOT_RUN",
