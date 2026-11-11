@@ -1,0 +1,353 @@
+{
+  "taskId": "labs-reading-time-estimator-spec-20261109",
+  "specId": "spec-reading-time-estimator-20261109",
+  "workType": "spec",
+  "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a",
+  "reviewerContributed": false,
+  "independenceEvidence": {
+    "owner": {
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "claimId": "muse-r4-reading-time-estim-claim-20261109T154234Z-3d861",
+      "claimedAt": "2026-11-09T15:42:34.381Z"
+    },
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "contributors": [
+      "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+    ]
+  },
+  "registry": {
+    "branchHead": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "taskStatus": "reviewing",
+    "specStatus": "draft"
+  },
+  "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/254",
+  "prHead": "131cea60be513f3790bf3327930c6251fd622569",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "131cea60be513f3790bf3327930c6251fd622569",
+    "path": "docs/specs/reading-time-estimator/SPEC.md"
+  },
+  "sourceFiles": {
+    "BRIEF.md": {
+      "gitBlob": "9173ae13dff820f57eb00b14f1a186ab76de5345",
+      "remoteGitBlob": "9173ae13dff820f57eb00b14f1a186ab76de5345",
+      "sha256": "ebf5b03914273e5fb7b44cb6dfae919130f3b372519d9505154b74a2ba76d08b",
+      "bytes": 1503,
+      "identical": true
+    },
+    "SPEC.md": {
+      "gitBlob": "6bf42ba5e7e2822432166dd9288164edc4f841aa",
+      "remoteGitBlob": "6bf42ba5e7e2822432166dd9288164edc4f841aa",
+      "sha256": "ead0160ac64922d7b68ba783d09e202d6865b909a17ec4a9c912b42065a21bbb",
+      "bytes": 21995,
+      "identical": true
+    },
+    "fixtures.json": {
+      "gitBlob": "b59bf6d44548ede5d087e12da326de71f3d7c4b3",
+      "remoteGitBlob": "b59bf6d44548ede5d087e12da326de71f3d7c4b3",
+      "sha256": "dad1d90236dd961d76d8d33e1e5123ac895a799edb15d4d371b612df66d00bf4",
+      "bytes": 122969,
+      "identical": true
+    },
+    "AUTHOR-CHECK.md": {
+      "gitBlob": "c052add2946c75f0df6fba796e0364847f9bb69e",
+      "remoteGitBlob": "c052add2946c75f0df6fba796e0364847f9bb69e",
+      "sha256": "e928bef9e4f240249382e43da1b7425472eebef0b64733faf1909e577c0c1a3c",
+      "bytes": 5344,
+      "identical": true
+    }
+  },
+  "observedAt": "2026-11-11 02:54:38 UTC",
+  "status": "FAIL",
+  "readyRecommended": false,
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": false,
+    "inputsOutputs": true,
+    "implementation": true,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 98,
+      "status": "PASS",
+      "evidence": "桌面完整稿、手機錄音前短稿兩種場景，輸出漢字／詞數和兩種時間，並附速度及計數規則。"
+    },
+    {
+      "id": "scope",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "上限、Unicode 單位、無檔案／頻率／播放都有定義。核對相鄰詞頻、語音朗讀和 legacy 閱讀進度規格，三者各有不同產物。"
+    },
+    {
+      "id": "userFlow",
+      "score": 84,
+      "status": "FAIL",
+      "evidence": "草稿、範例、編輯、取消、錯誤、重設均可追蹤。兩語 FAQ 的乘法、日文零計數說法會誤導實際使用者。見 READ-01。"
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "四組速率端點與欄位順序、兩種 Unicode 單位、25 個分隔字元、精確加總和 JSON 契約都有界線。另跑 NEL／FEFF、混合 token 與 100000 單位。"
+    },
+    {
+      "id": "implementation",
+      "score": 96,
+      "status": "PASS",
+      "evidence": "靜態 HTML、純核心、Worker 及世代控制可由原生 ESM 與 Node 24 實作。無外部語言服務或持久儲存。"
+    },
+    {
+      "id": "acceptance",
+      "score": 95,
+      "status": "PASS",
+      "evidence": "九面向都有實測方法，靜讀混合捨入、H:MM:SS、兩語／CSP／離線、真瀏覽器與正式 SEO 均有檢查路徑。"
+    },
+    {
+      "id": "tests",
+      "score": 87,
+      "status": "FAIL",
+      "evidence": "17 筆 core 與 3 筆狀態 fixture 全數相符。AUTHOR-CHECK 的補充平面手算複製成 U+10000 後不相符，與測例字面不同。見 READ-02。"
+    },
+    {
+      "id": "handoff",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "固定 SPEC、BRIEF、作者檢查及 fixture。`tools/reading-time-estimator/`、階段、停止條件與原 owner 可追溯。"
+    }
+  ],
+  "independentFixtureCheck": {
+    "status": "PASS",
+    "passed": 20,
+    "failed": 0,
+    "exit": 0,
+    "runtime": "v24.14.0",
+    "output": "fixture-results.json",
+    "command": "node reading-time-estimator/verify.mjs fixtures/reading-time-estimator.json",
+    "source": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "131cea60be513f3790bf3327930c6251fd622569",
+      "path": "docs/specs/reading-time-estimator/fixtures.json",
+      "gitBlob": "b59bf6d44548ede5d087e12da326de71f3d7c4b3",
+      "bytes": 122969,
+      "sha256": "dad1d90236dd961d76d8d33e1e5123ac895a799edb15d4d371b612df66d00bf4"
+    }
+  },
+  "productChecks": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "真實文字估算與下載、混合總秒數一次捨入、跨一小時格式。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "UTF-16 100000/100001、四速度首錯與上下限、三個 controller 案例。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Network/Storage/URL/console 及重設清除稿件。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "文本 inert、CSP、固定報告、上限、Worker/Blob dispose。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "雙語桌面與行動、零計數說明、忙碌／取消／錯誤／修正／下載。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、錯誤、狀態回報、320px/200% zoom、對比與觸控。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩 HTML、同語回鏈、候選 noindex 與正式 canonical/hreflang。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、離線 check/test/build、重建 SHA-256、同一 PR head。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome/Edge、兩語 Worker、Blob 與 reflow。"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "READ-01",
+      "title": "兩語 FAQ 的時間公式與日文支援說明和核心相反",
+      "where": "SPEC.md §tests 兩語 FAQ、§userFlow 零計數說明",
+      "input": {
+        "text": "漢字かな",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "actual": "FAQ 說字數乘上每分鐘字數，並把日文本文概括成計數 0。按核心，漢字兩個、英文詞零，靜讀 0 秒、朗讀 1 秒；純假名才零。另以 400 個「字」、400 字/分為例，應是 1 分鐘，乘法無法得出時間。",
+      "expected": "中英文 FAQ 改用字數除以速度，並描述按碼點計數。四區段內的日文漢字可計，假名／韓文音節不計。加入混合日文最小案例，重跑字面案例並核對兩語 0 計數說明。"
+    },
+    {
+      "id": "READ-02",
+      "title": "作者手算的字面碼點和固定 fixture 不同",
+      "where": "AUTHOR-CHECK.md 的 astral-cjk；fixtures.json 的 astral-cjk",
+      "input": {
+        "text": "𐀀😀好",
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "actual": "作者手算字串首字與其行內例字均為 U+10000，按規則只得 1 個漢字、朗讀 0 秒。固定 fixture 首字為 U+20000，才有 2 個漢字、朗讀 1 秒。",
+      "expected": "AUTHOR-CHECK 使用和 fixture 完全相同的 U+20000 字面，核對 U+10000、U+20000 各自分類。固定 fixture 的正確輸入及 expected 可維持。"
+    },
+    {
+      "id": "READ-03",
+      "title": "可調預設的普遍速率宣稱欠相同口徑的來源",
+      "where": "SPEC.md §inputsOutputs 的四預設、§tests 的來源 FAQ；AUTHOR-CHECK.md 的速率依據",
+      "input": {
+        "zhSilentRate": "400",
+        "zhSpeakRate": "240",
+        "enSilentRate": "200",
+        "enSpeakRate": "150"
+      },
+      "actual": "作者將中文靜讀 400–600、朗讀 240–300、英文朗讀 130–160 稱為常見範圍，但未給可查來源或說明文字計數與樣本口徑。實查 Brysbaert 英文資料中，238 wpm 是成人非小說靜讀平均，朗讀平均 183。臺灣有 240–258 字/分的朗讀錄音實驗材料，計入標點且是國中評量用途。",
+      "expected": "保留四個產品預設即可，把未證實的一般速率改為可調估算慣例，或補一級來源並註明語料、讀法、計數單位。兩語 FAQ 和作者查核要有同一口徑。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "固定詞頻規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/131cea60be513f3790bf3327930c6251fd622569/docs/specs/word-frequency/SPEC.md",
+      "observation": "主產物為頻率／排名／篩選與 CSV。"
+    },
+    {
+      "title": "固定語音朗讀規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/131cea60be513f3790bf3327930c6251fd622569/docs/specs/text-to-speech-reader/SPEC.md",
+      "observation": "實際語音播放，含語音選擇與播放狀態。"
+    },
+    {
+      "title": "固定既有閱讀進度規格",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/be197ea30d909b1353e7f77bdf16b1811ac41f71/coordination/local/2026-10-29/specs/26-reading-plan/SPEC.md",
+      "observation": "依書本頁數與截止日期輸出逐日頁碼計畫。"
+    },
+    {
+      "title": "Unicode 17.0 PropList",
+      "url": "https://www.unicode.org/Public/17.0.0/ucd/PropList.txt",
+      "observation": "25 個 White_Space code point 與規格相符，包含 U+0085，沒有 U+FEFF。"
+    },
+    {
+      "title": "Unicode Linear B 碼表",
+      "url": "https://www.unicode.org/charts/PDF/U10000.pdf",
+      "observation": "U+10000 屬 Linear B。"
+    },
+    {
+      "title": "Brysbaert（2019）作者校方典藏",
+      "url": "https://biblio.ugent.be/publication/8647789",
+      "observation": "成人英語非小說靜讀平均 238 wpm、小說 260、朗讀 183。"
+    },
+    {
+      "title": "臺灣國中 TTS 閱讀研究 Methods",
+      "url": "https://link.springer.com/article/10.1007/s11145-025-10738-5",
+      "observation": "評量錄音口徑是 240–258 字/分，計入標點。只能支持該材料設定。"
+    }
+  ],
+  "nonBlocking": [
+    "§tests 寫「實際鍵入或合成檔」。驗收可明寫用合成文字貼到 textarea，與 MVP 的貼文工作流一致。"
+  ],
+  "phase2": {
+    "githubEvidence": "NOT_RUN",
+    "acknowledge": "NOT_RUN",
+    "registryReview": "NOT_RUN",
+    "markSpecReady": "NOT_RUN",
+    "requires": "主統籌安排串行寫入，重新核對 PR head、owner 和登記冊，再由本人執行。"
+  },
+  "documentReviewStatus": "FAIL",
+  "registryProductionContract": {
+    "status": "FAIL",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "specId": "spec-reading-time-estimator-20261109",
+    "field": "spec.acceptanceCriteria",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "documentTaskCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "specDeclaredProductCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missing": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "unexpected": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blockerId": "REG-01",
+    "evidence": "原規格製作 task 用八節評分正確。spec.acceptanceCriteria 也被登記成同八節，缺 SPEC.md §acceptance 的九個產品面向。新 production 需原樣繼承 spec.acceptanceCriteria，照現況無法繼承規格的產品契約。",
+    "resolution": "由主統籌依維護流程更正登記，保留原規格 task、候選和 owner；讀回相符九面向後才重評 ready/可開工。"
+  }
+}

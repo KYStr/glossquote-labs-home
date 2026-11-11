@@ -1,0 +1,324 @@
+{
+  "taskId": "labs-battery-runtime-calculator-spec-20261109",
+  "specId": "spec-battery-runtime-calculator-20261109",
+  "workType": "spec",
+  "reviewer": "local-codex:01a1c87c-f8d5-7e92-8aed-25f805df2a6a",
+  "reviewerContributed": false,
+  "independenceEvidence": {
+    "owner": {
+      "actorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+      "executor": "cloud-dot",
+      "claimId": "muse-r4-battery-runtime-ca-claim-20261109T154030Z-31ba0",
+      "claimedAt": "2026-11-09T15:40:30.178Z"
+    },
+    "authorId": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "contributors": [
+      "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+    ]
+  },
+  "registry": {
+    "branchHead": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "taskStatus": "reviewing",
+    "specStatus": "draft"
+  },
+  "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/253",
+  "prHead": "13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9",
+    "path": "docs/specs/battery-runtime-calculator/SPEC.md"
+  },
+  "sourceFiles": {
+    "BRIEF.md": {
+      "gitBlob": "0a37e657beecf18852a0482a8d4b1b71f9ab63a5",
+      "remoteGitBlob": "0a37e657beecf18852a0482a8d4b1b71f9ab63a5",
+      "sha256": "9f42141d2ea8a83c11ba476314643a7b14c56531f6edf9ab2053fc764211c288",
+      "bytes": 1262,
+      "identical": true
+    },
+    "SPEC.md": {
+      "gitBlob": "441467af5049fbaf193fb4e051e4e9dff8cfcb11",
+      "remoteGitBlob": "441467af5049fbaf193fb4e051e4e9dff8cfcb11",
+      "sha256": "71678ee98268ac0b61eb6921e5feddc033f2ba3902085ba48a54e553f88de59d",
+      "bytes": 25843,
+      "identical": true
+    },
+    "fixtures.json": {
+      "gitBlob": "60bee6db6b0b33a9996fe794db91ee17eb5de0f4",
+      "remoteGitBlob": "60bee6db6b0b33a9996fe794db91ee17eb5de0f4",
+      "sha256": "1f5ffad64a8f75839f67402b7d4b93059b2d44407b1273b6d81ab910ff7255fc",
+      "bytes": 12908,
+      "identical": true
+    },
+    "AUTHOR-CHECK.md": {
+      "gitBlob": "285d425beef2c91304ddb59139f9995b31927c57",
+      "remoteGitBlob": "285d425beef2c91304ddb59139f9995b31927c57",
+      "sha256": "54d118aaa1031cde275fe2bcb93a1104b7c7e1b248a1c891accf7b3946bca600",
+      "bytes": 3783,
+      "identical": true
+    }
+  },
+  "observedAt": "2026-11-11 02:51:28 UTC",
+  "status": "FAIL",
+  "readyRecommended": false,
+  "sections": {
+    "goal": true,
+    "scope": true,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": false,
+    "acceptance": true,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "§goal 列桌面筆電、行動電池組、停電路由器三種情境。`phone-basic` 可直接核對 37 Wh、222 分。"
+    },
+    {
+      "id": "scope",
+      "score": 97,
+      "status": "PASS",
+      "evidence": "§scope 固定四模式、放電深度與非目標。活動換電池規格輸入實測分鐘與時段、輸出換組時間表，和本件額定容量／負載估算工作不同。"
+    },
+    {
+      "id": "userFlow",
+      "score": 84,
+      "status": "FAIL",
+      "evidence": "§userFlow 的範例、五種切換後狀態、取消、重設與離頁都可驗。電壓欄欠缺和容量額定口徑的配對提示，反推文案還把模型內進位寫成無條件續航保證。見 BAT-02。"
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 78,
+      "status": "FAIL",
+      "evidence": "§inputsOutputs 固定欄位、首錯與精確算式，但其合法域包含無法透過既定 JSON Number 忠實表示的整數。見 BAT-01。"
+    },
+    {
+      "id": "implementation",
+      "score": 85,
+      "status": "FAIL",
+      "evidence": "本地純核心、定標整數、Worker 世代和資源撤銷可行。最大輸出的精確整數契約與最終 Number 轉換互相衝突。見 BAT-01。"
+    },
+    {
+      "id": "acceptance",
+      "score": 96,
+      "status": "PASS",
+      "evidence": "§acceptance 預宣告全部九面向、同 head、各項至少 90、必要檢查完整。§tests 指定瀏覽器、正式 SEO 與 Network/Storage 的實測方法。"
+    },
+    {
+      "id": "tests",
+      "score": 88,
+      "status": "FAIL",
+      "evidence": "28 個純核心與 3 個狀態 fixture 全數吻合。`boundary-max` 只用高負載驗 Wh 模式，缺反推與 pack 合法極端組合，未捕捉 BAT-01。"
+    },
+    {
+      "id": "handoff",
+      "score": 98,
+      "status": "PASS",
+      "evidence": "§handoff 固定文件、原 owner、兩階段里程碑與 `tools/battery-runtime-calculator/`。開啟的 PR 253 只改四份規格文件。"
+    }
+  ],
+  "independentFixtureCheck": {
+    "status": "PASS",
+    "passed": 31,
+    "failed": 0,
+    "exit": 0,
+    "runtime": "v24.14.0",
+    "output": "fixture-results.json",
+    "command": "node battery-runtime-calculator/verify.mjs fixtures/battery-runtime-calculator.json",
+    "source": {
+      "repository": "KYStr/glossquote-labs-home",
+      "commit": "13ccc1ccb1d24ca1ec70b1912ad25c65521aa2e9",
+      "path": "docs/specs/battery-runtime-calculator/fixtures.json",
+      "gitBlob": "60bee6db6b0b33a9996fe794db91ee17eb5de0f4",
+      "bytes": 12908,
+      "sha256": "1f5ffad64a8f75839f67402b7d4b93059b2d44407b1273b6d81ab910ff7255fc"
+    }
+  },
+  "productChecks": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "四模式結果和 JSON 報告；§tests 28 筆核心案例，修訂需加 BAT-01。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "第一錯誤、逢五進位、最大端點和 3 筆控制器案例。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "載入後重跑和重設，查 Network、Storage、URL、console。"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意資料、CSP、固定檔名、上限、Worker 與 Blob URL 撤銷。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語桌面與行動實作後驗空、忙、錯、改、取消和下載。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、狀態、320 CSS px、實際 200% zoom、對比和觸控。"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩獨立 HTML、同語首頁、候選 noindex、正式雙語 canonical/hreflang。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、check/test/build、雙次重建 bytes、候選 SHA 與 PR head。"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome 與 Edge 兩語路徑、Worker、Blob 下載與 reflow。"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BAT-01",
+      "title": "合法輸入破壞整數結果與匯出契約",
+      "where": "SPEC.md §inputsOutputs、§implementation、§tests；fixtures.json；AUTHOR-CHECK.md",
+      "input": {
+        "mode": "solve",
+        "voltage": "3",
+        "loadWatts": "1000000",
+        "targetRuntimeHours": "100000",
+        "depthOfDischargePercent": "0.00001"
+      },
+      "actual": "必要容量精確進位後是 333333333333333333334 mAh，JSON Number 序列化成 333333333333333300000，反解 double 只代表 333333333333333311488。另一 pack 合法案例的正確總分鐘 857142857142857143，double 代表 857142857142857088，輸出時分部也無法還原總分鐘。兩例的完整輸入、差值及欄位見 fixture-results.json 的 extra。",
+      "expected": "計算、畫面與匯出共用能表達同一精確整數的契約，反推最小整數不低估且時、分、總分鐘恆相等。若要保留 Number，需明定可驗證的有效域和越界回應。若保留目前輸入域，需釘版可無損的輸出型別。修訂相應 schema、雙語錯誤或格式，將兩例加入字面 fixture 並重跑。"
+    },
+    {
+      "id": "BAT-02",
+      "title": "額定電壓配對與反推保證會誤導商品頁情境",
+      "where": "SPEC.md §userFlow 欄位與反推文字、§inputsOutputs 欄位語義、§tests FAQ",
+      "input": {
+        "mode": "runtime-mah",
+        "capacityMah": "6000",
+        "voltage": "5",
+        "loadWatts": "10"
+      },
+      "actual": "範例 6000 mAh 若是 5 V 額定輸出容量，應配 5 V 得 30 Wh、3 小時；畫面只標「電壓」且主例使用 3.7 V，照主例混填會得到 22.2 Wh、2 小時 13 分。以電芯額定容量算供裝置的續航時，轉換損耗另外存在。反推文案「確保不低於目標續航所需」亦未限定理想模型。",
+      "expected": "兩語就地提示 mAh 與 V 採同一額定口徑，說明負載所在端以及未建模的轉換損耗。反推文案把進位保證限定於模型內的計算值。用相同電量的額定資料與反推畫面核對文案，保留原有四模式。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "固定活動換電池規格 §goal、§scope",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/c8edde6a8d2a83d69a5ef863057184d0ee5022d0/docs/specs/battery-swap-plan/SPEC.md",
+      "observation": "額定續航與活動換組排程的輸入、輸出不同。"
+    },
+    {
+      "title": "Anker 官方容量說明",
+      "url": "https://service.anker.com/eu/article-description/Why-Is-the-Rated-Capacity-Marked-on-a-Power-Bank-Lower-Than-Expected",
+      "observation": "以容量對應電壓換算 Wh，區分電芯、額定輸出與電路損耗。"
+    },
+    {
+      "title": "Victron BMV-700H 手冊",
+      "url": "https://www.victronenergy.com/media/pg/BMV-700H/en/battery-capacity-and-peukert-exponent.html",
+      "observation": "確認倍率會影響可用容量，Peukert 是本案排除的近似模型。"
+    },
+    {
+      "title": "Rolls Flooded Battery 技術說明",
+      "url": "https://support.rollsbattery.com/en/support/solutions/articles/246381-flooded-battery-capacity-temperature",
+      "observation": "50% DoD 是特定深循環範例的設計假設，可用容量仍隨溫度和循環條件改變。"
+    }
+  ],
+  "nonBlocking": [
+    "時、分與一位小時小數各自捨入。`half-up-tie` 顯示 2.3 小時和 2 小時 15 分時，畫面可用「約」幫使用者辨認顯示精度。"
+  ],
+  "phase2": {
+    "githubEvidence": "NOT_RUN",
+    "acknowledge": "NOT_RUN",
+    "registryReview": "NOT_RUN",
+    "markSpecReady": "NOT_RUN",
+    "requires": "主統籌安排串行寫入，重新核對 PR head、owner 和登記冊，再由本人執行。"
+  },
+  "documentReviewStatus": "FAIL",
+  "registryProductionContract": {
+    "status": "FAIL",
+    "revision": 1530,
+    "blob": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "specId": "spec-battery-runtime-calculator-20261109",
+    "field": "spec.acceptanceCriteria",
+    "registeredIds": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "documentTaskCriteria": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "specDeclaredProductCriteria": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "missing": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "unexpected": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "blockerId": "REG-01",
+    "evidence": "原規格製作 task 用八節評分正確。spec.acceptanceCriteria 也被登記成同八節，缺 SPEC.md §acceptance 的九個產品面向。新 production 需原樣繼承 spec.acceptanceCriteria，照現況無法繼承規格的產品契約。",
+    "resolution": "由主統籌依維護流程更正登記，保留原規格 task、候選和 owner；讀回相符九面向後才重評 ready/可開工。"
+  }
+}
