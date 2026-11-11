@@ -257,3 +257,34 @@ test("edit from error clears the error and goes dirty", () => {
   assert.equal(state.error, null);
   assert.equal(state.reportAvailable, false);
 });
+
+for (const restart of ["replace", "cancel"]) {
+  test("PWP-01: ignores old ping reply while a " + restart + " run is busy", () => {
+    const { controller, workers } = setup();
+    const newer = { amount: "100", unit: "ping" };
+    controller.edit(EXAMPLE);
+    controller.run();
+    if (restart === "cancel") {
+      controller.cancel();
+      assert.equal(controller.getState().state, "cancelled");
+    }
+    controller.edit(newer);
+    controller.run();
+    const [oldWorker, newWorker] = workers;
+    assert.equal(oldWorker.terminated, true);
+
+    oldWorker.respond(run(oldWorker.lastMessage.snapshot));
+    const pending = controller.getState();
+    assert.equal(pending.state, "busy");
+    assert.equal(pending.result, null);
+    assert.equal(pending.reportAvailable, false);
+    assert.equal(newWorker.terminated, false);
+
+    newWorker.respond(run(newWorker.lastMessage.snapshot));
+    const complete = controller.getState();
+    assert.equal(complete.state, "success");
+    assert.equal(complete.reportAvailable, true);
+    assert.deepEqual(complete.result, run(newer).result);
+    assert.equal(newWorker.terminated, true);
+  });
+}

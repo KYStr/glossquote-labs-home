@@ -13,8 +13,17 @@ export const RAW_LIMIT = 8; // max raw length of every string field, UTF-16 unit
 export const MAX_WALL_ROWS = 12;
 export const MAX_OPENING_ROWS = 20;
 
-export const WALL_MODES = ["perimeter", "walls"];
-export const OPENING_MODES = ["none", "area", "list"];
+const WALL_MODE_KEYS = {
+  perimeter: ["perimeterM", "heightM"],
+  walls: ["walls"],
+};
+const OPENING_MODE_KEYS = {
+  none: [],
+  area: ["openingsAreaM2"],
+  list: ["openings"],
+};
+export const WALL_MODES = Object.keys(WALL_MODE_KEYS);
+export const OPENING_MODES = Object.keys(OPENING_MODE_KEYS);
 
 export const DEFAULTS = {
   wallMode: "perimeter",
@@ -55,11 +64,8 @@ const ALWAYS_KEYS = [
 ];
 const KNOWN_KEYS = new Set([
   ...ALWAYS_KEYS,
-  "perimeterM",
-  "heightM",
-  "walls",
-  "openingsAreaM2",
-  "openings",
+  ...Object.values(WALL_MODE_KEYS).flat(),
+  ...Object.values(OPENING_MODE_KEYS).flat(),
 ]);
 const ARRAY_KEYS = new Set(["walls", "openings"]);
 
@@ -136,10 +142,9 @@ function readRow(element) {
 }
 
 // Schema phase (SPEC order step 1): plain-object shape, no unknown keys,
-// every always-key present, value types, and row element shapes. Element
+// every required key present, value types, and row element shapes. Element
 // shape errors carry the 1-based row; all other schema errors have
-// field/row null. Mode-dependent key presence is checked after the ENUM
-// step, because the expected key set is only defined for valid modes.
+// field/row null.
 function readSchema(input) {
   if (!isPlainObject(input)) return { error: schemaError() };
   let keys;
@@ -175,24 +180,22 @@ function readSchema(input) {
       values[arrayKey] = rows;
     }
   }
+  if (!matchesModeKeys(values, values.wallMode, WALL_MODE_KEYS) ||
+      !matchesModeKeys(values, values.openingsMode, OPENING_MODE_KEYS)) {
+    return { error: schemaError() };
+  }
   return { values };
 }
 
-// After the modes are known to be valid enum values, the exact key set is
-// fixed: a missing mode key or a key belonging to another mode is SCHEMA.
-function checkModeKeySet(values) {
-  const expected = new Set(ALWAYS_KEYS);
-  if (values.wallMode === "perimeter") {
-    expected.add("perimeterM");
-    expected.add("heightM");
-  } else {
-    expected.add("walls");
-  }
-  if (values.openingsMode === "area") expected.add("openingsAreaM2");
-  if (values.openingsMode === "list") expected.add("openings");
-  const actual = Object.keys(values);
-  if (actual.length !== expected.size) return false;
-  return actual.every((key) => expected.has(key));
+// A known mode selects an exact key set. An unknown mode still needs an
+// intact key set from its own group before the ENUM step can report it.
+function matchesModeKeys(values, mode, modes) {
+  const shapes = Object.values(modes);
+  const groupKeys = shapes.flat();
+  const candidates = Object.hasOwn(modes, mode) ? [modes[mode]] : shapes;
+  return candidates.some((expected) =>
+    groupKeys.every((key) => Object.hasOwn(values, key) === expected.includes(key)),
+  );
 }
 
 // Grammar-valid metre string -> integer centimetres, parsed digit by
@@ -272,7 +275,6 @@ export function run(input) {
   // 2. ENUM (wallMode first, then openingsMode)
   if (!WALL_MODES.includes(values.wallMode)) return fail("ENUM", "wallMode", null);
   if (!OPENING_MODES.includes(values.openingsMode)) return fail("ENUM", "openingsMode", null);
-  if (!checkModeKeySet(values)) return schemaError();
 
   // 3. MODE_COMBINATION: an openings list cannot say which wall each
   // opening belongs to, so the dimension list is perimeter-mode only.

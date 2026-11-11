@@ -1,5 +1,7 @@
 # 壁紙採購與坪數換算產品修訂
 
+目前候選的第二輪修正與驗證見 [FH-PWP-REPAIR-02](REPAIR-02.md)。下列原驗證結果屬前一個固定候選 `8fbd9ac4d98865480444ce11c4b772389a54ea3c`，保留供對照。
+
 維護任務 `labs-five-hour-product-wallpaper-ping-20261111`。以 [PR #283](https://github.com/KYStr/glossquote-labs-home/pull/283) 的 `448bd9fc9865fe65f6014b66f4a2e2d54b76f539` 接續既有產品。原壁紙 [Build #270](https://github.com/KYStr/glossquote-labs-home/pull/270) 與坪數 [Build #274](https://github.com/KYStr/glossquote-labs-home/pull/274) 保留。修正契約採已獨審接受的 [規格維護 PR #299](https://github.com/KYStr/glossquote-labs-home/pull/299) 固定 `c2c3f7715023990b1427e052a25c52f1987eaca9`，失敗基線見 [PR #314](https://github.com/KYStr/glossquote-labs-home/pull/314)。
 
 - 壁紙以全牆寬計整幅，尺寸清單和開口總面積都用於淨牆面積。既有開口案例為 23 幅、8 捲，半高窗為 6 幅、2 捲及 6.04 m² 淨面積。保留 `openingsWidthCm` 摘要，`effectiveWidthCm` 採全牆寬。輸入格式檢查完成後，開口超高早於總量和短捲檢查，回報第一個超高列的 `heightM`。兩語表單在提交失敗時標記該列並呼叫焦點，等高合法。頁面提示、結果表頭、FAQ 和固定下載同步。

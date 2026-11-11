@@ -1,5 +1,7 @@
 # 離線產品驗證
 
+目前候選的第二輪修正與驗證見 [FH-PWP-REPAIR-02](REPAIR-02.md)。下列原驗證結果屬前一個固定候選 `8fbd9ac4d98865480444ce11c4b772389a54ea3c`，保留供對照。
+
 Node v24.14.0。兩款皆執行 `node scripts/build.mjs --mode preview` 兩次，逐檔 bytes 與 SHA-256 相同。其後 `node --test`、`node scripts/check.mjs`、`node scripts/check-generated.mjs --mode preview` 均 exit 0。壁紙 58 項、坪數 61 項測試通過，0 失敗。壁紙首次靜態檢查發現舊 fixture 數量仍為 14，更新至 19 並鎖定新版 fixture SHA-256 後重跑通過。
 
 另外從 repository root 執行下列命令。它將實際生成的 Worker 程式接到 Node Worker 訊息橋，並啟動、檢查及關閉兩個隔離 loopback 預覽程序。

@@ -259,3 +259,34 @@ test("the public draft is an isolated copy (nested rows included)", () => {
   exposed.draft.walls[0].widthM = "9";
   assert.equal(controller.getState().draft.walls[0].widthM, "4");
 });
+
+for (const restart of ["replace", "cancel"]) {
+  test("PWP-01: ignores old wallpaper reply while a " + restart + " run is busy", () => {
+    const { controller, workers } = setup();
+    const newer = { ...EXAMPLE, perimeterM: "10", patternRepeatCm: "32" };
+    controller.edit(EXAMPLE);
+    controller.run();
+    if (restart === "cancel") {
+      controller.cancel();
+      assert.equal(controller.getState().state, "cancelled");
+    }
+    controller.edit(newer);
+    controller.run();
+    const [oldWorker, newWorker] = workers;
+    assert.equal(oldWorker.terminated, true);
+
+    deliverCoreResult(oldWorker);
+    const pending = controller.getState();
+    assert.equal(pending.state, "busy");
+    assert.equal(pending.result, null);
+    assert.equal(pending.reportAvailable, false);
+    assert.equal(newWorker.terminated, false);
+
+    deliverCoreResult(newWorker);
+    const complete = controller.getState();
+    assert.equal(complete.state, "success");
+    assert.equal(complete.reportAvailable, true);
+    assert.deepEqual(complete.result, run(newer).result);
+    assert.equal(newWorker.terminated, true);
+  });
+}

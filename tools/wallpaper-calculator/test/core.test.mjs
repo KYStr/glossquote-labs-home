@@ -56,7 +56,7 @@ test("schema: extra key, missing key, wrong types, array, null, accessor", () =>
   assert.deepEqual(errorOf(withGetter), SCHEMA);
 });
 
-test("schema: keys belonging to another mode are SCHEMA once modes are valid", () => {
+test("schema: keys belonging to another mode are SCHEMA", () => {
   // perimeter mode carrying a walls array
   assert.deepEqual(errorOf({ ...base, walls: [{ widthM: "4", heightM: "2.5" }] }), SCHEMA);
   // openingsMode none carrying an area value
@@ -506,4 +506,38 @@ test("run does not mutate its input", () => {
   const snapshot = JSON.stringify(input);
   run(input);
   assert.equal(JSON.stringify(input), snapshot);
+});
+
+test("PWP-02: malformed mode key sets precede invalid enum values", () => {
+  const { perimeterM, heightM, ...noDimensions } = base;
+  const row = { widthM: "1", heightM: "2" };
+  const malformed = [
+    { ...noDimensions, heightM, openingsMode: "oops" },
+    { ...base, walls: [row], openingsMode: "oops" },
+    { ...noDimensions, wallMode: "walls", openingsMode: "oops" },
+    { ...base, wallMode: "oops", openingsMode: "area" },
+    { ...base, wallMode: "oops", openingsMode: "list", openingsAreaM2: "2" },
+    { ...base, wallMode: "oops", openingsMode: "none", openings: [row] },
+    { ...noDimensions, wallMode: "oops", openingsMode: "oops" },
+    { ...base, wallMode: "oops", openingsMode: "oops", openings: [row], openingsAreaM2: "2" },
+  ];
+  for (const input of malformed) assert.deepEqual(errorOf(input), SCHEMA, JSON.stringify(input));
+
+  assert.deepEqual(
+    errorOf({ ...base, openingsMode: "oops", openings: [row, { widthM: "1" }] }),
+    { code: "SCHEMA", field: null, row: 2 },
+  );
+});
+
+test("PWP-02: intact key sets still identify the first invalid enum", () => {
+  const { perimeterM, heightM, ...withoutPerimeter } = base;
+  const row = { widthM: "1", heightM: "2" };
+  for (const [input, field] of [
+    [{ ...base, openingsMode: "oops", openingsAreaM2: "2" }, "openingsMode"],
+    [{ ...withoutPerimeter, wallMode: "walls", walls: [row], openingsMode: "oops", openings: [row] }, "openingsMode"],
+    [{ ...withoutPerimeter, wallMode: "toString", walls: [row], openingsMode: "list", openings: [row] }, "wallMode"],
+    [{ ...base, wallMode: "oops", openingsMode: "oops", openings: [row] }, "wallMode"],
+  ]) {
+    assert.deepEqual(errorOf(input), { code: "ENUM", field, row: null });
+  }
 });

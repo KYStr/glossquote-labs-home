@@ -78,9 +78,9 @@ export function createController({ createWorker, onChange = () => {} }) {
     }
     worker = nextWorker;
     worker.onmessage = (event) => {
+      if (generation !== postedGeneration || state !== "busy") return;
       const data = event.data;
-      if (data === null || typeof data !== "object") return;
-      if (data.generation !== postedGeneration || state !== "busy") return;
+      if (data === null || typeof data !== "object" || data.generation !== postedGeneration) return;
       terminateWorker();
       if (data.ok === true) {
         result = data.result;
