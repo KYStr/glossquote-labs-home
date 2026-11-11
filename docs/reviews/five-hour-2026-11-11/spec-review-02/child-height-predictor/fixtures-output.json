@@ -1,0 +1,687 @@
+{
+  "node": "v24.14.0",
+  "pr": 238,
+  "slug": "child-height-predictor",
+  "fixtureGitBlob": "3aae38d54340aabe5a0750fefc9b0600b3b2be83",
+  "fixtureSha256": "daace60a0d1ec2cf943801b17473ac2d799be1e8b0832b65496aa93dad867f02",
+  "coreMatches": 14,
+  "coreTotal": 14,
+  "controllerMatches": 3,
+  "controllerTotal": 3,
+  "rows": [
+    {
+      "id": "boy-typical",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "178",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "rangeHighCm": 186.5,
+          "rangeLowCm": 169.5,
+          "targetCm": 178
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "targetCm": 178,
+          "rangeLowCm": 169.5,
+          "rangeHighCm": 186.5
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "girl-same-parents",
+      "kind": "core",
+      "input": {
+        "childSex": "girl",
+        "fatherHeightCm": "178",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "rangeHighCm": 173.5,
+          "rangeLowCm": 156.5,
+          "targetCm": 165
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "targetCm": 165,
+          "rangeLowCm": 156.5,
+          "rangeHighCm": 173.5
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "decimal-half-up",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "175.5",
+        "motherHeightCm": "168.0"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "rangeHighCm": 186.8,
+          "rangeLowCm": 169.8,
+          "targetCm": 178.3
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "targetCm": 178.3,
+          "rangeLowCm": 169.8,
+          "rangeHighCm": 186.8
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "exact-tenth",
+      "kind": "core",
+      "input": {
+        "childSex": "girl",
+        "fatherHeightCm": "172",
+        "motherHeightCm": "160"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "rangeHighCm": 168,
+          "rangeLowCm": 151,
+          "targetCm": 159.5
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "targetCm": 159.5,
+          "rangeLowCm": 151,
+          "rangeHighCm": 168
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "min-endpoints",
+      "kind": "core",
+      "input": {
+        "childSex": "girl",
+        "fatherHeightCm": "100.0",
+        "motherHeightCm": "100.0"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "rangeHighCm": 102,
+          "rangeLowCm": 85,
+          "targetCm": 93.5
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "girl",
+          "targetCm": 93.5,
+          "rangeLowCm": 85,
+          "rangeHighCm": 102
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "max-endpoints",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "230.0",
+        "motherHeightCm": "230.0"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "rangeHighCm": 245,
+          "rangeLowCm": 228,
+          "targetCm": 236.5
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "childSex": "boy",
+          "targetCm": 236.5,
+          "rangeLowCm": 228,
+          "rangeHighCm": 245
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "below-range",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "99.9",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "RANGE",
+          "field": "fatherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "fatherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "above-range",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "178",
+        "motherHeightCm": "230.1"
+      },
+      "declared": {
+        "error": {
+          "code": "RANGE",
+          "field": "motherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "motherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "decimal-format",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "175.55",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "fatherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "fatherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "leading-zero",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "0175",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "fatherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "fatherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "empty-field",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "178",
+        "motherHeightCm": ""
+      },
+      "declared": {
+        "error": {
+          "code": "EMPTY",
+          "field": "motherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "motherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "enum-sex",
+      "kind": "core",
+      "input": {
+        "childSex": "other",
+        "fatherHeightCm": "178",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "ENUM",
+          "field": "childSex",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "childSex",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "input-limit",
+      "kind": "core",
+      "input": {
+        "childSex": "boy",
+        "fatherHeightCm": "123456789",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "fatherHeightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "fatherHeightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "schema-missing",
+      "kind": "core",
+      "input": {
+        "fatherHeightCm": "178",
+        "motherHeightCm": "165"
+      },
+      "declared": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "childSex": "boy",
+          "fatherHeightCm": "178",
+          "motherHeightCm": "230.1"
+        },
+        "initial": {
+          "childSex": "boy",
+          "fatherHeightCm": "178",
+          "motherHeightCm": "165"
+        }
+      },
+      "declared": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "independentlyDerived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "childSex": "boy",
+          "fatherHeightCm": "178",
+          "motherHeightCm": "165"
+        },
+        "lateResult": {
+          "childSex": "boy",
+          "rangeHighCm": 186.5,
+          "rangeLowCm": 169.5,
+          "targetCm": 178
+        }
+      },
+      "declared": {
+        "afterCancel": {
+          "draft": {
+            "childSex": "boy",
+            "fatherHeightCm": "178",
+            "motherHeightCm": "165"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "childSex": "boy",
+            "fatherHeightCm": "178",
+            "motherHeightCm": "165"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "independentlyDerived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "childSex": "boy",
+            "fatherHeightCm": "178",
+            "motherHeightCm": "165"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "fatherHeightCm": "178",
+            "motherHeightCm": "165",
+            "childSex": "boy"
+          }
+        }
+      },
+      "checks": [
+        {
+          "check": "lateResult from cancelled draft",
+          "observed": {
+            "childSex": "boy",
+            "rangeHighCm": 186.5,
+            "rangeLowCm": 169.5,
+            "targetCm": 178
+          },
+          "independentlyDerived": {
+            "childSex": "boy",
+            "targetCm": 178,
+            "rangeLowCm": 169.5,
+            "rangeHighCm": 186.5
+          },
+          "pass": true
+        }
+      ],
+      "match": true
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "childSex": "boy",
+          "fatherHeightCm": "178",
+          "motherHeightCm": "230.1"
+        },
+        "olderDraft": {
+          "childSex": "boy",
+          "fatherHeightCm": "178",
+          "motherHeightCm": "165"
+        },
+        "olderLateResult": {
+          "childSex": "boy",
+          "rangeHighCm": 186.5,
+          "rangeLowCm": 169.5,
+          "targetCm": 178
+        }
+      },
+      "declared": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "independentlyDerived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "motherHeightCm",
+            "row": null
+          }
+        }
+      },
+      "checks": [
+        {
+          "check": "olderLateResult from replaced draft",
+          "observed": {
+            "childSex": "boy",
+            "rangeHighCm": 186.5,
+            "rangeLowCm": 169.5,
+            "targetCm": 178
+          },
+          "independentlyDerived": {
+            "childSex": "boy",
+            "targetCm": 178,
+            "rangeLowCm": 169.5,
+            "rangeHighCm": 186.5
+          },
+          "pass": true
+        }
+      ],
+      "match": true
+    }
+  ],
+  "extra": {
+    "bareExport": {
+      "value": "{\"childSex\":\"boy\",\"rangeHighCm\":186.5,\"rangeLowCm\":169.5,\"targetCm\":178}\n",
+      "bytes": 73,
+      "sha256": "dd950714738bb384e7da45abf38c1e9cd04b8d429696f152242ab6c543a3d62c"
+    },
+    "anthropometry": [
+      {
+        "input": {
+          "fatherHeightCm": "100.0",
+          "motherHeightCm": "100.0",
+          "childSex": "girl"
+        },
+        "output": {
+          "ok": true,
+          "result": {
+            "childSex": "girl",
+            "targetCm": 93.5,
+            "rangeLowCm": 85,
+            "rangeHighCm": 102
+          }
+        }
+      },
+      {
+        "input": {
+          "fatherHeightCm": "230.0",
+          "motherHeightCm": "230.0",
+          "childSex": "boy"
+        },
+        "output": {
+          "ok": true,
+          "result": {
+            "childSex": "boy",
+            "targetCm": 236.5,
+            "rangeLowCm": 228,
+            "rangeHighCm": 245
+          }
+        }
+      },
+      {
+        "input": {
+          "fatherHeightCm": "175.5",
+          "motherHeightCm": "168.0",
+          "childSex": "boy"
+        },
+        "output": {
+          "ok": true,
+          "result": {
+            "childSex": "boy",
+            "targetCm": 178.3,
+            "rangeLowCm": 169.8,
+            "rangeHighCm": 186.8
+          }
+        }
+      }
+    ],
+    "omitChildField": {
+      "input": {
+        "fatherHeightCm": "178",
+        "motherHeightCm": "165"
+      },
+      "output": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    }
+  }
+}

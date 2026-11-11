@@ -1,0 +1,924 @@
+{
+  "node": "v24.14.0",
+  "pr": 234,
+  "slug": "steps-converter",
+  "fixtureGitBlob": "892b9192c36f7ec5906db8b692f09a567287d083",
+  "fixtureSha256": "acb9493ca78ea7d528f9079c233aed61b670ec6a31ca246d8cc63bd89ee9d84b",
+  "coreMatches": 19,
+  "coreTotal": 19,
+  "controllerMatches": 3,
+  "controllerTotal": 3,
+  "rows": [
+    {
+      "id": "height-basic",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "10000",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 7.04,
+          "stepsPerKm": 1421,
+          "strideCm": 70.4
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 70.4,
+          "distanceKm": 7.04,
+          "stepsPerKm": 1421,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "measured-basic",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "5000",
+        "strideCm": "65.5",
+        "strideSource": "measured",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 3.28,
+          "stepsPerKm": 1527,
+          "strideCm": 65.5
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 65.5,
+          "distanceKm": 3.28,
+          "stepsPerKm": 1527,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "calories-from-height",
+      "kind": "core",
+      "input": {
+        "calories": "on",
+        "heightCm": "165",
+        "steps": "8000",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "60"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": 246,
+          "distanceKm": 5.46,
+          "stepsPerKm": 1464,
+          "strideCm": 68.3
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 68.3,
+          "distanceKm": 5.46,
+          "stepsPerKm": 1464,
+          "caloriesKcal": 246
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "zero-steps",
+      "kind": "core",
+      "input": {
+        "calories": "on",
+        "heightCm": "170",
+        "steps": "0",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": 0,
+          "distanceKm": 0,
+          "stepsPerKm": 1421,
+          "strideCm": 70.4
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 70.4,
+          "distanceKm": 0,
+          "stepsPerKm": 1421,
+          "caloriesKcal": 0
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "max-boundary",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "99999999",
+        "strideCm": "100",
+        "strideSource": "measured",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 100000,
+          "stepsPerKm": 1000,
+          "strideCm": 100
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 100,
+          "distanceKm": 100000,
+          "stepsPerKm": 1000,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "stride-display-rounding",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "171",
+        "steps": "3000",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 2.12,
+          "stepsPerKm": 1413,
+          "strideCm": 70.8
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 70.8,
+          "distanceKm": 2.12,
+          "stepsPerKm": 1413,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "calories-tie",
+      "kind": "core",
+      "input": {
+        "calories": "on",
+        "heightCm": "170",
+        "steps": "2000",
+        "strideCm": "50",
+        "strideSource": "measured",
+        "weightKg": "66"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": 50,
+          "distanceKm": 1,
+          "stepsPerKm": 2000,
+          "strideCm": 50
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 50,
+          "distanceKm": 1,
+          "stepsPerKm": 2000,
+          "caloriesKcal": 50
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "single-step-min-stride",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "1",
+        "strideCm": "20",
+        "strideSource": "measured",
+        "weightKg": "65"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 0,
+          "stepsPerKm": 5000,
+          "strideCm": 20
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 20,
+          "distanceKm": 0,
+          "stepsPerKm": 5000,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "measured-calories-2dp-stride",
+      "kind": "core",
+      "input": {
+        "calories": "on",
+        "heightCm": "170",
+        "steps": "12000",
+        "strideCm": "72.25",
+        "strideSource": "measured",
+        "weightKg": "70.5"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": 458,
+          "distanceKm": 8.67,
+          "stepsPerKm": 1384,
+          "strideCm": 72.3
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 72.3,
+          "distanceKm": 8.67,
+          "stepsPerKm": 1384,
+          "caloriesKcal": 458
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "inactive-fields-ignored",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "160",
+        "steps": "100",
+        "strideCm": "999",
+        "strideSource": "height",
+        "weightKg": "abc"
+      },
+      "declared": {
+        "ok": true,
+        "result": {
+          "caloriesKcal": null,
+          "distanceKm": 0.07,
+          "stepsPerKm": 1510,
+          "strideCm": 66.2
+        }
+      },
+      "independentlyDerived": {
+        "ok": true,
+        "result": {
+          "strideCm": 66.2,
+          "distanceKm": 0.07,
+          "stepsPerKm": 1510,
+          "caloriesKcal": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "steps-integer-format",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "100.5",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "steps",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "steps",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "steps-leading-zero",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "007",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "steps",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "steps",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "mode-enum",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "100",
+        "strideCm": "70",
+        "strideSource": "auto",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "ENUM",
+          "field": "strideSource",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "strideSource",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "height-range",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "260",
+        "steps": "100",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "RANGE",
+          "field": "heightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "heightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "stride-range",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "100",
+        "strideCm": "160",
+        "strideSource": "measured",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "RANGE",
+          "field": "strideCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "strideCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "stride-decimal-format",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "steps": "100",
+        "strideCm": "70.456",
+        "strideSource": "measured",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "strideCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "strideCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "height-decimal-format",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170.55",
+        "steps": "100",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "heightCm",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "heightCm",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "weight-empty-when-on",
+      "kind": "core",
+      "input": {
+        "calories": "on",
+        "heightCm": "170",
+        "steps": "100",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": ""
+      },
+      "declared": {
+        "error": {
+          "code": "EMPTY",
+          "field": "weightKg",
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "weightKg",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "schema-extra-key",
+      "kind": "core",
+      "input": {
+        "calories": "off",
+        "heightCm": "170",
+        "note": "x",
+        "steps": "100",
+        "strideCm": "70",
+        "strideSource": "height",
+        "weightKg": "65"
+      },
+      "declared": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "independentlyDerived": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "calories": "off",
+          "heightCm": "170",
+          "steps": "100.5",
+          "strideCm": "70",
+          "strideSource": "height",
+          "weightKg": "65"
+        },
+        "initial": {
+          "calories": "off",
+          "heightCm": "170",
+          "steps": "10000",
+          "strideCm": "70",
+          "strideSource": "height",
+          "weightKg": "65"
+        }
+      },
+      "declared": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "INTEGER_FORMAT",
+            "field": "steps",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "independentlyDerived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "INTEGER_FORMAT",
+            "field": "steps",
+            "row": null
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "calories": "off",
+          "heightCm": "170",
+          "steps": "10000",
+          "strideCm": "70",
+          "strideSource": "height",
+          "weightKg": "65"
+        },
+        "lateResult": {
+          "caloriesKcal": null,
+          "distanceKm": 7.04,
+          "stepsPerKm": 1421,
+          "strideCm": 70.4
+        }
+      },
+      "declared": {
+        "afterCancel": {
+          "draft": {
+            "calories": "off",
+            "heightCm": "170",
+            "steps": "10000",
+            "strideCm": "70",
+            "strideSource": "height",
+            "weightKg": "65"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "calories": "off",
+            "heightCm": "170",
+            "steps": "10000",
+            "strideCm": "70",
+            "strideSource": "height",
+            "weightKg": "65"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "independentlyDerived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "calories": "off",
+            "heightCm": "170",
+            "steps": "10000",
+            "strideCm": "70",
+            "strideSource": "height",
+            "weightKg": "65"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "steps": "10000",
+            "strideSource": "height",
+            "strideCm": "70",
+            "heightCm": "170",
+            "calories": "off",
+            "weightKg": "65"
+          }
+        }
+      },
+      "checks": [
+        {
+          "check": "lateResult from cancelled input",
+          "observed": {
+            "caloriesKcal": null,
+            "distanceKm": 7.04,
+            "stepsPerKm": 1421,
+            "strideCm": 70.4
+          },
+          "independentlyDerived": {
+            "strideCm": 70.4,
+            "distanceKm": 7.04,
+            "stepsPerKm": 1421,
+            "caloriesKcal": null
+          },
+          "pass": true
+        }
+      ],
+      "match": true
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "calories": "off",
+          "heightCm": "260",
+          "steps": "10000",
+          "strideCm": "70",
+          "strideSource": "height",
+          "weightKg": "65"
+        },
+        "olderDraft": {
+          "calories": "off",
+          "heightCm": "170",
+          "steps": "10000",
+          "strideCm": "70",
+          "strideSource": "height",
+          "weightKg": "65"
+        },
+        "olderLateResult": {
+          "caloriesKcal": null,
+          "distanceKm": 7.04,
+          "stepsPerKm": 1421,
+          "strideCm": 70.4
+        }
+      },
+      "declared": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "heightCm",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "heightCm",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "independentlyDerived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "heightCm",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "heightCm",
+            "row": null
+          }
+        }
+      },
+      "checks": [
+        {
+          "check": "olderLateResult from replaced input",
+          "observed": {
+            "caloriesKcal": null,
+            "distanceKm": 7.04,
+            "stepsPerKm": 1421,
+            "strideCm": 70.4
+          },
+          "independentlyDerived": {
+            "strideCm": 70.4,
+            "distanceKm": 7.04,
+            "stepsPerKm": 1421,
+            "caloriesKcal": null
+          },
+          "pass": true
+        }
+      ],
+      "match": true
+    }
+  ],
+  "extra": {
+    "download": {
+      "value": "{\"caloriesKcal\":null,\"distanceKm\":7.04,\"stepsPerKm\":1421,\"strideCm\":70.4}\n",
+      "bytes": 74,
+      "sha256": "4489db044b31e62ef7cd6ee2748de127590b4788d0f641feb2ad3c274939fdcd"
+    },
+    "reportBytesAndDigestMatch": true,
+    "faqContradiction": {
+      "input": {
+        "steps": "100000",
+        "strideSource": "height",
+        "strideCm": "70",
+        "heightCm": "171",
+        "calories": "off",
+        "weightKg": "65"
+      },
+      "calculated": {
+        "strideCm": 70.8,
+        "distanceKm": 70.79,
+        "stepsPerKm": 1413,
+        "caloriesKcal": null
+      },
+      "ifUsingDisplayed": {
+        "strideCm": 70.8,
+        "distanceKm": 70.8,
+        "stepsPerKm": 1412,
+        "caloriesKcal": null
+      }
+    },
+    "twoStepVsOneStep": {
+      "input": {
+        "steps": "1000",
+        "strideSource": "measured",
+        "strideCm": "140",
+        "heightCm": "170",
+        "calories": "off",
+        "weightKg": "65"
+      },
+      "ifEnteringTwoStepStride": {
+        "ok": true,
+        "result": {
+          "strideCm": 140,
+          "distanceKm": 1.4,
+          "stepsPerKm": 714,
+          "caloriesKcal": null
+        }
+      },
+      "ifEnteringTruePerStep": {
+        "ok": true,
+        "result": {
+          "strideCm": 70,
+          "distanceKm": 0.7,
+          "stepsPerKm": 1429,
+          "caloriesKcal": null
+        }
+      }
+    },
+    "primaryEquationCounterexample": [
+      {
+        "maleHeightInches": 70,
+        "paceMinutesPerMile": 20,
+        "stepsPerMile": 2197,
+        "singleStepCm": 73.2518889394629,
+        "ratioToHeight": 0.4119903764874179
+      },
+      {
+        "maleHeightInches": 70,
+        "paceMinutesPerMile": 15,
+        "stepsPerMile": 1880,
+        "singleStepCm": 85.60340425531915,
+        "ratioToHeight": 0.48145896656534953
+      }
+    ],
+    "compendium": {
+      "historical2011": [
+        0.7291666666666667,
+        0.7678571428571429
+      ],
+      "published2024AtSameSpeeds": [
+        0.7916666666666666,
+        0.8571428571428572
+      ]
+    }
+  }
+}
