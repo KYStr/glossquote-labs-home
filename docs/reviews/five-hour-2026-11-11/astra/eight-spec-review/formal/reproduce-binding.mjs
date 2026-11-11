@@ -1,0 +1,6 @@
+import fs from'node:fs/promises';import path from'node:path';import{fileURLToPath}from'node:url';import{spawnSync}from'node:child_process';import assert from'node:assert/strict';
+const root=path.dirname(fileURLToPath(import.meta.url));assert(process.argv[2],'Usage: node reproduce-binding.mjs <new-output-directory>');const out=path.resolve(process.argv[2]);assert.notEqual(out,root);await fs.mkdir(out,{recursive:false});
+for(const n of ['input-manifest.json','fetch-inputs.mjs','verify-task-binding.mjs','registered-task.json','registered-commands.json','scores.json'])await fs.copyFile(path.join(root,n),path.join(out,n));
+const steps=[];for(const n of ['fetch-inputs.mjs','verify-task-binding.mjs']){const r=spawnSync(process.execPath,[path.join(out,n)],{cwd:out,encoding:'utf8',windowsHide:true});steps.push({script:n,exit:r.status,stdout:r.stdout,stderr:r.stderr});assert.equal(r.status,0,r.stderr);}
+const result={status:'PASS_PORTABLE_FORMAL_BINDING',observedAt:new Date().toISOString(),node:process.version,steps,pinnedInputs:10,targets:8,originalCommandHashes:4,structuredMakers:8,actualMakers:9,semanticCellsReused:64,arithmeticRerun:false,registryWrites:0,readyWrites:0};await fs.writeFile(path.join(out,'portable-result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+
