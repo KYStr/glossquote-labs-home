@@ -1,0 +1,269 @@
+{
+  "candidate": {
+    "pr": 323,
+    "head": "4f259d919e56c2f098035d2ae9d4431dc7b50af6",
+    "appBlob": "e812115dcb8e99f1a51d03ad92723e3d4ca5082e"
+  },
+  "command": "node verify-worker-url.mjs <fixed source directory>",
+  "exit": 1,
+  "expectedExit": 1,
+  "harnessSha256": "245d5321cdd813ebce8dc1e715c832b7f99d42c0191cea009784b1f7f4172ee2",
+  "stdoutSha256": "dab068980374377f7e55d804b7935e07d2e69795a77159e5951f079b06e1480a",
+  "node": "v24.14.0",
+  "scope": "Exact createWorker function evaluated with offline Node VM platform doubles and the fixed controller",
+  "passed": 1,
+  "total": 5,
+  "cases": [
+    {
+      "name": "normal-termination",
+      "before": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [],
+        "constructed": 1,
+        "terminateCalls": [
+          0
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "after": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [
+          "blob:offline-review/1"
+        ],
+        "constructed": 1,
+        "terminateCalls": [
+          1
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ],
+          [
+            "terminate",
+            "blob:offline-review/1"
+          ],
+          [
+            "revoke",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "pass": true
+    },
+    {
+      "name": "idempotent-revoke",
+      "after": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [
+          "blob:offline-review/1",
+          "blob:offline-review/1"
+        ],
+        "constructed": 1,
+        "terminateCalls": [
+          2
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ],
+          [
+            "terminate",
+            "blob:offline-review/1"
+          ],
+          [
+            "revoke",
+            "blob:offline-review/1"
+          ],
+          [
+            "terminate",
+            "blob:offline-review/1"
+          ],
+          [
+            "revoke",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "pass": false
+    },
+    {
+      "name": "constructor-failure",
+      "originalError": true,
+      "after": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [],
+        "constructed": 0,
+        "terminateCalls": [],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "pass": false
+    },
+    {
+      "name": "terminate-failure",
+      "originalError": true,
+      "after": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [],
+        "constructed": 1,
+        "terminateCalls": [
+          1
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ],
+          [
+            "terminate",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "pass": false
+    },
+    {
+      "name": "controller-retry",
+      "failureRecorded": true,
+      "retryUsesDraft": true,
+      "finishedWithResult": true,
+      "urlsReleased": false,
+      "afterFailure": {
+        "made": [
+          "blob:offline-review/1"
+        ],
+        "revoked": [],
+        "constructed": 0,
+        "terminateCalls": [],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ]
+        ]
+      },
+      "beforeReply": {
+        "made": [
+          "blob:offline-review/1",
+          "blob:offline-review/2"
+        ],
+        "revoked": [],
+        "constructed": 1,
+        "terminateCalls": [
+          0
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ],
+          [
+            "create",
+            "blob:offline-review/2"
+          ],
+          [
+            "construct",
+            "blob:offline-review/2"
+          ],
+          [
+            "post",
+            "blob:offline-review/2"
+          ]
+        ]
+      },
+      "afterReply": {
+        "made": [
+          "blob:offline-review/1",
+          "blob:offline-review/2"
+        ],
+        "revoked": [
+          "blob:offline-review/2"
+        ],
+        "constructed": 1,
+        "terminateCalls": [
+          1
+        ],
+        "events": [
+          [
+            "create",
+            "blob:offline-review/1"
+          ],
+          [
+            "construct",
+            "blob:offline-review/1"
+          ],
+          [
+            "create",
+            "blob:offline-review/2"
+          ],
+          [
+            "construct",
+            "blob:offline-review/2"
+          ],
+          [
+            "post",
+            "blob:offline-review/2"
+          ],
+          [
+            "terminate",
+            "blob:offline-review/2"
+          ],
+          [
+            "revoke",
+            "blob:offline-review/2"
+          ]
+        ]
+      },
+      "pass": false
+    }
+  ]
+}
