@@ -1,0 +1,280 @@
+{
+  "taskId": "labs-dice-roller-spec-20261109",
+  "specId": "spec-dice-roller-20261109",
+  "slug": "dice-roller",
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/260",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "5dccd3dcfbe72aa52c9a892391a44719e9de3f9a",
+    "path": "docs/specs/dice-roller/SPEC.md"
+  },
+  "reviewer": {
+    "actorId": "local-codex:01a1c87c-fc33-75e3-9aee-09999e6d38b1",
+    "executor": "local-codex",
+    "participatedInCandidates": false
+  },
+  "observedAt": "2026-11-11T02:58:26Z",
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "commit": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "taskStatus": "reviewing",
+    "specStatus": "draft",
+    "claimId": "muse-r4-dice-roller-claim-20261109T155155Z-5b64c",
+    "owner": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "submissionAuthor": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  },
+  "sourceVerification": {
+    "intake": "../intake.json",
+    "prOpen": true,
+    "draft": true,
+    "exactHead": true,
+    "blobs": [
+      {
+        "path": "docs/specs/dice-roller/AUTHOR-CHECK.md",
+        "sha": "e5ecf3505e04218f871059b9ae6a7848f120c2e1",
+        "bytes": 5002
+      },
+      {
+        "path": "docs/specs/dice-roller/BRIEF.md",
+        "sha": "b2c8cd92a01e313040124258432302edaa59a119",
+        "bytes": 1407
+      },
+      {
+        "path": "docs/specs/dice-roller/SPEC.md",
+        "sha": "52381b90dd6263cc195f042153910a83d215cc8e",
+        "bytes": 24244
+      },
+      {
+        "path": "docs/specs/dice-roller/fixtures.json",
+        "sha": "7a14f744c78239c95a87e519da8e4a466f5621cd",
+        "bytes": 13850
+      }
+    ]
+  },
+  "result": "FAIL",
+  "verdict": "revision",
+  "readyRecommendation": false,
+  "documentResult": "FAIL",
+  "productionContract": {
+    "findingId": "REG-01",
+    "status": "FAIL",
+    "blocksReady": true,
+    "actual": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "expected": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "evidence": "../production-rubric-check.json"
+  },
+  "formalReview": "NOT_RUN_WAITING_FOR_SERIAL_SLOT",
+  "sections": {
+    "goal": false,
+    "scope": true,
+    "userFlow": true,
+    "inputsOutputs": true,
+    "implementation": true,
+    "acceptance": false,
+    "tests": true,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 80,
+      "pass": false,
+      "evidence": "桌遊、TRPG 和測試工程師的場景及逐顆重現需求具體。§goal 宣稱可證明未重擲，種子與結果只有重算證據。DICE-01。"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 97,
+      "pass": true,
+      "evidence": "固定 NdM±K、單一種子與 JSON。對照 r1530 的 dice-sum-distribution（理論分布）、group-generator（洗牌後分組）、decision-wheel-picker（抽單一選項）、lottery（無放回），用途與輸出相異。"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 95,
+      "pass": true,
+      "evidence": "明確按 Roll 才在空種子時寫入 uint32 快照。可清空種子再抽，預設 `2d6`／空種子。dirty/cancel/reset、焦點、報告失效和離頁回收均有規則。"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 98,
+      "pass": true,
+      "evidence": "位元級 mulberry32、首個 UTF-16 錯誤位置、長度先於文法、文法先於範圍、三個元件次序與種子邊界均可重算。100 顆全值一致。"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 96,
+      "pass": true,
+      "evidence": "Node 24 及原生 ESM，輸入不進 Worker 程式或 DOM 標記。Web Crypto 只在 app 層填種子，純核心可離線，世代、CSP、Blob 生命週期有明文。"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 84,
+      "pass": false,
+      "evidence": "九產品面向有方法及逐項 90 門檻。要求的雙語 SEO 與 FAQ 鎖定過度承諾的 seed 文案，與 §inputsOutputs 不一致。DICE-01。"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 96,
+      "pass": true,
+      "evidence": "21 個核心及三個狀態案例完整比對，涵蓋 100 顆、修正、首錯位置、格式、取消後晚到與替換。另以測試種子驗空欄語義。"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 96,
+      "pass": true,
+      "evidence": "四個固定文件、八節審查、工具路徑、候選 PR、同一 head 及上線責任齊備。"
+    }
+  ],
+  "rubricComplete": true,
+  "requiredDocumentChecksComplete": true,
+  "productStatus": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語真輸入、相同完整快照重現 rolls 且能取報告"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "骰數、面數、正負修正、seed 端點、首錯及狀態"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "工作期零請求及 URL／storage／log"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意輸入 inert、CSP、資源 cap、Worker/Blob dispose"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "桌面手機範例、busy、取消、錯誤、修改、下載"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、320px、200% zoom、觸控、動態狀態"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語訊息、同語首頁、預覽 noindex，正式另驗 hreflang/canonical"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、離線命令、SHA-256、固定同 head"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome/Edge 實際 Worker、表單、reflow 與 Blob"
+    }
+  ],
+  "fixtureCheck": {
+    "command": "python -B dice-roller/verify.py /path/to/fixtures/dice-roller.json",
+    "commandRole": "portable reproduction from the evidence directory",
+    "observedInvocation": "Python verifier with fixed candidate fixtures",
+    "exit": 0,
+    "pythonVersion": "3.12.5",
+    "counts": {
+      "core": {
+        "total": 21,
+        "matched": 21
+      },
+      "controller": {
+        "total": 3,
+        "matched": 3
+      }
+    },
+    "script": "verify.py",
+    "output": "verification.json",
+    "stderrBytes": 0,
+    "source": {
+      "slug": "dice-roller",
+      "path": "docs/specs/dice-roller/fixtures.json",
+      "commit": "5dccd3dcfbe72aa52c9a892391a44719e9de3f9a",
+      "gitBlobSha": "7a14f744c78239c95a87e519da8e4a466f5621cd",
+      "url": "https://raw.githubusercontent.com/KYStr/glossquote-labs-home/5dccd3dcfbe72aa52c9a892391a44719e9de3f9a/docs/specs/dice-roller/fixtures.json",
+      "localName": "dice-roller.json"
+    }
+  },
+  "blockers": [
+    {
+      "id": "DICE-01",
+      "title": "種子與報告無法支持文案的重現與未重擲承諾",
+      "reproduce": "固定 seed `42`，分別輸入 `2d6` 與 `2d20`。再以任意不同 seed 擲一次，最後只下載 seed `42` 的報告。 [固定規格](https://github.com/KYStr/glossquote-labs-home/blob/5dccd3dcfbe72aa52c9a892391a44719e9de3f9a/docs/specs/dice-roller/SPEC.md)",
+      "actual": "前兩份報告依序為 `[4,3]` 與 `[13,9]`。BRIEF、description、FAQ 將重現歸於種子本身。`§goal` 認為可向同桌證明未重擲，報告只能重算單次快照。",
+      "expected": "雙語 BRIEF、goal、種子說明、SEO 與 FAQ 一致說明使用相同正規化骰式與種子才能重現該次結果。把證明未重擲的承諾修為可驗算該份報告。",
+      "impact": "不同骰式使用相同 seed 會有不同輸出。任何人都可只展示選中的快照，因而讓同桌把結果可重算誤解為過程可稽核。",
+      "recheck": "重核原 `2d6` 案例與 `2d20` 補充案例，逐項檢視雙語同義與 noindex／正式 metadata 的預期字串。"
+    }
+  ],
+  "nonBlocking": [
+    "未來實作可在 app 測試以假熵注入 `0`，檢查空種子點 Roll 時欄位寫回 `\"0\"` 並使用這份快照。核心仍維持 `seed-empty-core` 的 EMPTY。",
+    "刪除 File.arrayBuffer 與合成檔的共用樣板文字，避免讓讀者誤會支援檔案來源。"
+  ],
+  "primarySources": [
+    {
+      "title": "固定 lottery core",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/5dccd3dcfbe72aa52c9a892391a44719e9de3f9a/tools/lottery-number-picker/public/js/core/lottery.mjs",
+      "note": "核對 `createPrng` 的常數、位移、uint32 截斷與分母。抽籤路徑為部分 Fisher–Yates。"
+    },
+    {
+      "title": "固定 group-generator SPEC",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/93c1a8a8b12930270b611850a6b85007da4f5c4d/docs/specs/group-generator/SPEC.md",
+      "note": "同位元流用於名單洗牌和輪流分組，輸出責任不同。"
+    },
+    {
+      "title": "固定 dice-sum-distribution SPEC",
+      "url": "https://github.com/KYStr/glossquote-labs-home/blob/66323ef8a8aa1a5a099ed61a96217be3821089ed/docs/specs/dice-sum-distribution/SPEC.md",
+      "note": "分布預案已存在於 registry。本案以單次擲骰及可重算結果區隔。"
+    },
+    {
+      "title": "Web Cryptography §getRandomValues",
+      "url": "https://www.w3.org/TR/webcrypto/#Crypto-method-getRandomValues",
+      "note": "核實瀏覽器可將安全隨機 bytes 填入 Uint32Array，符合空種子補值的可行性。"
+    }
+  ],
+  "nextStep": "保留原 owner 與 claim。修正雙語文案及 REG-01 後重核固定 head。正式 ACK、review 及 ready 仍待主統籌串行安排。"
+}

@@ -1,0 +1,1132 @@
+{
+  "slug": "pool-volume-calculator",
+  "pythonVersion": "3.12.5",
+  "counts": {
+    "core": {
+      "total": 18,
+      "matched": 18
+    },
+    "controller": {
+      "total": 3,
+      "matched": 3
+    }
+  },
+  "fixtures": [
+    {
+      "id": "rect-single-depth",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.5,
+          "depthMode": "single",
+          "fillHours": 20,
+          "fillMinutes": 0,
+          "fillTotalMinutes": 1200,
+          "flowRateLMin": 40,
+          "shape": "rectangular",
+          "volumeGallonsUs": 12680,
+          "volumeLitres": 48000,
+          "volumeM3": 48
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 1.5,
+          "volumeM3": 48.0,
+          "volumeLitres": 48000,
+          "volumeGallonsUs": 12680,
+          "flowRateLMin": 40.0,
+          "fillTotalMinutes": 1200,
+          "fillHours": 20,
+          "fillMinutes": 0
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "rect-sloped-average",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "1.8",
+        "depthM": "1.5",
+        "depthMode": "sloped",
+        "diameterM": "5",
+        "flowRateLMin": "",
+        "lengthM": "10",
+        "shallowDepthM": "1.2",
+        "shape": "rectangular",
+        "widthM": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.5,
+          "depthMode": "sloped",
+          "fillHours": null,
+          "fillMinutes": null,
+          "fillTotalMinutes": null,
+          "flowRateLMin": null,
+          "shape": "rectangular",
+          "volumeGallonsUs": 19813,
+          "volumeLitres": 75000,
+          "volumeM3": 75
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "sloped",
+          "avgDepthM": 1.5,
+          "volumeM3": 75.0,
+          "volumeLitres": 75000,
+          "volumeGallonsUs": 19813,
+          "flowRateLMin": null,
+          "fillTotalMinutes": null,
+          "fillHours": null,
+          "fillMinutes": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "circular-basic",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.2",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "25",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "circular",
+        "widthM": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.2,
+          "depthMode": "single",
+          "fillHours": 15,
+          "fillMinutes": 42,
+          "fillTotalMinutes": 942,
+          "flowRateLMin": 25,
+          "shape": "circular",
+          "volumeGallonsUs": 6224,
+          "volumeLitres": 23562,
+          "volumeM3": 23.56
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "circular",
+          "depthMode": "single",
+          "avgDepthM": 1.2,
+          "volumeM3": 23.56,
+          "volumeLitres": 23562,
+          "volumeGallonsUs": 6224,
+          "flowRateLMin": 25.0,
+          "fillTotalMinutes": 942,
+          "fillHours": 15,
+          "fillMinutes": 42
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "oval-basic",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.4",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "20",
+        "lengthM": "7",
+        "shallowDepthM": "1",
+        "shape": "oval",
+        "widthM": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.4,
+          "depthMode": "single",
+          "fillHours": 25,
+          "fillMinutes": 39,
+          "fillTotalMinutes": 1539,
+          "flowRateLMin": 20,
+          "shape": "oval",
+          "volumeGallonsUs": 8133,
+          "volumeLitres": 30788,
+          "volumeM3": 30.79
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "oval",
+          "depthMode": "single",
+          "avgDepthM": 1.4,
+          "volumeM3": 30.79,
+          "volumeLitres": 30788,
+          "volumeGallonsUs": 8133,
+          "flowRateLMin": 20.0,
+          "fillTotalMinutes": 1539,
+          "fillHours": 25,
+          "fillMinutes": 39
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "rect-decimal-dimensions",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.42",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "",
+        "lengthM": "6.25",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "3.6"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.42,
+          "depthMode": "single",
+          "fillHours": null,
+          "fillMinutes": null,
+          "fillTotalMinutes": null,
+          "flowRateLMin": null,
+          "shape": "rectangular",
+          "volumeGallonsUs": 8440,
+          "volumeLitres": 31950,
+          "volumeM3": 31.95
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 1.42,
+          "volumeM3": 31.95,
+          "volumeLitres": 31950,
+          "volumeGallonsUs": 8440,
+          "flowRateLMin": null,
+          "fillTotalMinutes": null,
+          "fillHours": null,
+          "fillMinutes": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "circular-sloped",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "1.6",
+        "depthM": "1.5",
+        "depthMode": "sloped",
+        "diameterM": "4.5",
+        "flowRateLMin": "15",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "circular",
+        "widthM": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.3,
+          "depthMode": "sloped",
+          "fillHours": 22,
+          "fillMinutes": 58,
+          "fillTotalMinutes": 1378,
+          "flowRateLMin": 15,
+          "shape": "circular",
+          "volumeGallonsUs": 5462,
+          "volumeLitres": 20676,
+          "volumeM3": 20.68
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "circular",
+          "depthMode": "sloped",
+          "avgDepthM": 1.3,
+          "volumeM3": 20.68,
+          "volumeLitres": 20676,
+          "volumeGallonsUs": 5462,
+          "flowRateLMin": 15.0,
+          "fillTotalMinutes": 1378,
+          "fillHours": 22,
+          "fillMinutes": 58
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "fill-time-hours-minutes",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.2",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "33",
+        "lengthM": "5",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1.2,
+          "depthMode": "single",
+          "fillHours": 9,
+          "fillMinutes": 5,
+          "fillTotalMinutes": 545,
+          "flowRateLMin": 33,
+          "shape": "rectangular",
+          "volumeGallonsUs": 4755,
+          "volumeLitres": 18000,
+          "volumeM3": 18
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 1.2,
+          "volumeM3": 18.0,
+          "volumeLitres": 18000,
+          "volumeGallonsUs": 4755,
+          "flowRateLMin": 33.0,
+          "fillTotalMinutes": 545,
+          "fillHours": 9,
+          "fillMinutes": 5
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "fill-minutes-tie",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "32",
+        "lengthM": "4",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "2.5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 1,
+          "depthMode": "single",
+          "fillHours": 5,
+          "fillMinutes": 13,
+          "fillTotalMinutes": 313,
+          "flowRateLMin": 32,
+          "shape": "rectangular",
+          "volumeGallonsUs": 2642,
+          "volumeLitres": 10000,
+          "volumeM3": 10
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 1.0,
+          "volumeM3": 10.0,
+          "volumeLitres": 10000,
+          "volumeGallonsUs": 2642,
+          "flowRateLMin": 32.0,
+          "fillTotalMinutes": 313,
+          "fillHours": 5,
+          "fillMinutes": 13
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "min-dimensions",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "0.1",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "",
+        "lengthM": "0.1",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "0.1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 0.1,
+          "depthMode": "single",
+          "fillHours": null,
+          "fillMinutes": null,
+          "fillTotalMinutes": null,
+          "flowRateLMin": null,
+          "shape": "rectangular",
+          "volumeGallonsUs": 0,
+          "volumeLitres": 1,
+          "volumeM3": 0
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 0.1,
+          "volumeM3": 0.0,
+          "volumeLitres": 1,
+          "volumeGallonsUs": 0,
+          "flowRateLMin": null,
+          "fillTotalMinutes": null,
+          "fillHours": null,
+          "fillMinutes": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "max-dimensions",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "10",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "10000",
+        "lengthM": "100",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "100"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "avgDepthM": 10,
+          "depthMode": "single",
+          "fillHours": 166,
+          "fillMinutes": 40,
+          "fillTotalMinutes": 10000,
+          "flowRateLMin": 10000,
+          "shape": "rectangular",
+          "volumeGallonsUs": 26417205,
+          "volumeLitres": 100000000,
+          "volumeM3": 100000
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 10.0,
+          "volumeM3": 100000.0,
+          "volumeLitres": 100000000,
+          "volumeGallonsUs": 26417205,
+          "flowRateLMin": 10000.0,
+          "fillTotalMinutes": 10000,
+          "fillHours": 166,
+          "fillMinutes": 40
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "depth-out-of-range",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "10.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "depthM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "depthM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "length-format",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8.125",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "lengthM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "lengthM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "sloped-depth-order",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "1",
+        "depthM": "1.5",
+        "depthMode": "sloped",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8",
+        "shallowDepthM": "2",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "DEPTH_ORDER",
+          "field": "deepDepthM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "DEPTH_ORDER",
+          "field": "deepDepthM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "circular-diameter-empty",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "",
+        "flowRateLMin": "40",
+        "lengthM": "abc",
+        "shallowDepthM": "1",
+        "shape": "circular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "diameterM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "diameterM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "shape-invalid",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "square",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "ENUM",
+          "field": "shape",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "shape",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "flow-out-of-range",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "0",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "flowRateLMin",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "flowRateLMin",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "length-input-limit",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "123456789",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "4"
+      },
+      "expected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "lengthM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "lengthM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "width-unicode",
+      "kind": "core",
+      "input": {
+        "deepDepthM": "2",
+        "depthM": "1.5",
+        "depthMode": "single",
+        "diameterM": "5",
+        "flowRateLMin": "40",
+        "lengthM": "8",
+        "shallowDepthM": "1",
+        "shape": "rectangular",
+        "widthM": "\ud800"
+      },
+      "expected": {
+        "error": {
+          "code": "UNICODE",
+          "field": "widthM",
+          "row": null
+        },
+        "ok": false
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "widthM",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "edit": {
+          "deepDepthM": "2",
+          "depthM": "10.5",
+          "depthMode": "single",
+          "diameterM": "5",
+          "flowRateLMin": "40",
+          "lengthM": "8",
+          "shallowDepthM": "1",
+          "shape": "rectangular",
+          "widthM": "4"
+        },
+        "initial": {
+          "deepDepthM": "2",
+          "depthM": "1.5",
+          "depthMode": "single",
+          "diameterM": "5",
+          "flowRateLMin": "40",
+          "lengthM": "8",
+          "shallowDepthM": "1",
+          "shape": "rectangular",
+          "widthM": "4"
+        }
+      },
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "deepDepthM": "2",
+          "depthM": "1.5",
+          "depthMode": "single",
+          "diameterM": "5",
+          "flowRateLMin": "40",
+          "lengthM": "8",
+          "shallowDepthM": "1",
+          "shape": "rectangular",
+          "widthM": "4"
+        },
+        "lateResult": {
+          "avgDepthM": 1.5,
+          "depthMode": "single",
+          "fillHours": 20,
+          "fillMinutes": 0,
+          "fillTotalMinutes": 1200,
+          "flowRateLMin": 40,
+          "shape": "rectangular",
+          "volumeGallonsUs": 12680,
+          "volumeLitres": 48000,
+          "volumeM3": 48
+        }
+      },
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "deepDepthM": "2",
+            "depthM": "1.5",
+            "depthMode": "single",
+            "diameterM": "5",
+            "flowRateLMin": "40",
+            "lengthM": "8",
+            "shallowDepthM": "1",
+            "shape": "rectangular",
+            "widthM": "4"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "deepDepthM": "2",
+            "depthM": "1.5",
+            "depthMode": "single",
+            "diameterM": "5",
+            "flowRateLMin": "40",
+            "lengthM": "8",
+            "shallowDepthM": "1",
+            "shape": "rectangular",
+            "widthM": "4"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "deepDepthM": "2",
+            "depthM": "1.5",
+            "depthMode": "single",
+            "diameterM": "5",
+            "flowRateLMin": "40",
+            "lengthM": "8",
+            "shallowDepthM": "1",
+            "shape": "rectangular",
+            "widthM": "4"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "shape": "rectangular",
+            "depthMode": "single",
+            "lengthM": "8",
+            "widthM": "4",
+            "diameterM": "5",
+            "depthM": "1.5",
+            "shallowDepthM": "1",
+            "deepDepthM": "2",
+            "flowRateLMin": "40"
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "newerDraft": {
+          "deepDepthM": "2",
+          "depthM": "10.5",
+          "depthMode": "single",
+          "diameterM": "5",
+          "flowRateLMin": "40",
+          "lengthM": "8",
+          "shallowDepthM": "1",
+          "shape": "rectangular",
+          "widthM": "4"
+        },
+        "olderDraft": {
+          "deepDepthM": "2",
+          "depthM": "1.5",
+          "depthMode": "single",
+          "diameterM": "5",
+          "flowRateLMin": "40",
+          "lengthM": "8",
+          "shallowDepthM": "1",
+          "shape": "rectangular",
+          "widthM": "4"
+        },
+        "olderLateResult": {
+          "avgDepthM": 1.5,
+          "depthMode": "single",
+          "fillHours": 20,
+          "fillMinutes": 0,
+          "fillTotalMinutes": 1200,
+          "flowRateLMin": 40,
+          "shape": "rectangular",
+          "volumeGallonsUs": 12680,
+          "volumeLitres": 48000,
+          "volumeM3": 48
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "depthM",
+            "row": null
+          }
+        }
+      },
+      "match": true
+    }
+  ],
+  "additionalProbes": {
+    "usGallonFrom231CubicInches": "3.785411784000",
+    "inactiveSurrogate": {
+      "input": {
+        "shape": "circular",
+        "depthMode": "single",
+        "lengthM": "\ud800",
+        "widthM": "4",
+        "diameterM": "5",
+        "depthM": "1.5",
+        "shallowDepthM": "1",
+        "deepDepthM": "2",
+        "flowRateLMin": "40"
+      },
+      "specPipeline": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "lengthM",
+          "row": null
+        }
+      },
+      "specTestsText": {
+        "ok": true,
+        "result": {
+          "shape": "circular",
+          "depthMode": "single",
+          "avgDepthM": 1.5,
+          "volumeM3": 29.45,
+          "volumeLitres": 29452,
+          "volumeGallonsUs": 7781,
+          "flowRateLMin": 40.0,
+          "fillTotalMinutes": 736,
+          "fillHours": 12,
+          "fillMinutes": 16
+        }
+      }
+    },
+    "inactiveCap": {
+      "input": {
+        "shape": "circular",
+        "depthMode": "single",
+        "lengthM": "123456789",
+        "widthM": "4",
+        "diameterM": "5",
+        "depthM": "1.5",
+        "shallowDepthM": "1",
+        "deepDepthM": "2",
+        "flowRateLMin": "40"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "lengthM",
+          "row": null
+        }
+      }
+    },
+    "useUnroundedLitresForFill": {
+      "input": {
+        "shape": "rectangular",
+        "depthMode": "single",
+        "lengthM": "0.1",
+        "widthM": "0.1",
+        "diameterM": "5",
+        "depthM": "0.14",
+        "shallowDepthM": "1",
+        "deepDepthM": "2",
+        "flowRateLMin": "0.1"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 0.14,
+          "volumeM3": 0.0,
+          "volumeLitres": 1,
+          "volumeGallonsUs": 0,
+          "flowRateLMin": 0.1,
+          "fillTotalMinutes": 14,
+          "fillHours": 0,
+          "fillMinutes": 14
+        }
+      }
+    },
+    "minuteRollover": {
+      "input": {
+        "shape": "rectangular",
+        "depthMode": "single",
+        "lengthM": "1",
+        "widthM": "1",
+        "diameterM": "5",
+        "depthM": "1.19",
+        "shallowDepthM": "1",
+        "deepDepthM": "2",
+        "flowRateLMin": "20"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "shape": "rectangular",
+          "depthMode": "single",
+          "avgDepthM": 1.19,
+          "volumeM3": 1.19,
+          "volumeLitres": 1190,
+          "volumeGallonsUs": 314,
+          "flowRateLMin": 20.0,
+          "fillTotalMinutes": 60,
+          "fillHours": 1,
+          "fillMinutes": 0
+        }
+      }
+    },
+    "fieldErrorBeforeDepthOrder": {
+      "input": {
+        "shape": "rectangular",
+        "depthMode": "sloped",
+        "lengthM": "8",
+        "widthM": "4",
+        "diameterM": "5",
+        "depthM": "1.5",
+        "shallowDepthM": "2",
+        "deepDepthM": "1",
+        "flowRateLMin": "0"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "flowRateLMin",
+          "row": null
+        }
+      }
+    },
+    "documentReport": {
+      "utf8Bytes": 193,
+      "sha256": "af7506de9dad9d34ebc15718c38c52b48466ba28a827dfbd8b832c25bcebec00",
+      "jsonPlusLf": "{\"avgDepthM\":1.5,\"depthMode\":\"single\",\"fillHours\":20,\"fillMinutes\":0,\"fillTotalMinutes\":1200,\"flowRateLMin\":40,\"shape\":\"rectangular\",\"volumeGallonsUs\":12680,\"volumeLitres\":48000,\"volumeM3\":48}\n"
+    }
+  }
+}

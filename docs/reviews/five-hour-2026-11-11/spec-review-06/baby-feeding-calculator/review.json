@@ -1,0 +1,295 @@
+{
+  "taskId": "labs-baby-feeding-calculator-spec-20261109",
+  "specId": "spec-baby-feeding-calculator-20261109",
+  "slug": "baby-feeding-calculator",
+  "pr": "https://github.com/KYStr/glossquote-labs-home/pull/262",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "558e5afa80f14c686e40a306435b81672219fa68",
+    "path": "docs/specs/baby-feeding-calculator/SPEC.md"
+  },
+  "reviewer": {
+    "actorId": "local-codex:01a1c87c-fc33-75e3-9aee-09999e6d38b1",
+    "executor": "local-codex",
+    "participatedInCandidates": false
+  },
+  "observedAt": "2026-11-11T03:04:47Z",
+  "registry": {
+    "revision": 1530,
+    "blobSha": "e01da965f28e5248ca13158094ca356254a25c2b",
+    "commit": "e0ef81a2b5489489f13b2bc088f8906978700cb5",
+    "taskStatus": "reviewing",
+    "specStatus": "draft",
+    "claimId": "muse-r4-baby-feeding-calcu-claim-20261109T155434Z-4a705",
+    "owner": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory",
+    "submissionAuthor": "cloud-dot:3d64a845-35f8-4dbf-8f30-96e603f6cdc7:/home/hatch/workspace/glossquote-factory"
+  },
+  "sourceVerification": {
+    "intake": "../intake.json",
+    "prOpen": true,
+    "draft": true,
+    "exactHead": true,
+    "blobs": [
+      {
+        "path": "docs/specs/baby-feeding-calculator/AUTHOR-CHECK.md",
+        "sha": "f93f568ede9a80cf7ddc87d105f868189e5bfaef",
+        "bytes": 5503
+      },
+      {
+        "path": "docs/specs/baby-feeding-calculator/BRIEF.md",
+        "sha": "93593a8f88f66b7aa799f7d4bdd95149b6b7c38d",
+        "bytes": 1775
+      },
+      {
+        "path": "docs/specs/baby-feeding-calculator/SPEC.md",
+        "sha": "2b9a49396f24dd248be5ddb0290c2fd27c04957a",
+        "bytes": 25183
+      },
+      {
+        "path": "docs/specs/baby-feeding-calculator/fixtures.json",
+        "sha": "7d4ec6450dc4fca1107cc544c03483ab66453e1f",
+        "bytes": 7501
+      }
+    ]
+  },
+  "result": "FAIL",
+  "verdict": "revision",
+  "readyRecommendation": false,
+  "documentResult": "FAIL",
+  "productionContract": {
+    "findingId": "REG-01",
+    "status": "FAIL",
+    "blocksReady": true,
+    "actual": [
+      "goal",
+      "scope",
+      "userFlow",
+      "inputsOutputs",
+      "implementation",
+      "acceptance",
+      "tests",
+      "handoff"
+    ],
+    "expected": [
+      "functionality",
+      "boundaries",
+      "privacy",
+      "security",
+      "usability",
+      "accessibility",
+      "localization-seo",
+      "toolchain-provenance",
+      "compatibility"
+    ],
+    "evidence": "../production-rubric-check.json"
+  },
+  "formalReview": "NOT_RUN_WAITING_FOR_SERIAL_SLOT",
+  "sections": {
+    "goal": true,
+    "scope": false,
+    "userFlow": false,
+    "inputsOutputs": false,
+    "implementation": true,
+    "acceptance": false,
+    "tests": false,
+    "handoff": true
+  },
+  "aspects": [
+    {
+      "id": "goal",
+      "label": "明確受眾、實際問題、可觀察成功、假設與非目標。",
+      "score": 95,
+      "pass": true,
+      "evidence": "行動夜間估算、桌面比較係數的場景具體。每日總量和逐餐分配具可驗算語義。"
+    },
+    {
+      "id": "scope",
+      "label": "功能包含/排除、固定來源及與近似工具的用途/操作/輸入輸出差異，保留既有owner。",
+      "score": 85,
+      "pass": false,
+      "evidence": "明確限健康足月、第一週後至約 6 個月的配方奶一般估算，排除直接哺乳與診斷。產品規格仍要求對已超過來源年齡的資料給成功餵食表。BABY-01。"
+    },
+    {
+      "id": "userFlow",
+      "label": "主要使用旅程、錯誤與恢復、清除/離開與重複操作的可見流程完整。",
+      "score": 78,
+      "pass": false,
+      "evidence": "有按鈕、範例、焦點、dirty、cancel、reset 與可見免責。月齡只提示，畫面照常給出超出指引期間的個別逐餐量與下載。BABY-01。"
+    },
+    {
+      "id": "inputsOutputs",
+      "label": "精確輸入輸出規則、容量與邊界、有效無效例及資料生命週期。",
+      "score": 83,
+      "pass": false,
+      "evidence": "文法、先錯、整數捨入及不變量清楚。下載固定只有 result，醫療來源、適用聲明與重要上下文遺失。BABY-02。"
+    },
+    {
+      "id": "implementation",
+      "label": "純核心/controller/DOM分層、Node24零依賴、雙語/可及性、離線建置與命令可執行。",
+      "score": 96,
+      "pass": true,
+      "evidence": "原生靜態頁與 Node 24 零依賴，固定 Worker、錯誤回復、CSP、禁工作請求與敏感資料持久化，計算可離線。"
+    },
+    {
+      "id": "acceptance",
+      "label": "九未來產品面向均有方法/預期/可反駁證據，逐項至少90且必要檢查完整；未測NOT_RUN，不把純測換原生或文件分數。",
+      "score": 84,
+      "pass": false,
+      "evidence": "九個面向有量化方法、逐項門檻與候選 noindex、正式 SEO。健康內容的門檻只覆蓋頁面免責，尚未涵蓋不適用輸入及脫離頁面的報告。BABY-01、BABY-02。"
+    },
+    {
+      "id": "tests",
+      "label": "獨立expected、邊界與首錯、確定性輸出、真桌面鍵盤/下載證據。",
+      "score": 84,
+      "pass": false,
+      "evidence": "現有 16 核心及三個狀態案例算術全吻合，覆蓋精確進位與餘數。age-beyond-notice 與 max-boundary 固定了臨床範圍之外仍顯示逐餐量的路徑。"
+    },
+    {
+      "id": "handoff",
+      "label": "固定SPEC/作者查核/open draft PR；非作者八節完整度與同ID修訂，製作另取claim，不自ready或宣稱部署。",
+      "score": 96,
+      "pass": true,
+      "evidence": "固定四檔、來源與日期重核、另行 claim、同 commit 產品證據及隱私停止條件皆明文。"
+    }
+  ],
+  "rubricComplete": true,
+  "requiredDocumentChecksComplete": true,
+  "productStatus": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "真輸入、分配總和及下載"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "體重、係數、餐數、月齡、首錯、精確進位"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "健康資料零工作請求、零儲存、URL 與 log"
+    },
+    {
+      "id": "security",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "敵意輸入 inert、CSP、固定檔名、資源回收"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語桌面手機、狀態與免責／指引位置"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "鍵盤、焦點、錯誤、狀態、320px、200% zoom 與觸控"
+    },
+    {
+      "id": "localization-seo",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "兩語全文、同語首頁、noindex 與正式 SEO"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "Node 24、離線命令、SHA-256、同 head"
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN",
+      "plannedEvidence": "隔離 Chrome/Edge 實際 Worker、Blob 和 reflow"
+    }
+  ],
+  "fixtureCheck": {
+    "command": "python -B baby-feeding-calculator/verify.py /path/to/fixtures/baby-feeding-calculator.json",
+    "commandRole": "portable reproduction from the evidence directory",
+    "observedInvocation": "Python verifier with fixed candidate fixtures",
+    "exit": 0,
+    "pythonVersion": "3.12.5",
+    "counts": {
+      "core": {
+        "total": 16,
+        "matched": 16
+      },
+      "controller": {
+        "total": 3,
+        "matched": 3
+      }
+    },
+    "script": "verify.py",
+    "output": "verification.json",
+    "stderrBytes": 0,
+    "source": {
+      "slug": "baby-feeding-calculator",
+      "path": "docs/specs/baby-feeding-calculator/fixtures.json",
+      "commit": "558e5afa80f14c686e40a306435b81672219fa68",
+      "gitBlobSha": "7d4ec6450dc4fca1107cc544c03483ab66453e1f",
+      "url": "https://raw.githubusercontent.com/KYStr/glossquote-labs-home/558e5afa80f14c686e40a306435b81672219fa68/docs/specs/baby-feeding-calculator/fixtures.json",
+      "localName": "baby-feeding-calculator.json"
+    }
+  },
+  "blockers": [
+    {
+      "id": "BABY-01",
+      "title": "超出引用指引期間仍輸出個別逐餐餵食量",
+      "reproduce": "執行合成 `age-beyond-notice`，輸入 `weight=\"8\", factor=\"150\", feedsPerDay=\"5\", ageMonths=\"9\"`。對照 `age-newborn-notice`，月齡 0 不能區分第一週與其後。 [來源適用範圍](https://github.com/KYStr/glossquote-labs-home/blob/558e5afa80f14c686e40a306435b81672219fa68/docs/specs/baby-feeding-calculator/SPEC.md#L29)",
+      "actual": "9 月的合成案例仍成功回 1200 mL 與五餐各 240 mL，附一個超齡提示並開放下載。月齡空白時無提示，`max-boundary` 可成功產出 3000 mL 單餐。這些是規格算術輸出。 [字面案例](https://github.com/KYStr/glossquote-labs-home/blob/558e5afa80f14c686e40a306435b81672219fa68/docs/specs/baby-feeding-calculator/fixtures.json)",
+      "expected": "讓使用入口、結果與下載一致限定為來源適用的配方奶一般估算。對明確超出範圍的資料只呈現適用範圍說明。對未提供或 0 月而無法判斷是否已過第一週的資料，明訂如何確認適用與顯示。把按餐拆分說明為算術分配，配合來源的回應式餵食說明。",
+      "impact": "夜間照顧場景可能將表格當成可執行餵食計畫。NHS 111 Wales 文字只支持第一週結束後到約六個月的一般配方奶日量區間，沒有這些個別餐量或時程。 [NHS 111 Wales](https://111.wales.nhs.uk/doityourself/pregnancy/bottleformulacommonquest/)",
+      "recheck": "重核第一週、之後未滿一個月、未填、約 6 月及超過適用範圍的入口、輸出及下載。修正兩語 scope、結果標籤與 fixtures。保留適用區間內的純算術驗算。"
+    },
+    {
+      "id": "BABY-02",
+      "title": "下載失去醫療來源和適用上下文",
+      "reproduce": "按現行規格序列化 `age-beyond-notice` 的成功 `result` 為 `baby-feeding-report.json`，脫離頁面後單獨打開。 [報告格式](https://github.com/KYStr/glossquote-labs-home/blob/558e5afa80f14c686e40a306435b81672219fa68/docs/specs/baby-feeding-calculator/SPEC.md#L87)",
+      "actual": "報告有分餐數值與內部 notice ID，缺少指引出處、適用人群與年齡、一般估算說明。適用性未確認的 `max-boundary` 報告甚至有空 notices。",
+      "expected": "如保留下載，固定 schema 應攜帶可追溯的來源、適用範圍和一般估算／非個人餐量指示，並為脫離頁面的報告補上字面驗收案例。",
+      "impact": "頁面旁的雙語警示無法隨報告保留，接收者不能從檔案辨別數字用途。",
+      "recheck": "用合成輸入匯出，核對可獨立讀取的語境與固定排序／UTF-8 bytes。同步更新九個面向中報告證據與字面 expected。"
+    }
+  ],
+  "nonBlocking": [
+    "把「實務最常用」改為有來源支持的「該工具取引用區間下限」。NHS 頁面未比較各預設值的普及程度。",
+    "讓 BRIEF 的首例和 Load example 第一個 fixture 對齊，或明說前者是捨入驗算例。",
+    "新生兒提示的 150–200 應完整寫成每公斤每日 mL，兩語統一。"
+  ],
+  "primarySources": [
+    {
+      "title": "NHS 111 Wales 配方奶常見問題",
+      "url": "https://111.wales.nhs.uk/doityourself/pregnancy/bottleformulacommonquest/",
+      "note": "2026-11-11 讀到頁尾更新日期 19/04/2021。確認第一週結束後到約六個月、150–200 mL/kg/day 是多數嬰兒的一般區間，按需求餵食。"
+    },
+    {
+      "title": "NHS Best Start in Life 的回應式瓶餵",
+      "url": "https://www.nhs.uk/best-start-in-life/baby/feeding-your-baby/bottle-feeding/bottle-feeding-your-baby/feeding-on-demand/",
+      "note": "核實飢餓與飽足訊號優先於固定時程。"
+    },
+    {
+      "title": "CDC 配方奶餵食量與頻率",
+      "url": "https://www.cdc.gov/infant-toddler-nutrition/formula-feeding/how-much-and-how-often.html",
+      "note": "核實最初幾天、後續週月、6–12 個月依需求變化，僅核對期間差異。"
+    },
+    {
+      "title": "AAP 配方奶餵食資訊",
+      "url": "https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/amount-and-schedule-of-formula-feedings.aspx",
+      "note": "查讀作者列出的不同指引。這份審查沿用規格的單一主來源，不引入其他數值。"
+    },
+    {
+      "title": "Pregnancy, Birth and Baby",
+      "url": "https://www.pregnancybirthbaby.org.au/babies/feeding-and-nutrition/feeding-your-baby-with-formula",
+      "note": "查讀作者列出的澳洲年齡分段資料，確認其指引來源與適用分段不同。"
+    }
+  ],
+  "nextStep": "保留原 owner 與 claim。修正 BABY-01、BABY-02、REG-01 後重核同一新 head、主來源及兩語範圍。正式登記仍待主統籌安排。"
+}

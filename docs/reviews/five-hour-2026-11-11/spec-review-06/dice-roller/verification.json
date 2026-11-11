@@ -1,0 +1,1238 @@
+{
+  "slug": "dice-roller",
+  "pythonVersion": "3.12.5",
+  "counts": {
+    "core": {
+      "total": 21,
+      "matched": 21
+    },
+    "controller": {
+      "total": 3,
+      "matched": 3
+    }
+  },
+  "fixtures": [
+    {
+      "id": "example-2d6",
+      "kind": "core",
+      "input": {
+        "notation": "2d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "modifier-plus",
+      "kind": "core",
+      "input": {
+        "notation": "2d6+3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "2d6+3",
+          "count": 2,
+          "sides": 6,
+          "modifier": 3,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 10
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "2d6+3",
+          "count": 2,
+          "sides": 6,
+          "modifier": 3,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 10
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "implicit-count-d20",
+      "kind": "core",
+      "input": {
+        "notation": "d20",
+        "seed": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "1d20",
+          "count": 1,
+          "sides": 20,
+          "modifier": 0,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": 1
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "1d20",
+          "count": 1,
+          "sides": 20,
+          "modifier": 0,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": 1
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "negative-modifier",
+      "kind": "core",
+      "input": {
+        "notation": "1d20-25",
+        "seed": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "1d20-25",
+          "count": 1,
+          "sides": 20,
+          "modifier": -25,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": -24
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "1d20-25",
+          "count": 1,
+          "sides": 20,
+          "modifier": -25,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": -24
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "uppercase-d",
+      "kind": "core",
+      "input": {
+        "notation": "3D8",
+        "seed": "20261109"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "3d8",
+          "count": 3,
+          "sides": 8,
+          "modifier": 0,
+          "seed": 20261109,
+          "rolls": [
+            5,
+            2,
+            6
+          ],
+          "sum": 13,
+          "total": 13
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "3d8",
+          "count": 3,
+          "sides": 8,
+          "modifier": 0,
+          "seed": 20261109,
+          "rolls": [
+            5,
+            2,
+            6
+          ],
+          "sum": 13,
+          "total": 13
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "seed-zero",
+      "kind": "core",
+      "input": {
+        "notation": "3d6",
+        "seed": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "3d6",
+          "count": 3,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 0,
+          "rolls": [
+            2,
+            1,
+            2
+          ],
+          "sum": 5,
+          "total": 5
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "3d6",
+          "count": 3,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 0,
+          "rolls": [
+            2,
+            1,
+            2
+          ],
+          "sum": 5,
+          "total": 5
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "caps-max",
+      "kind": "core",
+      "input": {
+        "notation": "100d1000+10000",
+        "seed": "4294967295"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "100d1000+10000",
+          "count": 100,
+          "sides": 1000,
+          "modifier": 10000,
+          "seed": 4294967295,
+          "rolls": [
+            897,
+            190,
+            716,
+            945,
+            846,
+            540,
+            681,
+            476,
+            136,
+            989,
+            872,
+            190,
+            344,
+            739,
+            476,
+            757,
+            916,
+            103,
+            144,
+            393,
+            921,
+            924,
+            792,
+            853,
+            116,
+            92,
+            516,
+            276,
+            308,
+            20,
+            455,
+            254,
+            515,
+            435,
+            210,
+            397,
+            540,
+            607,
+            149,
+            268,
+            888,
+            797,
+            29,
+            277,
+            296,
+            748,
+            630,
+            753,
+            166,
+            962,
+            877,
+            987,
+            621,
+            426,
+            388,
+            524,
+            904,
+            254,
+            600,
+            402,
+            896,
+            164,
+            884,
+            218,
+            38,
+            677,
+            563,
+            567,
+            727,
+            239,
+            451,
+            796,
+            302,
+            562,
+            1000,
+            324,
+            402,
+            468,
+            754,
+            893,
+            897,
+            423,
+            647,
+            460,
+            482,
+            212,
+            235,
+            937,
+            268,
+            155,
+            871,
+            231,
+            78,
+            603,
+            142,
+            128,
+            334,
+            597,
+            551,
+            805
+          ],
+          "sum": 51508,
+          "total": 61508
+        }
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "100d1000+10000",
+          "count": 100,
+          "sides": 1000,
+          "modifier": 10000,
+          "seed": 4294967295,
+          "rolls": [
+            897,
+            190,
+            716,
+            945,
+            846,
+            540,
+            681,
+            476,
+            136,
+            989,
+            872,
+            190,
+            344,
+            739,
+            476,
+            757,
+            916,
+            103,
+            144,
+            393,
+            921,
+            924,
+            792,
+            853,
+            116,
+            92,
+            516,
+            276,
+            308,
+            20,
+            455,
+            254,
+            515,
+            435,
+            210,
+            397,
+            540,
+            607,
+            149,
+            268,
+            888,
+            797,
+            29,
+            277,
+            296,
+            748,
+            630,
+            753,
+            166,
+            962,
+            877,
+            987,
+            621,
+            426,
+            388,
+            524,
+            904,
+            254,
+            600,
+            402,
+            896,
+            164,
+            884,
+            218,
+            38,
+            677,
+            563,
+            567,
+            727,
+            239,
+            451,
+            796,
+            302,
+            562,
+            1000,
+            324,
+            402,
+            468,
+            754,
+            893,
+            897,
+            423,
+            647,
+            460,
+            482,
+            212,
+            235,
+            937,
+            268,
+            155,
+            871,
+            231,
+            78,
+            603,
+            142,
+            128,
+            334,
+            597,
+            551,
+            805
+          ],
+          "sum": 51508,
+          "total": 61508
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "empty-notation",
+      "kind": "core",
+      "input": {
+        "notation": "",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "notation",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "notation",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "notation-missing-sides",
+      "kind": "core",
+      "input": {
+        "notation": "2d",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 2
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 2
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "notation-bad-character",
+      "kind": "core",
+      "input": {
+        "notation": "2x6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 1
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 1
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "notation-space",
+      "kind": "core",
+      "input": {
+        "notation": "2d6 +3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 3
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 3
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "notation-double-sign",
+      "kind": "core",
+      "input": {
+        "notation": "2d6++3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 4
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 4
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "count-zero",
+      "kind": "core",
+      "input": {
+        "notation": "0d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "count-over-cap",
+      "kind": "core",
+      "input": {
+        "notation": "101d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "sides-below-min",
+      "kind": "core",
+      "input": {
+        "notation": "2d1",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "sides-over-cap",
+      "kind": "core",
+      "input": {
+        "notation": "2d1001",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "modifier-over-cap",
+      "kind": "core",
+      "input": {
+        "notation": "2d6+10001",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "modifier"
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "modifier"
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "notation-too-long",
+      "kind": "core",
+      "input": {
+        "notation": "12345678901234567890123456789012d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "notation",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "notation",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "seed-empty-core",
+      "kind": "core",
+      "input": {
+        "notation": "2d6",
+        "seed": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "seed-leading-zero",
+      "kind": "core",
+      "input": {
+        "notation": "2d6",
+        "seed": "042"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "seed-over-range",
+      "kind": "core",
+      "input": {
+        "notation": "2d6",
+        "seed": "4294967296"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "seed",
+          "row": null
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "input": {
+        "initial": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "edit": {
+          "notation": "2d",
+          "seed": "42"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      },
+      "derived": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "input": {
+        "draft": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "lateResult": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": "42"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": ""
+          }
+        }
+      },
+      "derived": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": "42"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": ""
+          }
+        }
+      },
+      "match": true
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "input": {
+        "olderDraft": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "newerDraft": {
+          "notation": "2d",
+          "seed": "42"
+        },
+        "olderLateResult": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      },
+      "derived": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      },
+      "match": true
+    }
+  ],
+  "additionalProbes": {
+    "sameSeedDifferentNotation": [
+      {
+        "input": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "derived": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      {
+        "input": {
+          "notation": "2d20",
+          "seed": "42"
+        },
+        "derived": {
+          "expression": "2d20",
+          "count": 2,
+          "sides": 20,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            13,
+            9
+          ],
+          "sum": 22,
+          "total": 22
+        }
+      }
+    ],
+    "normalizedEquivalent": {
+      "input": {
+        "notation": "002D06-00",
+        "seed": "42"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      }
+    },
+    "firstFiveNumeratorsFor42": [
+      2581720956,
+      1925393290,
+      3661312704,
+      2876485805,
+      750819978
+    ],
+    "lowestSidesWithNegativeCap": {
+      "input": {
+        "notation": "1d2-10000",
+        "seed": "0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "1d2-10000",
+          "count": 1,
+          "sides": 2,
+          "modifier": -10000,
+          "seed": 0,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": -9999
+        }
+      }
+    },
+    "grammarBeforeCountAndSeed": {
+      "input": {
+        "notation": "101d6x",
+        "seed": "042"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 5
+        }
+      }
+    },
+    "componentLengthBeforeValue": {
+      "input": {
+        "notation": "00000000001d1",
+        "seed": ""
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      }
+    },
+    "unpairedSurrogate": {
+      "input": {
+        "notation": "\ud800",
+        "seed": "42"
+      },
+      "derived": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "notation",
+          "row": null
+        }
+      }
+    },
+    "syntheticSeedInjection": {
+      "initialDraft": {
+        "notation": "2d6",
+        "seed": ""
+      },
+      "mockUint32": 0,
+      "completedDraft": {
+        "notation": "2d6",
+        "seed": "0"
+      },
+      "derived": {
+        "ok": true,
+        "result": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 0,
+          "rolls": [
+            2,
+            1
+          ],
+          "sum": 3,
+          "total": 3
+        }
+      }
+    },
+    "documentReport": {
+      "utf8Bytes": 96,
+      "sha256": "b2331c5dc8c1836605e583bc994ae676fe3e8f942b93895005140ef92175e0a1",
+      "jsonPlusLf": "{\"count\":2,\"expression\":\"2d6\",\"modifier\":0,\"rolls\":[4,3],\"seed\":42,\"sides\":6,\"sum\":7,\"total\":7}\n"
+    }
+  }
+}
