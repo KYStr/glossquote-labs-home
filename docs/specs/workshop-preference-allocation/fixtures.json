@@ -4380,6 +4380,315 @@
           }
         }
       ]
+    },
+    {
+      "id": "zero-byte-file-and-paste-recovery",
+      "steps": [
+        {
+          "event": {
+            "type": "INIT"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 0,
+              "phase": "empty",
+              "sources": {
+                "workshops": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "workshops",
+            "text": "workshop_id,title,capacity\nA,Workshop,1"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 1,
+              "phase": "partial",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 0,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "READ",
+            "source": "preferences",
+            "size": 0
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "loading",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": true,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": [
+              {
+                "type": "read",
+                "source": "preferences",
+                "generation": 1
+              }
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 1,
+            "hex": ""
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": {
+                "source": "preferences",
+                "code": "SOURCE_EMPTY",
+                "record": 1,
+                "column": 1
+              },
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EXPORT",
+            "kind": "batch"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 2,
+              "phase": "error",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 1,
+                  "origin": "file",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": {
+                "source": "preferences",
+                "code": "SOURCE_EMPTY",
+                "record": 1,
+                "column": 1
+              },
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "preferences",
+            "text": ""
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 3,
+              "phase": "partial",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 2,
+                  "origin": "empty",
+                  "text": "",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": null,
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        },
+        {
+          "event": {
+            "type": "EDIT",
+            "source": "preferences",
+            "text": "participant_id,pref1,pref2,pref3\nR,A,,"
+          },
+          "expected": {
+            "snapshot": {
+              "revision": 4,
+              "phase": "ready",
+              "sources": {
+                "workshops": {
+                  "generation": 1,
+                  "origin": "paste",
+                  "text": "workshop_id,title,capacity\nA,Workshop,1",
+                  "reading": false,
+                  "issue": null
+                },
+                "preferences": {
+                  "generation": 3,
+                  "origin": "paste",
+                  "text": "participant_id,pref1,pref2,pref3\nR,A,,",
+                  "reading": false,
+                  "issue": null
+                }
+              },
+              "validation": null,
+              "preview": {
+                "workshopCount": 1,
+                "participantCount": 1
+              },
+              "result": null,
+              "selected": null,
+              "downloads": {
+                "batch": false,
+                "roster": false
+              },
+              "activeExports": [],
+              "needsReallocation": false,
+              "exportError": null
+            },
+            "effects": []
+          }
+        }
+      ]
     }
   ]
 }

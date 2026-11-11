@@ -143,7 +143,7 @@
 
 失效時先讓 snapshot 清 result、selected、preview、exportError、下載權限和 URL map，再依 URL 建立順序撤銷、依 workshops、preferences 順序停止受影響 reader，確保舊回呼無法復活。曾有結果即設 needsReallocation，普通來源變更後保留此旗標，RESET／LEAVE／RESTORE 清除。App 依 `FileReader.readAsArrayBuffer` 的 load／error／abort 綁已捕獲的 source＋generation；API 檔案只暫留到讀取終了，主動 abort 要先讓 token 失效，再清 handler 和 reader 參照。URL map 只保留當前版本，reset、改來源及離頁同步 revoke。錨點以使用者動作觸發，移除暫用節點；瀏覽器／檔案系統已取得的下載副本由使用者管理。無主動保存、無網路上傳、無 service worker、Storage、clipboard 或工作資料 log。
 
-衍生相位順序為 reading → loading；有非取消 issue → error；只有取消 issue → cancelled；有 validation → error；皆空 → empty；缺一表 → partial；有現行結果 → complete；有效兩表且 needsReallocation → dirty；其餘有效兩表 → ready。pending 或 issue 存在時 validation、preview 為 null；其他時驗現有非空來源，第一個錯停止。有效兩表才有 preview。僅 complete 有下載權限，所選不是 `@unassigned` 時才開放 roster。忽略事件不變更 revision、快照及效果。結果一律由同一 snapshot 渲染，失效後沒有可用舊下載控制。
+衍生相位順序為 reading → loading；有非取消 issue → error；只有取消 issue → cancelled；有 validation → error；皆空 → empty；缺一表 → partial；有現行結果 → complete；有效兩表且 needsReallocation → dirty；其餘有效兩表 → ready。pending 或 issue 存在時 validation、preview 為 null；其他時依 origin 判斷已提供來源並驗證，第一個錯停止。origin 為 file 即使 text 為空也驗證，選取 0-byte CSV 後回該來源的 SOURCE_EMPTY，位置 1:1，phase 為 error。origin 為 empty 代表未提供，初載及清空貼上欄走 empty 或 partial。有效兩表才有 preview。僅 complete 有下載權限，所選不是 `@unassigned` 時才開放 roster。忽略事件不變更 revision、快照及效果。結果一律由同一 snapshot 渲染，失效後沒有可用舊下載控制。
 
 ## acceptance
 

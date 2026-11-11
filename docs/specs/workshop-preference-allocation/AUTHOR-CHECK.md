@@ -25,8 +25,10 @@
 
 - 欄寬錯優先於同一來源前段欄值錯，工作坊的錯優先於志願錯。空隙定位到空白後第一個填值，優先於該欄 ID 格式錯。參照逐欄判定，先遇未知工作坊即停止，即使下一欄也重覆。無效 UTF-8 用首錯前綴定位到欄，前綴已含不合法結構時先回前面的結構錯。
 - 上限用可重現輸入構造，30／31 個工作坊與 500／501 筆報名分別對應首個超限 record 32／502。500 筆都只有 W1，W1 恰有 500 席，因此 500 列全分配。ASCII 大小案的表頭、LF、`W1,` 和 `,1` 共 32 bytes，另有 131,040 個 `a` 剛好 128 KiB，故進入課名長度檢查；多 1 byte 先拒絕。每個 🪵 是一碼點／兩 UTF-16 units，80 個合法、81 個超限。
-- Controller 的五條序列共有 49 份完整快照及效果列表。用另一個 reader/URL 帳本核對讀取世代、是否仍有檔案讀取、舊回呼無效果、結果版本、分班與 URL 建立／重用／撤銷，並用枚舉結果核對完整狀態下的統計和下載。快照為文件中逐步寫定的值。模擬工作不充當真實 browser、FileReader、OS 下載或裝置證據。
+- Controller 的六條序列共有 56 份完整快照及效果列表。用另一個 reader/URL 帳本核對讀取世代、是否仍有檔案讀取、舊回呼無效果、結果版本、分班與 URL 建立／重用／撤銷，並用枚舉結果核對完整狀態下的統計和下載。快照為文件中逐步寫定的值。模擬工作不充當真實 browser、FileReader、OS 下載或裝置證據。
 - 範圍對照含固定研究來源、實際近似產品程式與相同用途查詢，依 [BRIEF](BRIEF.md) 的固定引用取回。UTF-8 fatal 與 BOM 的設計依 Encoding，讀取中止和 Blob 採 File API；不引入套件或外部 runtime 資產。 [WHATWG Encoding](https://encoding.spec.whatwg.org/#interface-textdecoder) · [File API](https://w3c.github.io/FileAPI/#FileReader-interface)
+
+WA-01 加入零位元組檔案讀取、來源錯誤、停用匯出、清空貼上與重新貼入的完整快照。驗證已選空檔在 record 1、column 1 回 SOURCE_EMPTY，清空貼上恢復為缺一表。取消系統選檔仍不送出 READ。
 
 ## 可重做的文件檢查
 
@@ -40,7 +42,7 @@ node verify-workshop-spec.mjs docs/specs/workshop-preference-allocation
 作者實際用 Node `v24.14.0` 執行同一腳本，以自己的四檔工作目錄為參數，exit `0`。輸出前三行的 bytes／SHA-256 如上，最後一行如下。
 
 ```json
-{"core":50,"positives":9,"negatives":41,"boundaries":10,"controller":5,"snapshots":49,"sections":8,"productCriteria":9,"status":"PASS"}
+{"core":50,"positives":9,"negatives":41,"boundaries":10,"controller":6,"snapshots":56,"sections":8,"productCriteria":9,"status":"PASS"}
 ```
 
 <details>
@@ -357,9 +359,13 @@ function checkController(test) {
     assert.deepEqual(s.activeExports, [...urls.values()]);
     for (const [name, src] of Object.entries(s.sources)) assert.equal(src.reading, readers.has(name));
     const issues = [ws.issue, ps.issue].filter(Boolean);
+    if (!readers.size && !issues.length) {
+      const emptyFile = Object.entries(s.sources).find(([, input]) => input.origin === 'file' && input.text === '');
+      if (emptyFile) assert.deepEqual(s.validation, { source: emptyFile[0], code: 'SOURCE_EMPTY', record: 1, column: 1 });
+    }
     const phase = readers.size ? 'loading' : issues.some(e => e.code !== 'READ_CANCELLED') ? 'error'
-      : issues.length ? 'cancelled' : s.validation ? 'error' : !ws.text && !ps.text ? 'empty'
-      : !ws.text || !ps.text ? 'partial' : allocated ? 'complete' : s.needsReallocation ? 'dirty' : 'ready';
+      : issues.length ? 'cancelled' : s.validation ? 'error' : ws.origin === 'empty' && ps.origin === 'empty' ? 'empty'
+      : ws.origin === 'empty' || ps.origin === 'empty' ? 'partial' : allocated ? 'complete' : s.needsReallocation ? 'dirty' : 'ready';
     assert.equal(s.phase, phase, label);
     if (['RESET','LEAVE','RESTORE'].includes(event.type)) {
       assert.deepEqual([ws.text,ps.text,ws.origin,ps.origin], ['', '', 'empty', 'empty']);
