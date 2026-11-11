@@ -1,0 +1,15 @@
+# labs-five-hour-repair-baking-20261111
+
+## 具體目標與主統籌裁決
+修正BPC01/02。較淺只描述盤壁高度，不能聲稱同量麵糊一定較薄；以底面積與實際份量說明，20x20x8至10x10x4、300ml同量0.75至3cm與縮放37.5ml後0.375cm反例入雙語。不得承諾烘烤時間。保留 factor/percent/scaledQuantity 字串型別與正常值既有位數；正值按原精度捨成零時，改half-up至8小數並去尾零，明示近似，不輸出零。證明既有所有尺寸/表格/最小quantity域的正值下界足以在8位非零；若下界不成立立即回報，不偷偷增加範圍。補1/2160、缺省quantity、同盤0.01g、最小正量兩端和nominal未知深度，更新canonical JSON全字面。容量常數與既有正常測例不隨意改。產品仍NOT_RUN。
+
+## 固定來源與非目標
+sources.json列原PR/commit/task/owner；initial-review/<slug>/REVIEW.md有非作者反例及來源。原四檔須以遠端blob核對後放work/docs/specs/<slug>/；允許slug僅baking-pan-converter。本輪只修文件/fixtures，不製作產品，不碰既有tools/、原分支、原owner、資料或部署。REG-01的合法登記修復由另案處理，此任務不可自行revise-spec。
+
+## 開工/交驗
+讀最新remote AGENTS/START-HERE/AGENT-HANDBOOK/協作規則/registry。目前只讀設計，等主統籌registry串行slot後，本人local-codex:<實際chatID> ACK/register maintenance/claim/readback/start；三必要面向 spec-corrections、exact-fixtures、provenance-and-scope。每個GitHub reference先確認存在；用pure core、fresh revision/blob條件寫入、精確operationId/requestHash/claimId/owner讀回；失敗查原操作，不搶別人的claim。禁止冒簽、revise-spec、標ready或改原作者task。修正不等於ready，產品九面向不等於文件八面向。
+
+只寫本任務資料夾work/指定規格、evidence/及HANDOFF.md和任務腳本。不得改其他task/root/工具產品/sharedregistry/共用git index；不得再委派。所有fixtures用獨立算式釘literal expected；舊結果有變要列前後及原因，不能用待製作產品產生expected。共同repo獨立codex分支PR由本人等發佈slot後提交，固定candidate再非作者審；不得merge/deploy。交付實際檔案/diff、命令/exit、固定來源/hash、NOT_RUN、已知風險與需要決策事項。
+
+## 安全/截止
+禁止桌面、本機互動browser、鍵鼠/焦點/IME/clipboard/native dialogs；只背景CLI/HTTP，子行程windowsHide true。Node24內建/既有Python，fake data、零新依賴；高風險來源讀官方。長automation前後persistent-env guard，GitHub寫前後git-settings guard；不得讀憑證/環境token、改global/system Git/gh auth、persistent env、安裝/付費。來源/owner變動、需新權限/超範圍，或連續兩輪同失敗沒進展即保存回報。UTC07:22:08收尾，2026-11-11T07:37:08Z硬截止；不得延長或假PASS。
