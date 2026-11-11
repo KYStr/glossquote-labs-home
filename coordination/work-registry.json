@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2026-10-29.1",
-  "revision": 1655,
+  "revision": 1657,
   "repository": "KYStr/glossquote-labs-home",
   "branch": "codex/initial-publication",
   "baseline": {
@@ -18187,6 +18187,63 @@
       "readiness": null,
       "consumedBy": null,
       "registeredAt": "2026-11-09T15:59:17.562Z"
+    },
+    {
+      "id": "spec-batch-sha256-manifest-20261111",
+      "title": "多檔 SHA-256 清單校驗 / Batch SHA-256 Manifest Check",
+      "authorId": "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10",
+      "source": {
+        "repository": "KYStr/glossquote-labs-home",
+        "commit": "14d3dff09fe8f283726a7e8cb9eaadd905500516",
+        "path": "docs/specs/batch-sha256-manifest/BRIEF.md"
+      },
+      "document": {
+        "repository": "KYStr/glossquote-labs-home",
+        "commit": "456b4210b3a2a41c0285cee30867bd741bc59c13",
+        "path": "docs/specs/batch-sha256-manifest/SPEC.md"
+      },
+      "acceptanceCriteria": [
+        {
+          "id": "functionality",
+          "label": "走兩語主要路徑，驗 mixed／all match／zero selected 的逐列狀態、表格與完整下載 bytes。獨立重算 SHA-256。"
+        },
+        {
+          "id": "boundaries",
+          "label": "字面測例命中 UTF-8/BOM、CRLF／裸 CR、格式、名稱、重名、大小、件數、總量、精確 Unicode 配對、read_error、digest／Worker 故障及 controller 世代。預檢失敗時待核對檔內容讀取為零，預檢可讀取清單 File。執行中個別配對檔讀取失敗時記為 read_error 並繼續，保留完整報告。digest 或 Worker 故障時核對已發生的讀取及全批失敗，無部分報告。"
+        },
+        {
+          "id": "privacy",
+          "label": "真實隔離瀏覽器以合成資料觀察初始資產完成後的 Network／Storage，走開始、取消、改檔、重跑、下載、語言、pagehide／返回。核對零上傳、零持久化、無同源遙測、所有過期 URLs 及 Worker 釋放。正式站另觀察主機注入。"
+        },
+        {
+          "id": "security",
+          "label": "確認 CSP、固定路徑、secure context、metadata schema、對 malformed／過期訊息的拒絕，檔名作文字及顯示轉義，原始例外和內容不出現在 UI/log。"
+        },
+        {
+          "id": "usability",
+          "label": "真實 Desktop 使用兩種清單來源、多選替換、移除、樣本、修正錯誤、進度取消、篩選後完整下載及清理。320 px 仍可完成小批次。"
+        },
+        {
+          "id": "accessibility",
+          "label": "可見 label、錯誤關聯、全鍵盤可達及焦點順序，讀屏狀態及表格、真 200% zoom、320 CSS px、觸控目標、必要文字與控制對比、reduced motion。記裝置和實際證據。"
+        },
+        {
+          "id": "localization-seo",
+          "label": "靜態兩入口的語言內容、lang、title、h1、description、canonical、互返 hreflang、x-default、預覽 noindex、同語首頁及兩語相同報告。正式 canonical 等到發布 gate。"
+        },
+        {
+          "id": "toolchain-provenance",
+          "label": "Node 24 內建模組、零 runtime 相依、固定 brief/SPEC/fixtures、公開候選唯一 head，離線重建兩次完整資產檔名與 SHA-256 相同。固定 Worker source 由同版程式與 build 產生。"
+        },
+        {
+          "id": "compatibility",
+          "label": "實際版本的 Windows Chrome／Edge 和代表性行動端走 File、Blob、Worker、離線、下載及低記憶體情境。記 secure context、檔案/瀏覽器限制、可觀測峰值或可靠指標及重試／取消結果。"
+        }
+      ],
+      "status": "draft",
+      "readiness": null,
+      "consumedBy": null,
+      "registeredAt": "2026-11-11T06:46:42.918Z"
     }
   ],
   "tasks": [
@@ -45788,7 +45845,7 @@
       "contributors": [
         "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10"
       ],
-      "status": "working",
+      "status": "reviewing",
       "owner": {
         "actorId": "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10",
         "executor": "local-codex",
@@ -45798,7 +45855,23 @@
       "checkpoint": null,
       "blocker": null,
       "handoff": null,
-      "submission": null,
+      "submission": {
+        "candidate": {
+          "repository": "KYStr/glossquote-labs-home",
+          "commit": "456b4210b3a2a41c0285cee30867bd741bc59c13",
+          "path": "docs/specs/batch-sha256-manifest/SPEC.md"
+        },
+        "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/312",
+        "evidence": "固定候選 456b4210b3a2a41c0285cee30867bd741bc59c13 的 PR #312 與四檔公開 bytes 已核對。作者離線驗證保留 55 個批次案例、60 個控制器步驟及 8 個邊界配方，FH-SHA312-01 受影響測例通過。獨立複核證據見 PR #320 的固定 commit 619ea26d28ace5877ef23b45d503d5f0e1441914。產品瀏覽器與裝置驗收為 NOT_RUN。",
+        "evidenceRef": {
+          "repository": "KYStr/glossquote-labs-home",
+          "commit": "456b4210b3a2a41c0285cee30867bd741bc59c13",
+          "path": "docs/specs/batch-sha256-manifest/AUTHOR-CHECK.md"
+        },
+        "authorId": "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10",
+        "claimId": "batch-sha256-manifest-20261111-recovery-claim-20261111T042231Z-01a1c8b8",
+        "submittedAt": "2026-11-11T06:46:42.918Z"
+      },
       "acceptance": null,
       "publication": null,
       "registeredAt": "2026-11-11T04:22:37.000Z",
@@ -65427,6 +65500,28 @@
       "executor": "local-codex",
       "observedAt": "2026-11-11T06:43:25.700Z",
       "taskId": "labs-five-hour-product-controller-race-20261111",
+      "specId": null
+    },
+    {
+      "operationId": "74566aff-8172-499a-831e-c2c8c7e5cfa2",
+      "requestHash": "b48f59f59f19497bdadfe77388a766e78138900d3c9ee2371585644fff78849d",
+      "revision": 1656,
+      "action": "register-spec",
+      "actorId": "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10",
+      "executor": "local-codex",
+      "observedAt": "2026-11-11T06:46:42.918Z",
+      "taskId": null,
+      "specId": "spec-batch-sha256-manifest-20261111"
+    },
+    {
+      "operationId": "5cf4e21d-3338-43e0-8f68-55ab8e40eab5",
+      "requestHash": "a20ce775030e447acc87af9ea745bbe5a27403b6ef9c6cc71d4661be501e0fb6",
+      "revision": 1657,
+      "action": "submit",
+      "actorId": "local-codex:01a1c8b8-117f-76b3-b938-52143fbd2f10",
+      "executor": "local-codex",
+      "observedAt": "2026-11-11T06:46:42.918Z",
+      "taskId": "labs-batch-sha256-manifest-spec-20261111",
       "specId": null
     }
   ],
