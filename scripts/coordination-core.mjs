@@ -6,6 +6,59 @@ export const BRANCH = 'codex/initial-publication';
 export const LABS_BATCH_POLICY = Object.freeze({threshold: 40, claimBatchSize: 5, maxActivePerActor: 1, submissionMode: 'batch'});
 export const EXECUTORS = ['local-codex', 'cloud-dot'];
 export const SPEC_SECTIONS = ['goal', 'scope', 'userFlow', 'inputsOutputs', 'implementation', 'acceptance', 'tests', 'handoff'];
+const MAINTENANCE_APPLIER = 'local-codex:01a0c75e-24c2-76e1-8c70-536ae1ad1fbf';
+const RUN5_SPEC_IDS = new Set([
+  'spec-age-calculator-20261109',
+  'spec-cooking-measurement-converter-20261109',
+  'spec-bill-split-calculator-20261109',
+  'spec-salary-converter-20261109',
+  'spec-workdays-calculator-20261109',
+  'spec-wallpaper-calculator-20261109',
+  'spec-ping-area-converter-20261109',
+  'spec-clothing-size-converter-20261109',
+  'spec-feels-like-temperature-20261109',
+  'spec-dew-point-calculator-20261109',
+  'spec-race-time-predictor-20261109',
+  'spec-period-cycle-calculator-20261109',
+  'spec-steps-converter-20261109',
+  'spec-bac-calculator-20261109',
+  'spec-vo2max-calculator-20261109',
+  'spec-calories-burned-calculator-20261109',
+  'spec-child-height-predictor-20261109',
+  'spec-ideal-weight-calculator-20261109',
+  'spec-breakeven-calculator-20261109',
+  'spec-tax-included-converter-20261109',
+  'spec-markup-margin-calculator-20261109',
+  'spec-stock-profit-calculator-20261109',
+  'spec-savings-goal-calculator-20261109',
+  'spec-inflation-calculator-20261109',
+  'spec-taiwan-water-bill-20261109',
+  'spec-nhi-premium-calculator-20261109',
+  'spec-car-depreciation-calculator-20261109',
+  'spec-lighting-lumen-calculator-20261109',
+  'spec-screen-ppi-calculator-20261109',
+  'spec-battery-runtime-calculator-20261109',
+  'spec-reading-time-estimator-20261109',
+  'spec-photo-print-size-calculator-20261109',
+  'spec-group-generator-20261109',
+  'spec-interval-timer-20261109',
+  'spec-currency-converter-20261109',
+  'spec-dice-roller-20261109',
+  'spec-pool-volume-calculator-20261109',
+  'spec-baby-feeding-calculator-20261109',
+  'spec-pet-feeding-calculator-20261109',
+  'spec-baking-pan-converter-20261109',
+]);
+const PRODUCT_ASPECTS = [
+  'functionality', 'boundaries', 'privacy', 'security', 'usability', 'accessibility',
+  'localization-seo', 'toolchain-provenance', 'compatibility'
+];
+const APPLY_MAINTENANCE = 'apply-spec-maintenance';
+const COMMAND_FIELDS = ['action', 'actor', 'operationId', 'expectedRevision', 'observedAt'];
+const REVISION_FIELDS = [
+  'specId', 'expectedAuthorId', 'expectedDocument', 'expectedSource', 'expectedCriteriaHash',
+  'document', 'source', 'acceptanceCriteria', 'mappingRef', 'sourceMaintenanceTaskIds'
+];
 const ACTIVE = new Set(['claimed', 'working', 'blocked', 'reviewing', 'revision']);
 const STATUSES = new Set(['draft', 'ready', 'claimed', 'working', 'blocked', 'reviewing', 'revision', 'accepted', 'released']);
 
@@ -55,6 +108,192 @@ function criteria(value) {
   value.forEach(row => { id(row.id, 'criterion.id'); text(row.label, 'criterion.label', 300); });
 }
 
+function fields(value, required, optional = []) {
+  check(object(value) && required.every(key => Object.hasOwn(value, key))
+    && Object.keys(value).every(key => required.includes(key) || optional.includes(key)),
+  'INVALID', 'Required fields are missing or unknown fields are present.');
+}
+
+function maintenanceRef(ref, name) {
+  fields(ref, ['repository', 'commit', 'path']);
+  githubRef(ref, name);
+  check(ref.repository === REPOSITORY && /^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(ref.path),
+    'INVALID_REFERENCE', `${name} must use a canonical path in the central repository.`);
+}
+
+function exactCriteria(value, aspects) {
+  check(Array.isArray(value), 'RUBRIC_MISMATCH', 'Acceptance criteria must be an array.');
+  for (const row of value) fields(row, ['id', 'label']);
+  criteria(value);
+  check(value.length === aspects.length && aspects.every(aspect => value.some(row => row.id === aspect)),
+    'RUBRIC_MISMATCH', 'Acceptance criteria must contain every required aspect exactly once.');
+}
+
+function sameFile(a, b) { return a.repository === b.repository && a.path === b.path; }
+function sameCommit(a, b) { return a.repository === b.repository && a.commit === b.commit; }
+
+function validateRevisionTarget(target) {
+  fields(target, REVISION_FIELDS);
+  check(RUN5_SPEC_IDS.has(target.specId), 'SPEC_MAINTENANCE_SCOPE', 'Only the forty fixed run5 specification IDs are eligible.');
+  id(target.expectedAuthorId, 'expectedAuthorId');
+  for (const key of ['expectedDocument', 'expectedSource', 'document', 'source', 'mappingRef']) maintenanceRef(target[key], key);
+  check(typeof target.expectedCriteriaHash === 'string' && /^[a-f0-9]{64}$/.test(target.expectedCriteriaHash),
+    'INVALID', 'expectedCriteriaHash must be the canonical criteria SHA-256.');
+  const slug = target.specId.slice('spec-'.length, -'-20261109'.length);
+  check(target.document.path === `docs/specs/${slug}/SPEC.md`
+    && sameFile(target.document, target.expectedDocument) && sameFile(target.source, target.expectedSource),
+  'SPEC_MAINTENANCE_SCOPE', 'A maintenance target must preserve the specification and source file identities.');
+  check(target.mappingRef.path.endsWith('.json') && sameCommit(target.document, target.mappingRef)
+    && sameCommit(target.source, target.mappingRef),
+  'CANDIDATE_MISMATCH', 'The mapping JSON and replacement references must share one fixed candidate commit.');
+  exactCriteria(target.acceptanceCriteria, PRODUCT_ASPECTS);
+  unique(target.sourceMaintenanceTaskIds, 'sourceMaintenanceTaskIds');
+  check(target.sourceMaintenanceTaskIds.length <= RUN5_SPEC_IDS.size, 'INVALID', 'Too many maintenance source tasks.');
+  for (const taskId of target.sourceMaintenanceTaskIds) id(taskId, 'sourceMaintenanceTaskId');
+}
+
+function taskMakers(task) {
+  return [...new Set([...task.contributors, task.owner?.actorId, task.submission?.authorId].filter(Boolean))];
+}
+
+function acceptedMaintenance(registry, taskId) {
+  const task = taskById(registry, taskId);
+  check(task.workType === 'maintenance' && task.status === 'accepted', 'INVALID_STATE', 'A source or mapping task must be accepted maintenance.');
+  validateAcceptance(task, task.acceptance);
+  check(task.submission.claimId === task.owner.claimId && task.submission.authorId === task.owner.actorId,
+    'STALE_CLAIM', 'The accepted candidate must belong to the recorded maintenance owner and claim.');
+  id(task.submission.authorId, 'maintenance submission author');
+  id(task.acceptance.reviewerId, 'maintenance reviewer');
+  githubRef(task.submission.evidenceRef, 'maintenance submission evidence');
+  check(typeof task.submission.pullRequest === 'string'
+    && /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[1-9][0-9]*$/.test(task.submission.pullRequest)
+    && task.submission.pullRequest.startsWith(`https://github.com/${task.submission.candidate.repository}/pull/`),
+  'CANDIDATE_MISMATCH', 'Accepted maintenance must identify the pull request for its candidate.');
+  return task;
+}
+
+function sourceMaintenanceTasks(registry, target) {
+  return target.sourceMaintenanceTaskIds.map(taskId => {
+    const task = acceptedMaintenance(registry, taskId);
+    maintenanceRef(task.submission.candidate, 'source maintenance candidate');
+    return task;
+  });
+}
+
+function knownSpecMakers(registry, spec) {
+  const briefPath = spec.document.path.replace(/\/SPEC\.md$/, '/BRIEF.md');
+  const specTasks = registry.tasks.filter(task => task.workType === 'spec'
+    && (task.specId === spec.id || (task.submission?.candidate && sameFile(task.submission.candidate, spec.document))
+      || (task.brief.repository === spec.document.repository && task.brief.path === briefPath)));
+  return [spec.authorId, ...(spec.contributors ?? []), ...specTasks.flatMap(taskMakers)];
+}
+
+function validateMappingTask(registry, task) {
+  check(task.workType === 'maintenance' && task.specId === null,
+    'SPEC_MAINTENANCE_SCOPE', 'Only a maintenance task without a production spec reference can declare revision targets.');
+  exactCriteria(task.acceptanceCriteria, SPEC_SECTIONS);
+  const targets = task.specRevisionTargets;
+  check(Array.isArray(targets) && targets.length > 0 && targets.length <= RUN5_SPEC_IDS.size,
+    'INVALID', 'A mapping task needs one to forty declared specification targets.');
+  for (const target of targets) validateRevisionTarget(target);
+  unique(targets.map(target => target.specId), 'revision target specification IDs');
+  const mappingRef = targets[0].mappingRef;
+  const inherited = [];
+  for (const target of targets) {
+    const spec = registry.specs.find(row => row.id === target.specId);
+    check(spec && target.expectedAuthorId === spec.authorId, 'SPEC_MAINTENANCE_SCOPE', 'The target must retain its existing specification and author.');
+    check(same(target.mappingRef, mappingRef), 'CANDIDATE_MISMATCH', 'A mapping task must declare a single fixed mapping file.');
+    check(!target.sourceMaintenanceTaskIds.includes(task.id), 'SPEC_MAINTENANCE_SCOPE', 'A mapping task cannot source its own candidate.');
+    inherited.push(spec.authorId, ...sourceMaintenanceTasks(registry, target).flatMap(taskMakers));
+  }
+  if (task.submission) {
+    maintenanceRef(task.submission.candidate, 'mapping submission candidate');
+    check(sameCommit(task.submission.candidate, mappingRef),
+      'CANDIDATE_MISMATCH', 'Submission must use the candidate fixed at mapping registration. A changed commit requires a new task.');
+  }
+  return inherited;
+}
+
+function checkTargetState(registry, spec, target) {
+  check(['draft', 'ready', 'invalid'].includes(spec.status) && spec.consumedBy === null
+    && !registry.tasks.some(task => task.specId === spec.id), 'SPEC_ALREADY_ASSIGNED',
+  'Only an unassigned draft, ready or invalid specification may be maintained.');
+  check(spec.authorId === target.expectedAuthorId && same(spec.document, target.expectedDocument)
+    && same(spec.source, target.expectedSource) && fingerprint(spec.acceptanceCriteria) === target.expectedCriteriaHash,
+  'SPEC_MAINTENANCE_STALE', 'Current specification does not match its declared pre-maintenance state.');
+  check(!same(spec.document, target.document) || !same(spec.source, target.source)
+    || !same(spec.acceptanceCriteria, target.acceptanceCriteria), 'NO_CHANGE', 'Maintenance must change the fixed references or product criteria.');
+}
+
+function specSnapshot(spec) {
+  return structuredClone({
+    id: spec.id, title: spec.title, authorId: spec.authorId, registeredAt: spec.registeredAt,
+    document: spec.document, source: spec.source, acceptanceCriteria: spec.acceptanceCriteria,
+    status: spec.status, readiness: spec.readiness, consumedBy: spec.consumedBy,
+    lastRevision: spec.lastRevision ?? null, contributors: spec.contributors ?? []
+  });
+}
+
+function maintenanceEvidence(task) {
+  const {candidate, pullRequest, authorId, submittedAt, evidenceRef: submissionRef} = task.submission;
+  const {reviewerId, reviewedAt, evidenceRef: acceptanceRef} = task.acceptance;
+  return structuredClone({
+    submission: {candidate, pullRequest, authorId, submittedAt, evidenceRef: submissionRef, recordHash: fingerprint(task.submission)},
+    acceptance: {reviewerId, reviewedAt, evidenceRef: acceptanceRef, recordHash: fingerprint(task.acceptance)}
+  });
+}
+
+function validateMaintenanceHistory(registry, spec, events) {
+  const history = spec.maintenanceHistory === undefined ? [] : spec.maintenanceHistory;
+  check(Array.isArray(history) && history.length === events.length, 'INVALID_REGISTRY', 'Maintenance history must match the recorded apply events.');
+  if (spec.contributors !== undefined) {
+    unique(spec.contributors, 'spec contributors');
+    for (const contributor of spec.contributors) id(contributor, 'spec contributor');
+    check(spec.contributors.includes(spec.authorId), 'INVALID_REGISTRY', 'Specification contributors must retain the original author.');
+  }
+  if (!events.length) return;
+  const usedTasks = new Set();
+  for (const [index, entry] of history.entries()) {
+    const event = events[index];
+    id(event.operationId, 'maintenance operation ID');
+    timestamp(event.observedAt, 'maintenance event time');
+    check(Number.isSafeInteger(event.revision) && event.revision > (events[index - 1]?.revision ?? 0)
+      && event.revision <= registry.revision && /^[a-f0-9]{64}$/.test(event.requestHash),
+    'INVALID_REGISTRY', 'Maintenance history requires ordered events with valid revisions and request hashes.');
+    fields(entry, ['operationId', 'actorId', 'observedAt', 'taskId', 'claimId', 'makers', 'submission', 'acceptance', 'previous', 'replacement']);
+    check(event.operationId === entry.operationId && event.actorId === MAINTENANCE_APPLIER && event.executor === 'local-codex'
+      && entry.actorId === event.actorId && entry.observedAt === event.observedAt && entry.taskId === event.taskId
+      && !usedTasks.has(entry.taskId), 'INVALID_REGISTRY', 'Maintenance history must identify a unique matching primary apply event and mapping task.');
+    usedTasks.add(entry.taskId);
+    const task = acceptedMaintenance(registry, entry.taskId);
+    const target = task.specRevisionTargets?.find(row => row.specId === spec.id);
+    const evidence = maintenanceEvidence(task);
+    check(target && same(entry.replacement, target) && entry.claimId === task.owner.claimId
+      && same(entry.submission, evidence.submission) && same(entry.acceptance, evidence.acceptance)
+      && same(entry.makers, taskMakers(task)), 'INVALID_REGISTRY', 'Maintenance history must preserve the accepted mapping, claim and makers.');
+    const previous = entry.previous;
+    fields(previous, ['id', 'title', 'authorId', 'registeredAt', 'document', 'source', 'acceptanceCriteria', 'status', 'readiness', 'consumedBy', 'lastRevision', 'contributors']);
+    criteria(previous.acceptanceCriteria);
+    unique(previous.contributors, 'previous spec contributors');
+    check(previous.id === spec.id && previous.authorId === target.expectedAuthorId
+      && previous.title === spec.title && previous.registeredAt === spec.registeredAt
+      && ['draft', 'ready', 'invalid'].includes(previous.status) && previous.consumedBy === null
+      && same(previous.document, target.expectedDocument) && same(previous.source, target.expectedSource)
+      && fingerprint(previous.acceptanceCriteria) === target.expectedCriteriaHash,
+    'INVALID_REGISTRY', 'Maintenance history must preserve the exact previous specification state.');
+    if (previous.status === 'ready') validateSpecReadiness(previous, index > 0);
+    check(spec.contributors && [...previous.contributors, ...entry.makers].every(maker => spec.contributors.includes(maker)),
+      'INVALID_REGISTRY', 'Specification contributors must include every historical maker.');
+  }
+  const latest = history.at(-1).replacement;
+  const lastApplyRevision = events.at(-1).revision;
+  const revisedLater = registry.events.some(event => event.action === 'revise-spec' && event.specId === spec.id
+    && event.actorId === spec.authorId && event.revision > lastApplyRevision);
+  if (!revisedLater) check(same(spec.document, latest.document) && same(spec.source, latest.source)
+    && same(spec.acceptanceCriteria, latest.acceptanceCriteria),
+  'INVALID_REGISTRY', 'Maintained specification references and criteria must match the latest application or a later author revision.');
+}
+
 export function validateRegistry(registry) {
   check(object(registry) && registry.schemaVersion === 1, 'INVALID_REGISTRY', 'Expected registry schemaVersion 1.');
   text(registry.contractVersion, 'contractVersion', 80);
@@ -81,11 +320,19 @@ export function validateRegistry(registry) {
     text(actor.contractVersion, 'actor.contractVersion', 80); text(actor.baselineCommit, 'actor.baselineCommit', 40);
     timestamp(actor.acknowledgedAt, 'actor.acknowledgedAt'); text(actor.evidence, 'actor.evidence');
   }
+  const maintenanceEvents = new Map();
+  for (const event of registry.events) {
+    if (event.action !== APPLY_MAINTENANCE) continue;
+    check(registry.specs.some(spec => spec.id === event.specId), 'INVALID_REGISTRY', 'Maintenance event must identify an existing specification.');
+    if (!maintenanceEvents.has(event.specId)) maintenanceEvents.set(event.specId, []);
+    maintenanceEvents.get(event.specId).push(event);
+  }
   for (const spec of registry.specs) {
     id(spec.id, 'spec.id'); text(spec.title, 'spec.title', 300); id(spec.authorId, 'spec.authorId');
     githubRef(spec.document, 'spec.document'); githubRef(spec.source, 'spec.source');
     criteria(spec.acceptanceCriteria);
     check(['draft', 'ready', 'consumed', 'reserved', 'invalid'].includes(spec.status), 'INVALID_REGISTRY', 'Unknown spec status.');
+    validateMaintenanceHistory(registry, spec, maintenanceEvents.get(spec.id) ?? []);
     if (spec.status === 'ready' || spec.status === 'consumed') validateSpecReadiness(spec);
     if (spec.status === 'consumed' || spec.status === 'reserved') check(object(spec.consumedBy) && typeof spec.consumedBy.taskId === 'string', 'INVALID_REGISTRY', 'Consumed/reserved spec needs consuming task.');
   }
@@ -107,17 +354,30 @@ export function validateRegistry(registry) {
       check(task.allowedExecutors.includes(task.owner.executor), 'INVALID_REGISTRY', 'Owner executor is not permitted.');
     } else check(task.owner === null, 'INVALID_REGISTRY', 'Unclaimed task cannot retain an owner.');
     if (task.status === 'accepted') validateAcceptance(task, task.acceptance);
+    if (task.specRevisionTargets !== undefined) {
+      const inherited = validateMappingTask(registry, task);
+      check([...inherited, ...taskMakers(task)].every(maker => task.contributors.includes(maker)),
+        'INVALID_REGISTRY', 'Mapping task contributors must retain every source maker and its recorded owner.');
+      for (const maker of task.contributors) id(maker, 'mapping contributor');
+    }
   }
   if (registry.baseline.inventoryComplete) check(isReconciled(registry), 'INVALID_REGISTRY', 'Complete inventory requires current acknowledgements and both reconciliations.');
   return registry;
 }
 
-function validateSpecReadiness(spec) {
+function validateSpecReadiness(spec, maintained = Boolean(spec.maintenanceHistory?.length)) {
   check(object(spec.readiness) && object(spec.readiness.sections), 'INCOMPLETE_SPEC', 'Specification readiness evidence is missing.');
   check(SPEC_SECTIONS.every(section => spec.readiness.sections[section] === true), 'INCOMPLETE_SPEC', 'Every required specification section must be checked.');
   id(spec.readiness.reviewerId, 'spec.readiness.reviewerId');
-  check(spec.readiness.reviewerId !== spec.authorId, 'INDEPENDENT_REVIEW_REQUIRED', 'The specification author cannot approve their own ready inventory.');
+  check(spec.readiness.reviewerId !== spec.authorId && !(spec.contributors ?? []).includes(spec.readiness.reviewerId),
+    'INDEPENDENT_REVIEW_REQUIRED', 'The specification author and contributors cannot approve their own ready inventory.');
   text(spec.readiness.evidence, 'spec.readiness.evidence'); timestamp(spec.readiness.reviewedAt, 'spec.readiness.reviewedAt');
+  if (maintained) {
+    exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
+    fields(spec.readiness.sections, SPEC_SECTIONS);
+    check(same(spec.readiness.document, spec.document), 'CANDIDATE_MISMATCH', 'Readiness must review the exact maintained specification document.');
+    githubRef(spec.readiness.evidenceRef, 'spec.readiness.evidenceRef');
+  }
 }
 
 function currentActor(registry, actor) {
@@ -178,6 +438,7 @@ function readyToClaim(registry, task, actor) {
   if (task.workType === 'production') {
     const spec = registry.specs.find(row => row.id === task.specId);
     check(spec && (spec.status === 'ready' || (spec.status === 'consumed' && spec.consumedBy.taskId === task.id)), 'SPEC_UNAVAILABLE', 'Production needs a ready spec or the same previously consumed spec.');
+    if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
     validateSpecReadiness(spec);
   }
 }
@@ -271,8 +532,43 @@ export function applyOperation(input, command) {
     case 'mark-spec-ready': {
       const spec = registry.specs.find(row => row.id === command.specId); check(spec, 'NOT_FOUND', 'Specification not found.');
       check(['draft', 'invalid', 'reserved'].includes(spec.status), 'SPEC_UNAVAILABLE', 'Only a draft, reserved or invalidated spec can be reviewed.');
+      if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
       spec.readiness = {reviewerId: command.actor.id, sections: command.sections, evidence: command.evidence, reviewedAt: command.observedAt};
+      if (spec.maintenanceHistory?.length) {
+        fields(command, [...COMMAND_FIELDS, 'specId', 'sections', 'evidence', 'document', 'evidenceRef']);
+        check(!knownSpecMakers(registry, spec).includes(command.actor.id),
+          'INDEPENDENT_REVIEW_REQUIRED', 'A recorded specification maker cannot independently approve readiness.');
+        spec.readiness.document = command.document;
+        spec.readiness.evidenceRef = command.evidenceRef;
+      }
       validateSpecReadiness(spec); spec.status = spec.status === 'reserved' ? 'consumed' : 'ready';
+      break;
+    }
+    case APPLY_MAINTENANCE: {
+      fields(command, [...COMMAND_FIELDS, 'taskId', 'specId']);
+      fields(command.actor, ['id', 'executor']);
+      check(command.actor.id === MAINTENANCE_APPLIER && command.actor.executor === 'local-codex',
+        'SPEC_MAINTENANCE_AUTHORITY', 'Only the fixed primary actor can apply run5 specification maintenance.');
+      const task = acceptedMaintenance(registry, command.taskId);
+      const target = task.specRevisionTargets?.find(row => row.specId === command.specId);
+      check(target, 'SPEC_MAINTENANCE_SCOPE', 'The accepted mapping task must predeclare this exact specification.');
+      const spec = registry.specs.find(row => row.id === target.specId);
+      check(!(spec.maintenanceHistory ?? []).some(entry => entry.taskId === task.id),
+        'SPEC_MAINTENANCE_STALE', 'This mapping task was already applied to the specification.');
+      checkTargetState(registry, spec, target);
+      const makers = taskMakers(task);
+      check(knownSpecMakers(registry, spec).every(maker => makers.includes(maker)),
+        'INDEPENDENT_REVIEW_REQUIRED', 'The mapping omitted a recorded specification maker. Register and independently review a fresh mapping.');
+      spec.maintenanceHistory ??= [];
+      spec.maintenanceHistory.push({
+        operationId: command.operationId, actorId: command.actor.id, observedAt: command.observedAt,
+        taskId: task.id, claimId: task.owner.claimId, makers, ...maintenanceEvidence(task),
+        previous: specSnapshot(spec), replacement: structuredClone(target)
+      });
+      spec.contributors = [...new Set([...makers, ...(spec.contributors ?? []), spec.authorId])];
+      const {document, source, acceptanceCriteria} = structuredClone(target);
+      spec.document = document; spec.source = source; spec.acceptanceCriteria = acceptanceCriteria;
+      spec.status = 'draft'; spec.readiness = null;
       break;
     }
     case 'register-task': {
@@ -282,10 +578,28 @@ export function applyOperation(input, command) {
       check(['spec', 'production', 'review', 'maintenance'].includes(task.workType), 'INVALID', 'Unsupported workType.');
       const allowedExecutors = task.allowedExecutors ?? (task.workType === 'production' ? ['local-codex'] : ['local-codex', 'cloud-dot']);
       unique(allowedExecutors, 'allowedExecutors'); check(allowedExecutors.length && allowedExecutors.every(row => EXECUTORS.includes(row)), 'INVALID', 'Invalid executors.');
-      if (task.workType === 'production') check(registry.specs.some(row => row.id === task.specId), 'NOT_FOUND', 'Register the production specification first.');
       criteria(task.acceptanceCriteria);
-      if (task.workType === 'production') check(same(task.acceptanceCriteria, registry.specs.find(row => row.id === task.specId).acceptanceCriteria), 'RUBRIC_MISMATCH', 'Production acceptance criteria must exactly match the reviewed specification.');
-      registry.tasks.push({id: task.id, title: task.title, workType: task.workType, source: task.source, brief: task.brief, specId: task.specId ?? null, allowedExecutors, acceptanceCriteria: task.acceptanceCriteria, contributors: [], status: 'ready', owner: null, checkpoint: null, blocker: null, handoff: null, submission: null, acceptance: null, publication: null, registeredAt: command.observedAt});
+      if (task.workType === 'production') {
+        const spec = registry.specs.find(row => row.id === task.specId);
+        check(spec, 'NOT_FOUND', 'Register the production specification first.');
+        if (RUN5_SPEC_IDS.has(spec.id)) exactCriteria(spec.acceptanceCriteria, PRODUCT_ASPECTS);
+        check(same(task.acceptanceCriteria, spec.acceptanceCriteria), 'RUBRIC_MISMATCH', 'Production acceptance criteria must exactly match the reviewed specification.');
+      }
+      const registered = {id: task.id, title: task.title, workType: task.workType, source: task.source, brief: task.brief, specId: task.specId ?? null, allowedExecutors, acceptanceCriteria: task.acceptanceCriteria, contributors: [], status: 'ready', owner: null, checkpoint: null, blocker: null, handoff: null, submission: null, acceptance: null, publication: null, registeredAt: command.observedAt};
+      if (Object.hasOwn(task, 'specRevisionTargets')) {
+        fields(command, [...COMMAND_FIELDS, 'task']);
+        fields(task, ['id', 'title', 'workType', 'source', 'brief', 'acceptanceCriteria', 'specRevisionTargets'], ['allowedExecutors']);
+        registered.specRevisionTargets = structuredClone(task.specRevisionTargets);
+        registered.acceptanceCriteria = structuredClone(task.acceptanceCriteria);
+        const inherited = validateMappingTask(registry, registered);
+        for (const target of registered.specRevisionTargets) {
+          const spec = registry.specs.find(row => row.id === target.specId);
+          checkTargetState(registry, spec, target);
+          inherited.push(...knownSpecMakers(registry, spec));
+        }
+        registered.contributors = [...new Set(inherited)];
+      }
+      registry.tasks.push(registered);
       break;
     }
     case 'adopt-existing': {
@@ -382,6 +696,14 @@ export function applyOperation(input, command) {
       check(['accepted', 'revision'].includes(command.verdict), 'INVALID', 'Verdict must be accepted or revision.');
       const review = {verdict: command.verdict, reviewerId: command.actor.id, candidate: command.candidate, evidence: command.evidence, evidenceRef: command.evidenceRef, rubricComplete: command.rubricComplete === true, requiredChecksComplete: command.requiredChecksComplete === true, aspects: command.aspects ?? [], reviewedAt: command.observedAt};
       if (command.verdict === 'accepted') validateAcceptance(task, review);
+      if (command.verdict === 'accepted' && task.specRevisionTargets) {
+        for (const target of task.specRevisionTargets) {
+          const spec = registry.specs.find(row => row.id === target.specId);
+          checkTargetState(registry, spec, target);
+          check(knownSpecMakers(registry, spec).every(maker => task.contributors.includes(maker)),
+            'INDEPENDENT_REVIEW_REQUIRED', 'The mapping must retain every known specification maker before acceptance.');
+        }
+      }
       task.acceptance = review; task.status = command.verdict === 'accepted' ? 'accepted' : 'revision';
       break;
     }
@@ -404,9 +726,35 @@ export function operationReferences(registry, command) {
     if (task) { add(task.source); add(task.brief); add(task.submission?.candidate); const spec = registry.specs.find(row => row.id === task.specId); if (spec) { add(spec.document); add(spec.source); } }
   }
   if (command.specId) { const spec = registry.specs.find(row => row.id === command.specId); if (spec) { add(spec.document); add(spec.source); } }
+  const mapping = specMappingVerification(registry, command);
+  if (mapping) {
+    add(mapping.mappingRef);
+    if (mapping.submission) add(mapping.submission.evidenceRef);
+    add(mapping.acceptance?.evidenceRef);
+    for (const {target, sources} of mapping.targets) {
+      for (const ref of [target.expectedDocument, target.expectedSource, target.document, target.source]) add(ref);
+      for (const source of sources) {
+        for (const ref of [source.source, source.brief, source.submission.candidate,
+          source.submission.evidenceRef, source.acceptance.evidenceRef]) add(ref);
+      }
+    }
+  }
   return [...new Map(refs.map(ref => [canonical(ref), ref])).values()];
 }
 
+/** Pinned inputs for the network adapter, computed after the proposed transition validates. */
+export function specMappingVerification(registry, command) {
+  const registering = command.action === 'register-task';
+  if (!registering && !['submit', 'review', APPLY_MAINTENANCE].includes(command.action)) return null;
+  const task = registering ? command.task : registry.tasks.find(row => row.id === command.taskId);
+  if (!task?.specRevisionTargets) return null;
+  return {
+    mappingRef: task.specRevisionTargets[0].mappingRef,
+    targets: task.specRevisionTargets.map(target => ({target, sources: sourceMaintenanceTasks(registry, target)})),
+    submission: task.submission,
+    acceptance: task.acceptance
+  };
+}
 
 /** Validate the entire batch in memory before any write. Each child retains its exact operation ID/hash/revision. */
 export function applyBatch(input, commands) {

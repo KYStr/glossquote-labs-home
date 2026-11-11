@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyBatch, applyOperation, inventorySummary, validateRegistry, SPEC_SECTIONS, REPOSITORY, BRANCH } from '../scripts/coordination-core.mjs';
+import { applyBatch, applyOperation, inventorySummary, operationReferences, validateRegistry, SPEC_SECTIONS, REPOSITORY, BRANCH } from '../scripts/coordination-core.mjs';
 import { MAX_REGISTRY_BYTES, MAX_RESPONSE_BYTES, executeBatch, executeOperation, GitHubError, GitHubClient } from '../scripts/coordination.mjs';
 
 const source = {repository: REPOSITORY, commit: 'a'.repeat(40), path: 'README.md'};
@@ -416,4 +416,499 @@ test('oversized proposed write fails before PUT and noncanonical pad bits fail e
   const {client,calls}=readClient([]);await assert.rejects(client.writeRegistry('a'.repeat(40),{padding:'x'.repeat(MAX_REGISTRY_BYTES)},{action:'fixture',operationId:'fixture'}),{code:'REGISTRY_TOO_LARGE'});assert.equal(calls.length,0);
   const bytes=Buffer.from('0'),sha=createHash('sha1').update('blob 1\0').update(bytes).digest('hex');
   await assert.rejects(readClient([{type:'file',sha,size:1,encoding:'base64',content:'MB=='}]).client.readRegistry(),{code:'INVALID_RESPONSE'});
+});
+
+const primary = {id: 'local-codex:01a0c75e-24c2-76e1-8c70-536ae1ad1fbf', executor: 'local-codex'};
+const mappingMaker = {id: 'local-codex:fixture-mapping-maker', executor: 'local-codex'};
+const originalMaker = {id: 'cloud-dot:fixture-original-maker', executor: 'cloud-dot'};
+const ageSpec = 'spec-age-calculator-20261109';
+const billSpec = 'spec-bill-split-calculator-20261109';
+const originTask = 'fixture-accepted-repair';
+const mappingTask = 'fixture-spec-mapping';
+const mappingPR = 'https://github.com/KYStr/glossquote-labs-home/pull/99';
+const mappingRef = {...proof, commit: 'e'.repeat(40), path: 'docs/reviews/spec-mapping.json'};
+const mappingCandidate = {...mappingRef, path: 'docs/reviews/mapping-check.md'};
+const originCandidate = {...proof, commit: 'd'.repeat(40), path: 'docs/reviews/source-repair.md'};
+const sections = ['goal', 'scope', 'userFlow', 'inputsOutputs', 'implementation', 'acceptance', 'tests', 'handoff'];
+const eightSections = Object.fromEntries(sections.map(id => [id, true]));
+const documentRubric = sections.map(id => ({id, label: 'Independently checked section ' + id}));
+const productRubric = [
+  {id: 'functionality', label: 'Leap-day ages match the published table'},
+  {id: 'boundaries', label: 'Reject an end date before the birth date'},
+  {id: 'privacy', label: 'Dates remain local and are cleared on reset'},
+  {id: 'security', label: 'Reject non-date input and render output as text'},
+  {id: 'usability', label: 'Recover from malformed dates beside the field'},
+  {id: 'accessibility', label: 'Keyboard and screen-reader flow reaches results'},
+  {id: 'localization-seo', label: 'Both localized routes have canonical metadata'},
+  {id: 'toolchain-provenance', label: 'Node 24 offline reproducible static build'},
+  {id: 'compatibility', label: 'Age results agree in isolated supported browsers'}
+];
+// Literal fixture keys are already ordered as id, label. Derive the expected hash independently of the core.
+const criteriaHash = rubric => createHash('sha256').update(JSON.stringify(rubric)).digest('hex');
+const taskRow = (registry, id) => registry.tasks.find(task => task.id === id);
+
+function maintenanceReview(registry, taskId, candidate, overrides = {}) {
+  const aspects = taskRow(registry, taskId).acceptanceCriteria.map(({id}) => ({id, score: 94, evidence: 'Observed ' + id}));
+  return command(registry, reviewer, 'review', {taskId, candidate, verdict: 'accepted',
+    evidenceRef: {...proof, path: 'docs/reviews/independent-review.md'}, evidence: 'Independent pinned review.',
+    rubricComplete: true, requiredChecksComplete: true, aspects, ...overrides});
+}
+
+function claimAndStart(registry, actor, taskId) {
+  registry = apply(registry, actor, 'claim', {taskId});
+  const claimId = taskRow(registry, taskId).owner.claimId;
+  registry = apply(registry, actor, 'start', {taskId, claimId, evidence: 'Started after exact readback.'});
+  return {registry, claimId};
+}
+
+function mappingInputs(status = 'draft') {
+  let registry = reconciled();
+  for (const actor of [primary, mappingMaker, originalMaker]) registry = acknowledge(registry, actor);
+  for (const specId of [ageSpec, billSpec]) {
+    const document = {...proof, path: 'docs/specs/' + specId.slice(5, -9) + '/SPEC.md'};
+    registry = apply(registry, author, 'register-spec', {spec: {
+      id: specId, title: 'Fixture ' + specId, document, source, acceptanceCriteria: documentRubric
+    }});
+    // A snapshot written by the old core could mark the eight-aspect rubric ready.
+    if (status === 'ready') Object.assign(registry.specs.at(-1), {
+      status, readiness: {reviewerId: reviewer.id, sections: eightSections,
+        evidence: 'Independent eight-section review of the old document.', reviewedAt: '2026-10-29T01:00:00.000Z'}
+    });
+    if (status === 'invalid') registry.specs.at(-1).status = 'invalid';
+  }
+  registry = apply(registry, author, 'register-task', {task: {
+    id: 'fixture-original-authoring', title: 'Original spec task', workType: 'spec', source,
+    brief: {...proof, path: 'docs/specs/age-calculator/BRIEF.md'}, acceptanceCriteria: documentRubric
+  }});
+  registry = apply(registry, originalMaker, 'claim', {taskId: 'fixture-original-authoring'});
+  registry = apply(registry, author, 'register-task', {task: {
+    id: originTask, title: 'Accepted source maintenance', workType: 'maintenance',
+    source: {...proof, path: 'docs/reviews/source-start.md'}, brief: {...proof, path: 'docs/reviews/source-brief.md'},
+    acceptanceCriteria: criteria
+  }});
+  registry = apply(registry, local, 'claim', {taskId: originTask});
+  registry = apply(registry, local, 'offer-handoff', {taskId: originTask, claimId: registry.tasks.at(-1).owner.claimId,
+    toActorId: local2.id, checkpoint: 'Origin work safely checkpointed.', evidenceRef: proof});
+  registry = apply(registry, local2, 'accept-handoff', {taskId: originTask, offerId: registry.tasks.at(-1).handoff.offerId,
+    evidence: 'Exact source handoff read back.'});
+  const claimId = registry.tasks.at(-1).owner.claimId;
+  registry = apply(registry, local2, 'start', {taskId: originTask, claimId, evidence: 'Source repair started.'});
+  registry = apply(registry, local2, 'submit', {taskId: originTask, claimId, candidate: originCandidate,
+    pullRequest: 'https://github.com/KYStr/glossquote-labs-home/pull/98',
+    evidence: 'Source candidate.', evidenceRef: {...proof, path: 'docs/reviews/source-test.md'}});
+  registry = applyOperation(registry, maintenanceReview(registry, originTask, originCandidate)).registry;
+  const targets = registry.specs.map(spec => ({
+    specId: spec.id, expectedAuthorId: author.id, expectedDocument: spec.document, expectedSource: source,
+    expectedCriteriaHash: criteriaHash(documentRubric), document: {...spec.document, commit: mappingRef.commit},
+    source: {...source, commit: mappingRef.commit}, acceptanceCriteria: productRubric, mappingRef,
+    sourceMaintenanceTaskIds: spec.id === ageSpec ? [originTask] : []
+  }));
+  const task = {id: mappingTask, title: 'Fixture product rubric mapping', workType: 'maintenance',
+    source, brief: {...proof, path: 'docs/reviews/mapping-brief.md'}, acceptanceCriteria: documentRubric,
+    specRevisionTargets: targets};
+  return {registry, targets, task};
+}
+
+function mappingFixture(status) {
+  const {registry: before, task, targets} = mappingInputs(status);
+  const registered = apply(before, mappingMaker, 'register-task', {task});
+  const started = claimAndStart(registered, mappingMaker, task.id);
+  const submit = {taskId: task.id, claimId: started.claimId, candidate: mappingCandidate,
+    pullRequest: mappingPR, evidence: 'Fixed mapping candidate.', evidenceRef: proof};
+  const reviewing = apply(started.registry, mappingMaker, 'submit', submit);
+  const registry = applyOperation(reviewing, maintenanceReview(reviewing, task.id, mappingCandidate)).registry;
+  return {registry, before, task, targets, registered, started, submit, reviewing};
+}
+
+const maintain = (registry, extra = {}) => command(registry, primary, 'apply-spec-maintenance', {taskId: mappingTask, specId: ageSpec, ...extra});
+const markMaintained = (registry, actor = reviewer, extra = {}) => command(registry, actor, 'mark-spec-ready', {
+  specId: ageSpec, document: registry.specs[0].document, sections: eightSections, evidence: 'Exact eight-section review.',
+  evidenceRef: proof, ...extra
+});
+
+test('primary maintenance keeps old tasks and audit state, resets readiness, and supplies nine product aspects', () => {
+  for (const status of ['draft', 'ready', 'invalid']) {
+    const {registry, targets} = mappingFixture(status);
+    const before = clone(registry);
+    const cmd = maintain(registry);
+    const after = applyOperation(registry, cmd).registry;
+    const [spec] = after.specs;
+    const [original] = before.specs;
+    const task = taskRow(registry, mappingTask);
+    assert.deepEqual(registry, before);
+    assert.deepEqual(after.tasks, before.tasks);
+    assert.deepEqual(after.actors, before.actors);
+    assert.deepEqual(after.baseline, before.baseline);
+    assert.deepEqual(after.specs[1], before.specs[1]);
+    assert.deepEqual(after.events.slice(0, -1), before.events);
+    assert.equal(spec.authorId, original.authorId);
+    assert.equal(spec.title, original.title);
+    assert.equal(spec.status, 'draft');
+    assert.equal(spec.readiness, null);
+    assert.equal(spec.consumedBy, null);
+    assert.deepEqual(spec.document, targets[0].document);
+    assert.deepEqual(spec.source, targets[0].source);
+    assert.deepEqual(spec.acceptanceCriteria, productRubric);
+    const makers = [author, originalMaker, local, local2, mappingMaker];
+    assert.deepEqual(new Set(spec.contributors), new Set(makers.map(actor => actor.id)));
+    assert.deepEqual(spec.maintenanceHistory, [{
+      operationId: cmd.operationId, actorId: primary.id, observedAt: cmd.observedAt,
+      taskId: mappingTask, claimId: task.owner.claimId, makers: task.contributors,
+      submission: {candidate: task.submission.candidate, pullRequest: task.submission.pullRequest, authorId: task.submission.authorId,
+        submittedAt: task.submission.submittedAt, evidenceRef: task.submission.evidenceRef, recordHash: recordHash(task.submission)},
+      acceptance: {reviewerId: task.acceptance.reviewerId, reviewedAt: task.acceptance.reviewedAt,
+        evidenceRef: task.acceptance.evidenceRef, recordHash: recordHash(task.acceptance)},
+      previous: {...original, lastRevision: null, contributors: []}, replacement: targets[0]
+    }]);
+    for (const actor of makers) assert.throws(() => applyOperation(after, markMaintained(after, actor)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+    assert.throws(() => applyOperation(after, markMaintained(after, reviewer, {document: original.document})), {code: 'CANDIDATE_MISMATCH'});
+    assert.throws(() => applyOperation(after, markMaintained(after, reviewer, {sections: {goal: true}})), {code: 'INCOMPLETE_SPEC'});
+    const ready = applyOperation(after, markMaintained(after)).registry;
+    assert.equal(ready.specs[0].status, 'ready');
+    const productionTask = {id: 'mapped-production', title: 'Mapped product task',
+      workType: 'production', source, brief: proof, specId: ageSpec, acceptanceCriteria: productRubric};
+    assert.throws(() => apply(ready, local, 'register-task', {task: {...productionTask, acceptanceCriteria: documentRubric}}), {code: 'RUBRIC_MISMATCH'});
+    assert.deepEqual(apply(ready, local, 'register-task', {task: productionTask}).tasks.at(-1).acceptanceCriteria, productRubric);
+  }
+});
+
+test('maintenance requires exact primary ACK, current revision, declared target and accepted mapping', () => {
+  const {registry, reviewing} = mappingFixture();
+  for (const [extra, code] of [
+    [{actor: local}, 'SPEC_MAINTENANCE_AUTHORITY'],
+    [{actor: {...local, role: 'primary'}}, 'INVALID'],
+    [{override: true}, 'INVALID'],
+    [{expectedRevision: registry.revision - 1}, 'REVISION_CONFLICT'],
+    [{specId: 'fixture-outside-spec'}, 'SPEC_MAINTENANCE_SCOPE'],
+    [{taskId: originTask}, 'SPEC_MAINTENANCE_SCOPE']
+  ]) assert.throws(() => applyOperation(registry, maintain(registry, extra)), {code});
+  for (const mutate of [
+    row => { row.actors = row.actors.filter(actor => actor.id !== primary.id); },
+    row => { row.actors.find(actor => actor.id === primary.id).contractVersion = 'outdated'; },
+    row => { row.actors.find(actor => actor.id === primary.id).baselineCommit = '9'.repeat(40); }
+  ]) {
+    const stale = clone(registry);
+    mutate(stale);
+    assert.throws(() => applyOperation(stale, maintain(stale)), {code: 'ACK_REQUIRED'});
+  }
+  assert.throws(() => applyOperation(reviewing, maintain(reviewing)), {code: 'INVALID_STATE'});
+});
+
+test('unmapped run5 document rubric cannot become ready or be dispatched as product acceptance', () => {
+  const draft = mappingInputs().registry;
+  assert.throws(() => apply(draft, reviewer, 'mark-spec-ready', {specId: ageSpec, sections: eightSections,
+    evidence: 'Only the eight document sections were checked.'}), {code: 'RUBRIC_MISMATCH'});
+  const prior = mappingInputs('ready').registry;
+  const task = {id: 'historical-product-task', title: 'Previously staged product task',
+    workType: 'production', source, brief: proof, specId: ageSpec, acceptanceCriteria: documentRubric};
+  assert.throws(() => apply(prior, local, 'register-task', {task}), {code: 'RUBRIC_MISMATCH'});
+  const olderRegistry = clone(prior);
+  olderRegistry.tasks.push({...olderRegistry.tasks[0], ...task, owner: null, status: 'ready'});
+  assert.doesNotThrow(() => validateRegistry(olderRegistry));
+  assert.throws(() => apply(olderRegistry, local, 'claim', {taskId: task.id}), {code: 'RUBRIC_MISMATCH'});
+});
+
+test('registration rejects stale state, unknown fields, out-of-scope refs, and invalid source maintenance', () => {
+  const {registry, task, targets: [target, second]} = mappingInputs();
+  const register = (patch, taskPatch = {}, snapshot = registry) => apply(snapshot, mappingMaker, 'register-task',
+    {task: {...task, specRevisionTargets: [{...target, ...patch}, second], ...taskPatch}});
+  for (const [patch, code] of [
+    [{expectedAuthorId: reviewer.id}, 'SPEC_MAINTENANCE_SCOPE'],
+    [{expectedDocument: {...target.expectedDocument, commit: '1'.repeat(40)}}, 'SPEC_MAINTENANCE_STALE'],
+    [{expectedSource: {...source, commit: '1'.repeat(40)}}, 'SPEC_MAINTENANCE_STALE'],
+    [{expectedCriteriaHash: '1'.repeat(64)}, 'SPEC_MAINTENANCE_STALE'],
+    [{expectedCriteriaHash: 'bad'}, 'INVALID'],
+    [{specId: 'spec-outside-the-fixed-forty-20261109'}, 'SPEC_MAINTENANCE_SCOPE'],
+    [{document: {...target.document, path: second.document.path}}, 'SPEC_MAINTENANCE_SCOPE'],
+    [{source: {...target.source, path: 'docs/OTHER.md'}}, 'SPEC_MAINTENANCE_SCOPE'],
+    [{document: {...target.document, repository: 'KYStr/other'}}, 'INVALID_REFERENCE'],
+    [{source: {...target.source, commit: '1'.repeat(40)}}, 'CANDIDATE_MISMATCH'],
+    [{mappingRef: {...mappingRef, path: 'docs/other.json'}}, 'CANDIDATE_MISMATCH'],
+    [{mappingRef: {...mappingRef, path: 'docs/../other.json'}}, 'INVALID_REFERENCE'],
+    [{mappingRef: {...mappingRef, extra: true}}, 'INVALID'],
+    [{owner: local.id}, 'INVALID'],
+    [{acceptanceCriteria: productRubric.slice(1)}, 'RUBRIC_MISMATCH'],
+    [{acceptanceCriteria: documentRubric}, 'RUBRIC_MISMATCH'],
+    [{acceptanceCriteria: criteria}, 'RUBRIC_MISMATCH'],
+    [{acceptanceCriteria: [productRubric[1], ...productRubric.slice(1)]}, 'INVALID'],
+    [{acceptanceCriteria: [{...productRubric[0], score: 100}, ...productRubric.slice(1)]}, 'INVALID'],
+    [{sourceMaintenanceTaskIds: ['missing-repair']}, 'NOT_FOUND'],
+    [{sourceMaintenanceTaskIds: ['fixture-original-authoring']}, 'INVALID_STATE'],
+    [{sourceMaintenanceTaskIds: [originTask, originTask]}, 'INVALID']
+  ]) assert.throws(() => register(patch), {code});
+  for (const [patch, code] of [
+    [{contributors: [reviewer.id]}, 'INVALID'], [{specId: ageSpec}, 'INVALID'],
+    [{specRevisionTargets: null}, 'INVALID'], [{specRevisionTargets: [target, target]}, 'INVALID'],
+    [{workType: 'review'}, 'SPEC_MAINTENANCE_SCOPE'], [{acceptanceCriteria: productRubric}, 'RUBRIC_MISMATCH']
+  ]) assert.throws(() => register({}, patch), {code});
+  const unchanged = clone(registry);
+  Object.assign(unchanged.specs[0], {document: target.document, source: target.source, acceptanceCriteria: productRubric});
+  assert.throws(() => register({expectedDocument: target.document, expectedSource: target.source,
+    expectedCriteriaHash: criteriaHash(productRubric)}, {}, unchanged), {code: 'NO_CHANGE'});
+  const pending = clone(registry);
+  Object.assign(taskRow(pending, originTask), {status: 'reviewing', acceptance: null});
+  assert.throws(() => register({}, {}, pending), {code: 'INVALID_STATE'});
+});
+
+test('maintenance rejects task references in any phase, consumed states and later author revisions', () => {
+  const {registry} = mappingFixture();
+  for (const status of ['ready', 'released']) {
+    const row = clone(registry);
+    row.tasks.push({...row.tasks[0], id: 'fixture-referencing-work', owner: null, status, specId: ageSpec});
+    assert.throws(() => applyOperation(row, maintain(row)), {code: 'SPEC_ALREADY_ASSIGNED'});
+  }
+  for (const status of ['draft', 'reserved', 'consumed']) {
+    const row = clone(registry);
+    Object.assign(row.specs[0], {status, consumedBy: {taskId: 'fixture-prior-work'}});
+    if (status === 'consumed') row.specs[0].readiness = {
+      reviewerId: reviewer.id, sections: eightSections, evidence: 'Previous review.', reviewedAt: '2026-10-29T01:00:00.000Z'
+    };
+    assert.throws(() => applyOperation(row, maintain(row)), {code: 'SPEC_ALREADY_ASSIGNED'});
+  }
+  const stale = apply(registry, author, 'revise-spec', {specId: ageSpec, document: {...registry.specs[0].document, commit: '7'.repeat(40)},
+    source, acceptanceCriteria: documentRubric, evidence: 'An author revision landed after registration.'});
+  assert.throws(() => applyOperation(stale, maintain(stale)), {code: 'SPEC_MAINTENANCE_STALE'});
+});
+
+test('mapping acceptance binds the exact candidate and excludes original and inherited makers', () => {
+  const {reviewing, registered, started, submit} = mappingFixture();
+  const makers = [author, originalMaker, local, local2];
+  assert.deepEqual(new Set(registered.tasks.at(-1).contributors), new Set(makers.map(actor => actor.id)));
+  assert.throws(() => apply(started.registry, mappingMaker, 'submit', {...submit, candidate: {...mappingCandidate, commit: '9'.repeat(40)}}),
+    {code: 'CANDIDATE_MISMATCH'});
+  for (const actor of [...makers, mappingMaker]) assert.throws(() =>
+    applyOperation(reviewing, maintenanceReview(reviewing, mappingTask, mappingCandidate, {actor})), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  for (const [extra, code] of [
+    [{candidate: {...mappingCandidate, path: 'docs/other.md'}}, 'CANDIDATE_MISMATCH'],
+    [{aspects: [{id: 'goal', score: 100, evidence: 'Partial.'}]}, 'INCOMPLETE_REVIEW'],
+    [{requiredChecksComplete: false}, 'INCOMPLETE_REVIEW'],
+    [{aspects: documentRubric.map(({id}, i) => ({id, score: i ? 90 : 89, evidence: 'Scored.'}))}, 'SCORE_BELOW_TARGET']
+  ]) assert.throws(() => applyOperation(reviewing, maintenanceReview(reviewing, mappingTask, mappingCandidate, extra)), {code});
+  const changed = clone(reviewing);
+  taskRow(changed, 'fixture-original-authoring').contributors.push(reviewer.id);
+  assert.throws(() => applyOperation(changed, maintenanceReview(changed, mappingTask, mappingCandidate)),
+    {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+});
+
+test('exact maintenance replay is idempotent and changed, partial and cross-mapping replays fail atomically', () => {
+  const {registry} = mappingFixture();
+  const first = maintain(registry);
+  const second = maintain(registry, {specId: billSpec, expectedRevision: registry.revision + 1});
+  const result = applyBatch(registry, [first, second]);
+  assert.deepEqual(result.registry.specs.map(spec => spec.maintenanceHistory.length), [1, 1]);
+  assert.equal(applyOperation(result.registry, first).idempotent, true);
+  assert.equal(applyBatch(result.registry, [first, second]).idempotent, true);
+  assert.throws(() => applyOperation(result.registry, {...first, specId: billSpec}), {code: 'IDEMPOTENCY_CONFLICT'});
+  assert.throws(() => applyOperation(result.registry, maintain(result.registry)), {code: 'SPEC_MAINTENANCE_STALE'});
+  assert.throws(() => applyBatch(applyOperation(registry, first).registry, [first, second]), {code: 'PARTIAL_BATCH'});
+  const before = clone(registry);
+  assert.throws(() => applyBatch(registry, [first, {...second, taskId: originTask}]), {code: 'SPEC_MAINTENANCE_SCOPE'});
+  assert.deepEqual(registry, before);
+});
+
+test('validation detects corrupted history, ownership, exact acceptance, and readiness evidence', () => {
+  const {registry} = mappingFixture();
+  const applied = applyOperation(registry, maintain(registry)).registry;
+  const ready = applyOperation(applied, markMaintained(applied)).registry;
+  for (const mutate of [
+    row => { delete row.specs[0].maintenanceHistory; },
+    row => { row.specs[0].maintenanceHistory[0].previous.document.commit = '9'.repeat(40); },
+    row => { row.specs[0].maintenanceHistory[0].claimId = 'wrong-claim'; },
+    row => { row.specs[0].maintenanceHistory[0].acceptance.reviewerId = mappingMaker.id; },
+    row => { row.specs[0].contributors = [author.id]; },
+    row => { row.specs[0].readiness.reviewerId = local.id; },
+    row => { delete row.specs[0].readiness.document; },
+    row => { row.tasks.at(-1).contributors = [mappingMaker.id]; },
+    row => { row.tasks.at(-1).submission.candidate.commit = '9'.repeat(40); },
+    row => { row.tasks.at(-1).acceptance.candidate.commit = '9'.repeat(40); },
+    row => { delete row.tasks.at(-1).acceptance; }
+  ]) {
+    const corrupted = clone(ready);
+    mutate(corrupted);
+    assert.throws(() => validateRegistry(corrupted));
+  }
+  assert.deepEqual(validateRegistry(ready), ready);
+});
+
+
+const recordHash = value => createHash('sha256').update(JSON.stringify(value, (_key, part) => {
+  if (!part || typeof part !== 'object' || Array.isArray(part)) return part;
+  return Object.fromEntries(Object.entries(part).sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0));
+})).digest('hex');
+
+test('a later independently accepted maintenance appends history and still excludes earlier makers', () => {
+  const {registry} = mappingFixture();
+  const first = applyOperation(registry, maintain(registry)).registry;
+  const firstReady = applyOperation(first, markMaintained(first)).registry;
+  const spec = firstReady.specs[0];
+  const laterMapping = {...mappingRef, commit: 'f'.repeat(40)};
+  const laterCandidate = {...laterMapping, path: mappingCandidate.path};
+  const laterTask = 'fixture-next-mapping';
+  const adjusted = productRubric.map(row => row.id === 'compatibility' ? {...row, label: 'Same output in both supported browsers'} : row);
+  const nextTarget = {
+    specId: ageSpec, expectedAuthorId: author.id, expectedDocument: spec.document,
+    expectedSource: spec.source, expectedCriteriaHash: criteriaHash(productRubric),
+    document: {...spec.document, commit: laterMapping.commit},
+    source: {...spec.source, commit: laterMapping.commit},
+    acceptanceCriteria: adjusted, mappingRef: laterMapping, sourceMaintenanceTaskIds: [mappingTask]
+  };
+  const newMaker = {id: 'local-codex:fixture-new-mapping-maker', executor: 'local-codex'};
+  let current = acknowledge(firstReady, newMaker);
+  current = apply(current, newMaker, 'register-task', {task: {id: laterTask, title: 'Second independent mapping', workType: 'maintenance',
+    source, brief: proof, acceptanceCriteria: documentRubric, specRevisionTargets: [nextTarget]}});
+  const {registry: started, claimId} = claimAndStart(current, newMaker, laterTask);
+  current = apply(started, newMaker, 'submit', {taskId: laterTask, claimId, candidate: laterCandidate, pullRequest: mappingPR,
+    evidenceRef: proof, evidence: 'Pinned new mapping.'});
+  current = applyOperation(current, maintenanceReview(current, laterTask, laterCandidate)).registry;
+  current = applyOperation(current, maintain(current, {taskId: laterTask})).registry;
+  assert.deepEqual(current.specs[0].maintenanceHistory[0], spec.maintenanceHistory[0]);
+  assert.equal(current.specs[0].maintenanceHistory.length, 2);
+  assert.deepEqual(current.specs[0].maintenanceHistory[1].previous.readiness, spec.readiness);
+  assert.deepEqual(current.specs[0].acceptanceCriteria, adjusted);
+  assert.throws(() => applyOperation(current, markMaintained(current, mappingMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+  assert.throws(() => applyOperation(current, markMaintained(current, newMaker)), {code: 'INDEPENDENT_REVIEW_REQUIRED'});
+});
+
+function filePayload(bytes) {
+  return {type: 'file', size: bytes.length, encoding: 'base64', content: bytes.toString('base64'),
+    sha: createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex')};
+}
+
+const fixedFileKey = ref => ref.repository + '/' + ref.commit + '/' + ref.path;
+
+function adapterFixture(registry, targets) {
+  const files = new Map();
+  const save = (ref, content) => files.set(fixedFileKey(ref), filePayload(Buffer.from(content)));
+  const auxiliary = [
+    source, proof, mappingCandidate, originCandidate, {...proof, path: 'docs/reviews/source-start.md'},
+    {...proof, path: 'docs/reviews/source-brief.md'}, {...proof, path: 'docs/reviews/source-test.md'},
+    {...proof, path: 'docs/reviews/independent-review.md'}, {...proof, path: 'docs/reviews/mapping-brief.md'}
+  ];
+  for (const ref of auxiliary) save(ref, 'Independent fixture file ' + ref.path);
+  const oldDocuments = ['old age specification\r\n', 'old and unchanged bill specification\n'];
+  const newDocuments = ['repaired age specification\r\n', 'old and unchanged bill specification\n'];
+  const sourceBytes = 'Independent fixture file README.md';
+  const descriptor = (ref, value) => ({repository: ref.repository, path: ref.path, bytes: Buffer.byteLength(value),
+    sha256: createHash('sha256').update(value).digest('hex')});
+  const manifest = {targets: targets.map((target, index) => {
+    const {mappingRef, document, source, ...fields} = target;
+    save(target.expectedDocument, oldDocuments[index]);
+    save(document, newDocuments[index]);
+    save(source, sourceBytes);
+    if (index === 0) save({...originCandidate, path: document.path}, newDocuments[index]);
+    return {...fields, document: descriptor(document, newDocuments[index]), source: descriptor(source, sourceBytes)};
+  })};
+  save(mappingRef, JSON.stringify(manifest));
+  const state = {registry: clone(registry), writes: 0, head: mappingCandidate.commit, open: true, calls: []};
+  const client = new GitHubClient('fixture-not-real', {fetchFn: async (raw, init) => {
+    const url = new URL(raw);
+    assert.equal(url.origin, 'https://api.github.com');
+    assert.equal(init.redirect, 'error');
+    state.calls.push({path: url.pathname, ref: url.searchParams.get('ref'), method: init.method});
+    const registryPath = '/repos/' + REPOSITORY + '/contents/coordination/work-registry.json';
+    if (url.pathname === registryPath && init.method === 'PUT') {
+      state.writes++;
+      const payload = JSON.parse(init.body);
+      assert.equal(payload.sha, registryPayload(state.registry).sha);
+      assert.equal(payload.branch, BRANCH);
+      state.registry = JSON.parse(Buffer.from(payload.content, 'base64').toString());
+      return {ok: true, text: async () => '{}'};
+    }
+    let result;
+    if (url.pathname === registryPath) {
+      assert.equal(url.searchParams.get('ref'), BRANCH);
+      result = registryPayload(state.registry);
+    } else if (url.pathname === '/repos/' + REPOSITORY + '/pulls/99') {
+      result = {head: {sha: state.head, repo: {full_name: REPOSITORY}}, state: state.open ? 'open' : 'closed'};
+    } else {
+      const match = /^\/repos\/([^/]+\/[^/]+)\/contents\/(.+)$/.exec(url.pathname);
+      if (match) result = files.get(fixedFileKey({
+        repository: match[1], commit: url.searchParams.get('ref'), path: decodeURIComponent(match[2])
+      }));
+    }
+    return result ? {ok: true, text: async () => JSON.stringify(result)} : {ok: false, status: 404};
+  }});
+  return {state, client, files, save, manifest};
+}
+
+test('mapping references include original and replacement files, pinned mapping, and the entire source review chain', () => {
+  const {registry, targets} = mappingFixture();
+  const references = operationReferences(registry, maintain(registry)).map(fixedFileKey);
+  const origin = taskRow(registry, originTask);
+  const task = taskRow(registry, mappingTask);
+  const required = [mappingRef, task.source, task.brief, task.submission.candidate, task.submission.evidenceRef,
+    task.acceptance.evidenceRef, origin.source, origin.brief, origin.submission.candidate,
+    origin.submission.evidenceRef, origin.acceptance.evidenceRef,
+    ...targets.flatMap(target => [target.expectedDocument, target.expectedSource, target.document, target.source])];
+  for (const ref of required) assert.ok(references.includes(fixedFileKey(ref)), fixedFileKey(ref));
+  assert.equal(references.length, new Set(references).size);
+});
+
+test('adapter reads pinned bytes, validates mapping candidate head before one CAS, and replays without writing', async () => {
+  const {registry, targets} = mappingFixture();
+  const {client, state} = adapterFixture(registry, targets);
+  const first = maintain(registry);
+  const second = maintain(registry, {specId: billSpec, expectedRevision: registry.revision + 1});
+  const commands = [first, second];
+  const {receipts} = await executeBatch(client, commands);
+  assert.equal(receipts.length, 2);
+  assert.deepEqual(receipts.map(row => row.operationId), [first.operationId, second.operationId]);
+  assert.deepEqual(state.registry.specs.map(spec => spec.document), targets.map(target => target.document));
+  assert.equal(state.writes, 1);
+  const writeIndex = state.calls.findIndex(row => row.method === 'PUT');
+  assert.equal(state.calls[writeIndex - 1].path, '/repos/' + REPOSITORY + '/pulls/99');
+  assert.equal(state.calls.filter(row => row.path.endsWith(mappingRef.path)).length, 2);
+  assert.ok(state.calls.some(row => row.path.endsWith(targets[0].document.path) && row.ref === originCandidate.commit));
+  assert.ok((await executeBatch(client, commands)).receipts.every(row => row.idempotent));
+  assert.equal(state.writes, 1);
+});
+
+test('adapter rejects absent refs, mismatched mapping and byte provenance, and moved PR before any PUT', async () => {
+  const {registry, targets} = mappingFixture();
+  for (const [alter, error] of [
+    [({files}) => files.delete(fixedFileKey(mappingRef)), {status: 404}],
+    [({files}) => files.delete(fixedFileKey(taskRow(registry, originTask).acceptance.evidenceRef)), {status: 404}],
+    [({save}) => save(mappingRef, 'invalid JSON'), {code: 'INVALID_SPEC_MAPPING'}],
+    [({save}) => save(mappingRef, Buffer.from([255])), {code: 'INVALID_SPEC_MAPPING'}],
+    [({save, manifest}) => save(mappingRef, JSON.stringify({...manifest, extra: true})), {code: 'INVALID_SPEC_MAPPING'}],
+    [({save, manifest}) => {
+      manifest.targets[0].acceptanceCriteria = productRubric.map(row => ({...row, label: 'Wrong label'}));
+      save(mappingRef, JSON.stringify(manifest));
+    }, {code: 'INVALID_SPEC_MAPPING'}],
+    [({save, manifest}) => {
+      manifest.targets[0].document.sha256 = 'f'.repeat(64);
+      save(mappingRef, JSON.stringify(manifest));
+    }, {code: 'INVALID_SPEC_MAPPING'}],
+    [({save}) => save({...originCandidate, path: targets[0].document.path}, 'Wrong accepted document'), {code: 'SPEC_SOURCE_MISMATCH'}],
+    [({files}) => files.delete(fixedFileKey({...originCandidate, path: targets[0].document.path})), {code: 'SPEC_SOURCE_MISMATCH'}],
+    [({save}) => save(targets[1].document, 'Unreviewed changes in second target'), {code: 'SPEC_SOURCE_MISMATCH'}],
+    [({save}) => save(targets[0].source, 'Unreviewed replacement baseline'), {code: 'SPEC_SOURCE_MISMATCH'}],
+    [({files}) => { files.get(fixedFileKey(mappingRef)).sha = 'f'.repeat(40); }, {code: 'BLOB_HASH_MISMATCH'}],
+    [({files}) => { files.get(fixedFileKey(mappingRef)).encoding = 'none'; }, {code: 'INVALID_RESPONSE'}],
+    [({state}) => { state.head = '9'.repeat(40); }, {code: 'CANDIDATE_MISMATCH'}],
+    [({state}) => { state.open = false; }, {code: 'INVALID_STATE'}]
+  ]) {
+    const fixture = adapterFixture(registry, targets);
+    alter(fixture);
+    const commands = [maintain(registry), maintain(registry, {specId: billSpec, expectedRevision: registry.revision + 1})];
+    await assert.rejects(executeBatch(fixture.client, commands, {verifyReferences: false}), error);
+    assert.equal(fixture.state.writes, 0);
+    assert.deepEqual(fixture.state.registry, registry);
+  }
+});
+
+test('adapter also verifies fixed mapping during register, submit, and independent review', async () => {
+  const {before, task, targets, started, submit, reviewing} = mappingFixture();
+  const register = command(before, mappingMaker, 'register-task', {task});
+  const submitCommand = command(started.registry, mappingMaker, 'submit', submit);
+  const reviewCommand = maintenanceReview(reviewing, task.id, mappingCandidate);
+  for (const [registry, cmd] of [[before, register], [started.registry, submitCommand], [reviewing, reviewCommand]]) {
+    const good = adapterFixture(registry, targets);
+    assert.equal((await executeOperation(good.client, cmd)).saved, true);
+    assert.equal(good.state.writes, 1);
+    const changed = adapterFixture(registry, targets);
+    changed.save(mappingRef, '{"targets":[]}');
+    await assert.rejects(executeOperation(changed.client, cmd), {code: 'INVALID_SPEC_MAPPING'});
+    assert.equal(changed.state.writes, 0);
+  }
 });

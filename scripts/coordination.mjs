@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { REGISTRY_PATH, REPOSITORY, BRANCH, CoordinationError, applyBatch, applyOperation, validateRegistry, inventorySummary, operationReferences, fingerprint } from './coordination-core.mjs';
+import { REGISTRY_PATH, REPOSITORY, BRANCH, CoordinationError, applyBatch, applyOperation, validateRegistry, inventorySummary, operationReferences, specMappingVerification, canonical, fingerprint } from './coordination-core.mjs';
 
 export const MAX_REGISTRY_BYTES = 4 * 1024 * 1024;
 export const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 const API = 'https://api.github.com';
+const MAX_MAPPING_FILE_BYTES = 1024 * 1024;
 const encodePath = path => path.split('/').map(encodeURIComponent).join('/');
 const endpoint = `/repos/${REPOSITORY}/contents/${encodePath(REGISTRY_PATH)}`;
 const fail = (code, message) => { throw new CoordinationError(code, message); };
@@ -62,12 +63,119 @@ export class GitHubClient {
     const data = await this.request(`/repos/${ref.repository}/contents/${encodePath(ref.path)}?ref=${encodeURIComponent(ref.commit)}`);
     if (data.type !== 'file' || typeof data.sha !== 'string') fail('MISSING_SOURCE', `Required pinned GitHub file is unavailable: ${ref.repository}/${ref.path}.`);
   }
+  async readReferenceBytes(ref) {
+    const data = await this.request(`/repos/${ref.repository}/contents/${encodePath(ref.path)}?ref=${encodeURIComponent(ref.commit)}`);
+    if (data.type !== 'file' || !/^[a-f0-9]{40}$/.test(data.sha ?? '') || !Number.isSafeInteger(data.size)
+      || data.size <= 0 || data.size > MAX_MAPPING_FILE_BYTES || data.encoding !== 'base64' || typeof data.content !== 'string') {
+      fail('INVALID_RESPONSE', `Expected a bounded pinned file with content: ${ref.repository}/${ref.path}.`);
+    }
+    const encoded = data.content.replace(/[\r\n]/g, '');
+    if (encoded.length !== 4 * Math.ceil(data.size / 3)) fail('INVALID_RESPONSE', 'Pinned file content size differs from GitHub metadata.');
+    const bytes = Buffer.from(encoded, 'base64');
+    if (bytes.length !== data.size || bytes.toString('base64') !== encoded) fail('INVALID_RESPONSE', 'Pinned file content is not canonical base64.');
+    const sha = createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
+    if (sha !== data.sha) fail('BLOB_HASH_MISMATCH', 'Pinned file bytes differ from the Git blob SHA.');
+    return bytes;
+  }
   async verifyPullRequest(url, candidate) {
     const match = /^https:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)\/pull\/([1-9][0-9]*)$/.exec(url);
     if (!match || match[1] !== candidate.repository) fail('CANDIDATE_MISMATCH', 'Pull request and candidate repositories must match.');
     const pull = await this.request(`/repos/${match[1]}/pulls/${match[2]}`);
     if (pull.head?.sha !== candidate.commit || pull.head?.repo?.full_name !== candidate.repository) fail('CANDIDATE_MISMATCH', 'Pull request head is not the exact submitted candidate commit. Re-freeze and re-review after changes.');
     if (pull.state !== 'open') fail('INVALID_STATE', 'Submit and review an open pull request; accepted source and deployed release are separate records.');
+  }
+}
+
+function parseMapping(bytes) {
+  try { return JSON.parse(new TextDecoder('utf-8', {fatal: true, ignoreBOM: true}).decode(bytes)); }
+  catch { fail('INVALID_SPEC_MAPPING', 'The pinned mapping must be UTF-8 JSON.'); }
+}
+
+function mappingFile(ref, bytes) {
+  return {repository: ref.repository, path: ref.path, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')};
+}
+
+async function verifySpecMapping(client, verification, files) {
+  const {mappingRef, targets} = verification;
+  const read = async ref => {
+    const key = canonical(ref);
+    if (!files.has(key)) files.set(key, await client.readReferenceBytes(ref));
+    return files.get(key);
+  };
+  const mapping = parseMapping(await read(mappingRef));
+  const declared = [];
+  for (const {target, sources} of targets) {
+    const {mappingRef: fixedRef, document, source, ...otherFields} = target;
+    const documentBytes = await read(document);
+    const sourceBytes = await read(source);
+    const sourceCandidates = replacement => sources.map(task => ({
+      repository: task.submission.candidate.repository,
+      commit: task.submission.candidate.commit,
+      path: replacement.path
+    }));
+    const matchesAny = async (bytes, references) => {
+      for (const ref of references) {
+        try {
+          if (bytes.equals(await read(ref))) return true;
+        } catch (error) {
+          if (!(error instanceof GitHubError) || error.status !== 404) throw error;
+        }
+      }
+      return false;
+    };
+    const documentOrigins = sources.length ? sourceCandidates(document) : [target.expectedDocument];
+    if (!await matchesAny(documentBytes, documentOrigins)
+      || !await matchesAny(sourceBytes, [target.expectedSource, ...sourceCandidates(source)])) {
+      fail('SPEC_SOURCE_MISMATCH', `The pinned replacement bytes lack the declared accepted source provenance for ${target.specId}.`);
+    }
+    declared.push({...otherFields, document: mappingFile(document, documentBytes), source: mappingFile(source, sourceBytes)});
+  }
+  if (canonical(mapping) !== canonical({targets: declared})) {
+    fail('INVALID_SPEC_MAPPING', 'The pinned mapping JSON differs from the declared targets and verified file bytes.');
+  }
+}
+
+async function verifyOperation(client, registry, command, verifyReferences, cache) {
+  const mapping = specMappingVerification(registry, command);
+  if (!verifyReferences && !mapping) return;
+  for (const ref of operationReferences(registry, command)) {
+    const key = canonical(ref);
+    if (cache.references.has(key)) continue;
+    await client.verifyReference(ref);
+    cache.references.add(key);
+  }
+  if (mapping) {
+    const key = fingerprint(mapping.targets.map(({target}) => target));
+    if (!cache.mappings.has(key)) {
+      await verifySpecMapping(client, mapping, cache.files);
+      cache.mappings.add(key);
+    }
+  }
+  if (command.action === 'submit') {
+    if (mapping) {
+      const key = canonical([command.pullRequest, command.candidate]);
+      cache.mappingPulls.set(key, command);
+    } else {
+      await client.verifyPullRequest(command.pullRequest, command.candidate);
+    }
+  } else if (command.action === 'review' || command.action === 'apply-spec-maintenance') {
+    const {submission} = registry.tasks.find(row => row.id === command.taskId);
+    if (mapping) {
+      const key = canonical([submission.pullRequest, submission.candidate]);
+      cache.mappingPulls.set(key, submission);
+    } else {
+      await client.verifyPullRequest(submission.pullRequest, command.candidate);
+    }
+  }
+}
+
+function verificationCache() {
+  return {references: new Set(), files: new Map(), mappings: new Set(), mappingPulls: new Map()};
+}
+
+async function verifyMappingHeads(client, cache) {
+  for (const {pullRequest, candidate} of cache.mappingPulls.values()) {
+    await client.verifyPullRequest(pullRequest, candidate);
   }
 }
 
@@ -88,12 +196,9 @@ export async function executeOperation(client, command, {verifyReferences = true
   const before = await client.readRegistry();
   const proposed = applyOperation(before.registry, command);
   if (proposed.idempotent) return receipt(before, command, proposed.event, {idempotent: true, putAttempted: false});
-  if (verifyReferences) {
-    for (const ref of operationReferences(before.registry, command)) await client.verifyReference(ref);
-    const task = before.registry.tasks.find(row => row.id === command.taskId);
-    if (command.action === 'submit') await client.verifyPullRequest(command.pullRequest, command.candidate);
-    if (command.action === 'review') await client.verifyPullRequest(task.submission.pullRequest, command.candidate);
-  }
+  const cache = verificationCache();
+  await verifyOperation(client, before.registry, command, verifyReferences, cache);
+  await verifyMappingHeads(client, cache);
   let writeError = null;
   try { await client.writeRegistry(before.sha, proposed.registry, command); } catch (error) { writeError = error; }
   let after;
@@ -116,20 +221,13 @@ export async function executeBatch(client, commands, {verifyReferences = true} =
   const result = (snapshot, events, extra) => ({saved: true, batchSize: commands.length,
     receipts: commands.map((command, i) => receipt(snapshot, command, events[i], extra))});
   if (proposed.idempotent) return result(before, proposed.events, {idempotent: true, putAttempted: false});
-  if (verifyReferences) {
-    let staged = before.registry;
-    const checked = new Set();
-    for (const command of commands) {
-      for (const ref of operationReferences(staged, command)) {
-        const key = fingerprint(ref);
-        if (!checked.has(key)) { await client.verifyReference(ref); checked.add(key); }
-      }
-      const task = staged.tasks.find(row => row.id === command.taskId);
-      if (command.action === 'submit') await client.verifyPullRequest(command.pullRequest, command.candidate);
-      if (command.action === 'review') await client.verifyPullRequest(task.submission.pullRequest, command.candidate);
-      staged = applyOperation(staged, command).registry;
-    }
+  const cache = verificationCache();
+  let staged = before.registry;
+  for (const command of commands) {
+    await verifyOperation(client, staged, command, verifyReferences, cache);
+    staged = applyOperation(staged, command).registry;
   }
+  await verifyMappingHeads(client, cache);
   let writeError = null;
   try { await client.writeRegistry(before.sha, proposed.registry, {action: 'batch', operationId: commands[0].operationId}); }
   catch (error) { writeError = error; }

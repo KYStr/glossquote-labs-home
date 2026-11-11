@@ -95,3 +95,9 @@ accepted 只表示該候選與約定範圍已驗收，不等於正式發布。�
 ## 2026-11-09 單一來源入口
 
 [START-HERE](../START-HERE.md)與[完整接續說明書](AGENT-HANDBOOK.md)整合來源/預案/承接/驗收。舊repo保留；新製作與後續正式遷移使用共用repo tools/<slug>/。來源搬移不改owner、不等於產品accepted或部署，不重設兩端原始reconciliation。
+
+## Run5 規格維護
+
+固定範圍內的未派工規格可由 primary 套用已獨立驗收的維護映射。既有修訂沿原 claim 驗收，再以新 maintenance 任務預宣告固定候選、來源任務、舊狀態及九項產品 criteria。映射驗收涵蓋每份規格的八節。原作者、原規格製作者、來源維護 makers 及映射 owner 均排除於獨立評分。
+
+套用時須以 [命令與映射格式](COORDINATION-COMMANDS.md#run5-規格維護映射) 核對固定映射 JSON、文件 bytes、來源候選及映射 PR head，再做 CAS 和精確讀回。只確認檔案存在的流程不足以執行規格映射。套用後規格回到 draft，須由獨立 reviewer 確認同一固定文件的八節後才可 ready。
