@@ -1,0 +1,273 @@
+{
+  "bom-quotes-file-v-paste": {
+    "input": "id,Apr,note,May\r\n001,\"A,\r\nB\",ignore,\"he said \"\"Hi\"\"\"\r\n001,,skip,0\r\n002,\" \",,\r\n",
+    "fileLeadingBOM": true,
+    "fileExpected": {
+      "columns": [
+        "id",
+        "period",
+        "loan"
+      ],
+      "rows": [
+        [
+          "001",
+          "Apr",
+          "A,\r\nB"
+        ],
+        [
+          "001",
+          "May",
+          "he said \"Hi\""
+        ],
+        [
+          "001",
+          "May",
+          "0"
+        ],
+        [
+          "002",
+          "Apr",
+          " "
+        ]
+      ],
+      "coordinates": [
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "skipped": 2,
+      "risk": []
+    },
+    "pasteFirstValue": "A,\nB",
+    "expectedCsv": "\"id\",\"period\",\"loan\"\r\n\"001\",\"Apr\",\"A,\r\nB\"\r\n\"001\",\"May\",\"he said \"\"Hi\"\"\"\r\n\"001\",\"May\",\"0\"\r\n\"002\",\"Apr\",\" \"",
+    "csv": {
+      "bytes": 105,
+      "sha256": "1b632205679f12540740ef24a18d062c294adcb0fab8da5c9bfd69bb529cda68"
+    }
+  },
+  "empty-cells-and-terminal-boundary": {
+    "terminalData": [
+      [
+        "",
+        ""
+      ]
+    ],
+    "headerOnlyCsv": "\"id\",\"attribute\",\"value\""
+  },
+  "quoted-lf-and-blank-record": {
+    "inputHex": "69642c770a3030312c22780a79220a0a3030322c31",
+    "expected": {
+      "code": "ragged",
+      "record": 3,
+      "column": 2
+    }
+  },
+  "short-record": {
+    "inputHex": "69642c770a3030310a",
+    "expected": {
+      "code": "ragged",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "extra-field": {
+    "inputHex": "69642c770a3030312c322c",
+    "expected": {
+      "code": "ragged",
+      "record": 2,
+      "column": 3
+    }
+  },
+  "duplicate-header": {
+    "inputHex": "69642c782c780a3030312c322c33",
+    "expected": {
+      "code": "duplicate-header",
+      "record": 1,
+      "column": 3
+    }
+  },
+  "text-after-quote": {
+    "inputHex": "69642c770a3030312c22612220",
+    "expected": {
+      "code": "syntax",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "quote-in-bare": {
+    "inputHex": "69642c770a3030312c612262",
+    "expected": {
+      "code": "syntax",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "unclosed-quote": {
+    "inputHex": "69642c770a3030312c22610a62",
+    "expected": {
+      "code": "syntax",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "bare-cr-file": {
+    "inputHex": "69642c770d3030312c32",
+    "expected": {
+      "code": "syntax",
+      "record": 1,
+      "column": 2
+    }
+  },
+  "nul-in-data": {
+    "inputHex": "69642c770a3030312c610062",
+    "expected": {
+      "code": "control",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "fatal-utf8": {
+    "inputHex": "69642c770a3030312ceda080",
+    "expected": {
+      "code": "utf8",
+      "record": null,
+      "column": null
+    }
+  },
+  "fatal-overlong-utf8": {
+    "inputHex": "69642c770a3030312cc0af",
+    "expected": {
+      "code": "utf8",
+      "record": null,
+      "column": null
+    }
+  },
+  "lone-surrogate": {
+    "inputEscaped": "id,w\\n001,\\ud800",
+    "expected": {
+      "code": "surrogate",
+      "record": null,
+      "column": null
+    }
+  },
+  "risk-roles-and-coordinate": {
+    "input": "\" =team\",\"＋Week\",note\n001,\" =1+1\",\"001\"\n001,\"\t\",\"0\"",
+    "positions": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "rawCsv": "suppressed",
+    "protectedCsv": "\"' =team\",\"attribute\",\"value\"\r\n\"001\",\"'＋Week\",\"' =1+1\"\r\n\"001\",\"note\",\"001\"\r\n\"001\",\"'＋Week\",\"'\t\"\r\n\"001\",\"note\",\"0\"",
+    "originalJson": "{\"schemaVersion\":1,\"columns\":[\" =team\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"＋Week\",\" =1+1\"],[\"001\",\"note\",\"001\"],[\"001\",\"＋Week\",\"\\t\"],[\"001\",\"note\",\"0\"]]}\n",
+    "predicate": {
+      "": false,
+      " ": false,
+      "001": false,
+      "0": false,
+      "a=1": false,
+      "'=1+1": false,
+      "​=1+1": false,
+      "\t": true,
+      " \r": true,
+      "\n": true,
+      "﻿=1+1": true,
+      " +1": true,
+      " -1": true,
+      " @x": true,
+      "＝1+1": true,
+      "＠x": true
+    }
+  },
+  "protected-header-collision": {
+    "input": "=1+1,'=1+1,w\n001,002,1",
+    "logicalHeaders": [
+      "=1+1",
+      "'=1+1",
+      "attribute",
+      "value"
+    ],
+    "protectedHeaderByPrefixRule": "\"'=1+1\",\"'=1+1\",\"attribute\",\"value\""
+  },
+  "byte-and-row-bounds": {
+    "generator": "1000 input records, 20 short expansion headers, first 429 IDs len 406 and rest len 405",
+    "exactCsvBytes": 8388608,
+    "oneByteOverCsv": {
+      "bytes": 8388609,
+      "sha256": "54847663f8dca2dce33a4eafdada5f8c3e97b2eb5f60460d5034d5e8648511d2"
+    },
+    "oneByteOverJson": {
+      "bytes": 8408651,
+      "sha256": "fd767e47087ae93a7f9d46ce420fd6e79dd75cd7ad6b6ffb1e18df4afccd2b5b"
+    },
+    "extraInputRecordMakesRows": 20020
+  },
+  "independent-output-caps": {
+    "generator": "1000 source records, 20 risky four-character headers, one 403-character risk-marked ID",
+    "expected": "protected CSV over cap; original JSON available; raw CSV suppressed by formula-risk rule",
+    "protectedCsvBytes": 8400024,
+    "originalJsonBytes": 8380066
+  },
+  "input-size-before-decode": {
+    "exactInputBytes": 1048576,
+    "exactRows": 64,
+    "oneByteOver": 1048577,
+    "oneByteOverAndInvalidUtf8": "size before decode",
+    "bytesIncludeBom": true
+  },
+  "header-code-point-limit": {
+    "literalShape": "astral character repeated",
+    "expected": {
+      "code": "header-name",
+      "record": 1,
+      "column": 2
+    }
+  },
+  "astral-cell-unit-limit": {
+    "literalShape": "astral character repeated",
+    "expected": {
+      "code": "cell-limit",
+      "record": 2,
+      "column": 2
+    }
+  },
+  "cancel-and-source-generation": {
+    "modelOnly": true,
+    "staleParseDiscarded": true,
+    "staleTransformDiscarded": true,
+    "cancelledTransformDiscarded": true,
+    "editAndCancelRevokeApproval": true,
+    "cancelRetainsColumnsAndCurrentRoles": true,
+    "sourceEditDropsColumns": true
+  }
+}
