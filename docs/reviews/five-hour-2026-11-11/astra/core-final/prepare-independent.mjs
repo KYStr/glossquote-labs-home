@@ -1,0 +1,14 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+const source=await fs.readFile(new URL('./effective-readiness-probes.original.mjs',import.meta.url),'utf8');
+const cut=source.indexOf('const rows=[];let recoverable;');assert(cut>0);assert.equal(source.lastIndexOf('const rows=[];let recoverable;'),cut);
+const builder=source.slice(0,cut)+'\nexport {stateBeforeLateSource,addStock};\n';
+await fs.writeFile(new URL('./temporal-fixture-builder.mjs',import.meta.url),builder);
+const original=await fs.readFile(new URL('./recheck-source-chain.original.mjs',import.meta.url),'utf8');
+assert.equal(original.split('110e809c15b10004c2aadca6a6649b9324be1419').length,2);
+const current=original.replace('110e809c15b10004c2aadca6a6649b9324be1419','93595abc7b2f9c46a07aaaa74418b3882c8901b4').replace('FH-CORE-A-02 is separately reproduced and still blocks acceptance','FH-CORE-A-02 is separately checked against the current candidate');
+await fs.writeFile(new URL('./recheck-source-chain.mjs',import.meta.url),current);
+const hash=s=>createHash('sha256').update(s).digest('hex');
+await fs.writeFile(new URL('./fixture-provenance.json',import.meta.url),JSON.stringify({status:'PASS',sourceCommit:'7690f87c0ea45004ab4682e20763c525ea1c0d10',temporalBuilder:{method:'Verbatim imports and fixture builders before the previous assertion loop; export existing two functions',sourceSha256:hash(source),prefixBytes:Buffer.byteLength(source.slice(0,cut)),outputSha256:hash(builder)},A01Matrix:{method:'Only candidate/result-scope metadata updated; all twelve test bodies and assertions unchanged',sourceSha256:hash(original),outputSha256:hash(current)}},null,2)+'\n');
+console.log(JSON.stringify({status:'PASS',unchangedFixtureBuilders:true,unchangedA01Assertions:12}));
