@@ -77,10 +77,12 @@ export function createController({ createWorker, onChange = () => {} }) {
       return getPublicState();
     }
     worker = nextWorker;
+    const isCurrentJob = () =>
+      worker === nextWorker && generation === postedGeneration && state === "busy";
     worker.onmessage = (event) => {
       const data = event.data;
       if (data === null || typeof data !== "object") return;
-      if (data.generation !== postedGeneration || state !== "busy") return;
+      if (!isCurrentJob() || data.generation !== postedGeneration) return;
       terminateWorker();
       if (data.ok === true) {
         result = data.result;
@@ -94,7 +96,7 @@ export function createController({ createWorker, onChange = () => {} }) {
       emit();
     };
     worker.onerror = () => {
-      if (generation !== postedGeneration || state !== "busy") return;
+      if (!isCurrentJob()) return;
       terminateWorker();
       result = null;
       error = { ...WORKER_ERROR };
