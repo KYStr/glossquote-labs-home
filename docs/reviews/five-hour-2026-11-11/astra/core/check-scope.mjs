@@ -1,0 +1,18 @@
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.dirname(fileURLToPath(import.meta.url));
+const blob=b=>createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');
+const allow=await fs.readFile(path.join(root,'run5-spec-ids.json'));
+assert.equal(blob(allow),'2676df8888796766e58da0cb957a09222ba05b85');
+const brief=await fs.readFile(path.join(root,'TASK-snapshot.md'));
+assert.equal(blob(brief),'26fba34923ecf2cbd12582a19a62af8bff55cbcb');
+const expected=JSON.parse(allow);assert.equal(expected.length,40);
+const code=await fs.readFile(path.join(root,'candidate/scripts/coordination-core.mjs'),'utf8');
+const region=code.match(/const RUN5_SPEC_IDS = new Set\(\[([\s\S]*?)\]\);/);assert(region);
+const actual=[...region[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);
+assert.deepEqual(actual,expected);assert.equal(new Set(actual).size,40);
+const result={status:'PASS',observedAt:new Date().toISOString(),count:40,exactOrderAndMembership:true,scopeCommit:'8040cc2dfbbfb40c2ac587133d1c03578deab224',allowlistBlob:blob(allow),briefBlob:blob(brief)};
+await fs.writeFile(path.join(root,'scope-verification.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
