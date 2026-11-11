@@ -1,0 +1,294 @@
+{
+  "task": "FH-NEW-WORKSHOP-REVIEW",
+  "specId": "spec-workshop-preference-allocation-20261111",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "a1cf43a35b2130d9de89a7fdd9c063fc7f54c601",
+    "path": "docs/specs/workshop-preference-allocation/SPEC.md",
+    "pullRequest": "https://github.com/KYStr/glossquote-labs-home/pull/332"
+  },
+  "reviewer": "local-codex:01a1c8a3-8c54-7810-a0e1-bc3a2ffbfe01",
+  "author": "local-codex:01a1c8b8-1888-7b02-9539-c67eb1dd3b47",
+  "authorClaimId": "workshop-spec-claim-51844316-c259-4f0a-8206-b4adb00edfdf",
+  "registryObservation": {
+    "revision": 1663,
+    "blob": "4663aedf3f94811894bd13cac870db1dc854cac2",
+    "taskStatus": "working",
+    "submission": null,
+    "specRegistered": false
+  },
+  "source": {
+    "initialBrief": {
+      "commit": "14d3dff09fe8f283726a7e8cb9eaadd905500516",
+      "gitBlobSha": "75509423cb3310c6c32f8965627772b68f0da274",
+      "sha256": "19d7ac443e09c4dac03c1a860ca97ce018936b1f1c5023f154399033ee03fba7"
+    },
+    "files": [
+      {
+        "name": "AUTHOR-CHECK.md",
+        "path": "docs/specs/workshop-preference-allocation/AUTHOR-CHECK.md",
+        "gitBlobSha": "baeff09d2e0c0110ae004b084fc2173c6dc0e07b",
+        "sha256": "820caaf7a2b2f8ed77dd2977bc9a9217a958f1d6fb9d6fae4b8b11ad357d2e4e",
+        "bytes": 21864
+      },
+      {
+        "name": "BRIEF.md",
+        "path": "docs/specs/workshop-preference-allocation/BRIEF.md",
+        "gitBlobSha": "540835814e859347bfdd879193874bfe8a81a4dd",
+        "sha256": "a8f4b4e3ee93de967fe5c845d601cd83cfbe4e7e9e428eb5b7eff999cf709c89",
+        "bytes": 10510
+      },
+      {
+        "name": "SPEC.md",
+        "path": "docs/specs/workshop-preference-allocation/SPEC.md",
+        "gitBlobSha": "6828da47a36c7a5f4d1a0f617b8c40d65ecec2b4",
+        "sha256": "d25ab1547d3a99f8a1f4d97b927fb47d27838e0f75c359953613e3375d19fc01",
+        "bytes": 34119
+      },
+      {
+        "name": "fixtures.json",
+        "path": "docs/specs/workshop-preference-allocation/fixtures.json",
+        "gitBlobSha": "1789715038f36366a2b343c8e525a579d1e77ee4",
+        "sha256": "fbd3ccccd701ea7fdb384d7604d70af7cf90c28055cd040e5943d13d8e7f8fc7",
+        "bytes": 125821
+      }
+    ],
+    "diff": [
+      {
+        "filename": "docs/specs/workshop-preference-allocation/AUTHOR-CHECK.md",
+        "status": "added",
+        "additions": 418,
+        "deletions": 0,
+        "hasPatch": true
+      },
+      {
+        "filename": "docs/specs/workshop-preference-allocation/BRIEF.md",
+        "status": "added",
+        "additions": 91,
+        "deletions": 0,
+        "hasPatch": true
+      },
+      {
+        "filename": "docs/specs/workshop-preference-allocation/SPEC.md",
+        "status": "added",
+        "additions": 191,
+        "deletions": 0,
+        "hasPatch": true
+      },
+      {
+        "filename": "docs/specs/workshop-preference-allocation/fixtures.json",
+        "status": "added",
+        "additions": 4385,
+        "deletions": 0,
+        "hasPatch": false
+      }
+    ],
+    "portability": "PASS"
+  },
+  "sections": [
+    {
+      "id": "goal",
+      "score": 98,
+      "complete": true,
+      "evidence": "Observable volunteer workflow, once-per-registration and class roster handoff."
+    },
+    {
+      "id": "scope",
+      "score": 96,
+      "complete": true,
+      "evidence": "Same-slot seats and ranked choices distinguished from five fixed similar product sources."
+    },
+    {
+      "id": "userFlow",
+      "score": 88,
+      "complete": false,
+      "evidence": "WA-01: a selected empty file enters partial rather than the promised source error."
+    },
+    {
+      "id": "inputsOutputs",
+      "score": 97,
+      "complete": true,
+      "evidence": "Strict CSV, precedence, identifiers and canonical exports. Independent 50 core and 10 generated cases match."
+    },
+    {
+      "id": "implementation",
+      "score": 88,
+      "complete": false,
+      "evidence": "WA-01: LOAD records origin=file, but the nonempty-text validation rule skips it."
+    },
+    {
+      "id": "acceptance",
+      "score": 97,
+      "complete": true,
+      "evidence": "Nine concrete independent product acceptance criteria pinned in SPEC."
+    },
+    {
+      "id": "tests",
+      "score": 89,
+      "complete": false,
+      "evidence": "All 49 controller snapshots match existing fixtures. The adapter route for a zero-byte selected file lacks a regression case."
+    },
+    {
+      "id": "handoff",
+      "score": 96,
+      "complete": true,
+      "evidence": "Fixed brief, original author and claim, public PR and product gates traceable."
+    }
+  ],
+  "verdict": "revision",
+  "requiredChecksComplete": false,
+  "rubricComplete": true,
+  "blockers": [
+    {
+      "id": "WA-01",
+      "sectionRefs": [
+        65,
+        77,
+        132,
+        146
+      ],
+      "probe": {
+        "id": "controller-empty-selected-file",
+        "events": [
+          {
+            "type": "EDIT",
+            "source": "workshops",
+            "text": "workshop_id,title,capacity\nA,Workshop,1"
+          },
+          {
+            "type": "READ",
+            "source": "preferences",
+            "size": 0
+          },
+          {
+            "type": "LOAD",
+            "source": "preferences",
+            "generation": 1,
+            "hex": ""
+          }
+        ],
+        "observedUnderNonemptyDraftRule": {
+          "revision": 2,
+          "phase": "partial",
+          "sources": {
+            "workshops": {
+              "generation": 1,
+              "origin": "paste",
+              "text": "workshop_id,title,capacity\nA,Workshop,1",
+              "reading": false,
+              "issue": null
+            },
+            "preferences": {
+              "generation": 1,
+              "origin": "file",
+              "text": "",
+              "reading": false,
+              "issue": null
+            }
+          },
+          "validation": null,
+          "preview": null,
+          "result": null,
+          "selected": null,
+          "downloads": {
+            "batch": false,
+            "roster": false
+          },
+          "activeExports": [],
+          "needsReallocation": false,
+          "exportError": null
+        },
+        "requiredBySourceErrorContract": {
+          "phase": "error",
+          "validation": {
+            "source": "preferences",
+            "code": "SOURCE_EMPTY",
+            "record": 1,
+            "column": 1
+          },
+          "downloads": {
+            "batch": false,
+            "roster": false
+          }
+        }
+      },
+      "fix": "Validate a provided file even when its decoded text is empty. Preserve empty paste/missing source behavior and add a controller fixture."
+    }
+  ],
+  "documentChecks": {
+    "literalFixtureVerification": {
+      "core": {
+        "passed": 50,
+        "total": 50
+      },
+      "boundary": {
+        "passed": 10,
+        "total": 10
+      },
+      "controller": {
+        "passed": 49,
+        "total": 49
+      }
+    },
+    "commands": [
+      {
+        "command": "python -B -X utf8 oracle.py",
+        "exit": 0
+      },
+      {
+        "command": "python -B -X utf8 verify-fixtures.py /path/to/fixed-candidate/fixtures.json",
+        "exit": 0
+      }
+    ]
+  },
+  "productStatus": "NOT_RUN",
+  "productAspects": [
+    {
+      "id": "functionality",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "boundaries",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "privacy",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "security",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "usability",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "accessibility",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "localization-seo",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "toolchain-provenance",
+      "status": "NOT_RUN",
+      "score": null
+    },
+    {
+      "id": "compatibility",
+      "status": "NOT_RUN",
+      "score": null
+    }
+  ],
+  "formalRegistryReview": "NOT_RUN",
+  "specReady": "NOT_RUN"
+}
