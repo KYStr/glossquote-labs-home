@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作日計算機｜Gloss Tools</title>
+<meta name="description" content="計算兩個日期之間的工作日（扣除週末與自訂假日），或從某日起加減 N 個工作日得到目標日期；起日不計、訖日計入。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../index.html">Gloss Tools</a>
+  <span class="topbar-title">工作日計算機</span>
+  <span class="lang-switch">
+    <a href="en/index.html" hreflang="en" lang="en">English</a>
+    <span class="draft-warning">切換語言或離開頁面會失去目前草稿。</span>
+  </span>
+</header>
+<main class="layout">
+  <section class="panel input-panel" aria-labelledby="page-title">
+    <h1 id="page-title">工作日計算機</h1>
+    <p class="lede">計算兩個日期之間的工作日（扣除週末與自訂假日），或從某日起加減 N 個工作日得到目標日期；起日不計、訖日計入。資料只保留在目前頁面草稿，不會傳送或儲存。</p>
+    <form id="workdays-form" novalidate>
+      <fieldset class="mode-toggle">
+        <legend>模式</legend>
+        <label class="mode-option"><input type="radio" name="mode" id="mode-count" value="count" checked> 計算工作日數</label>
+        <label class="mode-option"><input type="radio" name="mode" id="mode-shift" value="shift"> 加減工作日</label>
+      </fieldset>
+      <div class="field">
+        <label for="start-date">開始日期</label>
+        <input id="start-date" name="startDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="start-date-error">
+        <p class="field-error" id="start-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field" id="end-date-field">
+        <label for="end-date">結束日期</label>
+        <input id="end-date" name="endDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="end-date-error">
+        <p class="field-error" id="end-date-error" role="alert" hidden></p>
+      </div>
+      <div class="field" id="days-field" hidden>
+        <label for="days">工作日數（可為負數）</label>
+        <input id="days" name="days" type="text" inputmode="numeric" autocomplete="off" placeholder="5" aria-describedby="days-hint days-error">
+        <p class="field-hint" id="days-hint">整數，範圍 -3660 至 3660；正數往後、負數往前，0 表示起日原樣不動。</p>
+        <p class="field-error" id="days-error" role="alert" hidden></p>
+      </div>
+      <div class="field">
+        <label for="holidays">自訂假日（每行一個日期，可留空）</label>
+        <textarea id="holidays" name="holidays" rows="6" autocomplete="off" placeholder="YYYY-MM-DD" aria-describedby="holidays-hint holidays-error"></textarea>
+        <p class="field-hint" id="holidays-hint">每行一個 YYYY-MM-DD，最多 400 筆；重複行會自動去重，落在區間外的假日只列出、不影響計算。</p>
+        <p class="field-error" id="holidays-error" role="alert" hidden></p>
+      </div>
+      <div class="actions">
+        <button type="submit" class="button primary" id="run-btn">計算工作日</button>
+        <button type="button" class="button" id="cancel-btn" hidden>取消</button>
+        <button type="button" class="button" id="example-btn">載入範例</button>
+        <button type="button" class="button quiet" id="reset-btn">重設</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <section class="panel result-panel" id="result-panel" aria-labelledby="result-heading" aria-busy="false">
+    <h2 id="result-heading">結果</h2>
+    <p class="result-empty" id="result-empty">尚無結果。輸入日期後按「計算工作日」或「計算目標日期」。</p>
+    <div id="result-count" hidden>
+      <h3>區間內的工作日</h3>
+      <p class="remaining"><span class="remaining-label">工作日數</span> <span class="remaining-value" id="business-days-value">0</span> <span class="remaining-unit">天</span></p>
+      <dl class="details">
+        <div class="detail-row"><dt>開始日期</dt><dd id="count-start">—</dd></div>
+        <div class="detail-row"><dt>結束日期</dt><dd id="count-end">—</dd></div>
+        <div class="detail-row"><dt>日曆天數</dt><dd id="count-calendar">0</dd></div>
+        <div class="detail-row"><dt>週末天數</dt><dd id="count-weekend">0</dd></div>
+        <div class="detail-row"><dt>假日扣除</dt><dd id="count-subtracted">0</dd></div>
+        <div class="detail-row"><dt>假日落在週末</dt><dd id="count-on-weekends">0</dd></div>
+        <div class="detail-row"><dt>假日超出區間</dt><dd id="count-out-of-range">0</dd></div>
+        <div class="detail-row"><dt>重複假日行</dt><dd id="count-duplicates">0</dd></div>
+      </dl>
+    </div>
+    <div id="result-shift" hidden>
+      <h3>目標日期</h3>
+      <p class="remaining"><span class="remaining-value" id="result-date-value">—</span> <span class="remaining-unit" id="result-weekday-name"></span></p>
+      <dl class="details">
+        <div class="detail-row"><dt>工作日數</dt><dd id="shift-days">0</dd></div>
+        <div class="detail-row"><dt>移動日曆天數</dt><dd id="shift-moved">0</dd></div>
+        <div class="detail-row"><dt>結果為工作日</dt><dd id="shift-is-business">—</dd></div>
+      </dl>
+    </div>
+    <div class="actions">
+      <button type="button" class="button" id="download-btn" hidden>下載報告</button>
+    </div>
+  </section>
+  <section class="panel info-panel" aria-labelledby="info-heading">
+    <h2 id="info-heading">計算規則與限制</h2>
+    <p>工作日是週一至週五、且不在自訂假日清單中的日期；週末固定為週六、週日。計數採起日不計、訖日計入：交換起訖日只會讓工作日數反號，天數明細仍以正向區間計算。本工具不含任何內建國定假日。</p>
+    <p>輸入限制：日期 1900-01-01 至 2100-12-31；工作日數 -3660 至 3660；假日最多 400 筆、全文最多 4096 個字元。兩種模式互為反運算：訖日是工作日時，從起日加「區間工作日數」個工作日會恰好回到訖日。</p>
+    <h3>常見問題</h3>
+    <dl class="faq">
+      <div class="faq-item"><dt>起訖日怎麼算？</dt><dd>起日不計入、訖日計入；例如週一到週五是 4 個工作日（週二到週五），用加減模式從週一加 4 個工作日也會回到週五。</dd></div>
+      <div class="faq-item"><dt>假日落在週末會重複扣嗎？</dt><dd>不會；週末日本來就不是工作日，落在週末的假日會另外列出，不會重複扣。</dd></div>
+      <div class="faq-item"><dt>有內建國定假日嗎？</dt><dd>沒有；假日由你自行逐行輸入（例如公司休假日），本工具不含任何官方行事曆。</dd></div>
+    </dl>
+  </section>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
