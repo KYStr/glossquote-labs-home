@@ -1,0 +1,766 @@
+--- fixed/77b72cb74db4cae3bba2c4c1bff7cae5dbc63639/docs/specs/breakeven-calculator/BRIEF.md
++++ candidate/docs/specs/breakeven-calculator/BRIEF.md
+@@ -2,7 +2,7 @@
+ 
+ **文件草案，產品檢查 NOT_RUN** · `spec-breakeven-calculator-20261109`
+ 
+-小攤商、工作室或接案者手上有每月固定成本、單位售價與單位變動成本，要算出至少賣幾件、做到多少營收才打平，並在給定預期銷量時看到安全邊際與預期利潤；售價不高於變動成本時，要直接被告知不存在損益平衡點，而不是拿到一個負數或無限大的假答案。
++小攤商、工作室或接案者手上有每月固定成本、單位售價與單位變動成本，要算出至少賣幾件、做到多少營收才打平，並在給定預期銷量時看到安全邊際與預期利潤；售價不高於變動成本時，工具說明為何無法提供以正貢獻攤平固定成本的唯一銷售門檻，並依售價和固定成本說明何時會打平或虧損。
+ 
+ MVP 範圍。單一產品、單一幣別；固定成本／單位售價／單位變動成本三個金額輸入（整數分精確運算），輸出單位邊際貢獻、邊際貢獻率、損益平衡銷量（理論值＋無條件進位的整數單位值）、損益平衡營收（理論值＋整數單位值）；選填預期銷量時加安全邊際與預期利潤。非目標為多產品組合、階梯定價、稅費、折現、非線性成本、圖表、歷史紀錄。
+ 
+--- fixed/77b72cb74db4cae3bba2c4c1bff7cae5dbc63639/docs/specs/breakeven-calculator/SPEC.md
++++ candidate/docs/specs/breakeven-calculator/SPEC.md
+@@ -1,6 +1,6 @@
+ # 損益平衡計算 / Breakeven Calculator
+ 
+-**DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-breakeven-calculator-20261109` · 2026-11-09 · v1
++**DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-breakeven-calculator-20261109` · 2026-11-11 · v2
+ 
+ [個別任務簡報](BRIEF.md) · [字面案例](fixtures.json) · [作者檢查](AUTHOR-CHECK.md)
+ 
+@@ -9,7 +9,7 @@
+ 小攤商、工作室或接案者要決定一個產品或服務賣多少才不會虧：他們手上有每月固定成本（租金、訂閱、薪資）、單位售價和單位變動成本（材料、包裝、運費），需要一個確定的數字——至少賣幾件、做到多少營收才打平——以及在預期銷量下離打平還有多遠、安全或危險。
+ 
+ - 桌面。桌面填入三個金額（和選填的預期銷量），立即核對損益平衡銷量與營收、邊際貢獻率與安全邊際。
+-- 行動。手機在談價或看店面時快速試算不同售價，確認某個價格是否根本不可能打平。
++- 行動。手機在談價或看店面時快速試算不同售價，確認某個價格能否靠增加銷量打平。
+ 
+ 使用情境為試算假設。所有金額採同一幣別由使用者自理，本工具不換算、不標示幣別。資料只保留在目前頁面草稿。
+ 
+@@ -32,7 +32,7 @@
+ 採 Gloss Tools Product App。遵守設計系統的 paper/ink、間距、焦點和斷點。寬版以輸入與結果相鄰，結果擁有最多空間。窄版依輸入、主操作、狀態、結果直排。首屏見主工作和常用設定，詳細格式用一層 disclosure。
+ 
+ - 欄位或說明「固定成本、單位售價、單位變動成本 / Fixed costs, price per unit and variable cost per unit」
+-- 欄位或說明「預期銷量（選填）/ Expected sales volume (optional)」
++- 欄位或說明「預期銷量（選填）/ Expected sales volume (optional)」。預期銷量須與固定成本涵蓋同一期間，例如月固定成本配月銷量。 / Use the same period for expected sales and fixed costs, such as one month.
+ - 「計算損益平衡 / Calculate breakeven」是主要操作。「載入範例 / Load example」填入 [fixtures.json](fixtures.json) 第一個合成案例（`ceil-rounds-up`），明示範例並等待手動執行。
+ - 「損益平衡結果 / Breakeven result」先摘要（整數單位銷量與其營收）再列全部數字。成功才顯示「下載報告 / Download report」。文字可手動選取。
+ 
+@@ -42,8 +42,19 @@
+ | dirty | 任一輸入改變，立即撤銷舊結果和下載。顯示「輸入已變更，請重新執行 / Input changed. Run again.」。 |
+ | busy | 明確執行時處理快照，顯示「處理中 / Working」及「取消 / Cancel」。無下載。編輯終止舊工作並回 dirty。 |
+ | success | 報告對應目前快照。結果含理論值與整數單位值並標示何者可直接採用（整數單位值）。預期銷量低於損益平衡銷量時，安全邊際區另以文字及符號標示「預期銷量低於損益平衡銷量 / Expected volume is below the breakeven volume」，不用顏色單獨傳達。 |
+-| error | 保留草稿，沒有結果。欄位錯誤顯示本地化錯誤並連結欄位，提交失敗時移焦首錯欄。NO_MARGIN 是整份輸入的語義結果，不是欄位錯誤：不標記任何欄位，改顯示專屬說明「單位變動成本必須低於單位售價，否則賣得越多虧得越多，沒有損益平衡點。 / Variable cost per unit must be below the price per unit; otherwise every sale loses money and no breakeven point exists.」，並把焦點移到狀態標題。 |
++| error | 保留草稿，沒有結果。欄位錯誤顯示本地化錯誤並連結欄位，提交失敗時移焦首錯欄。NO_MARGIN 顯示下方對應的整份輸入說明，焦點移至狀態標題。 |
+ | cancelled | 保留草稿，終止並告知「已取消，可重新執行 / Cancelled. You can run again.」。舊結果仍無效。 |
++
++`NO_MARGIN` 的標題為「沒有正的單位邊際貢獻 / No positive contribution per unit」。只在目前世代驗證通過的輸入快照收到此語義結果時，以原精確分值比較 P、V 與 F。顯示對應整段文字，欄位維持有效狀態，不顯示結果或下載。
++
++| 條件 | 繁中 | English |
++| --- | --- | --- |
++| P = V、F > 0 | 每賣一件的貢獻為零，任何銷量都仍虧固定成本。 | Each sale contributes zero. At any sales volume, the loss equals fixed costs. |
++| P = V、F = 0 | 任何銷量都剛好打平，沒有唯一的銷售門檻。 | Every sales volume breaks even, so there is no single sales threshold. |
++| P < V、F > 0 | 即使一件也沒賣，仍虧固定成本。每多賣一件，虧損就增加。 | The loss starts at fixed costs even with no sales. Every sale increases the loss. |
++| P < V、F = 0 | 零銷量剛好打平。只要賣出一件或更多就會虧損。 | Zero sales break even. Selling any units produces a loss. |
++
++共同後續提示「如要計算靠銷售攤平成本的門檻，請將單位售價設得高於單位變動成本。 / To calculate a sales threshold from positive contribution, enter a unit price above the variable cost per unit.」
+ 
+ 「重設 / Reset」停止工作，復原預設 `{"fixedCost":"100000","price":"400","variableCost":"150","expectedUnits":""}` 並聚焦首欄。標籤不可只用 placeholder。用 aria-busy 和 polite 回報狀態，以 aria-describedby/aria-errormessage 連結錯誤。語言連結旁揭露切語或離頁會失去草稿。沒有登入或權限要求。頁面載入後可離線計算，Worker 失敗保留草稿供重試。
+ 
+@@ -62,14 +73,14 @@
+ - 驗證順序固定。先 SCHEMA（整份形狀）。再依欄位順序 fixedCost、price、variableCost、expectedUnits 逐欄驗證，每欄依序：容量 INPUT_LIMIT → 未成對 surrogate UNICODE → 必填空白 EMPTY（僅三個必填金額欄；expectedUnits 空白即未提供，跳過其餘檢查）→ 文法 DECIMAL_FORMAT／INTEGER_FORMAT → 範圍 RANGE。任一欄失敗即整份失敗，不再檢查後續欄位與語義。
+ - 整份失敗回 `{ok:false,error:{code,field,row}}`，field 為欄位名或 null，row 恆為 null（本工具無列輸入）。資源或 Worker 失敗用固定 INTERNAL/WORKER_ERROR，不回傳堆疊。
+ 
+-語義檢查（全部欄位通過後才執行）：金額先換算為整數分（cents，BigInt）：cents = 整數部分 × 100 ＋ 小數部分補齊兩位。若 variableCost 的 cents ≥ price 的 cents，回 `{ok:false,error:{code:"NO_MARGIN",field:null,row:null}}`。這是語義結果不是欄位錯誤：每個單位的邊際貢獻 ≤ 0，任何銷量都無法攤平正的固定成本，數學上不存在損益平衡點，因此不產生 result。price 為 0 已在 RANGE 擋下，不會走到語義檢查。
++語義檢查（全部欄位通過後才執行）：金額先換算為整數分（cents，BigInt）：cents = 整數部分 × 100 ＋ 小數部分補齊兩位。令 F、P、V 分別為固定成本、售價、變動成本的 cents。若 P ≤ V，回 `{ok:false,error:{code:"NO_MARGIN",field:null,row:null}}`。此碼表示無法以正的單位貢獻計算唯一銷售門檻，具體的打平或虧損情況依非負銷量 Q 的利潤 `Q × (P − V) − F` 與 userFlow 的四列判定。price 為 0 已在 RANGE 擋下，不會走到語義檢查。
+ 
+ 成功計算全部以整數分與 BigInt 有理數運算，無浮點。令 F、P、V 為三金額的 cents，M = P − V（> 0），U 為損益平衡整數單位銷量：
+ 
+ 1. `contributionMarginPerUnit`：M 直接格式化為金額字串（M 恆為整數分，無捨入）。
+ 2. `contributionMarginRatioPercent`：有理數 q = M × 100 / P，以 R(q, 2) 捨入後格式化為固定兩位小數的百分比數值字串（不含 `%` 符號，符號由 UI 標籤呈現）。
+ 3. `breakevenUnitsExact`：有理數 q = F / M，以 R(q, 4) 捨入、固定四位小數字串。僅供參考（理論值），不是可採用銷量。
+-4. `breakevenUnits`：F = 0 時為 0；否則為整數無條件進位 ceil(F / M) ＝ (F + M − 1) div M（整數除法）。進位是硬規則：取 floor 時總邊際貢獻 (U−1) × M < F，仍為虧損，未達損益平衡。U ≥ 1 時恆滿足 (U−1) × M < F ≤ U × M。
++4. `breakevenUnits`：F = 0 時為 0；否則為整數無條件進位 ceil(F / M) ＝ (F + M − 1) div M（整數除法）。進位是硬規則：當 U ≥ 1 時，比 U 少賣一件的總邊際貢獻 (U−1) × M < F，仍為虧損，未達損益平衡。U ≥ 1 時恆滿足 (U−1) × M < F ≤ U × M。
+ 5. `breakevenRevenueExact`：有理數 F × P / M（單位為分），以 floor(x + 1/2) 捨入到整數分後格式化為金額。是假設可賣出小數單位時的理論營收，僅供參考。
+ 6. `breakevenRevenue`：U × P 分，整數精確，格式化為金額。這是整數單位值對應的營收，為可直接採用的數字。未捨入的理論營收 ≤ breakevenRevenue，差距 < P（不到一個單位的售價）；兩者在 F / M 恰為整數時相等。顯示值因理論營收已捨入到分，顯示差可能差一分。
+ 7. `marginOfSafety`：expectedUnits 未提供時為 null。提供時為物件：`expectedUnits`（整數 E 本人）、`units` = E − U（有號整數，可為負）、`percent`（E = 0 時為 null，因除以零無定義；否則有理數 (E − U) × 100 / E 以 R(q, 2) 捨入的固定兩位小數字串，可為負）、`expectedProfit` = E × M − F 分，整數精確格式化為金額字串（可為負，如 `-20000.00`；零恆為 `0.00`，無負零）、`belowBreakeven` = E < U（布林）。
+@@ -98,7 +109,7 @@
+ | 面向 ID | 同一候選的必要證據 |
+ | --- | --- |
+ | functionality | 從真實輸入執行「計算損益平衡」，畫面和完整報告符合核心 fixtures（含 NO_MARGIN 與安全邊際），使用者取得對應產物。 |
+-| boundaries | 合法端點、剛好越界、第一個錯誤、進位不變式 (U−1)×M < F ≤ U×M、expectedUnits 為 0 與恰等於 U、2.675% 半進位案例的證據。 |
++| boundaries | 合法端點、剛好越界、第一個錯誤、進位不變式 (U−1)×M < F ≤ U×M、expectedUnits 為 0 與恰等於 U、2.675% 與 2.665% 半進位案例，以及四種 NO_MARGIN 情況的證據。 |
+ | privacy | 靜態載入後從使用到重設的零工作請求，並核對 storage、URL 和 log。 |
+ | security | 敵意輸入 inert、無動態執行、CSP、固定下載名稱、資源上限和 Worker/Blob dispose。 |
+ | usability | 兩語桌面與行動的主流程、空、繁忙、取消、欄位錯誤、NO_MARGIN、修改和下載可操作。 |
+@@ -109,7 +120,7 @@
+ 
+ ## tests
+ 
+-驗收輸入見 [fixtures.json](fixtures.json)。18 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
++驗收輸入見 [fixtures.json](fixtures.json)。21 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+ 
+ | 案例 ID | 驗證行為 |
+ | --- | --- |
+@@ -121,8 +132,10 @@
+ | `below-breakeven` | 安全邊際與預期利潤為負，belowBreakeven true |
+ | `expected-equals-breakeven` | 預期銷量恰等於 U，安全邊際 0、percent 0.00 |
+ | `expected-zero` | 預期銷量 0，percent 為 null、利潤為 −F |
+-| `no-margin-equal` | 變動成本等於售價，NO_MARGIN |
+-| `no-margin-negative` | 變動成本高於售價，NO_MARGIN |
++| `no-margin-equal` | 售價等於變動成本且固定成本為正，任一銷量的虧損均等於固定成本，NO_MARGIN |
++| `no-margin-equal-zero-fixed` | 售價等於變動成本且固定成本為零，任何銷量都打平，NO_MARGIN |
++| `no-margin-negative` | 售價低於變動成本且固定成本為正，零銷量已虧、銷量越高虧損越大，NO_MARGIN |
++| `no-margin-negative-zero-fixed` | 售價低於變動成本且固定成本為零，只有零銷量打平，NO_MARGIN |
+ | `price-zero-range` | 售價 0 是 RANGE 而非 NO_MARGIN |
+ | `money-three-decimals` | 金額三位小數，DECIMAL_FORMAT |
+ | `empty-price` | 必填空白，EMPTY |
+@@ -130,14 +143,15 @@
+ | `input-limit-fixed` | raw 長度 13 先於文法觸發 INPUT_LIMIT |
+ | `expected-units-decimal` | 預期銷量含小數，INTEGER_FORMAT |
+ | `range-fixed-over-max` | 文法合法但超過金額上限，RANGE |
+-| `ratio-half-up-tie` | 貢獻率恰 2.675%，half-up 得 2.68（浮點或銀行家捨入會得 2.67） |
++| `ratio-half-up-tie` | 貢獻率恰 2.675%，精確 half-up 與 half-even 均得 2.68 |
++| `ratio-half-up-distinguishes-half-even` | 貢獻率恰 2.665%，精確 half-up 得 2.67、half-even 得 2.66 |
+ | `state-dirty-error` | 先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。 |
+ | `state-cancel-late` | 延遲成功後取消，舊回傳不能復活，重設回預設值。 |
+ | `state-replace-late` | 新工作得到 NO_MARGIN 後收到上一份工作的成功，保留目前語義結果。 |
+ 
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作得到 NO_MARGIN，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證金額上下限 999999999.99／1000000000、售價 0.01／0、預期銷量 100000000／100000001、raw 長度恰 12／13 與 9／10、NO_MARGIN 在任一欄位錯誤存在時不出現（欄位錯誤優先）、F=0 且 E=0 時 marginOfSafety 為 percent null 且 belowBreakeven false。所有成功案例核對不變式 (U−1)×M < F ≤ U×M（U ≥ 1）與未捨入理論營收 ≤ 整數單位營收且差 < 售價。
++另測合法上限、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證金額上下限 999999999.99／1000000000、售價 0.01／0、預期銷量 100000000／100000001、raw 長度恰 12／13 與 9／10、NO_MARGIN 在任一欄位錯誤存在時不出現（欄位錯誤優先）、F=0 且 E=0 時 marginOfSafety 為 percent null 且 belowBreakeven false。四個 NO_MARGIN fixture 逐一在兩語頁核對 userFlow 指定文字、狀態標題焦點、欄位有效狀態與無下載。另以 Q=0、Q=2 代入利潤式核對分支。兩個半進位 fixture 均以精確有理數同時計算 half-up 與 half-even。所有成功案例核對不變式 (U−1)×M < F ≤ U×M（U ≥ 1）與未捨入理論營收 ≤ 整數單位營收且差 < 售價。
+ 
+ 候選 gate（均 NOT_RUN）
+ 
+@@ -152,9 +166,9 @@
+ - 繁中 lang=zh-Hant，H1「損益平衡計算」，title「損益平衡計算｜Gloss Tools」，description「輸入固定成本、單位售價與單位變動成本，算出損益平衡銷量與營收、安全邊際與邊際貢獻率。」。英文 lang=en，H1 “Breakeven Calculator”，title “Breakeven Calculator | Gloss Tools”，description “Enter fixed costs, price per unit and variable cost per unit to find the breakeven volume and revenue, margin of safety and contribution margin ratio.”。兩頁靜態呈現操作、限制、FAQ。全部狀態及錯誤使用對等本地化訊息。
+ - 錯誤與狀態訊息對譯（節錄固定文案）：INPUT_LIMIT「輸入太長 / Input is too long」；UNICODE「含有無效字元 / Contains an invalid character」；EMPTY「必填 / Required」；DECIMAL_FORMAT「金額格式不正確（最多兩位小數）/ Invalid amount (up to two decimal places)」；INTEGER_FORMAT「請輸入整數 / Enter a whole number」；RANGE「超出允許範圍 / Out of range」；NO_MARGIN 見 userFlow 的專屬說明全文。
+ - 結果標籤對譯：單位邊際貢獻 / Contribution margin per unit；邊際貢獻率 / Contribution margin ratio；損益平衡銷量（理論值）/ Breakeven volume (exact)；損益平衡銷量（整數單位）/ Breakeven volume (whole units)；損益平衡營收（理論值）/ Breakeven revenue (exact)；損益平衡營收（整數單位）/ Breakeven revenue (whole units)；安全邊際 / Margin of safety；預期利潤 / Expected profit。
+-- FAQ。為什麼損益平衡銷量要無條件進位？少賣一個單位就還有固定成本沒攤平，仍是虧損；整數單位值是第一個不虧的銷量。 / Why is the breakeven volume always rounded up? Selling one unit fewer leaves part of the fixed costs uncovered, so it still loses money; the whole-unit figure is the first volume that does not lose money.
+-- FAQ。為什麼有兩個營收數字？理論值假設可以賣出小數單位；整數單位值是第一個打平銷量的實際營收，兩者只差不到一個單位的售價。 / Why are there two revenue figures? The exact figure assumes fractional units could be sold; the whole-unit figure is the actual revenue at the first volume that breaks even, and they differ by less than one unit's price.
+-- FAQ。售價等於或低於變動成本時會怎樣？每個單位貢獻零或負數，賣再多也攤不平固定成本，數學上沒有損益平衡點，本工具直接說明而不給數字。 / What if the price is at or below variable cost? Each unit contributes zero or less, so no volume can cover fixed costs and no breakeven point exists; the tool explains this instead of showing a number.
++- FAQ。為什麼損益平衡銷量要無條件進位？當整數門檻大於零時，少賣一件仍會虧損。整數門檻是第一個不虧的銷量。固定成本為零且每件貢獻為正時，零銷量就是門檻。 / Why is breakeven volume rounded up? If the whole-unit threshold is above zero, selling one fewer unit still produces a loss. The threshold is the first volume without a loss. With zero fixed costs and positive contribution per unit, the threshold is zero.
++- FAQ。為什麼有兩個營收數字？理論值假設可以賣出小數單位。整數單位值是達到第一個不虧損銷量時的營收。未捨入的兩個數字只差不到一個單位的售價。 / Why are there two revenue figures? The exact figure allows fractional units. The whole-unit figure is the revenue at the first volume without a loss. Before display rounding, the difference is less than one unit’s price.
++- FAQ。售價等於或低於變動成本時會怎樣？售價等於變動成本時，虧損恆等於固定成本。固定成本也為零時，任何銷量都打平。售價低於變動成本時，每賣一件都增加虧損，只有固定成本和銷量同為零時會打平。工具會依情況說明。 / What if the price is at or below variable cost? At equal price and variable cost, the loss equals fixed costs at every volume. When fixed costs are also zero, every volume breaks even. Below variable cost, each sale increases the loss. Breakeven in that case occurs only with zero fixed costs and zero sales. The tool explains which case applies.
+ - FAQ。安全邊際是什麼？預期銷量高出（或低於）損益平衡銷量的單位數與百分比，並附該銷量下的預期利潤或虧損。 / What is the margin of safety? How far the expected volume sits above (or below) the breakeven volume, in units and percent, together with the profit or loss at that volume.
+ - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
+ - 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。規劃 origin https://breakeven-calculator.glossquote.com 尚未配置。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
+@@ -163,7 +177,7 @@
+ 
+ 本份交付文件。固定保存 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json) 及 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)，registry document 指向實際 GitHub commit。主頁基線 [固定 README](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md)。開工與送審前重讀遠端規則、registry、基線和既有 owner，檢查新增範圍。
+ 
+-非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。缺陷交原作者修訂，重審新 head。
++非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。本次透過獨立維護任務修訂並保留原作者與原候選。新 head 仍需完整文件審查，另由主統籌處理既有登記的產品驗收面向繼承問題。
+ 
+ 製作須有另登記 task、本人 ACK、明示 allowed executor、CAS 後同 operationId/claimId/owner 讀回。遵循 40 ready、5 held、1 working。製作目標 `tools/breakeven-calculator/`，同 repo 用 `codex/<task>-<actor>` 分支與開啟 PR。先完成核心／狀態 fixtures，再交雙語候選與真瀏覽器證據。
+ 
+--- fixed/77b72cb74db4cae3bba2c4c1bff7cae5dbc63639/docs/specs/breakeven-calculator/fixtures.json
++++ candidate/docs/specs/breakeven-calculator/fixtures.json
+@@ -225,7 +225,7 @@
+         "variableCost": "200"
+       },
+       "kind": "core",
+-      "purpose": "變動成本等於售價，邊際貢獻為零，NO_MARGIN"
++      "purpose": "固定成本為正、每件貢獻為零，任一銷量都仍虧固定成本，NO_MARGIN"
+     },
+     {
+       "expected": {
+@@ -244,7 +244,45 @@
+         "variableCost": "200"
+       },
+       "kind": "core",
+-      "purpose": "變動成本高於售價，每賣一件賠一件，NO_MARGIN"
++      "purpose": "固定成本為正、每件貢獻為負，零銷量即虧，每多賣一件虧損增加，NO_MARGIN"
++    },
++    {
++      "expected": {
++        "error": {
++          "code": "NO_MARGIN",
++          "field": null,
++          "row": null
++        },
++        "ok": false
++      },
++      "id": "no-margin-equal-zero-fixed",
++      "input": {
++        "expectedUnits": "2",
++        "fixedCost": "0",
++        "price": "10",
++        "variableCost": "10"
++      },
++      "kind": "core",
++      "purpose": "固定成本為零、每件貢獻為零，任何銷量打平，NO_MARGIN"
++    },
++    {
++      "expected": {
++        "error": {
++          "code": "NO_MARGIN",
++          "field": null,
++          "row": null
++        },
++        "ok": false
++      },
++      "id": "no-margin-negative-zero-fixed",
++      "input": {
++        "expectedUnits": "2",
++        "fixedCost": "0",
++        "price": "10",
++        "variableCost": "11"
++      },
++      "kind": "core",
++      "purpose": "固定成本為零、每件貢獻為負，只有零銷量打平，NO_MARGIN"
+     },
+     {
+       "expected": {
+@@ -404,7 +442,30 @@
+         "variableCost": "38.93"
+       },
+       "kind": "core",
+-      "purpose": "邊際貢獻率恰為 2.675%，半進位（half-up）得 2.68，區別於銀行家捨入與浮點誤差"
++      "purpose": "邊際貢獻率恰為 2.675%，精確 half-up 與 half-even 同為 2.68"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "breakevenRevenue": "200.00",
++          "breakevenRevenueExact": "200.00",
++          "breakevenUnits": 1,
++          "breakevenUnitsExact": "1.0000",
++          "contributionMarginPerUnit": "5.33",
++          "contributionMarginRatioPercent": "2.67",
++          "marginOfSafety": null
++        }
++      },
++      "id": "ratio-half-up-distinguishes-half-even",
++      "input": {
++        "expectedUnits": "",
++        "fixedCost": "5.33",
++        "price": "200.00",
++        "variableCost": "194.67"
++      },
++      "kind": "core",
++      "purpose": "邊際貢獻率恰為 2.665%，精確 half-up 得 2.67，half-even 得 2.66"
+     },
+     {
+       "expected": {
+--- fixed/77b72cb74db4cae3bba2c4c1bff7cae5dbc63639/docs/specs/breakeven-calculator/AUTHOR-CHECK.md
++++ candidate/docs/specs/breakeven-calculator/AUTHOR-CHECK.md
+@@ -1,4 +1,6 @@
+ # 損益平衡計算 — 作者檢查
++
++2026-11-11 維護紀錄。由獨立維護任務 `labs-five-hour-repair-pricing-20261111` 修訂，原作者及承接記錄見 [PR #240 的固定作者核對](https://github.com/KYStr/glossquote-labs-home/blob/77b72cb74db4cae3bba2c4c1bff7cae5dbc63639/docs/specs/breakeven-calculator/AUTHOR-CHECK.md)。下列更新為維護者自查，須由非作者在固定新候選上重審。
+ 
+ 作者：run 5 規格作者（cloud-dot 子代理；登記、claim 與 submit 由家長代理處理，作者未執行任何 registry/coordination 指令）。作者文件核對，待非作者 readiness。本文件不是獨立審查。
+ 
+@@ -9,20 +11,24 @@
+ 
+ - **兩個營收都報**：理論營收（F×P/M，假設可賣小數單位）與整數單位營收（ceil 後單位 × 售價）並列，關係釘版：未捨入理論值 ≤ 整數單位值、差 < 一個售價、理論銷量恰整數時相等。理由：只報理論值會讓使用者低估實際需要的營收；只報整數值會看不出進位吃掉多少。
+ - **邊際貢獻兩個都報**：單位邊際貢獻（金額，整數分精確、無捨入）與邊際貢獻率（百分比，R(q,2)），因率是損益平衡推導的中間量且定價討論常用。
+-- **進位規則**：損益平衡銷量恆無條件進位（ceil），並在 SPEC 與 FAQ 釘版理由：floor 時 (U−1)×M < F 仍虧損。每個成功案例皆驗證不變式 (U−1)×M < F ≤ U×M。
++- **進位規則**：損益平衡銷量恆無條件進位（ceil），並在 SPEC 與 FAQ 釘版理由：U ≥ 1 時少賣一件有 (U−1)×M < F，仍虧損。這些成功案例驗證不變式 (U−1)×M < F ≤ U×M。
+ - **錯誤分類調和**：概念備註把「price ≤ variable cost」標為 NO_BREAKEVEN；本規格依家長錯誤分類釘版單一語義碼 `NO_MARGIN`（field=null 的整份語義結果，不是欄位錯誤，與 RANGE 區分），同一條件不設第二個碼。price = 0 屬欄位 RANGE，先於語義檢查（`price-zero-range` 案例釘版）。
+-- **fixedCost = 0** → 損益平衡銷量 0、營收 0（不視為錯誤）；expectedUnits = 0 時 percent 安全邊際為 null（除以零無定義），其餘欄位照常；percent 只在 E = 0 時為 null，E = U 時為 `0.00`（`expected-equals-breakeven` 與 `expected-zero` 兩案例對照釘版）。
++- **fixedCost = 0 且 P > V** → 損益平衡銷量 0、營收 0（不視為錯誤）；expectedUnits = 0 時 percent 安全邊際為 null（除以零無定義），其餘欄位照常；percent 只在 E = 0 時為 null，E = U 時為 `0.00`（`expected-equals-breakeven` 與 `expected-zero` 兩案例對照釘版）。
+ - **單一捨入規則**：R(q, d) = floor(q×10^d + 1/2)/10^d，全部顯示捨入只套一次、只來自未捨入有理數；負數 tie 向 +∞，與本系列既有規格的 half-up 函數同型。
+ 
+ ## 手算推導（第一法，整數分）
+ 
+ - `ceil-rounds-up`：F=12,345,600c、P=40,000c、V=15,000c、M=25,000c。理論銷量 12,345,600/25,000 = 493.824 → 進位 494（493×25,000=12,325,000 < F ≤ 494×25,000=12,350,000）。理論營收 12,345,600×40,000/25,000 = 19,752,960c = 197529.60；整數營收 494×40,000 = 19,760,000c = 197600.00。率 25,000×100/40,000 = 62.5 → 62.50。
+ - `fractional-cents`：F=100,050c、P=1,999c、V=999c、M=1,000c。率 1000×100/1999 = 50.0250125… → 50.03。理論銷量 100.05 → 101。理論營收 100,050×1,999/1,000 = 199,999.95c → 半進位 200,000c = 2000.00（跨元進位）。整數營收 101×1,999 = 201,899c = 2018.99。
+-- `ratio-half-up-tie`：M=107c、P=4,000c，率 = 107×100/4,000 = 2.675 恰為 tie → half-up 2.68（銀行家捨入或二進浮點會得 2.67，故釘版此案例）。F=1,070,000c，銷量恰 10,000，兩營收皆 40,000,000c。
++- `ratio-half-up-tie`：M=107c、P=4,000c，率 = 107×100/4,000 = 2.675 恰為 tie → half-up 2.68；精確 half-even 也是 2.68。F=1,070,000c，銷量恰 10,000，兩營收皆 40,000,000c。
++- `ratio-half-up-distinguishes-half-even`：F=M=533c、P=20,000c，兩種銷量都是 1、兩種營收都是 200.00。貢獻率 533×100/20,000＝2.665%，half-up 2.67%，half-even 2.66%。
++- 四種 NO_MARGIN 以 Q=0 與 Q=2 代入利潤式核對。等價、有固定成本時皆為 −50000.00；等價、零固定成本時皆為 0.00；低價、有固定成本時由 −50000.00 到 −50100.00；低價、零固定成本時由 0.00 到 −2.00。各案保留同一 error envelope。
+ - 安全邊際三態（同 F=12,000,000c、M=25,000c、U=480）：E=800 → units 320、percent 40.00、profit 800×25,000−12,000,000 = 8,000,000c；E=400 → units −80、percent −20.00、profit −2,000,000c、belowBreakeven true；E=0 → units −480、percent null、profit −12,000,000c。
+-- 語義與文法案例（NO_MARGIN ×2、RANGE ×2、DECIMAL_FORMAT、EMPTY、INPUT_LIMIT、INTEGER_FORMAT）逐一按 SPEC 釘版的驗證順序手推：容量先於文法（`9999999999.99` 長度 13 → INPUT_LIMIT 而非 RANGE）、文法先於範圍（`100.999` → DECIMAL_FORMAT）、欄位錯誤先於語義（`price=0` → RANGE 而非 NO_MARGIN）。
++- 語義與文法案例（NO_MARGIN ×4、RANGE ×2、DECIMAL_FORMAT、EMPTY、INPUT_LIMIT、INTEGER_FORMAT）逐一按 SPEC 釘版的驗證順序手推：容量先於文法（`9999999999.99` 長度 13 → INPUT_LIMIT 而非 RANGE）、文法先於範圍（`100.999` → DECIMAL_FORMAT）、欄位錯誤先於語義（`price=0` → RANGE 而非 NO_MARGIN）。
+ 
+-## 獨立重算（第二法）
++## 原候選重算與維護驗算
++
++下列 18 個核心案例及三個 controller 案例是原候選作者記錄。維護候選另以文件驗算器核對全部 21 個核心和三個 controller 案例。
+ 
+ - 以另寫的 Python 實作（`fractions.Fraction` 精確有理數，完全照 SPEC 的文法、驗證順序、R 捨入與格式化重寫，未讀取 fixtures 的 expected 產生邏輯）重跑全部 18 個核心案例，與 fixtures.json 逐欄深比對：**18/18 完全一致**。
+ - 3 個 controller 案例交叉核對：state-cancel-late 的 lateResult 與 state-replace-late 的 olderLateResult 皆等於核心 `ceil-rounds-up` 的 result；state-replace-late 的 newerDraft 重算得 NO_MARGIN；state-dirty-error 的 edit 重算得 RANGE/price。全部通過。
+--- fixed/1d5de750bf4371a81c1c8d8b57bf38fceea19d66/docs/specs/markup-margin-calculator/BRIEF.md
++++ candidate/docs/specs/markup-margin-calculator/BRIEF.md
+@@ -2,9 +2,9 @@
+ 
+ **文件草案，產品檢查 NOT_RUN** · `spec-markup-margin-calculator-20261109`
+ 
+-小商家或賣家定價時最常混淆的一組數字：同一筆利潤，除以成本是加價率、除以售價是毛利率，兩個百分比不一樣，反推售價的公式也不同。本工具把三個方向一次講清楚並算到底：成本＋售價 → 加價率與毛利率；成本＋目標加價率 → 售價；成本＋目標毛利率 → 售價。
++小商家或賣家定價時最常混淆的一組數字：同一筆利潤，除以成本是加價率、除以售價是毛利率，兩個百分比不一樣，反推售價的公式也不同。本工具把三個方向一次講清楚並算到底：成本＋售價 → 加價率與毛利率；成本＋目標加價率或目標毛利率 → 達標的最低售價，以及按該售價回算的兩個實際率。
+ 
+-MVP 範圍。三種求解模式，共用整數分與千分之一百分比的精確有理數運算（沿用分帳計算機的 BigInt 先例），百分比顯示至小數點後兩位。目標毛利率 ≥100% 時沒有有限售價，釘版為語意狀態 NO_SOLUTION，不是範圍錯誤；售價低於成本照常報表（負值），不是錯誤。非目標為多商品或價目表批次計算、含稅價換算（屬含稅未稅換算範圍）、損益平衡數量（屬損益平衡點範圍）、折扣促銷價（屬折扣計算範圍）、币別換算與歷史價格儲存。
++MVP 範圍。三種求解模式，共用整數分與千分之一百分比的精確有理數運算（沿用分帳計算機的 BigInt 先例），目標率保留三位小數，實際率顯示至兩位小數。兩個求解模式將精確售價門檻向上取整至分。目標毛利率 ≥100% 時沒有有限售價，釘版為語意狀態 NO_SOLUTION，不是範圍錯誤；售價低於成本照常報表；售價為零時毛利率無法定義。非目標為多商品或價目表批次計算、含稅價換算（屬含稅未稅換算範圍）、損益平衡數量（屬損益平衡點範圍）、折扣促銷價（屬折扣計算範圍）、幣別換算與歷史價格儲存。
+ 
+ 首個可觀察案例。成本 80.00、售價 100.00 → 加價率 25.00%、毛利率 20.00%（`report-basic`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
+ 
+--- fixed/1d5de750bf4371a81c1c8d8b57bf38fceea19d66/docs/specs/markup-margin-calculator/SPEC.md
++++ candidate/docs/specs/markup-margin-calculator/SPEC.md
+@@ -1,21 +1,21 @@
+ # 加價率與毛利率換算 / Markup & Margin Calculator
+ 
+-**DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-markup-margin-calculator-20261109` · 2026-11-09 · v1
++**DRAFT_FOR_INDEPENDENT_DOCUMENT_REVIEW** · `spec-markup-margin-calculator-20261109` · 2026-11-11 · v2
+ 
+ [個別任務簡報](BRIEF.md) · [字面案例](fixtures.json) · [作者檢查](AUTHOR-CHECK.md)
+ 
+ ## goal
+ 
+-定價時要分清楚兩個長得像、其實不同的百分比：加價率是利潤除以成本，毛利率是利潤除以售價。同樣賺 20 元，成本 80 元時加價率 25.00%、毛利率只有 20.00%；把兩者搞混，售價就會定錯。使用者給成本與售價，要同時看到兩個率；反過來給目標加價率或目標毛利率，要算回必須定的售價。
++定價時要分清楚兩個長得像、其實不同的百分比：加價率是利潤除以成本，毛利率是利潤除以售價。同樣賺 20 元，成本 80 元時加價率 25.00%、毛利率只有 20.00%；把兩者搞混，售價就會定錯。使用者給成本與售價，要同時看到兩個率；反過來給目標加價率或目標毛利率，要算出達到目標的最低整分售價。
+ 
+ - 攤位與小店。手機輸入成本與預定售價，當場確認這筆生意的加價率與毛利率，再決定要不要照這個價賣。
+-- 出貨前定價。桌面輸入成本與目標毛利率，反推售價，並看到該售價對應的加價率與每單位利潤，下載報告留存。
++- 出貨前定價。桌面輸入成本與目標毛利率，反推最低售價，並看到該售價對應的兩個實際率與單件毛利，下載報告留存。
+ 
+ 使用情境為單一商品的定價與檢核。資料只保留在目前頁面草稿。
+ 
+ ## scope
+ 
+-三種求解模式：`report`（成本＋售價 → 利潤、加價率、毛利率）、`solve-markup`（成本＋目標加價率 → 售價、利潤、毛利率）、`solve-margin`（成本＋目標毛利率 → 售價、利潤、加價率）。金額與百分比全程精確有理數運算，只在釘版位置捨入。非目標為多商品批次、含稅／未稅換算、損益平衡數量、折扣後價格、币別、價格歷史或儲存。
++有三種模式。`report` 由成本和售價算出單件毛利、加價率和毛利率。`solve-markup` 使用成本和目標加價率，`solve-margin` 使用成本和目標毛利率，兩者皆輸出達標的最低整分售價、目標率、兩個實際率與單件毛利。金額與百分比全程精確有理數運算，只在釘版位置捨入。非目標為多商品批次、含稅／未稅換算、損益平衡數量、折扣後價格、幣別、價格歷史或儲存。
+ 
+ 與既有及同批預案比對，最相近者的實質差異如下。
+ 
+@@ -33,7 +33,8 @@
+ - 模式選項組「計算方式 / Mode」：三個選項「由成本與售價算兩率 / Both rates from cost and price」、「由加價率求售價 / Price from target markup」、「由毛利率求售價 / Price from target margin」。切換模式立即把不屬於新模式的欄位設為 null（畫面清空並停用），草稿進入 dirty。
+ - 欄位或說明「成本 / Cost」；`report` 模式加欄位「售價 / Selling price」；`solve-markup` 模式加欄位「目標加價率（%）/ Target markup (%)」；`solve-margin` 模式加欄位「目標毛利率（%）/ Target margin (%)」。
+ - 「計算 / Calculate」是主要操作。「載入範例 / Load example」填入 [fixtures.json](fixtures.json) 第一個合成案例，明示範例並等待手動執行。
+-- 結果標題：`report` 為「加價率與毛利率 / Markup and margin」；求解模式為「建議售價與換算 / Selling price and conversion」。先摘要（售價模式先顯示售價）再列細節：單位利潤、加價率、毛利率，百分比格式固定為整數部、點、兩位小數加 `%`。求解模式的另一率標示「由四捨五入後售價回算 / Derived from the rounded price」。`report` 且售價低於成本時，另以文字標示「售價低於成本，兩率為負值 / The price is below cost; both rates are negative.」；毛利率無法定義時以「毛利率無法定義（售價為零）/ Margin is undefined (the price is zero).」取代數字。成功才顯示「下載報告 / Download report」。文字可手動選取。
++- 結果標題在 `report` 為「加價率與毛利率 / Markup and margin」，求解為「達標的最低售價 / Minimum price to meet your target」。求解先顯示最低售價，再顯示所選「目標加價率 / Target markup」或「目標毛利率 / Target margin」（保留三位小數），以及「實際加價率 / Actual markup」、「實際毛利率 / Actual margin」（均由該售價回算、顯示兩位小數）與「單件毛利 / Gross profit per unit」（售價減輸入成本）。成功的求解顯示「售價已達目標。實際率顯示至小數點後兩位。 / This price meets the target. Actual rates are displayed to two decimal places.」。達標判定使用精確比例。
++- `report` 顯示單件毛利與兩個實際率，百分比固定兩位小數。售價低於成本時顯示「售價低於成本。 / The price is below cost.」。售價為零時，仍顯示加價率，以「毛利率無法定義（售價為零）/ Margin is undefined (the price is zero).」取代毛利率數字。成功才顯示「下載報告 / Download report」。文字可手動選取。
+ - 靜態對照表「毛利率 ↔ 加價率對照 / Margin ↔ markup reference」在兩語頁面常駐（非計算結果）：毛利率 0%、10%、20%、25%、30%、40%、50%、60%、70%、75%、80%、90%、95% 對應加價率 0.00%、11.11%、25.00%、33.33%、42.86%、66.67%、100.00%、150.00%、233.33%、300.00%、400.00%、900.00%、1900.00%，由恆等式 加價率 ＝ 毛利率 ÷（100 − 毛利率）逐列推導、顯示至小數兩位。
+ 
+ | 狀態 | 操作與結果 |
+@@ -68,12 +69,14 @@
+ 6. `solve-margin` 語意檢查：marginPercent 千分之一值 ≥ 100,000（即 ≥100%）時回 NO_SOLUTION，field=marginPercent。這不是 RANGE：字串文法與值域都合法，是方程式 price ＝ cost ÷（1 − 毛利率）在毛利率 ≥100% 時沒有有限解。與第 5 步 RANGE 的區別已在 tests 釘版案例。
+ 7. 精確解析，不經浮點：金額 cents ＝ 整數部×100 ＋ 小數部（不足兩位右補 0）；百分比 milli ＝ 整數部×1000 ＋ 小數部（不足三位右補 0），即百分比×1000 的整數（25% → 25000，33.333% → 33333）。全程用 BigInt。
+ 8. 捨入函式釘版：roundHalfUpDiv(n, d)（n ≥ 0、d > 0）以整數除法取商 q 與餘數 r，2r ≥ d 時取 q+1，否則取 q。roundRatio(n, d)（d > 0、n 可正可負）於 n＝0 時為 0，否則為 sign(n) × roundHalfUpDiv(|n|, d)，恰為一半時遠離零進位。百分比結果單位為百分之一百分比（hundredths：25.00% → 2500），顯示至小數兩位即此單位。
+-9. `report`：profitCents ＝ priceCents − costCents（可為負）。markupHundredths ＝ roundRatio(profitCents × 10000, costCents)。marginHundredths ＝ priceCents 為 0 時 null，否則 roundRatio(profitCents × 10000, priceCents)。belowCost ＝ profitCents ＜ 0。售價低於成本是合法報表結果，照常回傳負利潤與負百分比，不回錯誤。結果 {mode, costCents, priceCents, profitCents, markupHundredths, marginHundredths, belowCost}。
+-10. `solve-markup`：priceCents ＝ roundHalfUpDiv(costCents × (100000 ＋ markupMilli), 100000)，只捨入這一次；priceCents ＞ 99,999,999 時回 RANGE，field=markupPercent（與第 5 步同 code 同 field，結果不變）。profitCents ＝ priceCents − costCents ≥ 0。marginHundredths ＝ roundRatio(profitCents × 10000, priceCents)，由四捨五入後的售價回算，不承諾等於任何目標值。結果 {mode, costCents, markupPercentMilli, priceCents, profitCents, marginHundredths}。
+-11. `solve-margin`：priceCents ＝ roundHalfUpDiv(costCents × 100000, 100000 − marginMilli)，只捨入這一次；priceCents ＞ 99,999,999 時回 RANGE，field=marginPercent。profitCents ＝ priceCents − costCents ≥ 0。markupHundredths ＝ roundRatio(profitCents × 10000, costCents)，由四捨五入後的售價回算。結果 {mode, costCents, marginPercentMilli, priceCents, profitCents, markupHundredths}。
++9. `report`：profitCents ＝ priceCents − costCents（可為負）。markupHundredths ＝ roundRatio(profitCents × 10000, costCents)。marginHundredths ＝ priceCents 為 0 時 null，否則 roundRatio(profitCents × 10000, priceCents)。belowCost ＝ profitCents ＜ 0。售價低於成本是合法報表結果，照常回傳負的單件毛利和加價率，正售價的毛利率也為負，零售價的毛利率為 null。結果 {mode, costCents, priceCents, profitCents, markupHundredths, marginHundredths, belowCost}。
++10. `solve-markup`：令 n = costCents × (100000 ＋ markupMilli)，d = 100000。priceCents ＝ ceilDiv(n, d)。priceCents ＞ 99,999,999 時回 RANGE，field=markupPercent。profitCents ＝ priceCents − costCents。actualMarkupHundredths ＝ roundRatio(profitCents × 10000, costCents)。marginHundredths ＝ roundRatio(profitCents × 10000, priceCents)。結果 {mode, costCents, markupPercentMilli, priceCents, profitCents, actualMarkupHundredths, marginHundredths}。
++11. `solve-margin`：令 n = costCents × 100000，d = 100000 − marginMilli（第 6 步保證 d > 0）。priceCents ＝ ceilDiv(n, d)。priceCents ＞ 99,999,999 時回 RANGE，field=marginPercent。profitCents ＝ priceCents − costCents。markupHundredths ＝ roundRatio(profitCents × 10000, costCents)。actualMarginHundredths ＝ roundRatio(profitCents × 10000, priceCents)。結果 {mode, costCents, marginPercentMilli, priceCents, profitCents, markupHundredths, actualMarginHundredths}。
+ 12. 結果整數皆為安全整數：金額 ≤ 99,999,999 分；百分比 hundredths 的絕對值上限出現在 report 的極端比例（成本 1 分、售價 99,999,999 分 → 999,999,980,000），仍遠小於 2^53。畫面金額以「整數部.兩位小數」呈現、負數冠負號，百分比同法再加 `%`；不加千分位、不加幣別符號（單位即輸入原幣別）；機器值不隨 locale 改。注意 report 的毛利率精確值恆小於 100%（成本為正時），但極端比例下顯示捨入後可呈現 100.00%，案例 `report-extreme-ratio` 釘版此行為，頁面 FAQ 亦揭露。
+ 
+-固定下載 `markup-margin-report.json`。內容為 result 的 compact JSON、object own keys 按 UTF-16 code units 升序遞迴排列，array 順序不改，末尾一個 LF、UTF-8 無 BOM。字串用 JSON 字面轉義，不呼叫輸入的 toJSON。報告上限 2,097,152 bytes，超過 OUTPUT_LIMIT 並停用所有產物。錯誤（含 NO_SOLUTION）不產生下載。
++兩個求解模式中，`ceilDiv(n, d) = (n + d − 1) div d`（BigInt 整數除法，n > 0、d > 0）。兩種目標的達標條件均等價於 `priceCents × d ≥ n`，且正成本使求解所得售價必為正。最小性以 `(priceCents − 1) × d < n ≤ priceCents × d` 驗證。售價減一分等於零時，以整數不等式驗證，毛利率維持未定義。兩個求解結果的 `markupPercentMilli` 或 `marginPercentMilli` 只表示精確輸入目標。實際率使用第 9 步同一回算與顯示規則，包含以新欄位表示的目標類型實際率。目標率由 milli 格式化為三位小數加 `%`，不先捨入。兩位顯示可能看似略低於三位目標，例如精確毛利率 33⅓% 達到 33.333% 目標，畫面實際率顯示 33.33%。畫面保留精確達標提示。
++
++固定下載 `markup-margin-report.json`。內容為完整 result 的 compact JSON（求解含目標 milli、該類型實際率的新欄位及另一實際率），object own keys 按 UTF-16 code units 升序遞迴排列，array 順序不改，末尾一個 LF、UTF-8 無 BOM。字串用 JSON 字面轉義，不呼叫輸入的 toJSON。報告上限 2,097,152 bytes，超過 OUTPUT_LIMIT 並停用所有產物。錯誤（含 NO_SOLUTION）不產生下載。
+ 
+ ## implementation
+ 
+@@ -92,7 +95,7 @@
+ | 面向 ID | 同一候選的必要證據 |
+ | --- | --- |
+ | functionality | 從真實輸入執行「計算」，三種模式的畫面和完整報告符合核心 fixtures，含低於成本與無解狀態。 |
+-| boundaries | 合法端點、剛好越界、NO_SOLUTION 與 RANGE 的區別、第一個錯誤和三種 controller case 的證據。 |
++| boundaries | 合法端點、剛好越界、NO_SOLUTION 與 RANGE 的區別、最低整分售價與減一分不達標、向上取整後超限、第一個錯誤和三種 controller 案例的證據。 |
+ | privacy | 靜態載入後從使用到重設的零工作請求，並核對 storage、URL 和 log。 |
+ | security | 敵意輸入 inert、無動態執行、CSP、固定下載名稱、資源上限和 Worker/Blob dispose。 |
+ | usability | 兩語桌面與行動的三模式主流程、空、繁忙、取消、錯誤、修改和下載可操作。 |
+@@ -103,7 +106,7 @@
+ 
+ ## tests
+ 
+-驗收輸入見 [fixtures.json](fixtures.json)。32 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
++驗收輸入見 [fixtures.json](fixtures.json)。38 個字面核心案例與 3 個 controller 案例。對每個 expected 深度比對，下載用獨立序列化驗 bytes 和 SHA-256。不得用產品程式產生 expected。
+ 
+ | 案例 ID | 驗證行為 |
+ | --- | --- |
+@@ -111,23 +114,29 @@
+ | `report-repeating-markup` | 加價率循環小數 33.333…% 捨入至 33.33 |
+ | `report-repeating-margin` | 毛利率循環小數 22.222…% 捨入至 22.22 |
+ | `report-below-cost` | 售價低於成本，負利潤與負百分比照常報表，負值捨入遠離零 |
+-| `report-free-price` | 售價為零，毛利率 null（無法定義），加價率 −100.00% |
++| `report-free-price` | 售價為零，實際毛利率 null、加價率 −100.00%，兩語狀態顯示低於成本及毛利率無法定義 |
++| `report-one-cent-at-cost` | 成本、售價皆 1 分，兩率皆 0%，低於兩種 25% 目標 |
++| `report-two-cent-actual-rates` | 成本 1 分、售價 2 分，實際加價 100.00%、實際毛利 50.00%，與兩求解模式回算一致 |
+ | `report-zero-profit` | 售價等於成本，利潤與兩率皆零 |
+ | `report-half-tie` | 加價率恰 2.5（百分之一單位）遠離零進位、同案毛利率捨去 |
+ | `report-extreme-ratio` | 成本 1 分對最大售價，加價率大整數精確、毛利率顯示捨入為 100.00 |
+ | `solve-markup-basic` | 加價率 25% 反推售價 100.00 與毛利率 20.00% |
+-| `solve-markup-repeating` | 加價率 33.333% 反推售價捨入至分、毛利率由售價回算 |
++| `solve-markup-repeating` | 目標加價 33.333%，門檻 1333.33 分，最低售價 1334 分，回算兩個實際率 |
+ | `solve-markup-zero` | 加價率 0%，售價等於成本 |
+-| `solve-markup-tie` | 售價恰半分進位（2.5 分 → 3 分） |
++| `solve-markup-tie` | 門檻 2.5 分，最低售價 3 分 |
++| `solve-markup-one-cent-target` | 成本 1 分、目標加價 25%，門檻 5/4 分，最低售價 2 分 |
+ | `solve-markup-large` | 大金額加價率 7.5%，售價小數 .85 進位與毛利率回算 |
+ | `solve-margin-basic` | 毛利率 20% 反推售價 100.00 與加價率 25.00% |
+ | `solve-margin-half` | 毛利率 50% ↔ 加價率 100.00% |
+ | `solve-margin-repeating` | 毛利率 33.333% 反推售價 1500 分、加價率由售價回算 |
+ | `solve-margin-zero` | 毛利率 0%，售價等於成本 |
+-| `solve-margin-high` | 毛利率 99.9%，售價放大百倍、加價率 99900.00% |
++| `solve-margin-one-cent-target` | 成本 1 分、目標毛利 25%，門檻 4/3 分，最低售價 2 分 |
++| `solve-margin-zero-min-cost` | 成本 1 分、目標毛利 0%，最低售價 1 分，候選 0 分毛利率無法定義 |
++| `solve-margin-high` | 毛利率 99.9%，售價為成本的千倍、加價率 99900.00% |
+ | `solve-margin-hundred` | 毛利率恰 100% → NO_SOLUTION（非 RANGE） |
+ | `solve-margin-over-hundred` | 毛利率 150.5% → NO_SOLUTION（非 RANGE） |
+ | `solve-markup-price-over-cap` | 加價率 1% 使最大成本售價超出上限 → RANGE/markupPercent |
++| `solve-markup-ceil-over-cap` | 精確門檻為上限加 0.36 分，向上取整後超限 → RANGE/markupPercent |
+ | `solve-margin-price-over-cap` | 毛利率 99.999% 使售價超出上限 → RANGE/marginPercent |
+ | `cost-zero` | 成本為零低於範圍 |
+ | `cost-over-range` | 成本文法通過但分值超過上限 |
+@@ -145,7 +154,7 @@
+ 
+ 狀態測例使用可控制完成時間的假 Worker。state-dirty-error 先 run initial，再 edit 成 edit 並重新執行。state-cancel-late 先 run draft、在回傳前取消、注入舊世代 lateResult，最後重設。state-replace-late 先掛起 olderDraft，再以 newerDraft 啟動新工作，先令新工作出錯，再注入舊世代 olderLateResult。每個 expected checkpoint 分別檢查畫面與下載。
+ 
+-另測合法上限（cost 0.01 與 999999.99、price 0 與 999999.99、百分比 0 與 99999.999、mode 三值）、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。驗證所有 report 成功案例的未捨入恆等式 毛利率 ＝ 加價率 ÷（1 ＋ 加價率）（以有理數核對，不以顯示值核對）；驗證 solve 案例把售價代回 report 公式得到所列的另一率；驗證 NO_SOLUTION 只出現在 solve-margin 且 marginMilli ≥ 100,000，同值域內的字串永不回 RANGE。
++另測合法上限（cost 0.01 與 999999.99、price 0 與 999999.99、百分比 0 與 99999.999、mode 三值）、剛好超限、錯型別、額外欄、單獨 surrogate、惡意字串、快速改值及晚到訊息。對正售價的成功 report 以有理數核對恆等式 毛利率 ＝ 加價率 ÷（1 ＋ 加價率）。零售價另驗 marginHundredths 為 null。逐一對成功求解核對最低整分售價與 `(P−1)d < n ≤ Pd`、精確目標 milli、兩個實際率與同售價 report 一致。0.01 成本與 25% 目標的兩種解均比較售價 0.01、0.02 的字面 report。兩語檢查目標與實際欄、達標提示，以及售價零的兩段正確提示。下載用兩種 solve 的固定範例獨立序列化核對新增欄位。驗證合法格式與輸入值域內的 marginMilli ≥ 100,000 在 solve-margin 先回 NO_SOLUTION。低於 100% 的合法目標可能因最低售價超限而回 RANGE。
+ 
+ 候選 gate（均 NOT_RUN）
+ 
+@@ -157,10 +166,11 @@
+ 
+ 兩語靜態內容與正式 gate（目前 NOT_RUN）
+ 
+-- 繁中 lang=zh-Hant，H1「加價率與毛利率換算」，title「加價率與毛利率換算｜Gloss Tools」，description「輸入成本與售價，同時算出加價率與毛利率；或反過來，由目標加價率、目標毛利率反推售價。全程以整數分與千分之一百分比精確運算，百分比顯示至小數點後兩位。」。英文 lang=en，H1 “Markup & Margin Calculator”，title “Markup & Margin Calculator | Gloss Tools”，description “Enter cost and price to get markup and margin together, or work backwards from a target markup or margin to the required price. All arithmetic is exact integer cents and milli-percent; percentages display to two decimals.”。兩頁靜態呈現操作、限制、對照表、FAQ。全部狀態及錯誤使用對等本地化訊息。
++- 繁中 lang=zh-Hant，H1「加價率與毛利率換算」，title「加價率與毛利率換算｜Gloss Tools」，description「輸入成本與售價計算加價率和毛利率，或由目標率找出達標的最低整分售價及實際率。」。英文 lang=en，H1 “Markup & Margin Calculator”，title “Markup & Margin Calculator | Gloss Tools”，description “Enter cost and price to calculate markup and margin, or find the lowest price in cents that meets a target rate and see the actual rates.”。兩頁靜態呈現操作、限制、對照表、FAQ。全部狀態及錯誤使用對等本地化訊息。
+ - FAQ。加價率和毛利率有什麼不同？兩者利潤相同，分母不同：加價率除以成本，毛利率除以售價。售價高於成本時毛利率恆小於加價率，且毛利率永遠到不了 100%。 / Markup and margin use the same profit over different bases: markup divides by cost, margin by price. When the price is above cost, margin is always smaller than markup, and margin can never reach 100%.
+ - FAQ。為什麼目標毛利率 100% 求不出售價？毛利率 100% 表示利潤等於全部售價，也就是成本必須為零；成本為正時售價要無限大才行，所以本工具回報無解，而不是輸入錯誤。 / Why is a 100% target margin unsolvable? A 100% margin means the profit equals the whole price, so the cost would have to be zero; with any positive cost the price would need to be infinite, so the tool reports no solution instead of an input error.
+-- FAQ。售價低於成本時會發生什麼事？照常計算，利潤與兩個百分比為負值並標示低於成本；這是有效的報表結果，不是錯誤。 / What happens when the price is below cost? It is still calculated: the profit and both percentages come out negative and are flagged as below cost — a valid report, not an error.
++- FAQ。售價低於成本時會發生什麼事？結果照常顯示單件毛利、加價率及低於成本提示。正售價的毛利率為負，零售價的毛利率無法定義。 / What happens when the price is below cost? The report shows gross profit per unit, markup and a below-cost message. Margin is negative at a positive price and undefined at zero.
++- FAQ。為什麼最低售價以分為單位向上取整？若精確門檻落在兩個整分之間，較低的整分售價達不到目標。工具用較高的一分，並從該售價回算實際加價率與毛利率。 / Why is the minimum price rounded up to a cent? If the exact threshold falls between two cent amounts, the lower one misses the target. The calculator uses the higher one and derives actual markup and margin from that price.
+ - FAQ。毛利率顯示 100.00% 是怎麼回事？成本相對售價極小時，精確毛利率非常接近但小於 100%，顯示捨入至小數兩位後呈現 100.00%；精確值永遠小於 100%。 / Why can the margin display as 100.00%? When the cost is tiny next to the price, the exact margin is very close to but below 100%; rounded to two decimals for display it shows 100.00%, while the exact value is always below 100%.
+ - 候選 /index.html、/en/index.html 帶 robots meta 與 X-Robots-Tag noindex,nofollow。無 production canonical、hreflang 或 sitemap。語言連結只帶路徑。
+ - 正式以實際核對的 HTTPS origin 生成兩個 self-canonical、互惠 zh-Hant/en、zh-Hant x-default、robots.txt/sitemap、正確 MIME、安全標頭、404 及 root redirects。規劃 origin https://markup-margin.glossquote.com 尚未配置。首頁回鏈為 https://glossquote.com/index.html 或 https://glossquote.com/en/index.html。比對實際上線 bytes、標頭、雙語連結後再由主代理整合目錄。
+@@ -169,7 +179,7 @@
+ 
+ 本份交付文件。固定保存 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json) 及 [AUTHOR-CHECK.md](AUTHOR-CHECK.md)，registry document 指向實際 GitHub commit。主頁基線 [固定 README](https://github.com/KYStr/glossquote-labs-home/blob/26525d5f6380915ea95dde879dec769442db0d95/README.md)。開工與送審前重讀遠端規則、registry、基線和既有 owner，檢查新增範圍。
+ 
+-非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。缺陷交原作者修訂，重審新 head。
++非作者 reviewer 核對同一固定文件候選的八節及字面案例，保存 evidence。八節皆實核才可 mark-spec-ready。產品檢查獨立。本次透過獨立維護任務修訂並保留原作者與原候選。新 head 仍需完整文件審查，另由主統籌處理既有登記的產品驗收面向繼承問題。
+ 
+ 製作須有另登記 task、本人 ACK、明示 allowed executor、CAS 後同 operationId/claimId/owner 讀回。遵循 40 ready、5 held、1 working。製作目標 `tools/markup-margin-calculator/`，同 repo 用 `codex/<task>-<actor>` 分支與開啟 PR。先完成核心／狀態 fixtures，再交雙語候選與真瀏覽器證據。
+ 
+--- fixed/1d5de750bf4371a81c1c8d8b57bf38fceea19d66/docs/specs/markup-margin-calculator/fixtures.json
++++ candidate/docs/specs/markup-margin-calculator/fixtures.json
+@@ -118,7 +118,55 @@
+         "price": "0"
+       },
+       "kind": "core",
+-      "purpose": "售價為零，毛利率 null（無法定義），加價率 −100.00%"
++      "purpose": "售價零且低於成本，毛利率 null，實際加價率 −100.00%"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "belowCost": false,
++          "costCents": 1,
++          "marginHundredths": 0,
++          "markupHundredths": 0,
++          "mode": "report",
++          "priceCents": 1,
++          "profitCents": 0
++        }
++      },
++      "id": "report-one-cent-at-cost",
++      "input": {
++        "cost": "0.01",
++        "marginPercent": null,
++        "markupPercent": null,
++        "mode": "report",
++        "price": "0.01"
++      },
++      "kind": "core",
++      "purpose": "售價 1 分時兩率為 0%，低於 25% 目標"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "belowCost": false,
++          "costCents": 1,
++          "marginHundredths": 5000,
++          "markupHundredths": 10000,
++          "mode": "report",
++          "priceCents": 2,
++          "profitCents": 1
++        }
++      },
++      "id": "report-two-cent-actual-rates",
++      "input": {
++        "cost": "0.01",
++        "marginPercent": null,
++        "markupPercent": null,
++        "mode": "report",
++        "price": "0.02"
++      },
++      "kind": "core",
++      "purpose": "售價 2 分時兩率分別為 100.00% 與 50.00%"
+     },
+     {
+       "expected": {
+@@ -196,6 +244,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarkupHundredths": 2500,
+           "costCents": 8000,
+           "marginHundredths": 2000,
+           "markupPercentMilli": 25000,
+@@ -219,12 +268,13 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarkupHundredths": 3340,
+           "costCents": 1000,
+-          "marginHundredths": 2498,
++          "marginHundredths": 2504,
+           "markupPercentMilli": 33333,
+           "mode": "solve-markup",
+-          "priceCents": 1333,
+-          "profitCents": 333
++          "priceCents": 1334,
++          "profitCents": 334
+         }
+       },
+       "id": "solve-markup-repeating",
+@@ -236,12 +286,13 @@
+         "price": null
+       },
+       "kind": "core",
+-      "purpose": "加價率 33.333% 反推售價捨入至分、毛利率由售價回算"
+-    },
+-    {
+-      "expected": {
+-        "ok": true,
+-        "result": {
++      "purpose": "精確門檻 1333.33 分，向上取整至 1334 分，回算實際兩率"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "actualMarkupHundredths": 0,
+           "costCents": 4500,
+           "marginHundredths": 0,
+           "markupPercentMilli": 0,
+@@ -265,6 +316,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarkupHundredths": 5000,
+           "costCents": 2,
+           "marginHundredths": 3333,
+           "markupPercentMilli": 25000,
+@@ -282,12 +334,37 @@
+         "price": null
+       },
+       "kind": "core",
+-      "purpose": "售價恰半分進位（2.5 分 → 3 分）"
+-    },
+-    {
+-      "expected": {
+-        "ok": true,
+-        "result": {
++      "purpose": "精確門檻 2.5 分，最低售價 3 分"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "actualMarkupHundredths": 10000,
++          "costCents": 1,
++          "marginHundredths": 5000,
++          "markupPercentMilli": 25000,
++          "mode": "solve-markup",
++          "priceCents": 2,
++          "profitCents": 1
++        }
++      },
++      "id": "solve-markup-one-cent-target",
++      "input": {
++        "cost": "0.01",
++        "marginPercent": null,
++        "markupPercent": "25",
++        "mode": "solve-markup",
++        "price": null
++      },
++      "kind": "core",
++      "purpose": "成本 1 分、目標加價 25%，5/4 分向上至 2 分"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "actualMarkupHundredths": 750,
+           "costCents": 12345678,
+           "marginHundredths": 698,
+           "markupPercentMilli": 7500,
+@@ -311,6 +388,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarginHundredths": 2000,
+           "costCents": 8000,
+           "marginPercentMilli": 20000,
+           "markupHundredths": 2500,
+@@ -334,6 +412,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarginHundredths": 5000,
+           "costCents": 5000,
+           "marginPercentMilli": 50000,
+           "markupHundredths": 10000,
+@@ -357,6 +436,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarginHundredths": 3333,
+           "costCents": 1000,
+           "marginPercentMilli": 33333,
+           "markupHundredths": 5000,
+@@ -380,6 +460,7 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarginHundredths": 0,
+           "costCents": 4500,
+           "marginPercentMilli": 0,
+           "markupHundredths": 0,
+@@ -403,6 +484,55 @@
+       "expected": {
+         "ok": true,
+         "result": {
++          "actualMarginHundredths": 5000,
++          "costCents": 1,
++          "marginPercentMilli": 25000,
++          "markupHundredths": 10000,
++          "mode": "solve-margin",
++          "priceCents": 2,
++          "profitCents": 1
++        }
++      },
++      "id": "solve-margin-one-cent-target",
++      "input": {
++        "cost": "0.01",
++        "marginPercent": "25",
++        "markupPercent": null,
++        "mode": "solve-margin",
++        "price": null
++      },
++      "kind": "core",
++      "purpose": "成本 1 分、目標毛利 25%，4/3 分向上至 2 分"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "actualMarginHundredths": 0,
++          "costCents": 1,
++          "marginPercentMilli": 0,
++          "markupHundredths": 0,
++          "mode": "solve-margin",
++          "priceCents": 1,
++          "profitCents": 0
++        }
++      },
++      "id": "solve-margin-zero-min-cost",
++      "input": {
++        "cost": "0.01",
++        "marginPercent": "0",
++        "markupPercent": null,
++        "mode": "solve-margin",
++        "price": null
++      },
++      "kind": "core",
++      "purpose": "目標毛利 0%，最低價 1 分，零價無定義毛利率"
++    },
++    {
++      "expected": {
++        "ok": true,
++        "result": {
++          "actualMarginHundredths": 9990,
+           "costCents": 1000,
+           "marginPercentMilli": 99900,
+           "markupHundredths": 9990000,
+@@ -420,7 +550,7 @@
+         "price": null
+       },
+       "kind": "core",
+-      "purpose": "毛利率 99.9%，售價放大百倍、加價率 99900.00%"
++      "purpose": "目標毛利率 99.9%，售價是成本千倍，實際加價 99900.00%"
+     },
+     {
+       "expected": {
+@@ -481,6 +611,26 @@
+       },
+       "kind": "core",
+       "purpose": "加價率 1% 使最大成本售價超出上限 → RANGE/markupPercent"
++    },
++    {
++      "expected": {
++        "error": {
++          "code": "RANGE",
++          "field": "markupPercent",
++          "row": null
++        },
++        "ok": false
++      },
++      "id": "solve-markup-ceil-over-cap",
++      "input": {
++        "cost": "999920.00",
++        "marginPercent": null,
++        "markupPercent": "0.008",
++        "mode": "solve-markup",
++        "price": null
++      },
++      "kind": "core",
++      "purpose": "門檻 99,999,999.36 分，向上取整後超限"
+     },
+     {
+       "expected": {
+--- fixed/1d5de750bf4371a81c1c8d8b57bf38fceea19d66/docs/specs/markup-margin-calculator/AUTHOR-CHECK.md
++++ candidate/docs/specs/markup-margin-calculator/AUTHOR-CHECK.md
+@@ -1,16 +1,18 @@
+ # 加價率與毛利率換算 — 作者檢查
+ 
+-作者 [原作者署名見固定 PR]，run 5 補庫概念 #20。本文件是作者本人對文件的核對，明確不是獨立審查；ready 與否由非作者 reviewer 決定。
++2026-11-11 維護紀錄。由獨立維護任務 `labs-five-hour-repair-pricing-20261111` 修訂，原作者及承接記錄見 [PR #243 的固定作者核對](https://github.com/KYStr/glossquote-labs-home/blob/1d5de750bf4371a81c1c8d8b57bf38fceea19d66/docs/specs/markup-margin-calculator/AUTHOR-CHECK.md)。下列更新為維護者自查，須由非作者在固定新候選上重審。
++
++原作者署名見上方固定版本，run 5 補庫概念 #20。本文件是作者本人對文件的核對，明確不是獨立審查；ready 與否由非作者 reviewer 決定。
+ 
+ - 八節涵蓋 goal、scope、userFlow、inputsOutputs、implementation、acceptance、tests、handoff。配對 [SPEC.md](SPEC.md)、[BRIEF.md](BRIEF.md)、[fixtures.json](fixtures.json)。
+ - §6 已預宣告九個產品面向與必要證據；本文只提供文件，九項產品分數皆 null、狀態均 NOT_RUN。
+ - 差異比對（設計層級）：discount-calculator 與 percentage-calculator 為單一金額百分比／折扣運算，無雙率恆等式與售價反解；breakeven-calculator 求損益平衡數量與營收，不反推售價；rational-arithmetic 為通用分數運算，無定價語義；bakers-percentage-calculator 為配方比例。registry 層級的查重由統籌在登記時核實，本人未執行 registry 指令。
+-- 精確運算沿用分帳計算機（bill-split-calculator，本批 run 5 規格）的先例：金額以整數分、百分比以千分之一百分比（milli）表示，全程 BigInt，roundHalfUp 只在釘版位置各用一次。本案在此之上新增兩個釘版決定：(1) 百分比結果以百分之一（hundredths）表示、負值捨入遠離零（roundRatio），使低於成本的負毛利率對稱捨入；(2) 目標毛利率 ≥100% 釘版為語意狀態 NO_SOLUTION，與值域 RANGE 分開——150.5% 是完全合法的百分比輸入，只是方程式無有限解，此區別以 `solve-margin-hundred`、`solve-margin-over-hundred` 兩案釘版。
+-- 本案無外部法規、費率表或官方公式來源：加價率 ＝ 利潤 ÷ 成本、毛利率 ＝ 利潤 ÷ 售價為通行會計定義，已在 SPEC 釘版為恆等式；對照表每一列由恆等式推導（見下），未抄錄任何外部表格。概念說明（brief #20）與定義無衝突，無待修正事項。
++- 精確運算沿用分帳計算機（bill-split-calculator，本批 run 5 規格）的先例：金額以整數分、百分比以千分之一百分比（milli）表示，全程 BigInt，roundHalfUp 只用於比例顯示，兩個求解的售價由精確值向上取整至分。本案在此之上新增兩個釘版決定：(1) 百分比結果以百分之一（hundredths）表示、負值捨入遠離零（roundRatio），使低於成本的負毛利率對稱捨入；(2) 目標毛利率 ≥100% 釘版為語意狀態 NO_SOLUTION，與值域 RANGE 分開——150.5% 是完全合法的百分比輸入，只是方程式無有限解，此區別以 `solve-margin-hundred`、`solve-margin-over-hundred` 兩案釘版。
++- 本案無外部法規、費率表或官方公式來源：加價率 ＝ 利潤 ÷ 成本、毛利率 ＝ 利潤 ÷ 售價為通行會計定義，已在 SPEC 釘版為恆等式；對照表每一列由恆等式推導（見下），未抄錄任何外部表格。維護的最低分位規則依本次任務契約，並用精確有理數驗算。
+ 
+ ## Fixture 雙重推導（手算＋獨立重算）
+ 
+-每個計算案例先以手算依 SPEC 規則推出，再以兩支獨立腳本重算：Python `fractions.Fraction` 精確有理數實作，與 Node.js BigInt 整數實作（正規表示式解析字串、全程整數運算），兩者對 22 個計算案例逐值完全一致；最後再以第三支依 SPEC 驗證順序寫成的 Python 驗證器跑完 fixtures.json 全部 32 個核心案例，expected 逐一深度相等（0 不符），3 個 controller 案例的 draft／lateResult 與 `report-basic` 的 input／result 逐字對應亦已核對。手算如下（金額單位：分；百分比 milli 為百分比×1000；hundredths 為百分比×100）。
++原候選的三套作者核對留在上方固定版本。此版的字面值先用下列整數分與分數推導，再以離線文件驗算器核對 38 個核心案例和 3 個狀態模型案例。百分比 milli 為百分比×1000，hundredths 為百分比×100。
+ 
+ | 案例 | 手算 |
+ | --- | --- |
+@@ -23,19 +25,24 @@
+ | `report-half-tie` | 利潤 4；加價 4/16000＝0.025% → 以 hundredths 計恰 2.5，遠離零進位 → 3；毛利 4/16004＝0.024994…% → 2。 |
+ | `report-extreme-ratio` | 利潤 99,999,998；加價 99999998/1 → 999,999,980,000（精確整數）；毛利 99999998/99999999 ＝ 99.999999…% → 顯示 10000（100.00%），精確值恆 ＜100%，SPEC 與 FAQ 已揭露。 |
+ | `solve-markup-basic` | 售價 8000×(100000＋25000)/100000＝10000；利潤 2000；毛利 2000/10000＝2000。 |
+-| `solve-markup-repeating` | m＝33333；售價 1000×133333/100000＝1333.33 → 1333；利潤 333；毛利 333/1333＝24.9812…% → 2498。 |
++| `solve-markup-repeating` | m＝33333，門檻＝1333.33 分。售價 1333→1334，毛利 333→334，marginHundredths 2498→2504；新增 actualMarkupHundredths 3340。1333 分時加價 33.3% 未達 33.333%。 |
+ | `solve-markup-zero` | m＝0；售價＝成本 4500；利潤 0；毛利 0。 |
+-| `solve-markup-tie` | 售價 2×125000/100000＝2.5，恰半分進位 → 3；利潤 1；毛利 1/3＝33.333…% → 3333。 |
+-| `solve-markup-large` | 售價 12345678×107500/100000＝13,271,603.85 → 13271604；利潤 925926；毛利 925926/13271604＝6.9762…% → 698。 |
++| `solve-markup-tie` | 售價 2×125000/100000＝2.5，向上取整 → 3；利潤 1；毛利 1/3＝33.333…% → 3333。 |
++| `solve-markup-large` | 售價 12345678×107500/100000＝13,271,603.85 → 向上取整得 13271604；利潤 925926；毛利 925926/13271604＝6.9762…% → 698。 |
+ | `solve-margin-basic` | 售價 8000×100000/80000＝10000；利潤 2000；加價 2000/8000＝2500。 |
+ | `solve-margin-half` | 售價 5000×100000/50000＝10000；利潤 5000；加價 5000/5000＝100.00%（10000）。對照表 50 ↔ 100 的同一列。 |
+ | `solve-margin-repeating` | k＝33333；售價 1000×100000/66667＝1499.925… → 1500；利潤 500；加價 500/1000＝50.00%（5000）。 |
+ | `solve-margin-zero` | k＝0；售價＝成本 4500；利潤 0；加價 0。 |
+-| `solve-margin-high` | k＝99900；售價 1000×100000/100＝1,000,000；利潤 999,000；加價 999000/1000＝99,900.00%（9,990,000）。 |
++| `solve-margin-high` | k＝99900；售價 1000×100000/100＝1,000,000（成本千倍），毛利 999,000，加價 99900.00%（9,990,000），實際毛利 99.90%（9990）。 |
++| `solve-markup-one-cent-target`／`solve-margin-one-cent-target` | 精確門檻分別 5/4、4/3 分。2 分售價的兩個實際率為 100.00% 和 50.00%；1 分為 0.00% 和 0.00%，皆低於目標。 |
++| `solve-margin-zero-min-cost` | 目標 0%、精確門檻 1 分，故最低價 1 分。0 分的毛利率無法定義，整數不等式 0 < 1 證明較低價格不足。 |
++| `solve-markup-ceil-over-cap` | 99,992,000 × 100008 / 100000 = 99,999,999.36 分，向上整為 100,000,000，超過上限 99,999,999。 |
+ | `solve-margin-hundred` | k＝100,000 ≥ 100,000 → NO_SOLUTION/marginPercent（字串與值域合法，非 RANGE）。 |
+ | `solve-margin-over-hundred` | k＝150,500 ≥ 100,000 → NO_SOLUTION/marginPercent（同上）。 |
+ | `solve-markup-price-over-cap` | 售價 99,999,999×101000/100000＝100,999,998.99 → 100,999,999 ＞ 上限 99,999,999 → RANGE/markupPercent（計算後檢查）。 |
+ | `solve-margin-price-over-cap` | k＝99,999 ＜ 100,000 可解；售價 99,999,999×100000/1＝9,999,999,900,000 ＞ 上限 → RANGE/marginPercent（計算後檢查）。 |
++
++既有成功求解的目標 milli 意義與另一實際率欄保留；全部 10 筆均新增對應的 actualMarkupHundredths 或 actualMarginHundredths。除 `solve-markup-repeating` 上表列出的數值，既有成功求解及 report 的其他原欄位數值不變。
+ 
+ 錯誤案例逐筆以手算核對釘版驗證順序：`cost-zero`（"0" 文法通過、分值 0＜1 → RANGE/cost）；`cost-over-range`（"9999999.99" 為 10 單元在容量內、文法通過、999,999,999 分＞上限 → RANGE/cost）；`cost-format`（"10.005" 小數 3 位＞2 → DECIMAL_FORMAT/cost）；`percent-format`（"33.3333" 小數 4 位＞3 → DECIMAL_FORMAT/markupPercent）；`percent-range`（"999999.99" 為 9 單元＝容量、文法通過、999,999,990 milli＞99,999,999 → RANGE/markupPercent）；`percent-empty`（"" 容量與 surrogate 先過 → EMPTY/marginPercent）；`price-input-limit`（"12345678901" 為 11 單元＞10 → INPUT_LIMIT/price，先於文法與範圍）；`mode-enum`（"REPORT" 非列舉 → ENUM/mode）；`schema-extra-field`（多出 currency 鍵 → SCHEMA，field=null）；`schema-mode-mismatch`（report 模式 price=null 且 markupPercent 非 null → 一致性 SCHEMA，field=null）。三個 controller 案例沿用 `report-basic` 的 input/result 逐字對應，狀態轉移與預設值已逐項核對。
+ 
