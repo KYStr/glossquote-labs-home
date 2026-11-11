@@ -1,0 +1,1215 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "default-forward",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "明確載入合成範例所用的純核心輸入，正向乘匯率並顯示反向匯率與對照表。"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 315000,
+          "convertedCents": 10000,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "reverse-exact",
+      "input": {
+        "amount": "3150",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "反向換算 amount ÷ rate 恰好整除；快速對照表與方向無關"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 317,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "reverse-repeating",
+      "input": {
+        "amount": "100",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "反向為循環小數，捨入至 317 分。誤用顯示逆率回乘在本案也得到 317 分。"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 3000000,
+          "convertedCents": 1000000,
+          "direction": "b-to-a",
+          "fromCode": "USD",
+          "inverseRate": "0.333333",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 300
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 3000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 30000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 300000
+            }
+          ],
+          "rateMicro": 3000000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "reverse-display-rounding-regression",
+      "input": {
+        "amount": "30000",
+        "direction": "b-to-a",
+        "fromCode": "USD",
+        "rate": "3",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "精確相除為 1000000 分，顯示逆率 0.333333 回乘僅為 999999 分。"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 100000,
+          "convertedCents": 660,
+          "direction": "a-to-b",
+          "fromCode": "KRW",
+          "inverseRate": "151.515",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 1
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 7
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 66
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 660
+            }
+          ],
+          "rateMicro": 6600,
+          "toCode": "TWD"
+        }
+      },
+      "id": "small-rate-inverse",
+      "input": {
+        "amount": "1000",
+        "direction": "a-to-b",
+        "fromCode": "KRW",
+        "rate": "0.0066",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "小匯率 0.0066：反向匯率以 6 位有效數字顯示；對照表每列獨立捨入（1 單位列 0.66 分進位為 1 分）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 1,
+          "convertedCents": 3,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.4",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 250
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 2500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 25000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 250000
+            }
+          ],
+          "rateMicro": 2500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "half-up-tie",
+      "input": {
+        "amount": "0.01",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "2.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "恰半分平局：0.01 × 2.5 ＝ 2.5 分，half-up 進位為 3 分（銀行家捨入會給 2 分）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "lowercase-codes",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "usd",
+        "rate": "31.5",
+        "toCode": "twd"
+      },
+      "kind": "core",
+      "purpose": "小寫幣別代碼正規化為大寫，結果與 default-forward 相同"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 0,
+          "convertedCents": 0,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "zero-amount",
+      "input": {
+        "amount": "0",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "金額 0 合法：換算結果 0，對照表與反向匯率照常產生"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 25075,
+          "convertedCents": 3757489,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.00667334",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 14985
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 149850
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 1498500
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 14985000
+            }
+          ],
+          "rateMicro": 149850000,
+          "toCode": "JPY"
+        }
+      },
+      "id": "yen-rate",
+      "input": {
+        "amount": "250.75",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "149.85",
+        "toCode": "JPY"
+      },
+      "kind": "core",
+      "purpose": "兩位小數匯率 149.85：乘積小數 .75 進位；反向匯率 0.00667334… 取 6 位有效數字"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 500000,
+          "convertedCents": 1,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "1000000",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 0
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 0
+            }
+          ],
+          "rateMicro": 1,
+          "toCode": "TWD"
+        }
+      },
+      "id": "min-rate-tie",
+      "input": {
+        "amount": "5000",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "0.000001",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "最小匯率 0.000001：5000 × 0.000001 恰 0.5 分進位為 1 分；對照表每列皆捨入為 0；反向匯率為整數 1000000"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 1,
+          "convertedCents": 1000000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.000001",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100000000
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000000000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000000000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000000000
+            }
+          ],
+          "rateMicro": 1000000000000,
+          "toCode": "TWD"
+        }
+      },
+      "id": "rate-cap-boundary",
+      "input": {
+        "amount": "0.01",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1000000",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "匯率上限 1000000 恰在範圍內（含邊界）；反向匯率 0.000001"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "amountCents": 5000,
+          "convertedCents": 5000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "1",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 100
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 1000
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 10000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 100000
+            }
+          ],
+          "rateMicro": 1000000,
+          "toCode": "USD"
+        }
+      },
+      "id": "same-codes",
+      "input": {
+        "amount": "50",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1",
+        "toCode": "USD"
+      },
+      "kind": "core",
+      "purpose": "來源與目標代碼相同合法（不對照 ISO 清單、也不禁止同碼）；匯率 1 為恆等換算"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "rate-zero",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "0",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "匯率 0 文法合法但不在值域（須大於 0）"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "rate-too-precise",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.1234567",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "匯率小數 7 位超過釘版 6 位文法"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "rate",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "rate-over-cap",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "1000000.000001",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "匯率 1000000.000001 恰在 14 單元容量內、文法通過，micro 值超過上限 → RANGE"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "amount-format",
+      "input": {
+        "amount": "10.005",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "金額小數 3 位超過釘版 2 位文法"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "amount-over-limit",
+      "input": {
+        "amount": "1234567890123",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "金額 13 單元超過 12 單元容量，先於文法與範圍"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "amount-over-range",
+      "input": {
+        "amount": "99999999.99",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "金額 99999999.99 在 12 單元容量內、文法通過，超過 9999999.99 上限 → RANGE"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "CODE_FORMAT",
+          "field": "fromCode",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "code-format",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USDT",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "代碼 4 個字母在 8 單元容量內，但不是恰 3 個英文字母"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "toCode",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "code-empty",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": ""
+      },
+      "kind": "core",
+      "purpose": "目標代碼空白：容量與 surrogate 先過 → EMPTY"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "ENUM",
+          "field": "direction",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "direction-enum",
+      "input": {
+        "amount": "100",
+        "direction": "both",
+        "fromCode": "USD",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "方向不是 a-to-b 或 b-to-a 列舉值"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "schema-extra-field",
+      "input": {
+        "amount": "100",
+        "direction": "a-to-b",
+        "fromCode": "USD",
+        "live": "true",
+        "rate": "31.5",
+        "toCode": "TWD"
+      },
+      "kind": "core",
+      "purpose": "多出未知鍵（live）→ 整體形狀 SCHEMA，先於逐欄驗證"
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "afterRun": {
+          "rateSource": "manual",
+          "reportAvailable": true,
+          "resultRateSource": "manual",
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "0",
+          "toCode": "TWD"
+        },
+        "initial": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再把匯率改為 0，舊結果及所有下載立即失效，重跑得到 RANGE。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "whilePending": {
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        },
+        "lateResult": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "kind": "controller",
+      "purpose": "取消手填換算後丟棄舊回傳，重設回空匯率且無來源。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "0",
+          "toCode": "TWD"
+        },
+        "olderDraft": {
+          "amount": "100",
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "rate": "31.5",
+          "toCode": "TWD"
+        },
+        "olderLateResult": {
+          "amountCents": 10000,
+          "convertedCents": 315000,
+          "direction": "a-to-b",
+          "fromCode": "USD",
+          "inverseRate": "0.031746",
+          "quickTable": [
+            {
+              "amountCents": 100,
+              "convertedCents": 3150
+            },
+            {
+              "amountCents": 1000,
+              "convertedCents": 31500
+            },
+            {
+              "amountCents": 10000,
+              "convertedCents": 315000
+            },
+            {
+              "amountCents": 100000,
+              "convertedCents": 3150000
+            }
+          ],
+          "rateMicro": 31500000,
+          "toCode": "TWD"
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    },
+    {
+      "expected": {
+        "afterReset": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "afterStaleEdit": {
+          "rateSource": "manual",
+          "report": {
+            "rateSource": "manual",
+            "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+            "utf8Bytes": 362
+          },
+          "reportAvailable": true,
+          "resultRateSource": "manual",
+          "state": "success"
+        },
+        "afterStaleReset": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "amountChanged": {
+          "draft": {
+            "amount": "200",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleBeforeEdit": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleBeforeReset": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleBeforeResetLoaded": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleLoaded": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "examplePending": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "exampleReloaded": {
+          "rateSource": "example",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "exampleSuccess": {
+          "rateSource": "example",
+          "report": {
+            "rateSource": "example",
+            "sha256": "6f20c87037f7321021a981ad1130ae348beb46c9fb49cb0ef910c4a87cea1b51",
+            "utf8Bytes": 363
+          },
+          "reportAvailable": true,
+          "resultRateSource": "example",
+          "state": "success"
+        },
+        "initial": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "empty"
+        },
+        "initialError": {
+          "error": {
+            "code": "EMPTY",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "initialPending": {
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "manualPending": {
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "manualSuccess": {
+          "rateSource": "manual",
+          "report": {
+            "rateSource": "manual",
+            "sha256": "68b59c99e99674e21404d391193eb8a28e29ebadd7fe53bbba4bb8c7e881e9e9",
+            "utf8Bytes": 362
+          },
+          "reportAvailable": true,
+          "resultRateSource": "manual",
+          "state": "success"
+        },
+        "rateCleared": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "",
+            "toCode": "TWD"
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        },
+        "resetError": {
+          "error": {
+            "code": "EMPTY",
+            "field": "rate",
+            "row": null
+          },
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "error"
+        },
+        "resetPending": {
+          "rateSource": null,
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "busy"
+        },
+        "sameRateEdited": {
+          "draft": {
+            "amount": "100",
+            "direction": "a-to-b",
+            "fromCode": "USD",
+            "rate": "31.5",
+            "toCode": "TWD"
+          },
+          "rateSource": "manual",
+          "reportAvailable": false,
+          "resultRateSource": null,
+          "state": "dirty"
+        }
+      },
+      "id": "state-rate-source",
+      "input": {
+        "steps": [
+          {
+            "at": "initial",
+            "op": "initial"
+          },
+          {
+            "at": "initialPending",
+            "job": "empty",
+            "op": "start"
+          },
+          {
+            "at": "initialError",
+            "job": "empty",
+            "op": "finish"
+          },
+          {
+            "at": "exampleLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "examplePending",
+            "job": "example",
+            "op": "start"
+          },
+          {
+            "at": "exampleSuccess",
+            "job": "example",
+            "op": "finish"
+          },
+          {
+            "at": "amountChanged",
+            "field": "amount",
+            "op": "edit",
+            "value": "200"
+          },
+          {
+            "at": "exampleReloaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeEdit",
+            "job": "staleAfterEdit",
+            "op": "start"
+          },
+          {
+            "at": "sameRateEdited",
+            "field": "rate",
+            "op": "edit",
+            "value": "31.5"
+          },
+          {
+            "at": "manualPending",
+            "job": "manual",
+            "op": "start"
+          },
+          {
+            "at": "manualSuccess",
+            "job": "manual",
+            "op": "finish"
+          },
+          {
+            "at": "afterStaleEdit",
+            "job": "staleAfterEdit",
+            "op": "finish"
+          },
+          {
+            "at": "rateCleared",
+            "field": "rate",
+            "op": "edit",
+            "value": ""
+          },
+          {
+            "at": "exampleBeforeResetLoaded",
+            "op": "loadExample"
+          },
+          {
+            "at": "exampleBeforeReset",
+            "job": "staleAfterReset",
+            "op": "start"
+          },
+          {
+            "at": "afterReset",
+            "op": "reset"
+          },
+          {
+            "at": "afterStaleReset",
+            "job": "staleAfterReset",
+            "op": "finish"
+          },
+          {
+            "at": "resetPending",
+            "job": "resetEmpty",
+            "op": "start"
+          },
+          {
+            "at": "resetError",
+            "job": "resetEmpty",
+            "op": "finish"
+          }
+        ]
+      },
+      "kind": "controller",
+      "purpose": "空匯率、顯式合成來源、手填同值、清空、重設與丟棄舊範例回覆。"
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 1,
+  "slug": "currency-converter",
+  "specId": "spec-currency-converter-20261109"
+}
