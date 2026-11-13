@@ -1,0 +1,755 @@
+{
+  "schemaVersion": 1,
+  "candidate": "8fbd9ac4d98865480444ce11c4b772389a54ea3c",
+  "node": "v24.14.0",
+  "commands": [
+    {
+      "command": "node run-offline.mjs",
+      "exit": 0
+    },
+    {
+      "command": "python -B -X utf8 audit-diff.py",
+      "exit": 0
+    },
+    {
+      "command": "python -B -X utf8 derive-vectors.py",
+      "exit": 0,
+      "privateVectorSha256": "6a828c4fe1988fe93c774fb26c231ca6d11b148352f10ad97806cbf75e2dc2ac"
+    },
+    {
+      "command": "node check-independent.mjs",
+      "exit": 1,
+      "failures": [
+        "PWP-01",
+        "PWP-02"
+      ]
+    },
+    {
+      "command": "node check-preview-worker.mjs",
+      "exit": 1,
+      "failures": [
+        "PWP-03"
+      ]
+    }
+  ],
+  "products": {
+    "wallpaper-calculator": {
+      "tests": {
+        "total": 58,
+        "passed": 58,
+        "failed": 0
+      },
+      "commandResults": [
+        {
+          "name": "test",
+          "command": [
+            "node",
+            "--test"
+          ],
+          "exit": 0,
+          "durationMs": 446
+        },
+        {
+          "name": "check",
+          "command": [
+            "node",
+            "scripts/check.mjs"
+          ],
+          "exit": 0,
+          "durationMs": 532
+        },
+        {
+          "name": "build-1",
+          "command": [
+            "node",
+            "scripts/build.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 70
+        },
+        {
+          "name": "build-2",
+          "command": [
+            "node",
+            "scripts/build.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 68
+        },
+        {
+          "name": "check-generated",
+          "command": [
+            "node",
+            "scripts/check-generated.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 67
+        }
+      ],
+      "reproduciblePreview": {
+        "committedBytesMatch": true,
+        "identicalBuilds": true,
+        "inventoryHashes": {
+          "first": "916528059937bae58049ab72b1cadb67bc4bc679effc6dd0278aa21d65a5a051",
+          "second": "916528059937bae58049ab72b1cadb67bc4bc679effc6dd0278aa21d65a5a051"
+        },
+        "fileCountIncludingManifest": 10,
+        "files": [
+          {
+            "path": "BUILD-MANIFEST.json",
+            "bytes": 1392,
+            "sha256": "b94022efa8163cf623e482ad4e08c0620261c7f2c011089dd4603357ffc916ed"
+          },
+          {
+            "path": "dist-preview/en/index.html",
+            "bytes": 13299,
+            "sha256": "4b3b6dfda9c152eea2e6502f45d9310a4fbfec0b5de5ca8edf3380de0b3ee687"
+          },
+          {
+            "path": "dist-preview/index.html",
+            "bytes": 12548,
+            "sha256": "ca7df2171b42291f9c004437f5d1924fcdeca9de56efc3f67867367916379d26"
+          },
+          {
+            "path": "dist-preview/js/app.js",
+            "bytes": 20324,
+            "sha256": "830ec823d138ca82abefeecbc72b4b6192492d245b16e53558521ea8658a314b"
+          },
+          {
+            "path": "dist-preview/js/controller.mjs",
+            "bytes": 5855,
+            "sha256": "fb6184d0333580730208a9dac56dde795ec0f44ffc82857d28d60bec27de2ea1"
+          },
+          {
+            "path": "dist-preview/js/core/wallpaper.mjs",
+            "bytes": 15285,
+            "sha256": "e0d4d9c699aeb3667ad7d2dd98d9d716bc0e85f199f378aa355409510fd3e185"
+          },
+          {
+            "path": "dist-preview/js/worker-handler.mjs",
+            "bytes": 785,
+            "sha256": "85802f91c77f1902e2a22f36cea67630df78d8664940bef77abef3a4d3935b2a"
+          },
+          {
+            "path": "dist-preview/js/worker-source.js",
+            "bytes": 16956,
+            "sha256": "5c8f4372ef68c615778db0c87a208b3ba59d7478b7a760938d996640a35b68c8"
+          },
+          {
+            "path": "dist-preview/robots.txt",
+            "bytes": 26,
+            "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1"
+          },
+          {
+            "path": "dist-preview/styles/app.css",
+            "bytes": 6931,
+            "sha256": "e2337d5c7b9b5804f786f9fff003204069b675555fdab5e553197f412272908f"
+          }
+        ]
+      },
+      "fixtureDelta": {
+        "before": 17,
+        "after": 22,
+        "retained": 17,
+        "added": [
+          "partial-height-opening-full-strips",
+          "opening-height-exceeds-wall",
+          "opening-height-equals-wall",
+          "first-opening-height-before-aggregate-and-roll",
+          "opening-width-format-before-height-cross-check"
+        ],
+        "changed": [
+          "openings-list-deduction"
+        ],
+        "byteIdenticalToFixedSpecification": true
+      },
+      "core": {
+        "fixedCases": 19,
+        "fixedPass": 19,
+        "heldOutCases": 17,
+        "passed": 35,
+        "failed": 1
+      },
+      "controllers": {
+        "fixed": [
+          {
+            "id": "state-dirty-error",
+            "status": "PASS"
+          },
+          {
+            "id": "state-cancel-late",
+            "status": "PASS"
+          },
+          {
+            "id": "state-replace-late",
+            "status": "PASS"
+          }
+        ],
+        "queuedBeforeActiveReply": "FAIL"
+      },
+      "reportByteChecks": 4,
+      "publicReportDigests": [
+        {
+          "id": "basic-perimeter",
+          "bytes": 280,
+          "sha256": "4e6b1fd3cfc4429f5e9a0a10735029094d1a1e43f50886152e4d492425c404e7",
+          "status": "PASS"
+        },
+        {
+          "id": "openings-list-deduction",
+          "bytes": 282,
+          "sha256": "3facdec2e1314b5bd4272078dec67888a1e859dfa20e599bf15213b58d020131",
+          "status": "PASS"
+        },
+        {
+          "id": "partial-height-opening-full-strips",
+          "bytes": 274,
+          "sha256": "0d1185f13fcc13cf89e3f96e35fd6485ad062d88f112a1a0a04ffee6a8a73d8f",
+          "status": "PASS"
+        }
+      ],
+      "tableRows": null,
+      "urlLifecycle": {
+        "normal": true,
+        "constructionFailure": {
+          "id": "PWP-03",
+          "inheritedFrom283": true,
+          "scope": "synthetic synchronous Worker construction error",
+          "created": 1,
+          "revoked": 0
+        }
+      },
+      "previewHTTP": {
+        "host": "127.0.0.1",
+        "files": [
+          {
+            "path": "/en/index.html",
+            "status": 200,
+            "mime": "text/html",
+            "sha256": "4b3b6dfda9c152eea2e6502f45d9310a4fbfec0b5de5ca8edf3380de0b3ee687",
+            "headStatus": 200
+          },
+          {
+            "path": "/index.html",
+            "status": 200,
+            "mime": "text/html",
+            "sha256": "ca7df2171b42291f9c004437f5d1924fcdeca9de56efc3f67867367916379d26",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/app.js",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "830ec823d138ca82abefeecbc72b4b6192492d245b16e53558521ea8658a314b",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/controller.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "fb6184d0333580730208a9dac56dde795ec0f44ffc82857d28d60bec27de2ea1",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/core/wallpaper.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "e0d4d9c699aeb3667ad7d2dd98d9d716bc0e85f199f378aa355409510fd3e185",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/worker-handler.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "85802f91c77f1902e2a22f36cea67630df78d8664940bef77abef3a4d3935b2a",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/worker-source.js",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "5c8f4372ef68c615778db0c87a208b3ba59d7478b7a760938d996640a35b68c8",
+            "headStatus": 200
+          },
+          {
+            "path": "/robots.txt",
+            "status": 200,
+            "mime": "text/plain",
+            "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
+            "headStatus": 200
+          },
+          {
+            "path": "/styles/app.css",
+            "status": 200,
+            "mime": "text/css",
+            "sha256": "e2337d5c7b9b5804f786f9fff003204069b675555fdab5e553197f412272908f",
+            "headStatus": 200
+          }
+        ],
+        "negative": {
+          "missing": 404,
+          "directory": 404,
+          "post": 405,
+          "rootEscape": 403
+        },
+        "csp": "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+      },
+      "embeddedNodeWorker": [
+        {
+          "id": "basic-perimeter",
+          "generation": 13,
+          "status": "PASS"
+        },
+        {
+          "id": "opening-height-exceeds-wall",
+          "generation": 14,
+          "status": "PASS"
+        }
+      ],
+      "staticSource": {
+        "pages": [
+          {
+            "lang": "zh-Hant",
+            "path": "index.html",
+            "homeHref": "../../",
+            "assets": [
+              "./styles/app.css",
+              "./js/app.js"
+            ],
+            "metaRobots": "noindex, nofollow",
+            "relativeHomeMatchesBaseline": true
+          },
+          {
+            "lang": "en",
+            "path": "en/index.html",
+            "homeHref": "../../en/",
+            "assets": [
+              "../styles/app.css",
+              "../js/app.js"
+            ],
+            "metaRobots": "noindex, nofollow",
+            "relativeHomeMatchesBaseline": true
+          }
+        ],
+        "translationKeys": [
+          "DECIMAL_FORMAT",
+          "EMPTY",
+          "ENUM",
+          "INPUT_LIMIT",
+          "INTEGER_FORMAT",
+          "INTERNAL",
+          "MODE_COMBINATION",
+          "OPENINGS_EXCEED_WALL",
+          "OPENING_HEIGHT_EXCEEDS_WALL",
+          "OUTPUT_LIMIT",
+          "RANGE",
+          "ROW_LIMIT",
+          "SCHEMA",
+          "STRIP_TOO_LONG",
+          "UNICODE",
+          "WORKER_ERROR"
+        ],
+        "noForbiddenSourceSinks": true,
+        "reducedMotionCss": true
+      },
+      "baselineCoreBlob": "1111f3e2e3bd4e29873b7469bc44f6cae06dab4a",
+      "candidateCoreBlob": "06040324b1c4f17ef7956bd685089f06f5e18cac",
+      "previewByteIdenticalToBaseline": false,
+      "syntheticLocalizationRoutes": {
+        "passed": 10,
+        "languages": [
+          "zh-Hant",
+          "en"
+        ],
+        "actualBrowser": false,
+        "publicCases": [
+          {
+            "language": "zh-Hant",
+            "id": "first-opening-height-before-aggregate-and-roll",
+            "target": "field-opening-2-heightM",
+            "status": "PASS"
+          },
+          {
+            "language": "zh-Hant",
+            "id": "opening-width-format-before-height-cross-check",
+            "target": "field-opening-2-widthM",
+            "status": "PASS"
+          },
+          {
+            "language": "zh-Hant",
+            "id": "opening-height-exceeds-wall",
+            "target": "field-opening-1-heightM",
+            "status": "PASS"
+          },
+          {
+            "language": "en",
+            "id": "first-opening-height-before-aggregate-and-roll",
+            "target": "field-opening-2-heightM",
+            "status": "PASS"
+          },
+          {
+            "language": "en",
+            "id": "opening-width-format-before-height-cross-check",
+            "target": "field-opening-2-widthM",
+            "status": "PASS"
+          },
+          {
+            "language": "en",
+            "id": "opening-height-exceeds-wall",
+            "target": "field-opening-1-heightM",
+            "status": "PASS"
+          }
+        ]
+      },
+      "requiredDeltaChecks": [
+        {
+          "id": "openings-list-deduction",
+          "status": "PASS"
+        },
+        {
+          "id": "partial-height-opening-full-strips",
+          "status": "PASS"
+        },
+        {
+          "id": "opening-height-exceeds-wall",
+          "status": "PASS"
+        },
+        {
+          "id": "opening-height-equals-wall",
+          "status": "PASS"
+        },
+        {
+          "id": "first-opening-height-before-aggregate-and-roll",
+          "status": "PASS"
+        },
+        {
+          "id": "opening-width-format-before-height-cross-check",
+          "status": "PASS"
+        }
+      ]
+    },
+    "ping-area-converter": {
+      "tests": {
+        "total": 61,
+        "passed": 61,
+        "failed": 0
+      },
+      "commandResults": [
+        {
+          "name": "test",
+          "command": [
+            "node",
+            "--test"
+          ],
+          "exit": 0,
+          "durationMs": 194
+        },
+        {
+          "name": "check",
+          "command": [
+            "node",
+            "scripts/check.mjs"
+          ],
+          "exit": 0,
+          "durationMs": 578
+        },
+        {
+          "name": "build-1",
+          "command": [
+            "node",
+            "scripts/build.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 74
+        },
+        {
+          "name": "build-2",
+          "command": [
+            "node",
+            "scripts/build.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 82
+        },
+        {
+          "name": "check-generated",
+          "command": [
+            "node",
+            "scripts/check-generated.mjs",
+            "--mode",
+            "preview"
+          ],
+          "exit": 0,
+          "durationMs": 66
+        }
+      ],
+      "reproduciblePreview": {
+        "committedBytesMatch": true,
+        "identicalBuilds": true,
+        "inventoryHashes": {
+          "first": "45f5e6d95292de60becdecfadd2e01bef859ae4db8a13fe28f347379e6ca3fc8",
+          "second": "45f5e6d95292de60becdecfadd2e01bef859ae4db8a13fe28f347379e6ca3fc8"
+        },
+        "fileCountIncludingManifest": 10,
+        "files": [
+          {
+            "path": "BUILD-MANIFEST.json",
+            "bytes": 1390,
+            "sha256": "2d714a51255b3f2611001487b7598b581cc782342dca89125e57f23d8252c06b"
+          },
+          {
+            "path": "dist-preview/en/index.html",
+            "bytes": 5924,
+            "sha256": "536008249ed50420a81ad9a6c74665adb9da93726f2d81c56bc7c2d948b0cf42"
+          },
+          {
+            "path": "dist-preview/index.html",
+            "bytes": 5588,
+            "sha256": "722e75c48bbe01cae017125ba7c708cc9eafe71e0df88c2918785b6624d062f8"
+          },
+          {
+            "path": "dist-preview/js/app.js",
+            "bytes": 10545,
+            "sha256": "9dc98b7331198ab3618cb11bb03611b62ca44a7f52bfd915f45373655ec129e5"
+          },
+          {
+            "path": "dist-preview/js/controller.mjs",
+            "bytes": 5022,
+            "sha256": "842d8092b82c93e503b2b2f8e1cccb7acbd03d115134b9c9cd1ca652d3802153"
+          },
+          {
+            "path": "dist-preview/js/core/ping-area.mjs",
+            "bytes": 10255,
+            "sha256": "ec2e16e069119e3c8479654a9f4fa4dbc5d64af02c7ea5e6787fbe402854d379"
+          },
+          {
+            "path": "dist-preview/js/worker-handler.mjs",
+            "bytes": 788,
+            "sha256": "f4dfa9f3f70f1ca982f80c3ccf47d53b803bd799cf44d4d50f8d26fef310dd05"
+          },
+          {
+            "path": "dist-preview/js/worker-source.js",
+            "bytes": 11688,
+            "sha256": "9ecbbaf71b97e2dd81c2d15b503d37e14f1eb98c19d4886ddbd7d95ac1d61b70"
+          },
+          {
+            "path": "dist-preview/robots.txt",
+            "bytes": 26,
+            "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1"
+          },
+          {
+            "path": "dist-preview/styles/app.css",
+            "bytes": 6669,
+            "sha256": "01f552a270d9c21d505c83b60eca6590b5c4bb5059e8cb626b7b77a86b85ae97"
+          }
+        ]
+      },
+      "fixtureDelta": {
+        "before": 27,
+        "after": 28,
+        "retained": 27,
+        "added": [
+          "hundred-ping-precision"
+        ],
+        "changed": [],
+        "byteIdenticalToFixedSpecification": true
+      },
+      "core": {
+        "fixedCases": 24,
+        "fixedPass": 24,
+        "heldOutCases": 13,
+        "passed": 37,
+        "failed": 0
+      },
+      "controllers": {
+        "fixed": [
+          {
+            "id": "state-dirty-error",
+            "status": "PASS"
+          },
+          {
+            "id": "state-cancel-late",
+            "status": "PASS"
+          },
+          {
+            "id": "state-replace-late",
+            "status": "PASS"
+          }
+        ],
+        "queuedBeforeActiveReply": "FAIL"
+      },
+      "reportByteChecks": 3,
+      "publicReportDigests": [
+        {
+          "id": "example-thirty-ping",
+          "bytes": 99,
+          "sha256": "2363e57e7570dae35a9830eaa3d86b003ca73be825cabeebd297d24f3f14dc20",
+          "status": "PASS"
+        },
+        {
+          "id": "hundred-ping-precision",
+          "bytes": 104,
+          "sha256": "1a8ae548d188a8085a2004e0fa9cb00ac0fc3ea71b7ff1467700c890901c8074",
+          "status": "PASS"
+        }
+      ],
+      "tableRows": 100,
+      "urlLifecycle": {
+        "normal": true,
+        "constructionFailure": {
+          "id": "PWP-03",
+          "inheritedFrom283": true,
+          "scope": "synthetic synchronous Worker construction error",
+          "created": 1,
+          "revoked": 0
+        }
+      },
+      "previewHTTP": {
+        "host": "127.0.0.1",
+        "files": [
+          {
+            "path": "/en/index.html",
+            "status": 200,
+            "mime": "text/html",
+            "sha256": "536008249ed50420a81ad9a6c74665adb9da93726f2d81c56bc7c2d948b0cf42",
+            "headStatus": 200
+          },
+          {
+            "path": "/index.html",
+            "status": 200,
+            "mime": "text/html",
+            "sha256": "722e75c48bbe01cae017125ba7c708cc9eafe71e0df88c2918785b6624d062f8",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/app.js",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "9dc98b7331198ab3618cb11bb03611b62ca44a7f52bfd915f45373655ec129e5",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/controller.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "842d8092b82c93e503b2b2f8e1cccb7acbd03d115134b9c9cd1ca652d3802153",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/core/ping-area.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "ec2e16e069119e3c8479654a9f4fa4dbc5d64af02c7ea5e6787fbe402854d379",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/worker-handler.mjs",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "f4dfa9f3f70f1ca982f80c3ccf47d53b803bd799cf44d4d50f8d26fef310dd05",
+            "headStatus": 200
+          },
+          {
+            "path": "/js/worker-source.js",
+            "status": 200,
+            "mime": "text/javascript",
+            "sha256": "9ecbbaf71b97e2dd81c2d15b503d37e14f1eb98c19d4886ddbd7d95ac1d61b70",
+            "headStatus": 200
+          },
+          {
+            "path": "/robots.txt",
+            "status": 200,
+            "mime": "text/plain",
+            "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
+            "headStatus": 200
+          },
+          {
+            "path": "/styles/app.css",
+            "status": 200,
+            "mime": "text/css",
+            "sha256": "01f552a270d9c21d505c83b60eca6590b5c4bb5059e8cb626b7b77a86b85ae97",
+            "headStatus": 200
+          }
+        ],
+        "negative": {
+          "missing": 404,
+          "directory": 404,
+          "post": 405,
+          "rootEscape": 403
+        },
+        "csp": "default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+      },
+      "embeddedNodeWorker": [
+        {
+          "id": "example-thirty-ping",
+          "generation": 13,
+          "status": "PASS"
+        },
+        {
+          "id": "error-empty-amount",
+          "generation": 14,
+          "status": "PASS"
+        }
+      ],
+      "staticSource": {
+        "pages": [
+          {
+            "lang": "zh-Hant",
+            "path": "index.html",
+            "homeHref": "../../",
+            "assets": [
+              "./styles/app.css",
+              "./js/app.js"
+            ],
+            "metaRobots": "noindex, nofollow",
+            "relativeHomeMatchesBaseline": true
+          },
+          {
+            "lang": "en",
+            "path": "en/index.html",
+            "homeHref": "../../en/",
+            "assets": [
+              "../styles/app.css",
+              "../js/app.js"
+            ],
+            "metaRobots": "noindex, nofollow",
+            "relativeHomeMatchesBaseline": true
+          }
+        ],
+        "translationKeys": [
+          "DECIMAL_FORMAT",
+          "EMPTY",
+          "ENUM",
+          "INPUT_LIMIT",
+          "INTERNAL",
+          "OUTPUT_LIMIT",
+          "RANGE",
+          "SCHEMA",
+          "UNICODE",
+          "WORKER_ERROR"
+        ],
+        "noForbiddenSourceSinks": true,
+        "reducedMotionCss": true
+      },
+      "baselineCoreBlob": "de7de866506a22ed288c3b33887617b04d72bfd9",
+      "candidateCoreBlob": "de7de866506a22ed288c3b33887617b04d72bfd9",
+      "previewByteIdenticalToBaseline": true,
+      "requiredDeltaChecks": [
+        {
+          "id": "hundred-ping-precision",
+          "status": "PASS"
+        }
+      ]
+    }
+  }
+}
