@@ -1,0 +1,2442 @@
+{
+  "status": "PASS",
+  "summary": {
+    "parse": 37,
+    "conversions": 26,
+    "predicate": 48,
+    "bounds": 27,
+    "controller": 5,
+    "steps": 75,
+    "stale": 5,
+    "effects": 4,
+    "compoundErrorProbes": 6,
+    "relativeLinks": 11
+  },
+  "files": {
+    "AUTHOR-CHECK.md": {
+      "bytes": 25512,
+      "sha256": "de728ff3eed1ed4deac22d56853a96be0f4a15437db0c20bc4491b8ca863d952"
+    },
+    "BRIEF.md": {
+      "bytes": 9360,
+      "sha256": "c57fc423e1618d3fdc7a9e2f7bd85db3bc7da046974891c2d1216e727db690e1"
+    },
+    "SPEC.md": {
+      "bytes": 36743,
+      "sha256": "358ebb9a89b2edbe2da72f7eb345f02a24bab4f1b11ec7bee5419dd3d9e89952"
+    },
+    "fixtures.json": {
+      "bytes": 157500,
+      "sha256": "803970d4bd78063ac1b9eaeb1a81969e20ba55a52c53f6146e9a392066dbe535"
+    }
+  },
+  "failures": [],
+  "parse": {
+    "brief-source": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "team",
+          "2026-11-02",
+          "2026-11-09",
+          "\u5099\u8a3b"
+        ],
+        "rows": [
+          [
+            "001",
+            "2",
+            "",
+            ""
+          ],
+          [
+            "002",
+            "0",
+            "\u6b78\u9084,\u5f85\u67e5",
+            "\u665a\u73ed"
+          ]
+        ]
+      }
+    },
+    "bom-and-mixed-newlines": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": [
+          [
+            "001",
+            "a\r\nb"
+          ],
+          [
+            "002",
+            "c\rd"
+          ],
+          [
+            "003",
+            "e\nf"
+          ]
+        ]
+      }
+    },
+    "quote-escape": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "i\"d",
+          "x"
+        ],
+        "rows": [
+          [
+            "001",
+            "he said \"hi\""
+          ]
+        ]
+      }
+    },
+    "trailing-empty": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": [
+          [
+            "001",
+            ""
+          ]
+        ]
+      }
+    },
+    "quoted-empty-pair": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": [
+          [
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    "exact-headers": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "\u00e9",
+          "e\u0301",
+          "ID",
+          "\u00a0"
+        ],
+        "rows": [
+          [
+            "\ud83d\ude42",
+            "a",
+            "b",
+            "c",
+            "\ufeffdata"
+          ]
+        ]
+      }
+    },
+    "header-only": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": []
+      }
+    },
+    "header-only-crlf": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": []
+      }
+    },
+    "space-and-tab-are-data": {
+      "ok": true,
+      "table": {
+        "headers": [
+          "id",
+          "x"
+        ],
+        "rows": [
+          [
+            "001",
+            "\t "
+          ],
+          [
+            "002",
+            " "
+          ],
+          [
+            "003",
+            "0"
+          ]
+        ]
+      }
+    },
+    "empty-source": {
+      "ok": false,
+      "error": {
+        "code": "EMPTY_SOURCE",
+        "record": 1,
+        "column": 1,
+        "field": null
+      }
+    },
+    "bom-only": {
+      "ok": false,
+      "error": {
+        "code": "EMPTY_SOURCE",
+        "record": 1,
+        "column": 1,
+        "field": null
+      }
+    },
+    "double-bom": {
+      "ok": false,
+      "error": {
+        "code": "DUPLICATE_BOM",
+        "record": 1,
+        "column": 1,
+        "field": null
+      }
+    },
+    "bad-utf8": {
+      "ok": false,
+      "error": {
+        "code": "INVALID_UTF8",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "unpaired-surrogate": {
+      "ok": false,
+      "error": {
+        "code": "INVALID_UNICODE",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "source-unknown-field": {
+      "ok": false,
+      "error": {
+        "code": "SOURCE_SCHEMA",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "one-header": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_WIDTH",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "empty-first-header": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_NAME",
+        "record": 1,
+        "column": 1,
+        "field": null
+      }
+    },
+    "ascii-space-header": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_NAME",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "tab-header": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_NAME",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "newline-header": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_NAME",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "duplicate-header": {
+      "ok": false,
+      "error": {
+        "code": "DUPLICATE_HEADER",
+        "record": 1,
+        "column": 3,
+        "field": null
+      }
+    },
+    "duplicate-before-later-bad-header": {
+      "ok": false,
+      "error": {
+        "code": "DUPLICATE_HEADER",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "short-row": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "extra-column": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2,
+        "column": 3,
+        "field": null
+      }
+    },
+    "empty-interior-record": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "outside-cr": {
+      "ok": false,
+      "error": {
+        "code": "BARE_CR",
+        "record": 1,
+        "column": 2,
+        "field": null
+      }
+    },
+    "bare-cr-after-close": {
+      "ok": false,
+      "error": {
+        "code": "BARE_CR",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "quote-in-unquoted": {
+      "ok": false,
+      "error": {
+        "code": "QUOTE_IN_UNQUOTED",
+        "record": 2,
+        "column": 1,
+        "field": null
+      }
+    },
+    "after-quote": {
+      "ok": false,
+      "error": {
+        "code": "AFTER_QUOTE",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "unclosed-quote": {
+      "ok": false,
+      "error": {
+        "code": "UNCLOSED_QUOTE",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "nul-before-eof": {
+      "ok": false,
+      "error": {
+        "code": "CONTROL_CHAR",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "vertical-tab": {
+      "ok": false,
+      "error": {
+        "code": "CONTROL_CHAR",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "lexical-before-row-width": {
+      "ok": false,
+      "error": {
+        "code": "AFTER_QUOTE",
+        "record": 2,
+        "column": 3,
+        "field": null
+      }
+    },
+    "closed-record-before-later-quote": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "logical-record-after-embedded-lf": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 3,
+        "column": 2,
+        "field": null
+      }
+    },
+    "control-after-closing-quote": {
+      "ok": false,
+      "error": {
+        "code": "CONTROL_CHAR",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "header-lexical-before-duplicate-check": {
+      "ok": false,
+      "error": {
+        "code": "AFTER_QUOTE",
+        "record": 1,
+        "column": 3,
+        "field": null
+      }
+    }
+  },
+  "conversions": {
+    "brief-keep": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "team",
+          "date",
+          "loan"
+        ],
+        "rows": [
+          [
+            "001",
+            "2026-11-02",
+            "2"
+          ],
+          [
+            "001",
+            "2026-11-09",
+            ""
+          ],
+          [
+            "002",
+            "2026-11-02",
+            "0"
+          ],
+          [
+            "002",
+            "2026-11-09",
+            "\u6b78\u9084,\u5f85\u67e5"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 4,
+          "actual": 4,
+          "emptyCells": 1,
+          "skippedEmpty": 0,
+          "omittedColumns": [
+            4
+          ]
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 127,
+            "utf8": "\"team\",\"date\",\"loan\"\r\n\"001\",\"2026-11-02\",\"2\"\r\n\"001\",\"2026-11-09\",\"\"\r\n\"002\",\"2026-11-02\",\"0\"\r\n\"002\",\"2026-11-09\",\"\u6b78\u9084,\u5f85\u67e5\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 173,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"team\",\"date\",\"loan\"],\"rows\":[[\"001\",\"2026-11-02\",\"2\"],[\"001\",\"2026-11-09\",\"\"],[\"002\",\"2026-11-02\",\"0\"],[\"002\",\"2026-11-09\",\"\u6b78\u9084,\u5f85\u67e5\"]]}\n"
+          }
+        }
+      }
+    },
+    "brief-skip": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "team",
+          "date",
+          "loan"
+        ],
+        "rows": [
+          [
+            "001",
+            "2026-11-02",
+            "2"
+          ],
+          [
+            "002",
+            "2026-11-02",
+            "0"
+          ],
+          [
+            "002",
+            "2026-11-09",
+            "\u6b78\u9084,\u5f85\u67e5"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 4,
+          "actual": 3,
+          "emptyCells": 1,
+          "skippedEmpty": 1,
+          "omittedColumns": [
+            4
+          ]
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 104,
+            "utf8": "\"team\",\"date\",\"loan\"\r\n\"001\",\"2026-11-02\",\"2\"\r\n\"002\",\"2026-11-02\",\"0\"\r\n\"002\",\"2026-11-09\",\"\u6b78\u9084,\u5f85\u67e5\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 149,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"team\",\"date\",\"loan\"],\"rows\":[[\"001\",\"2026-11-02\",\"2\"],[\"002\",\"2026-11-02\",\"0\"],[\"002\",\"2026-11-09\",\"\u6b78\u9084,\u5f85\u67e5\"]]}\n"
+          }
+        }
+      }
+    },
+    "space-and-zero": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "Week",
+            " "
+          ],
+          [
+            "001",
+            "Week",
+            "0"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 2,
+          "actual": 2,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 60,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"Week\",\" \"\r\n\"001\",\"Week\",\"0\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 104,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"Week\",\" \"],[\"001\",\"Week\",\"0\"]]}\n"
+          }
+        }
+      }
+    },
+    "header-only": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [],
+        "origins": [],
+        "counts": {
+          "potential": 0,
+          "actual": 0,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 24,
+            "utf8": "\"id\",\"attribute\",\"value\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 67,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+          }
+        }
+      }
+    },
+    "header-only-risk": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "=id",
+          "attribute",
+          "value"
+        ],
+        "rows": [],
+        "origins": [],
+        "counts": {
+          "potential": 0,
+          "actual": 0,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [
+          {
+            "record": 1,
+            "column": 1,
+            "sourceRecord": 1,
+            "sourceColumn": 1
+          }
+        ],
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null,
+            "utf8": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 26,
+            "utf8": "\"'=id\",\"attribute\",\"value\""
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 68,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"=id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+          }
+        }
+      }
+    },
+    "formula-risk": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "=1+1"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 1,
+          "actual": 1,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [
+          {
+            "record": 2,
+            "column": 3,
+            "sourceRecord": 2,
+            "sourceColumn": 2
+          }
+        ],
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null,
+            "utf8": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 43,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"'=1+1\""
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 85,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"=1+1\"]]}\n"
+          }
+        }
+      }
+    },
+    "risk-only-marked": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "  =1+1"
+          ],
+          [
+            "001",
+            "y",
+            "0"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 2,
+          "actual": 2,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [
+          {
+            "record": 2,
+            "column": 3,
+            "sourceRecord": 2,
+            "sourceColumn": 2
+          }
+        ],
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null,
+            "utf8": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 60,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"'  =1+1\"\r\n\"001\",\"y\",\"0\""
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 103,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"  =1+1\"],[\"001\",\"y\",\"0\"]]}\n"
+          }
+        }
+      }
+    },
+    "risk-origin-and-multiplicity": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "when",
+          "@value"
+        ],
+        "rows": [
+          [
+            "-12",
+            "\uff0bweek",
+            "0"
+          ],
+          [
+            "-12",
+            "ordinary",
+            "safe, text"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 2,
+          "actual": 2,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": [
+            4
+          ]
+        },
+        "risk": [
+          {
+            "record": 1,
+            "column": 3,
+            "sourceRecord": null,
+            "sourceColumn": null
+          },
+          {
+            "record": 2,
+            "column": 1,
+            "sourceRecord": 2,
+            "sourceColumn": 1
+          },
+          {
+            "record": 2,
+            "column": 2,
+            "sourceRecord": 1,
+            "sourceColumn": 2
+          },
+          {
+            "record": 3,
+            "column": 1,
+            "sourceRecord": 2,
+            "sourceColumn": 1
+          }
+        ],
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null,
+            "utf8": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 76,
+            "utf8": "\"id\",\"when\",\"'@value\"\r\n\"'-12\",\"'\uff0bweek\",\"0\"\r\n\"'-12\",\"ordinary\",\"safe, text\""
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 116,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"when\",\"@value\"],\"rows\":[[\"-12\",\"\uff0bweek\",\"0\"],[\"-12\",\"ordinary\",\"safe, text\"]]}\n"
+          }
+        }
+      }
+    },
+    "only-omitted-risk": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            ""
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 1,
+          "actual": 1,
+          "emptyCells": 1,
+          "skippedEmpty": 0,
+          "omittedColumns": [
+            2
+          ]
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 38,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 81,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"\"]]}\n"
+          }
+        }
+      }
+    },
+    "skipped-value-omits-risk-attribute": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [],
+        "origins": [],
+        "counts": {
+          "potential": 1,
+          "actual": 0,
+          "emptyCells": 1,
+          "skippedEmpty": 1,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 24,
+            "utf8": "\"id\",\"attribute\",\"value\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 67,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[]}\n"
+          }
+        }
+      }
+    },
+    "multiple-keep-and-duplicate-records": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "second",
+          "first",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "\u03b2",
+            "001",
+            "z",
+            "9"
+          ],
+          [
+            "\u03b2",
+            "001",
+            "x",
+            "0"
+          ],
+          [
+            "\u03b2",
+            "001",
+            "z",
+            "9"
+          ],
+          [
+            "\u03b2",
+            "001",
+            "x",
+            "0"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "counts": {
+          "potential": 4,
+          "actual": 4,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 116,
+            "utf8": "\"second\",\"first\",\"attribute\",\"value\"\r\n\"\u03b2\",\"001\",\"z\",\"9\"\r\n\"\u03b2\",\"001\",\"x\",\"0\"\r\n\"\u03b2\",\"001\",\"z\",\"9\"\r\n\"\u03b2\",\"001\",\"x\",\"0\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 162,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"second\",\"first\",\"attribute\",\"value\"],\"rows\":[[\"\u03b2\",\"001\",\"z\",\"9\"],[\"\u03b2\",\"001\",\"x\",\"0\"],[\"\u03b2\",\"001\",\"z\",\"9\"],[\"\u03b2\",\"001\",\"x\",\"0\"]]}\n"
+          }
+        }
+      }
+    },
+    "quoted-crlf-and-double-quote": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "a\r\nb,\"c\""
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 1,
+          "actual": 1,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 48,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"a\r\nb,\"\"c\"\"\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 93,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"a\\r\\nb,\\\"c\\\"\"]]}\n"
+          }
+        }
+      }
+    },
+    "name-can-match-nonkept-source-header": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "rename",
+          "x"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "4"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 1,
+          "actual": 1,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": [
+            3
+          ]
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 32,
+            "utf8": "\"id\",\"rename\",\"x\"\r\n\"001\",\"x\",\"4\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 75,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"rename\",\"x\"],\"rows\":[[\"001\",\"x\",\"4\"]]}\n"
+          }
+        }
+      }
+    },
+    "short-clean": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "2"
+          ],
+          [
+            "001",
+            "y",
+            "0"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "counts": {
+          "potential": 2,
+          "actual": 2,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 54,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"2\"\r\n\"001\",\"y\",\"0\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 98,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"2\"],[\"001\",\"y\",\"0\"]]}\n"
+          }
+        }
+      }
+    },
+    "wrong-settings-schema": {
+      "ok": false,
+      "error": {
+        "code": "OPTIONS_SCHEMA",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "unknown-settings-field": {
+      "ok": false,
+      "error": {
+        "code": "OPTIONS_SCHEMA",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "role-length": {
+      "ok": false,
+      "error": {
+        "code": "ROLE_LENGTH",
+        "record": null,
+        "column": null,
+        "field": "roles"
+      }
+    },
+    "role-value": {
+      "ok": false,
+      "error": {
+        "code": "ROLE_VALUE",
+        "record": null,
+        "column": 2,
+        "field": "roles"
+      }
+    },
+    "keep-before-expand": {
+      "ok": false,
+      "error": {
+        "code": "KEEP_REQUIRED",
+        "record": null,
+        "column": null,
+        "field": "roles"
+      }
+    },
+    "expand-required": {
+      "ok": false,
+      "error": {
+        "code": "EXPAND_REQUIRED",
+        "record": null,
+        "column": null,
+        "field": "roles"
+      }
+    },
+    "bad-output-name": {
+      "ok": false,
+      "error": {
+        "code": "OUTPUT_NAME",
+        "record": null,
+        "column": null,
+        "field": "attributeName"
+      }
+    },
+    "kept-name-collision": {
+      "ok": false,
+      "error": {
+        "code": "OUTPUT_NAME_COLLISION",
+        "record": null,
+        "column": null,
+        "field": "attributeName"
+      }
+    },
+    "new-name-collision": {
+      "ok": false,
+      "error": {
+        "code": "OUTPUT_NAME_COLLISION",
+        "record": null,
+        "column": null,
+        "field": "valueName"
+      }
+    },
+    "parse-error-before-settings": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "protected-duplicate-looking-headers": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "'=qty",
+          "=qty"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "2"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 1,
+          "actual": 1,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [
+          {
+            "record": 1,
+            "column": 3,
+            "sourceRecord": null,
+            "sourceColumn": null
+          }
+        ],
+        "files": {
+          "rawCsv": {
+            "status": "formula-risk",
+            "byteLength": null,
+            "utf8": null
+          },
+          "protectedCsv": {
+            "status": "ready",
+            "byteLength": 35,
+            "utf8": "\"id\",\"'=qty\",\"'=qty\"\r\n\"001\",\"x\",\"2\""
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 77,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"'=qty\",\"=qty\"],\"rows\":[[\"001\",\"x\",\"2\"]]}\n"
+          }
+        }
+      }
+    },
+    "pagination-26": {
+      "ok": true,
+      "result": {
+        "columns": [
+          "id",
+          "attribute",
+          "value"
+        ],
+        "rows": [
+          [
+            "001",
+            "x",
+            "v"
+          ],
+          [
+            "002",
+            "x",
+            "v"
+          ],
+          [
+            "003",
+            "x",
+            "v"
+          ],
+          [
+            "004",
+            "x",
+            "v"
+          ],
+          [
+            "005",
+            "x",
+            "v"
+          ],
+          [
+            "006",
+            "x",
+            "v"
+          ],
+          [
+            "007",
+            "x",
+            "v"
+          ],
+          [
+            "008",
+            "x",
+            "v"
+          ],
+          [
+            "009",
+            "x",
+            "v"
+          ],
+          [
+            "010",
+            "x",
+            "v"
+          ],
+          [
+            "011",
+            "x",
+            "v"
+          ],
+          [
+            "012",
+            "x",
+            "v"
+          ],
+          [
+            "013",
+            "x",
+            "v"
+          ],
+          [
+            "014",
+            "x",
+            "v"
+          ],
+          [
+            "015",
+            "x",
+            "v"
+          ],
+          [
+            "016",
+            "x",
+            "v"
+          ],
+          [
+            "017",
+            "x",
+            "v"
+          ],
+          [
+            "018",
+            "x",
+            "v"
+          ],
+          [
+            "019",
+            "x",
+            "v"
+          ],
+          [
+            "020",
+            "x",
+            "v"
+          ],
+          [
+            "021",
+            "x",
+            "v"
+          ],
+          [
+            "022",
+            "x",
+            "v"
+          ],
+          [
+            "023",
+            "x",
+            "v"
+          ],
+          [
+            "024",
+            "x",
+            "v"
+          ],
+          [
+            "025",
+            "x",
+            "v"
+          ],
+          [
+            "026",
+            "x",
+            "v"
+          ]
+        ],
+        "origins": [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            7,
+            2
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            11,
+            2
+          ],
+          [
+            12,
+            2
+          ],
+          [
+            13,
+            2
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            15,
+            2
+          ],
+          [
+            16,
+            2
+          ],
+          [
+            17,
+            2
+          ],
+          [
+            18,
+            2
+          ],
+          [
+            19,
+            2
+          ],
+          [
+            20,
+            2
+          ],
+          [
+            21,
+            2
+          ],
+          [
+            22,
+            2
+          ],
+          [
+            23,
+            2
+          ],
+          [
+            24,
+            2
+          ],
+          [
+            25,
+            2
+          ],
+          [
+            26,
+            2
+          ],
+          [
+            27,
+            2
+          ]
+        ],
+        "counts": {
+          "potential": 26,
+          "actual": 26,
+          "emptyCells": 0,
+          "skippedEmpty": 0,
+          "omittedColumns": []
+        },
+        "risk": [],
+        "files": {
+          "rawCsv": {
+            "status": "ready",
+            "byteLength": 414,
+            "utf8": "\"id\",\"attribute\",\"value\"\r\n\"001\",\"x\",\"v\"\r\n\"002\",\"x\",\"v\"\r\n\"003\",\"x\",\"v\"\r\n\"004\",\"x\",\"v\"\r\n\"005\",\"x\",\"v\"\r\n\"006\",\"x\",\"v\"\r\n\"007\",\"x\",\"v\"\r\n\"008\",\"x\",\"v\"\r\n\"009\",\"x\",\"v\"\r\n\"010\",\"x\",\"v\"\r\n\"011\",\"x\",\"v\"\r\n\"012\",\"x\",\"v\"\r\n\"013\",\"x\",\"v\"\r\n\"014\",\"x\",\"v\"\r\n\"015\",\"x\",\"v\"\r\n\"016\",\"x\",\"v\"\r\n\"017\",\"x\",\"v\"\r\n\"018\",\"x\",\"v\"\r\n\"019\",\"x\",\"v\"\r\n\"020\",\"x\",\"v\"\r\n\"021\",\"x\",\"v\"\r\n\"022\",\"x\",\"v\"\r\n\"023\",\"x\",\"v\"\r\n\"024\",\"x\",\"v\"\r\n\"025\",\"x\",\"v\"\r\n\"026\",\"x\",\"v\""
+          },
+          "protectedCsv": {
+            "status": "unavailable",
+            "byteLength": null,
+            "utf8": null
+          },
+          "originalJson": {
+            "status": "ready",
+            "byteLength": 482,
+            "utf8": "{\"schemaVersion\":1,\"columns\":[\"id\",\"attribute\",\"value\"],\"rows\":[[\"001\",\"x\",\"v\"],[\"002\",\"x\",\"v\"],[\"003\",\"x\",\"v\"],[\"004\",\"x\",\"v\"],[\"005\",\"x\",\"v\"],[\"006\",\"x\",\"v\"],[\"007\",\"x\",\"v\"],[\"008\",\"x\",\"v\"],[\"009\",\"x\",\"v\"],[\"010\",\"x\",\"v\"],[\"011\",\"x\",\"v\"],[\"012\",\"x\",\"v\"],[\"013\",\"x\",\"v\"],[\"014\",\"x\",\"v\"],[\"015\",\"x\",\"v\"],[\"016\",\"x\",\"v\"],[\"017\",\"x\",\"v\"],[\"018\",\"x\",\"v\"],[\"019\",\"x\",\"v\"],[\"020\",\"x\",\"v\"],[\"021\",\"x\",\"v\"],[\"022\",\"x\",\"v\"],[\"023\",\"x\",\"v\"],[\"024\",\"x\",\"v\"],[\"025\",\"x\",\"v\"],[\"026\",\"x\",\"v\"]]}\n"
+          }
+        }
+      }
+    }
+  },
+  "predicate": {
+    "0": {
+      "value": "=1+1",
+      "risky": true,
+      "protected": "'=1+1"
+    },
+    "1": {
+      "value": "+2",
+      "risky": true,
+      "protected": "'+2"
+    },
+    "2": {
+      "value": "-12",
+      "risky": true,
+      "protected": "'-12"
+    },
+    "3": {
+      "value": "@x",
+      "risky": true,
+      "protected": "'@x"
+    },
+    "4": {
+      "value": "  =x",
+      "risky": true,
+      "protected": "'  =x"
+    },
+    "5": {
+      "value": "\uff1d1",
+      "risky": true,
+      "protected": "'\uff1d1"
+    },
+    "6": {
+      "value": "\uff0b1",
+      "risky": true,
+      "protected": "'\uff0b1"
+    },
+    "7": {
+      "value": "\uff0d1",
+      "risky": true,
+      "protected": "'\uff0d1"
+    },
+    "8": {
+      "value": "\uff20x",
+      "risky": true,
+      "protected": "'\uff20x"
+    },
+    "9": {
+      "value": "\ttext",
+      "risky": true,
+      "protected": "'\ttext"
+    },
+    "10": {
+      "value": "\ntext",
+      "risky": true,
+      "protected": "'\ntext"
+    },
+    "11": {
+      "value": "\rtext",
+      "risky": true,
+      "protected": "'\rtext"
+    },
+    "12": {
+      "value": "\t",
+      "risky": true,
+      "protected": "'\t"
+    },
+    "13": {
+      "value": "\u3000\uff1d1",
+      "risky": true,
+      "protected": "'\u3000\uff1d1"
+    },
+    "14": {
+      "value": "\ufeff@x",
+      "risky": true,
+      "protected": "'\ufeff@x"
+    },
+    "15": {
+      "value": " =x",
+      "risky": true,
+      "protected": "' =x"
+    },
+    "16": {
+      "value": "\u00a0=x",
+      "risky": true,
+      "protected": "'\u00a0=x"
+    },
+    "17": {
+      "value": "\u1680=x",
+      "risky": true,
+      "protected": "'\u1680=x"
+    },
+    "18": {
+      "value": "\u2000=x",
+      "risky": true,
+      "protected": "'\u2000=x"
+    },
+    "19": {
+      "value": "\u2001=x",
+      "risky": true,
+      "protected": "'\u2001=x"
+    },
+    "20": {
+      "value": "\u2002=x",
+      "risky": true,
+      "protected": "'\u2002=x"
+    },
+    "21": {
+      "value": "\u2003=x",
+      "risky": true,
+      "protected": "'\u2003=x"
+    },
+    "22": {
+      "value": "\u2004=x",
+      "risky": true,
+      "protected": "'\u2004=x"
+    },
+    "23": {
+      "value": "\u2005=x",
+      "risky": true,
+      "protected": "'\u2005=x"
+    },
+    "24": {
+      "value": "\u2006=x",
+      "risky": true,
+      "protected": "'\u2006=x"
+    },
+    "25": {
+      "value": "\u2007=x",
+      "risky": true,
+      "protected": "'\u2007=x"
+    },
+    "26": {
+      "value": "\u2008=x",
+      "risky": true,
+      "protected": "'\u2008=x"
+    },
+    "27": {
+      "value": "\u2009=x",
+      "risky": true,
+      "protected": "'\u2009=x"
+    },
+    "28": {
+      "value": "\u200a=x",
+      "risky": true,
+      "protected": "'\u200a=x"
+    },
+    "29": {
+      "value": "\u2028=x",
+      "risky": true,
+      "protected": "'\u2028=x"
+    },
+    "30": {
+      "value": "\u2029=x",
+      "risky": true,
+      "protected": "'\u2029=x"
+    },
+    "31": {
+      "value": "\u202f=x",
+      "risky": true,
+      "protected": "'\u202f=x"
+    },
+    "32": {
+      "value": "\u205f=x",
+      "risky": true,
+      "protected": "'\u205f=x"
+    },
+    "33": {
+      "value": "\u3000=x",
+      "risky": true,
+      "protected": "'\u3000=x"
+    },
+    "34": {
+      "value": "\ufeff=x",
+      "risky": true,
+      "protected": "'\ufeff=x"
+    },
+    "35": {
+      "value": " \t0",
+      "risky": true,
+      "protected": "' \t0"
+    },
+    "36": {
+      "value": "  \r",
+      "risky": true,
+      "protected": "'  \r"
+    },
+    "37": {
+      "value": " \n0",
+      "risky": true,
+      "protected": "' \n0"
+    },
+    "38": {
+      "value": "",
+      "risky": false,
+      "protected": ""
+    },
+    "39": {
+      "value": "001",
+      "risky": false,
+      "protected": "001"
+    },
+    "40": {
+      "value": "a=1",
+      "risky": false,
+      "protected": "a=1"
+    },
+    "41": {
+      "value": "'=-x",
+      "risky": false,
+      "protected": "'=-x"
+    },
+    "42": {
+      "value": "text\t",
+      "risky": false,
+      "protected": "text\t"
+    },
+    "43": {
+      "value": "  ",
+      "risky": false,
+      "protected": "  "
+    },
+    "44": {
+      "value": "\u200b=x",
+      "risky": false,
+      "protected": "\u200b=x"
+    },
+    "45": {
+      "value": " \u00a0",
+      "risky": false,
+      "protected": " \u00a0"
+    },
+    "46": {
+      "value": "0",
+      "risky": false,
+      "protected": "0"
+    },
+    "47": {
+      "value": "normal\ntext",
+      "risky": false,
+      "protected": "normal\ntext"
+    }
+  },
+  "bounds": {
+    "file-1MiB": {
+      "ok": true,
+      "rows": 64,
+      "columns": 2,
+      "bytes": 1048576
+    },
+    "file-over-1MiB": {
+      "ok": false,
+      "error": {
+        "code": "INPUT_BYTES",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "paste-1MiB": {
+      "ok": true,
+      "rows": 64,
+      "columns": 2,
+      "bytes": 1048576
+    },
+    "paste-over-1MiB": {
+      "ok": false,
+      "error": {
+        "code": "INPUT_BYTES",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "paste-byte-cap-not-unit-cap": {
+      "ok": false,
+      "error": {
+        "code": "INPUT_BYTES",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "header-120-codepoints": {
+      "ok": true,
+      "rows": 0,
+      "columns": 2,
+      "firstHeaderCodePoints": 120
+    },
+    "header-121-codepoints": {
+      "ok": false,
+      "error": {
+        "code": "HEADER_NAME",
+        "record": 1,
+        "column": 1,
+        "field": null
+      }
+    },
+    "field-16384-units": {
+      "ok": true,
+      "rows": 1,
+      "columns": 2,
+      "firstDataValueUnits": 16384
+    },
+    "field-16385-units": {
+      "ok": false,
+      "error": {
+        "code": "FIELD_LIMIT",
+        "record": 2,
+        "column": 2,
+        "field": null
+      }
+    },
+    "width-48": {
+      "ok": true,
+      "rows": 0,
+      "columns": 48
+    },
+    "width-49": {
+      "ok": false,
+      "error": {
+        "code": "COLUMN_LIMIT",
+        "record": 1,
+        "column": 49,
+        "field": null
+      }
+    },
+    "rows-2000": {
+      "ok": true,
+      "rows": 2000,
+      "columns": 2
+    },
+    "rows-2001": {
+      "ok": false,
+      "error": {
+        "code": "ROW_LIMIT",
+        "record": 2002,
+        "column": null,
+        "field": null
+      }
+    },
+    "shape-largest-valid": {
+      "ok": true,
+      "rows": 2000,
+      "columns": 48,
+      "totalCells": 96048
+    },
+    "result-20000": {
+      "ok": true,
+      "counts": {
+        "potential": 20000,
+        "actual": 20000,
+        "emptyCells": 0,
+        "skippedEmpty": 0,
+        "omittedColumns": []
+      },
+      "firstOrigin": [
+        2,
+        2
+      ],
+      "lastOrigin": [
+        1001,
+        21
+      ]
+    },
+    "result-20020": {
+      "ok": false,
+      "error": {
+        "code": "RESULT_ROWS",
+        "record": null,
+        "column": null,
+        "field": null
+      }
+    },
+    "result-skip-back-to-20000": {
+      "ok": true,
+      "counts": {
+        "potential": 20020,
+        "actual": 20000,
+        "emptyCells": 20,
+        "skippedEmpty": 20,
+        "omittedColumns": []
+      },
+      "firstOrigin": [
+        2,
+        2
+      ],
+      "lastOrigin": [
+        1001,
+        21
+      ]
+    },
+    "raw-csv-below-8MiB": {
+      "ok": true,
+      "inputBytes": 446514,
+      "rows": 20000,
+      "riskCount": 0,
+      "files": {
+        "rawCsv": {
+          "status": "ready",
+          "byteLength": 8388607
+        },
+        "protectedCsv": {
+          "status": "unavailable",
+          "byteLength": null
+        },
+        "originalJson": {
+          "status": "too-large",
+          "byteLength": 8408649
+        }
+      }
+    },
+    "raw-csv-at-8MiB": {
+      "ok": true,
+      "inputBytes": 446515,
+      "rows": 20000,
+      "riskCount": 0,
+      "files": {
+        "rawCsv": {
+          "status": "ready",
+          "byteLength": 8388608
+        },
+        "protectedCsv": {
+          "status": "unavailable",
+          "byteLength": null
+        },
+        "originalJson": {
+          "status": "too-large",
+          "byteLength": 8408650
+        }
+      }
+    },
+    "raw-csv-above-8MiB": {
+      "ok": true,
+      "inputBytes": 446516,
+      "rows": 20000,
+      "riskCount": 0,
+      "files": {
+        "rawCsv": {
+          "status": "too-large",
+          "byteLength": 8388609
+        },
+        "protectedCsv": {
+          "status": "unavailable",
+          "byteLength": null
+        },
+        "originalJson": {
+          "status": "too-large",
+          "byteLength": 8408651
+        }
+      }
+    },
+    "protected-csv-below-8MiB": {
+      "ok": true,
+      "inputBytes": 463514,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "ready",
+          "byteLength": 8388607
+        },
+        "originalJson": {
+          "status": "ready",
+          "byteLength": 8368649
+        }
+      }
+    },
+    "protected-csv-at-8MiB": {
+      "ok": true,
+      "inputBytes": 463515,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "ready",
+          "byteLength": 8388608
+        },
+        "originalJson": {
+          "status": "ready",
+          "byteLength": 8368650
+        }
+      }
+    },
+    "protected-csv-above-8MiB": {
+      "ok": true,
+      "inputBytes": 463516,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "too-large",
+          "byteLength": 8388609
+        },
+        "originalJson": {
+          "status": "ready",
+          "byteLength": 8368651
+        }
+      }
+    },
+    "json-below-8MiB": {
+      "ok": true,
+      "inputBytes": 464510,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "too-large",
+          "byteLength": 8408565
+        },
+        "originalJson": {
+          "status": "ready",
+          "byteLength": 8388607
+        }
+      }
+    },
+    "json-at-8MiB": {
+      "ok": true,
+      "inputBytes": 464511,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "too-large",
+          "byteLength": 8408566
+        },
+        "originalJson": {
+          "status": "ready",
+          "byteLength": 8388608
+        }
+      }
+    },
+    "json-above-8MiB": {
+      "ok": true,
+      "inputBytes": 464512,
+      "rows": 20000,
+      "riskCount": 40000,
+      "files": {
+        "rawCsv": {
+          "status": "formula-risk",
+          "byteLength": null
+        },
+        "protectedCsv": {
+          "status": "too-large",
+          "byteLength": 8408567
+        },
+        "originalJson": {
+          "status": "too-large",
+          "byteLength": 8388609
+        }
+      }
+    },
+    "ragged-2001st-row-before-row-limit": {
+      "ok": false,
+      "error": {
+        "code": "ROW_WIDTH",
+        "record": 2002,
+        "column": 2,
+        "field": null
+      }
+    }
+  },
+  "controller": {
+    "dirty-cancel-late": {
+      "steps": 16,
+      "stale": 1,
+      "effects": 1
+    },
+    "risk-review-download-pagehide": {
+      "steps": 19,
+      "stale": 1,
+      "effects": 2
+    },
+    "source-replace-error-retry": {
+      "steps": 21,
+      "stale": 2,
+      "effects": 0
+    },
+    "file-read-error-and-cancel": {
+      "steps": 8,
+      "stale": 1,
+      "effects": 0
+    },
+    "pagination-full-download": {
+      "steps": 11,
+      "stale": 0,
+      "effects": 1
+    }
+  },
+  "compoundErrorProbes": [
+    {
+      "id": "c0-on-full-field",
+      "input": {
+        "kind": "text",
+        "recipe": "id,x\\n001, followed by repeated a and U+0000",
+        "aCount": 16384
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "CONTROL_CHAR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "CONTROL_CHAR",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "overlong-field-before-later-c0",
+      "input": {
+        "kind": "text",
+        "recipe": "id,x\\n001, followed by repeated a and U+0000",
+        "aCount": 16385
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "FIELD_LIMIT",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "FIELD_LIMIT",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "syntax-in-field49-before-column-limit",
+      "input": {
+        "kind": "text",
+        "text": "h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11,h12,h13,h14,h15,h16,h17,h18,h19,h20,h21,h22,h23,h24,h25,h26,h27,h28,h29,h30,h31,h32,h33,h34,h35,h36,h37,h38,h39,h40,h41,h42,h43,h44,h45,h46,h47,a\""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "QUOTE_IN_UNQUOTED",
+          "record": 1,
+          "column": 49,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "QUOTE_IN_UNQUOTED",
+          "record": 1,
+          "column": 49,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "raw-utf8-before-earlier-ragged-row",
+      "input": {
+        "kind": "file",
+        "hex": "69642c780a3030310a3030322ceda080"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_UTF8",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_UTF8",
+          "record": null,
+          "column": null,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "earlier-closed-ragged-row-before-later-c0",
+      "input": {
+        "kind": "text",
+        "text": "id,x\n001\n002,\u0000"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "ROW_WIDTH",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    },
+    {
+      "id": "escaped-pair-at-eof-remains-unclosed",
+      "input": {
+        "kind": "text",
+        "text": "id,x\n001,\"a\"\""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNCLOSED_QUOTE",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      },
+      "observed": {
+        "ok": false,
+        "error": {
+          "code": "UNCLOSED_QUOTE",
+          "record": 2,
+          "column": 2,
+          "field": null
+        }
+      }
+    }
+  ],
+  "riskBitsetProbe": {
+    "fixture": "formula-risk",
+    "width": 3,
+    "offset": 5,
+    "byteHex": "20"
+  },
+  "product": "NOT_RUN"
+}
