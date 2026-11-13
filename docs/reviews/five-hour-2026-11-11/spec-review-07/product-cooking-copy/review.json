@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "FH-PRODUCT-COOKING-INDEPENDENT",
+  "taskId": "labs-five-hour-product-cooking-copy-20261111",
+  "candidate": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "3fd8379427b1318ba65c1169f0256befc47ca93a",
+    "pr": "https://github.com/KYStr/glossquote-labs-home/pull/323",
+    "openDraft": true,
+    "tree": "94ff462d48ef668bd129bab62a3bef26584a2957"
+  },
+  "baseline": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "448bd9fc9865fe65f6014b66f4a2e2d54b76f539",
+    "pr": "https://github.com/KYStr/glossquote-labs-home/pull/283",
+    "tree": "0ff18fa2b669efebbb9a474991d90abed16ed100",
+    "importedCommit": "55930721be19cb869a4229776e1e56b0239881a2"
+  },
+  "specification": {
+    "repository": "KYStr/glossquote-labs-home",
+    "commit": "4bc6d4e300d315597a4b1ea5feb86f6f2d6fc1c0",
+    "path": "docs/specs/cooking-measurement-converter/SPEC.md",
+    "repairCommit": "23fa1265837f66fbedc04441db260dbb2a5ed924",
+    "fourFilesByteIdentical": true
+  },
+  "reviewer": {
+    "executor": "local-codex",
+    "independent": true,
+    "identityComparedWith": "maker publication receipt and fixed source authors"
+  },
+  "claimId": "fh-cooking-copy-20261111055849154-claim",
+  "determination": {
+    "verdict": "revision",
+    "rubricComplete": true,
+    "requiredChecksComplete": false,
+    "productAccepted": false,
+    "blockers": [
+      "CMC-CHECK-01"
+    ]
+  },
+  "aspects": [
+    {
+      "id": "functionality",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "20 核心、13 補充、14 字面成功報告與兩個 Node Worker 各 33 回覆相符。",
+      "missing": "兩語實際表單、結果畫面與 Blob 下載。"
+    },
+    {
+      "id": "boundaries",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "數量上限、精度、單位長度、列舉、首錯、Unicode、三個既有狀態 fixture 與輸出上限均經離線檢查。",
+      "missing": "實際瀏覽器的首錯移焦與重設／取消呈現。"
+    },
+    {
+      "id": "privacy",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "候選產品執行碼與網路／儲存規則未變，兩個新外部 URL 均為明示引用連結。loopback CSP 有 connect-src 'none'。",
+      "missing": "實際 Network、Storage、URL 與 console 觀察。"
+    },
+    {
+      "id": "security",
+      "score": 80,
+      "status": "FAIL",
+      "observed": "CSP、固定報告、Worker 行為及五項負向探針都有離線證據。CMC-CHECK-01 的註解引用被當作導航，兩種檢查皆誤通過。",
+      "missing": "同候選瀏覽器安全與資源生命週期。"
+    },
+    {
+      "id": "usability",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "兩語實際來源文字及 FAQ 語義相符，原控制器及操作入口 bytes 保留。",
+      "missing": "桌面與行動的各狀態操作及實際下載。"
+    },
+    {
+      "id": "accessibility",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "兩語頁原有 id parity、標籤、錯誤關聯與導航結構通過離線測試。兩個新增連結有可見名稱。",
+      "missing": "鍵盤與實際焦點、320 CSS px、200% zoom、對比、觸控、減少動態及輔具。"
+    },
+    {
+      "id": "localization-seo",
+      "score": 100,
+      "status": "PASS_PREVIEW",
+      "observed": "兩頁 lang、title、H1、description、同語首頁回鏈、FAQ 對譯、preview noindex 及無正式 canonical/hreflang 已核。",
+      "missing": "正式 HTTPS／SEO 另驗。"
+    },
+    {
+      "id": "toolchain-provenance",
+      "score": 100,
+      "status": "PASS",
+      "observed": "公開固定 36 檔及 Git blob 相符。Node v24.14.0 指定命令 exit 0，兩次重建 9 檔與 manifest 都符合公開候選。",
+      "missing": null
+    },
+    {
+      "id": "compatibility",
+      "score": null,
+      "status": "NOT_RUN_USER_FOCUS_INCIDENT",
+      "observed": "Node Worker 橋接驗兩版所有 33 筆資料、世代與錯誤。loopback HTTP 測試雙語資產。",
+      "missing": "真實隔離 Chrome／Edge、reflow、Blob 與原生下載。"
+    }
+  ],
+  "defects": [
+    {
+      "id": "CMC-CHECK-01",
+      "location": [
+        "tools/cooking-measurement-converter/scripts/check.mjs#L219-L236",
+        "tools/cooking-measurement-converter/test/html.test.mjs#L103-L115"
+      ],
+      "input": "審查副本的繁中頁中，把既有重量表的完整引用 a 元素包在 HTML 註解內。其餘 bytes 保留。",
+      "expected": "有效來源連結缺少時，靜態檢查應回非零，HTML 引用測試也應失敗。",
+      "actual": "node scripts/check.mjs exit 0；node --test test/html.test.mjs exit 0。raw substring 計數與測試正規式仍認為引用存在。",
+      "impact": "安全例外在頁面文字中依字面消除，未確認實際 href 導航的 HTML 語境。當來源只存於註解，檢查仍可核發有引用的通過結果。固定候選的實際兩語來源都包含有效錨點。",
+      "disposition": "revision",
+      "fixScope": "維持原兩個 URL、兩語檔案與全域禁止能力條件。引用例外及對應 HTML 測試只承認實際可導航的 a 元素，將註解案例納入退修回歸。"
+    }
+  ],
+  "scope": {
+    "candidatePublicFiles": 36,
+    "baselineProductFiles": 31,
+    "unchangedProductFiles": 21,
+    "changedProductFiles": 10,
+    "newMakerEvidenceFiles": 5,
+    "permittedChanges": [
+      "雙語來源文字和 FAQ",
+      "核心註解",
+      "靜態檢查及其測試",
+      "必要產物與 manifest"
+    ],
+    "runtimeExecutableDelta": false,
+    "files": "file-manifest.json"
+  },
+  "sources": [
+    {
+      "url": "https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1",
+      "use": "教材第 1 頁列無鹽奶油一杯 227 g"
+    },
+    {
+      "url": "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+      "use": "半杯奶油 113 g；水及鮮奶每杯 227 g；蜂蜜每湯匙 21 g；一般／快熟燕麥每杯 89 g，品牌列每杯 113 g"
+    },
+    {
+      "url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9#p-101.9(b)(5)(viii)",
+      "use": "營養標示用途 240 mL/cup、15 mL/tbsp、5 mL/tsp"
+    },
+    {
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8",
+      "use": "U.S. customary cup 約 236.5882 mL"
+    }
+  ],
+  "verified": {
+    "approvedSourceAnchors": [
+      "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+      "https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_February2025.pdf#page=1"
+    ],
+    "node": "v24.14.0",
+    "tests": {
+      "total": 60,
+      "pass": 60,
+      "fail": 0
+    },
+    "preview": {
+      "builtTwiceIdentical": true,
+      "generatedFiles": 9,
+      "matchPublic": true
+    },
+    "parity": {
+      "core": 20,
+      "reports": 14,
+      "additional": 13,
+      "controllerFixtureIds": [
+        "state-dirty-error",
+        "state-cancel-late",
+        "state-replace-late"
+      ],
+      "workerResponsesPerVersion": 33,
+      "fixtureSha256": "7c169215f6b31c44c196cd7eca08c26fcf1168cf63455a67be3a1d4d88edacff",
+      "executableCoreSha256": "4052eef7b53f508199bfdc63b4ade9cf0160a45a53f0614b4b3fc5acc55e77ac",
+      "executableWorkerSha256": "bdd91f71bfa8d187cdf22ff44361d959df2f5ba6f94c9424d0afa3eec850fe50",
+      "outputSha256": "f1b8a8364db3985e7504d842242549d5b4923cc6bc3d51ea913c1166a6fb439e"
+    },
+    "checks": {
+      "normal": "commands.json",
+      "staticNegative": "checker-evidence.json",
+      "parity": "parity-evidence.json",
+      "sourceManifest": "file-manifest.json"
+    },
+    "environment": {
+      "beforeExit": 0,
+      "afterExit": 0,
+      "unchanged": true
+    }
+  },
+  "provided": [
+    "Maker 的 60 tests、20 cases、14 reports、原始 manifest 與三個 checker 負例均按作者證據保存。本報告的 60 tests 與其餘數值來自獨立執行。"
+  ],
+  "notRun": {
+    "browser": "NOT_RUN_USER_FOCUS_INCIDENT",
+    "physicalDevice": "NOT_RUN_USER_FOCUS_INCIDENT",
+    "networkStorage": "NOT_RUN_USER_FOCUS_INCIDENT",
+    "nativeDownload": "NOT_RUN_USER_FOCUS_INCIDENT",
+    "productionHttpsSeo": "NOT_RUN",
+    "registry": "NOT_RUN",
+    "merge": "NOT_RUN",
+    "deployment": "NOT_RUN"
+  }
+}
