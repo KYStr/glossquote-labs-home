@@ -1,0 +1,735 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-period-cycle-calculator-20261109",
+  "slug": "period-cycle-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "regular-28",
+      "kind": "core",
+      "purpose": "典型 28 天週期，四個週期的開始、經期結束、排卵與易孕期",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "28",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-10-26",
+              "periodEnd": "2026-10-30",
+              "ovulation": "2026-11-09",
+              "fertileStart": "2026-11-04",
+              "fertileEnd": "2026-11-10"
+            },
+            {
+              "index": 1,
+              "start": "2026-11-23",
+              "periodEnd": "2026-11-27",
+              "ovulation": "2026-12-07",
+              "fertileStart": "2026-12-02",
+              "fertileEnd": "2026-12-08"
+            },
+            {
+              "index": 2,
+              "start": "2026-12-21",
+              "periodEnd": "2026-12-25",
+              "ovulation": "2027-01-04",
+              "fertileStart": "2026-12-30",
+              "fertileEnd": "2027-01-05"
+            },
+            {
+              "index": 3,
+              "start": "2027-01-18",
+              "periodEnd": "2027-01-22",
+              "ovulation": "2027-02-01",
+              "fertileStart": "2027-01-27",
+              "fertileEnd": "2027-02-02"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "short-21",
+      "kind": "core",
+      "purpose": "週期下限 21 天，排卵日為開始日 +7",
+      "input": {
+        "lastPeriodStart": "2026-11-02",
+        "cycleLength": "21",
+        "periodLength": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-11-02",
+              "periodEnd": "2026-11-04",
+              "ovulation": "2026-11-09",
+              "fertileStart": "2026-11-04",
+              "fertileEnd": "2026-11-10"
+            },
+            {
+              "index": 1,
+              "start": "2026-11-23",
+              "periodEnd": "2026-11-25",
+              "ovulation": "2026-11-30",
+              "fertileStart": "2026-11-25",
+              "fertileEnd": "2026-12-01"
+            },
+            {
+              "index": 2,
+              "start": "2026-12-14",
+              "periodEnd": "2026-12-16",
+              "ovulation": "2026-12-21",
+              "fertileStart": "2026-12-16",
+              "fertileEnd": "2026-12-22"
+            },
+            {
+              "index": 3,
+              "start": "2027-01-04",
+              "periodEnd": "2027-01-06",
+              "ovulation": "2027-01-11",
+              "fertileStart": "2027-01-06",
+              "fertileEnd": "2027-01-12"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "long-35",
+      "kind": "core",
+      "purpose": "週期上限 35 天，排卵日為開始日 +21",
+      "input": {
+        "lastPeriodStart": "2026-09-15",
+        "cycleLength": "35",
+        "periodLength": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-09-15",
+              "periodEnd": "2026-09-21",
+              "ovulation": "2026-10-06",
+              "fertileStart": "2026-10-01",
+              "fertileEnd": "2026-10-07"
+            },
+            {
+              "index": 1,
+              "start": "2026-10-20",
+              "periodEnd": "2026-10-26",
+              "ovulation": "2026-11-10",
+              "fertileStart": "2026-11-05",
+              "fertileEnd": "2026-11-11"
+            },
+            {
+              "index": 2,
+              "start": "2026-11-24",
+              "periodEnd": "2026-11-30",
+              "ovulation": "2026-12-15",
+              "fertileStart": "2026-12-10",
+              "fertileEnd": "2026-12-16"
+            },
+            {
+              "index": 3,
+              "start": "2026-12-29",
+              "periodEnd": "2027-01-04",
+              "ovulation": "2027-01-19",
+              "fertileStart": "2027-01-14",
+              "fertileEnd": "2027-01-20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "leap-february",
+      "kind": "core",
+      "purpose": "跨 2028 閏年 2 月 29 日的日期加法",
+      "input": {
+        "lastPeriodStart": "2028-02-10",
+        "cycleLength": "30",
+        "periodLength": "6"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2028-02-10",
+              "periodEnd": "2028-02-15",
+              "ovulation": "2028-02-26",
+              "fertileStart": "2028-02-21",
+              "fertileEnd": "2028-02-27"
+            },
+            {
+              "index": 1,
+              "start": "2028-03-11",
+              "periodEnd": "2028-03-16",
+              "ovulation": "2028-03-27",
+              "fertileStart": "2028-03-22",
+              "fertileEnd": "2028-03-28"
+            },
+            {
+              "index": 2,
+              "start": "2028-04-10",
+              "periodEnd": "2028-04-15",
+              "ovulation": "2028-04-26",
+              "fertileStart": "2028-04-21",
+              "fertileEnd": "2028-04-27"
+            },
+            {
+              "index": 3,
+              "start": "2028-05-10",
+              "periodEnd": "2028-05-15",
+              "ovulation": "2028-05-26",
+              "fertileStart": "2028-05-21",
+              "fertileEnd": "2028-05-27"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "year-crossing",
+      "kind": "core",
+      "purpose": "排卵日與易孕期跨年邊界",
+      "input": {
+        "lastPeriodStart": "2026-12-20",
+        "cycleLength": "26",
+        "periodLength": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-12-20",
+              "periodEnd": "2026-12-23",
+              "ovulation": "2027-01-01",
+              "fertileStart": "2026-12-27",
+              "fertileEnd": "2027-01-02"
+            },
+            {
+              "index": 1,
+              "start": "2027-01-15",
+              "periodEnd": "2027-01-18",
+              "ovulation": "2027-01-27",
+              "fertileStart": "2027-01-22",
+              "fertileEnd": "2027-01-28"
+            },
+            {
+              "index": 2,
+              "start": "2027-02-10",
+              "periodEnd": "2027-02-13",
+              "ovulation": "2027-02-22",
+              "fertileStart": "2027-02-17",
+              "fertileEnd": "2027-02-23"
+            },
+            {
+              "index": 3,
+              "start": "2027-03-08",
+              "periodEnd": "2027-03-11",
+              "ovulation": "2027-03-20",
+              "fertileStart": "2027-03-15",
+              "fertileEnd": "2027-03-21"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "period-one-day",
+      "kind": "core",
+      "purpose": "經期長度下限 1 天，經期結束日等於開始日",
+      "input": {
+        "lastPeriodStart": "2026-11-05",
+        "cycleLength": "24",
+        "periodLength": "1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-11-05",
+              "periodEnd": "2026-11-05",
+              "ovulation": "2026-11-15",
+              "fertileStart": "2026-11-10",
+              "fertileEnd": "2026-11-16"
+            },
+            {
+              "index": 1,
+              "start": "2026-11-29",
+              "periodEnd": "2026-11-29",
+              "ovulation": "2026-12-09",
+              "fertileStart": "2026-12-04",
+              "fertileEnd": "2026-12-10"
+            },
+            {
+              "index": 2,
+              "start": "2026-12-23",
+              "periodEnd": "2026-12-23",
+              "ovulation": "2027-01-02",
+              "fertileStart": "2026-12-28",
+              "fertileEnd": "2027-01-03"
+            },
+            {
+              "index": 3,
+              "start": "2027-01-16",
+              "periodEnd": "2027-01-16",
+              "ovulation": "2027-01-26",
+              "fertileStart": "2027-01-21",
+              "fertileEnd": "2027-01-27"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "period-ten-days",
+      "kind": "core",
+      "purpose": "經期長度上限 10 天",
+      "input": {
+        "lastPeriodStart": "2026-08-01",
+        "cycleLength": "32",
+        "periodLength": "10"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-08-01",
+              "periodEnd": "2026-08-10",
+              "ovulation": "2026-08-19",
+              "fertileStart": "2026-08-14",
+              "fertileEnd": "2026-08-20"
+            },
+            {
+              "index": 1,
+              "start": "2026-09-02",
+              "periodEnd": "2026-09-11",
+              "ovulation": "2026-09-20",
+              "fertileStart": "2026-09-15",
+              "fertileEnd": "2026-09-21"
+            },
+            {
+              "index": 2,
+              "start": "2026-10-04",
+              "periodEnd": "2026-10-13",
+              "ovulation": "2026-10-22",
+              "fertileStart": "2026-10-17",
+              "fertileEnd": "2026-10-23"
+            },
+            {
+              "index": 3,
+              "start": "2026-11-05",
+              "periodEnd": "2026-11-14",
+              "ovulation": "2026-11-23",
+              "fertileStart": "2026-11-18",
+              "fertileEnd": "2026-11-24"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cycle-too-short",
+      "kind": "core",
+      "purpose": "週期 20 天低於下限",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "20",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "cycleLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "cycle-too-long",
+      "kind": "core",
+      "purpose": "週期 36 天高於上限",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "36",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "cycleLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "period-zero",
+      "kind": "core",
+      "purpose": "經期 0 天低於下限",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "28",
+        "periodLength": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "periodLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "period-too-long",
+      "kind": "core",
+      "purpose": "經期 11 天高於上限",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "28",
+        "periodLength": "11"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "periodLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "date-format-slashes",
+      "kind": "core",
+      "purpose": "日期用斜線分隔不符合文法",
+      "input": {
+        "lastPeriodStart": "2026/10/26",
+        "cycleLength": "28",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DATE_FORMAT",
+          "field": "lastPeriodStart",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "invalid-date-feb30",
+      "kind": "core",
+      "purpose": "2 月 30 日不存在",
+      "input": {
+        "lastPeriodStart": "2026-02-30",
+        "cycleLength": "28",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_DATE",
+          "field": "lastPeriodStart",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "date-below-range",
+      "kind": "core",
+      "purpose": "日期早於 1900-01-01",
+      "input": {
+        "lastPeriodStart": "1899-12-31",
+        "cycleLength": "28",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "lastPeriodStart",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "cycle-decimal",
+      "kind": "core",
+      "purpose": "週期帶小數不符合整數文法",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "28.5",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "cycleLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "date-empty",
+      "kind": "core",
+      "purpose": "日期空白",
+      "input": {
+        "lastPeriodStart": "",
+        "cycleLength": "28",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "lastPeriodStart",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "cycle-leading-zero",
+      "kind": "core",
+      "purpose": "週期前導零不符合整數文法",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "028",
+        "periodLength": "5"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "cycleLength",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "extra-field",
+      "kind": "core",
+      "purpose": "多出未知欄位 note",
+      "input": {
+        "lastPeriodStart": "2026-10-26",
+        "cycleLength": "28",
+        "periodLength": "5",
+        "note": "x"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "lastPeriodStart": "2026-10-26",
+          "cycleLength": "28",
+          "periodLength": "5"
+        },
+        "edit": {
+          "lastPeriodStart": "2026-10-26",
+          "cycleLength": "36",
+          "periodLength": "5"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cycleLength",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "lastPeriodStart": "2026-10-26",
+          "cycleLength": "28",
+          "periodLength": "5"
+        },
+        "lateResult": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-10-26",
+              "periodEnd": "2026-10-30",
+              "ovulation": "2026-11-09",
+              "fertileStart": "2026-11-04",
+              "fertileEnd": "2026-11-10"
+            },
+            {
+              "index": 1,
+              "start": "2026-11-23",
+              "periodEnd": "2026-11-27",
+              "ovulation": "2026-12-07",
+              "fertileStart": "2026-12-02",
+              "fertileEnd": "2026-12-08"
+            },
+            {
+              "index": 2,
+              "start": "2026-12-21",
+              "periodEnd": "2026-12-25",
+              "ovulation": "2027-01-04",
+              "fertileStart": "2026-12-30",
+              "fertileEnd": "2027-01-05"
+            },
+            {
+              "index": 3,
+              "start": "2027-01-18",
+              "periodEnd": "2027-01-22",
+              "ovulation": "2027-02-01",
+              "fertileStart": "2027-01-27",
+              "fertileEnd": "2027-02-02"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "lastPeriodStart": "2026-10-26",
+            "cycleLength": "28",
+            "periodLength": "5"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "lastPeriodStart": "",
+            "cycleLength": "28",
+            "periodLength": "5"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "lastPeriodStart": "2026-10-26",
+          "cycleLength": "28",
+          "periodLength": "5"
+        },
+        "newerDraft": {
+          "lastPeriodStart": "2026-10-26",
+          "cycleLength": "36",
+          "periodLength": "5"
+        },
+        "olderLateResult": {
+          "cycles": [
+            {
+              "index": 0,
+              "start": "2026-10-26",
+              "periodEnd": "2026-10-30",
+              "ovulation": "2026-11-09",
+              "fertileStart": "2026-11-04",
+              "fertileEnd": "2026-11-10"
+            },
+            {
+              "index": 1,
+              "start": "2026-11-23",
+              "periodEnd": "2026-11-27",
+              "ovulation": "2026-12-07",
+              "fertileStart": "2026-12-02",
+              "fertileEnd": "2026-12-08"
+            },
+            {
+              "index": 2,
+              "start": "2026-12-21",
+              "periodEnd": "2026-12-25",
+              "ovulation": "2027-01-04",
+              "fertileStart": "2026-12-30",
+              "fertileEnd": "2027-01-05"
+            },
+            {
+              "index": 3,
+              "start": "2027-01-18",
+              "periodEnd": "2027-01-22",
+              "ovulation": "2027-02-01",
+              "fertileStart": "2027-01-27",
+              "fertileEnd": "2027-02-02"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cycleLength",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "cycleLength",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
