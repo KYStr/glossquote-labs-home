@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>螢幕 PPI 計算｜Gloss Tools</title>
+<meta name="description" content="輸入對角線英寸與原生解析度，算出像素密度 PPI、實體寬高、點距與總像素，購物前先查核螢幕細緻度。">
+<link rel="stylesheet" href="./styles/screen-ppi.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>螢幕 PPI 計算</h1>
+  <p class="lede">輸入對角線英寸與原生解析度，算出像素密度 PPI、實體寬高、點距與總像素，購物前先查核螢幕細緻度。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">對角線、解析度</h2>
+      <form id="screen-ppi-form" novalidate>
+        <div class="field">
+          <label for="field-diagonalIn">對角線（英寸）</label>
+          <p class="help" id="help-diagonalIn">0.1–200 英寸，最多兩位小數。請用規格表上的可視對角線。</p>
+          <input id="field-diagonalIn" name="diagonalIn" type="text" inputmode="decimal" autocomplete="off" value="27" aria-describedby="help-diagonalIn">
+          <p class="field-error" id="error-diagonalIn" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-widthPx">水平像素</label>
+          <p class="help" id="help-widthPx">1–16384 的整數。</p>
+          <input id="field-widthPx" name="widthPx" type="text" inputmode="numeric" autocomplete="off" value="2560" aria-describedby="help-widthPx">
+          <p class="field-error" id="error-widthPx" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-heightPx">垂直像素</label>
+          <p class="help" id="help-heightPx">1–16384 的整數。</p>
+          <input id="field-heightPx" name="heightPx" type="text" inputmode="numeric" autocomplete="off" value="1440" aria-describedby="help-heightPx">
+          <p class="field-error" id="error-heightPx" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算螢幕密度</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">像素密度與實體尺寸</h2>
+      <p class="result-value" id="ppi-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <p class="result-echo" id="result-width"></p>
+      <p class="result-echo" id="result-height"></p>
+      <p class="result-echo" id="result-dot-pitch"></p>
+      <p class="result-echo" id="result-megapixels"></p>
+      <p class="result-echo" id="result-aspect"></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>PPI = √(水平像素² + 垂直像素²) / 對角線（英寸）。實體寬高與點距由未捨入的 PPI 推導：寬 = 水平像素 / PPI × 2.54 公分，高同理；點距 = 25.4 / PPI 公釐。總像素 = 水平像素 × 垂直像素 / 1,000,000。長寬比以最大公因數約分，依寬:高順序顯示，只作參考標籤，不做求解。</p>
+    <p>顯示固定小數位：PPI 1 位、寬高 1 位、點距 3 位、總像素 2 位，不足補零。報告 JSON 帶捨入後的數值本身。下載的報告檔名固定為 screen-ppi-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>寬高為什麼不用畫面上顯示的 PPI 來算？</dt>
+      <dd>寬高由未捨入的 PPI 推導，四捨五入後的 PPI 只供閱讀；用顯示值反推會讓寬高與對角線對不起來。</dd>
+      <dt>可以由長寬比反推缺少的一邊嗎？</dt>
+      <dd>本工具不做求解，長寬比只是參考標籤；要由比例與一邊求另一邊，請用長寬比計算工具。</dd>
+      <dt>對角線要用含邊框的數字嗎？</dt>
+      <dd>請用規格表上的可視對角線與面板原生解析度；市售標示若含邊框或非原生解析度，結果會跟著偏差。</dd>
+      <dt>點距和 PPI 是同一個東西嗎？</dt>
+      <dd>點距是相鄰像素中心的距離（mm)，與 PPI 互為倒數關係（25.4 / PPI)；點距越小畫面越細緻。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在目前頁面，切換語言或離開頁面就會失去。</p>
+</main>
+</body>
+</html>
