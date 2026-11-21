@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>烤盤尺寸換算｜Gloss Tools</title>
+<meta name="description" content="選來源與目標烤盤，以容量比算出麵糊換算倍率與份量；11 種常見烤盤容量由標稱尺寸幾何推導，Bundt 與中空模用標稱容量並明示。">
+<link rel="stylesheet" href="./styles/baking-pan-converter.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>烤盤尺寸換算</h1>
+  <p class="lede">食譜指定的烤盤和手邊的不一樣？選來源盤與目標盤，以容量比算出麵糊要增減多少，並看看換盤後麵糊會變淺還是變深。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">烤盤與麵糊份量</h2>
+      <form id="baking-pan-form" novalidate>
+        <div class="side-block">
+          <h3>來源烤盤</h3>
+          <fieldset class="fieldset" id="field-sourceKind">
+            <legend>方式</legend>
+            <p class="help" id="help-sourceKind">從容量表選一個烤盤，或輸入自訂尺寸。</p>
+            <div class="radio-row" role="group" aria-describedby="help-sourceKind">
+              <label><input type="radio" name="sourceKind" value="table" checked> 表格選盤</label>
+              <label><input type="radio" name="sourceKind" value="custom"> 自訂尺寸</label>
+            </div>
+            <p class="field-error" id="error-sourceKind" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-sourcePan">烤盤</label>
+            <p class="help" id="help-sourcePan">僅表格選盤時啟用。11 種常見烤盤，容量見下方對照表。</p>
+            <select id="field-sourcePan" name="sourcePan" aria-describedby="help-sourcePan">
+              <option value="round-6">圓形 6 吋 — ⌀6 × 2 吋（⌀15.24 × 5.08 公分），927 毫升</option>
+              <option value="round-7">圓形 7 吋 — ⌀7 × 2 吋（⌀17.78 × 5.08 公分），1261 毫升</option>
+              <option value="round-8" selected>圓形 8 吋 — ⌀8 × 2 吋（⌀20.32 × 5.08 公分），1647 毫升</option>
+              <option value="round-9">圓形 9 吋 — ⌀9 × 2 吋（⌀22.86 × 5.08 公分），2085 毫升</option>
+              <option value="round-10">圓形 10 吋 — ⌀10 × 2 吋（⌀25.40 × 5.08 公分），2574 毫升</option>
+              <option value="square-8">方形 8×8 吋 — 8×8 × 2 吋（20.32×20.32 × 5.08 公分），2098 毫升</option>
+              <option value="square-9">方形 9×9 吋 — 9×9 × 2 吋（22.86×22.86 × 5.08 公分），2655 毫升</option>
+              <option value="rect-9x13">長方形 9×13 吋 — 9×13 × 2 吋（22.86×33.02 × 5.08 公分），3835 毫升</option>
+              <option value="loaf-9x5">吐司／磅蛋糕模 9×5 吋 — 9×5 × 2.5 吋（22.86×12.70 × 6.35 公分），1844 毫升</option>
+              <option value="bundt-10">Bundt 模 10 吋（標稱 12 杯） — 10 × 3.5 吋，2844 毫升（標稱容量）</option>
+              <option value="tube-10">中空蛋糕模 10 吋（標稱 16 杯） — 10 × 4 吋，3792 毫升（標稱容量）</option>
+            </select>
+            <p class="field-error" id="error-sourcePan" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-sourceShape">
+            <legend>形狀</legend>
+            <p class="help" id="help-sourceShape">僅自訂尺寸時啟用。</p>
+            <div class="radio-row" role="group" aria-describedby="help-sourceShape">
+              <label><input type="radio" name="sourceShape" value="round" checked> 圓形</label>
+              <label><input type="radio" name="sourceShape" value="rect"> 方形或長方形</label>
+            </div>
+            <p class="field-error" id="error-sourceShape" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-sourceD1">直徑／長（公分）</label>
+            <p class="help" id="help-sourceD1">僅自訂尺寸時啟用。圓形填直徑，方形或長方形填長。5–60 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-sourceD1"></span></p>
+            <input id="field-sourceD1" name="sourceD1" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceD1">
+            <p class="field-error" id="error-sourceD1" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sourceD2">寬（公分）</label>
+            <p class="help" id="help-sourceD2">僅自訂方形或長方形時啟用。5–60 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-sourceD2"></span></p>
+            <input id="field-sourceD2" name="sourceD2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceD2">
+            <p class="field-error" id="error-sourceD2" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sourceDepth">深度（公分）</label>
+            <p class="help" id="help-sourceDepth">僅自訂尺寸時啟用。1–15 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-sourceDepth"></span></p>
+            <input id="field-sourceDepth" name="sourceDepth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceDepth">
+            <p class="field-error" id="error-sourceDepth" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <h3>目標烤盤</h3>
+          <fieldset class="fieldset" id="field-targetKind">
+            <legend>方式</legend>
+            <p class="help" id="help-targetKind">從容量表選一個烤盤，或輸入自訂尺寸。</p>
+            <div class="radio-row" role="group" aria-describedby="help-targetKind">
+              <label><input type="radio" name="targetKind" value="table" checked> 表格選盤</label>
+              <label><input type="radio" name="targetKind" value="custom"> 自訂尺寸</label>
+            </div>
+            <p class="field-error" id="error-targetKind" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-targetPan">烤盤</label>
+            <p class="help" id="help-targetPan">僅表格選盤時啟用。11 種常見烤盤，容量見下方對照表。</p>
+            <select id="field-targetPan" name="targetPan" aria-describedby="help-targetPan">
+              <option value="round-6">圓形 6 吋 — ⌀6 × 2 吋（⌀15.24 × 5.08 公分），927 毫升</option>
+              <option value="round-7">圓形 7 吋 — ⌀7 × 2 吋（⌀17.78 × 5.08 公分），1261 毫升</option>
+              <option value="round-8">圓形 8 吋 — ⌀8 × 2 吋（⌀20.32 × 5.08 公分），1647 毫升</option>
+              <option value="round-9" selected>圓形 9 吋 — ⌀9 × 2 吋（⌀22.86 × 5.08 公分），2085 毫升</option>
+              <option value="round-10">圓形 10 吋 — ⌀10 × 2 吋（⌀25.40 × 5.08 公分），2574 毫升</option>
+              <option value="square-8">方形 8×8 吋 — 8×8 × 2 吋（20.32×20.32 × 5.08 公分），2098 毫升</option>
+              <option value="square-9">方形 9×9 吋 — 9×9 × 2 吋（22.86×22.86 × 5.08 公分），2655 毫升</option>
+              <option value="rect-9x13">長方形 9×13 吋 — 9×13 × 2 吋（22.86×33.02 × 5.08 公分），3835 毫升</option>
+              <option value="loaf-9x5">吐司／磅蛋糕模 9×5 吋 — 9×5 × 2.5 吋（22.86×12.70 × 6.35 公分），1844 毫升</option>
+              <option value="bundt-10">Bundt 模 10 吋（標稱 12 杯） — 10 × 3.5 吋，2844 毫升（標稱容量）</option>
+              <option value="tube-10">中空蛋糕模 10 吋（標稱 16 杯） — 10 × 4 吋，3792 毫升（標稱容量）</option>
+            </select>
+            <p class="field-error" id="error-targetPan" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-targetShape">
+            <legend>形狀</legend>
+            <p class="help" id="help-targetShape">僅自訂尺寸時啟用。</p>
+            <div class="radio-row" role="group" aria-describedby="help-targetShape">
+              <label><input type="radio" name="targetShape" value="round" checked> 圓形</label>
+              <label><input type="radio" name="targetShape" value="rect"> 方形或長方形</label>
+            </div>
+            <p class="field-error" id="error-targetShape" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-targetD1">直徑／長（公分）</label>
+            <p class="help" id="help-targetD1">僅自訂尺寸時啟用。圓形填直徑，方形或長方形填長。5–60 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-targetD1"></span></p>
+            <input id="field-targetD1" name="targetD1" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetD1">
+            <p class="field-error" id="error-targetD1" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-targetD2">寬（公分）</label>
+            <p class="help" id="help-targetD2">僅自訂方形或長方形時啟用。5–60 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-targetD2"></span></p>
+            <input id="field-targetD2" name="targetD2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetD2">
+            <p class="field-error" id="error-targetD2" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-targetDepth">深度（公分）</label>
+            <p class="help" id="help-targetDepth">僅自訂尺寸時啟用。1–15 公分，最多 2 位小數。 <span class="inch-equiv" id="inch-targetDepth"></span></p>
+            <input id="field-targetDepth" name="targetDepth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetDepth">
+            <p class="field-error" id="error-targetDepth" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <h3>麵糊份量（可省略）</h3>
+          <div class="field">
+            <label for="field-quantity">麵糊份量</label>
+            <p class="help" id="help-quantity">留空只算倍率。填寫時為一份麵糊的總量，大於 0、不超過 100,000，最多 2 位小數。</p>
+            <input id="field-quantity" name="quantity" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-quantity">
+            <p class="field-error" id="error-quantity" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-quantityUnit">
+            <legend>單位</legend>
+            <p class="help" id="help-quantityUnit">僅填寫份量時啟用。</p>
+            <div class="radio-row" role="group" aria-describedby="help-quantityUnit">
+              <label><input type="radio" name="quantityUnit" value="g" checked> 公克 (g)</label>
+              <label><input type="radio" name="quantityUnit" value="ml"> 毫升 (ml)</label>
+            </div>
+            <p class="field-error" id="error-quantityUnit" role="alert"></p>
+          </fieldset>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入來源與目標烤盤，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <p class="result-value" id="factor-value"></p>
+      <ul class="result-lines">
+        <li id="result-source"></li>
+        <li id="result-target"></li>
+        <li id="result-percent"></li>
+        <li id="result-scaled"></li>
+        <li id="result-depth"></li>
+      </ul>
+      <p class="depth-hint" id="depth-hint" hidden></p>
+      <p class="disclaimer" id="disclaimer">表格體積以標稱尺寸的直壁幾何計算；實際烤盤多有斜壁與圓角，容量會略有差異。標稱列（Bundt／中空模）採標準換算表的標示容量，不是幾何值。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>倍率 = 目標盤容量 ÷ 來源盤容量。表格列的容量是標稱尺寸的直壁幾何體積（圓形：((π × 半徑) × 半徑) × 深度；方形／長方形：(長 × 寬) × 深度），四捨五入到整數毫升後釘版；Bundt 與中空模採標準換算表的標示容量（12 杯 = 2844 毫升、16 杯 = 3792 毫升，1 杯 = 237 毫升），不是幾何值。自訂尺寸以公分輸入，容量以未捨入值計算；倍率顯示到 2 位小數、百分比到 1 位小數、換算後份量到 1 位小數，各自只捨入一次（半數進位），換算一律用未捨入的倍率。深度關係比較兩側深度：目標較淺、較深或相同；有一側是標稱容量烤盤時無法比較。下載的報告檔名固定為 baking-pan-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+    <p>本工具只換算一份麵糊的總量，不換算每種食材的重量、不計算烘烤時間或溫度調整。</p>
+  </details>
+
+  <section class="panel" aria-labelledby="table-heading">
+    <h2 id="table-heading">烤盤容量對照表</h2>
+    <div class="table-scroll" role="region" aria-labelledby="table-heading" tabindex="0">
+      <table>
+        <caption>11 種常見烤盤的容量，數字與英文頁相同</caption>
+        <thead>
+          <tr><th scope="col">烤盤</th><th scope="col">標稱尺寸（英吋）</th><th scope="col">尺寸（公分）</th><th scope="col">深度（公分）</th><th scope="col">容量（毫升）</th><th scope="col">依據</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>圓形 6 吋</td><td>⌀6 × 2</td><td>⌀15.24 × 5.08</td><td class="numeric">5.08</td><td class="numeric">927</td><td>幾何計算</td></tr>
+          <tr><td>圓形 7 吋</td><td>⌀7 × 2</td><td>⌀17.78 × 5.08</td><td class="numeric">5.08</td><td class="numeric">1261</td><td>幾何計算</td></tr>
+          <tr><td>圓形 8 吋</td><td>⌀8 × 2</td><td>⌀20.32 × 5.08</td><td class="numeric">5.08</td><td class="numeric">1647</td><td>幾何計算</td></tr>
+          <tr><td>圓形 9 吋</td><td>⌀9 × 2</td><td>⌀22.86 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2085</td><td>幾何計算</td></tr>
+          <tr><td>圓形 10 吋</td><td>⌀10 × 2</td><td>⌀25.40 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2574</td><td>幾何計算</td></tr>
+          <tr><td>方形 8×8 吋</td><td>8×8 × 2</td><td>20.32×20.32 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2098</td><td>幾何計算</td></tr>
+          <tr><td>方形 9×9 吋</td><td>9×9 × 2</td><td>22.86×22.86 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2655</td><td>幾何計算</td></tr>
+          <tr><td>長方形 9×13 吋</td><td>9×13 × 2</td><td>22.86×33.02 × 5.08</td><td class="numeric">5.08</td><td class="numeric">3835</td><td>幾何計算</td></tr>
+          <tr><td>吐司／磅蛋糕模 9×5 吋</td><td>9×5 × 2.5</td><td>22.86×12.70 × 6.35</td><td class="numeric">6.35</td><td class="numeric">1844</td><td>幾何計算</td></tr>
+          <tr><td>Bundt 模 10 吋（標稱 12 杯）</td><td>10 × 3.5</td><td>—</td><td class="numeric">—</td><td class="numeric">2844</td><td>標稱容量</td></tr>
+          <tr><td>中空蛋糕模 10 吋（標稱 16 杯）</td><td>10 × 4</td><td>—</td><td class="numeric">—</td><td class="numeric">3792</td><td>標稱容量</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>倍率怎麼看？</dt>
+      <dd>倍率 = 目標盤容量 ÷ 來源盤容量。大於 1 表示要做更多麵糊，小於 1 表示減量。</dd>
+      <dt>為什麼 Bundt 模和中空模用標稱容量？</dt>
+      <dd>它們的形狀（溝紋、中央管）不是單純的圓柱或方體，幾何公式算不出實容量，所以採用標準換算表的標示容量並標明 nominal。</dd>
+      <dt>可以換算每種食材的重量嗎？</dt>
+      <dd>不行。本工具只換算一份麵糊的總量；食材配比換算請用烘焙百分比計算。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面裡，離開頁面就會丟棄。</p>
+</main>
+</body>
+</html>

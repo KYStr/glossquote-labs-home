@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Baking Pan Converter | Gloss Tools</title>
+<meta name="description" content="Scale batter between two pans by capacity ratio: 11 common pans with volumes derived geometrically from their nominal dimensions, Bundt and tube pans by labelled nominal capacity.">
+<link rel="stylesheet" href="../styles/baking-pan-converter.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Baking Pan Converter</h1>
+  <p class="lede">The recipe calls for one pan and you have another? Pick a source pan and a target pan to scale the batter by capacity ratio, and see whether the batter will sit shallower or deeper after the switch.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Pans and batter quantity</h2>
+      <form id="baking-pan-form" novalidate>
+        <div class="side-block">
+          <h3>Source pan</h3>
+          <fieldset class="fieldset" id="field-sourceKind">
+            <legend>Method</legend>
+            <p class="help" id="help-sourceKind">Pick a pan from the capacity table, or enter custom dimensions.</p>
+            <div class="radio-row" role="group" aria-describedby="help-sourceKind">
+              <label><input type="radio" name="sourceKind" value="table" checked> From the table</label>
+              <label><input type="radio" name="sourceKind" value="custom"> Custom size</label>
+            </div>
+            <p class="field-error" id="error-sourceKind" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-sourcePan">Pan</label>
+            <p class="help" id="help-sourcePan">Only when using the table. 11 common pans; see the capacity table below.</p>
+            <select id="field-sourcePan" name="sourcePan" aria-describedby="help-sourcePan">
+              <option value="round-6">6-inch round — ⌀6 × 2 in (⌀15.24 × 5.08 cm), 927 ml</option>
+              <option value="round-7">7-inch round — ⌀7 × 2 in (⌀17.78 × 5.08 cm), 1261 ml</option>
+              <option value="round-8" selected>8-inch round — ⌀8 × 2 in (⌀20.32 × 5.08 cm), 1647 ml</option>
+              <option value="round-9">9-inch round — ⌀9 × 2 in (⌀22.86 × 5.08 cm), 2085 ml</option>
+              <option value="round-10">10-inch round — ⌀10 × 2 in (⌀25.40 × 5.08 cm), 2574 ml</option>
+              <option value="square-8">8×8-inch square — 8×8 × 2 in (20.32×20.32 × 5.08 cm), 2098 ml</option>
+              <option value="square-9">9×9-inch square — 9×9 × 2 in (22.86×22.86 × 5.08 cm), 2655 ml</option>
+              <option value="rect-9x13">9×13-inch rectangular — 9×13 × 2 in (22.86×33.02 × 5.08 cm), 3835 ml</option>
+              <option value="loaf-9x5">9×5-inch loaf — 9×5 × 2.5 in (22.86×12.70 × 6.35 cm), 1844 ml</option>
+              <option value="bundt-10">10-inch Bundt (nominal 12 cups) — 10 × 3.5 in, 2844 ml (nominal capacity)</option>
+              <option value="tube-10">10-inch tube (nominal 16 cups) — 10 × 4 in, 3792 ml (nominal capacity)</option>
+            </select>
+            <p class="field-error" id="error-sourcePan" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-sourceShape">
+            <legend>Shape</legend>
+            <p class="help" id="help-sourceShape">Only for a custom size.</p>
+            <div class="radio-row" role="group" aria-describedby="help-sourceShape">
+              <label><input type="radio" name="sourceShape" value="round" checked> Round</label>
+              <label><input type="radio" name="sourceShape" value="rect"> Square or rectangular</label>
+            </div>
+            <p class="field-error" id="error-sourceShape" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-sourceD1">Diameter / length (cm)</label>
+            <p class="help" id="help-sourceD1">Only for a custom size. Diameter for round, length for square or rectangular. 5–60 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-sourceD1"></span></p>
+            <input id="field-sourceD1" name="sourceD1" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceD1">
+            <p class="field-error" id="error-sourceD1" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sourceD2">Width (cm)</label>
+            <p class="help" id="help-sourceD2">Only for a custom square or rectangular pan. 5–60 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-sourceD2"></span></p>
+            <input id="field-sourceD2" name="sourceD2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceD2">
+            <p class="field-error" id="error-sourceD2" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-sourceDepth">Depth (cm)</label>
+            <p class="help" id="help-sourceDepth">Only for a custom size. 1–15 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-sourceDepth"></span></p>
+            <input id="field-sourceDepth" name="sourceDepth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sourceDepth">
+            <p class="field-error" id="error-sourceDepth" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <h3>Target pan</h3>
+          <fieldset class="fieldset" id="field-targetKind">
+            <legend>Method</legend>
+            <p class="help" id="help-targetKind">Pick a pan from the capacity table, or enter custom dimensions.</p>
+            <div class="radio-row" role="group" aria-describedby="help-targetKind">
+              <label><input type="radio" name="targetKind" value="table" checked> From the table</label>
+              <label><input type="radio" name="targetKind" value="custom"> Custom size</label>
+            </div>
+            <p class="field-error" id="error-targetKind" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-targetPan">Pan</label>
+            <p class="help" id="help-targetPan">Only when using the table. 11 common pans; see the capacity table below.</p>
+            <select id="field-targetPan" name="targetPan" aria-describedby="help-targetPan">
+              <option value="round-6">6-inch round — ⌀6 × 2 in (⌀15.24 × 5.08 cm), 927 ml</option>
+              <option value="round-7">7-inch round — ⌀7 × 2 in (⌀17.78 × 5.08 cm), 1261 ml</option>
+              <option value="round-8">8-inch round — ⌀8 × 2 in (⌀20.32 × 5.08 cm), 1647 ml</option>
+              <option value="round-9" selected>9-inch round — ⌀9 × 2 in (⌀22.86 × 5.08 cm), 2085 ml</option>
+              <option value="round-10">10-inch round — ⌀10 × 2 in (⌀25.40 × 5.08 cm), 2574 ml</option>
+              <option value="square-8">8×8-inch square — 8×8 × 2 in (20.32×20.32 × 5.08 cm), 2098 ml</option>
+              <option value="square-9">9×9-inch square — 9×9 × 2 in (22.86×22.86 × 5.08 cm), 2655 ml</option>
+              <option value="rect-9x13">9×13-inch rectangular — 9×13 × 2 in (22.86×33.02 × 5.08 cm), 3835 ml</option>
+              <option value="loaf-9x5">9×5-inch loaf — 9×5 × 2.5 in (22.86×12.70 × 6.35 cm), 1844 ml</option>
+              <option value="bundt-10">10-inch Bundt (nominal 12 cups) — 10 × 3.5 in, 2844 ml (nominal capacity)</option>
+              <option value="tube-10">10-inch tube (nominal 16 cups) — 10 × 4 in, 3792 ml (nominal capacity)</option>
+            </select>
+            <p class="field-error" id="error-targetPan" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-targetShape">
+            <legend>Shape</legend>
+            <p class="help" id="help-targetShape">Only for a custom size.</p>
+            <div class="radio-row" role="group" aria-describedby="help-targetShape">
+              <label><input type="radio" name="targetShape" value="round" checked> Round</label>
+              <label><input type="radio" name="targetShape" value="rect"> Square or rectangular</label>
+            </div>
+            <p class="field-error" id="error-targetShape" role="alert"></p>
+          </fieldset>
+          <div class="field">
+            <label for="field-targetD1">Diameter / length (cm)</label>
+            <p class="help" id="help-targetD1">Only for a custom size. Diameter for round, length for square or rectangular. 5–60 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-targetD1"></span></p>
+            <input id="field-targetD1" name="targetD1" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetD1">
+            <p class="field-error" id="error-targetD1" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-targetD2">Width (cm)</label>
+            <p class="help" id="help-targetD2">Only for a custom square or rectangular pan. 5–60 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-targetD2"></span></p>
+            <input id="field-targetD2" name="targetD2" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetD2">
+            <p class="field-error" id="error-targetD2" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-targetDepth">Depth (cm)</label>
+            <p class="help" id="help-targetDepth">Only for a custom size. 1–15 cm, at most 2 decimal places. <span class="inch-equiv" id="inch-targetDepth"></span></p>
+            <input id="field-targetDepth" name="targetDepth" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetDepth">
+            <p class="field-error" id="error-targetDepth" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <h3>Batter quantity (optional)</h3>
+          <div class="field">
+            <label for="field-quantity">Batter quantity</label>
+            <p class="help" id="help-quantity">Leave blank to compute the factor only. When filled, it is one total batter quantity: above 0 and at most 100,000, at most 2 decimal places.</p>
+            <input id="field-quantity" name="quantity" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-quantity">
+            <p class="field-error" id="error-quantity" role="alert"></p>
+          </div>
+          <fieldset class="fieldset" id="field-quantityUnit">
+            <legend>Unit</legend>
+            <p class="help" id="help-quantityUnit">Only when a quantity is entered.</p>
+            <div class="radio-row" role="group" aria-describedby="help-quantityUnit">
+              <label><input type="radio" name="quantityUnit" value="g" checked> Grams (g)</label>
+              <label><input type="radio" name="quantityUnit" value="ml"> Millilitres (ml)</label>
+            </div>
+            <p class="field-error" id="error-quantityUnit" role="alert"></p>
+          </fieldset>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter a source and a target pan, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Conversion result</h2>
+      <p class="result-value" id="factor-value"></p>
+      <ul class="result-lines">
+        <li id="result-source"></li>
+        <li id="result-target"></li>
+        <li id="result-percent"></li>
+        <li id="result-scaled"></li>
+        <li id="result-depth"></li>
+      </ul>
+      <p class="depth-hint" id="depth-hint" hidden></p>
+      <p class="disclaimer" id="disclaimer">Table volumes use straight-sided geometry at the nominal dimensions; real pans taper and have rounded corners, so actual capacity differs slightly. Nominal rows (Bundt / tube) use the labelled capacity from a standard conversion chart, not a geometric value.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the formats used</summary>
+    <p>Factor = target pan volume ÷ source pan volume. Table volumes are straight-sided geometry at the nominal dimensions (round: ((π × radius) × radius) × depth; square or rectangular: (length × width) × depth), rounded to whole millilitres and pinned; Bundt and tube pans use the standard conversion chart's labelled capacity (12 cups = 2844 ml, 16 cups = 3792 ml at 1 cup = 237 ml), not a geometric value. Custom sizes are entered in centimetres and computed from the unrounded volume; the factor is shown to 2 decimal places, the percentage to 1 decimal place, and the scaled quantity to 1 decimal place, each rounded once (half-up), and scaling always uses the unrounded factor. Depth relation compares the two depths: the target is shallower, deeper, or the same; it cannot be compared when one side is a nominal-capacity pan. The downloaded report is always named baking-pan-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing line feed.</p>
+    <p>This tool scales one total batter quantity only. It does not scale individual ingredient weights, and it does not calculate baking time or temperature adjustments.</p>
+  </details>
+
+  <section class="panel" aria-labelledby="table-heading">
+    <h2 id="table-heading">Pan capacity table</h2>
+    <div class="table-scroll" role="region" aria-labelledby="table-heading" tabindex="0">
+      <table>
+        <caption>Volumes for 11 common pans; the numbers match the Chinese page</caption>
+        <thead>
+          <tr><th scope="col">Pan</th><th scope="col">Nominal size (in)</th><th scope="col">Size (cm)</th><th scope="col">Depth (cm)</th><th scope="col">Volume (ml)</th><th scope="col">Basis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>6-inch round</td><td>⌀6 × 2</td><td>⌀15.24 × 5.08</td><td class="numeric">5.08</td><td class="numeric">927</td><td>Geometric</td></tr>
+          <tr><td>7-inch round</td><td>⌀7 × 2</td><td>⌀17.78 × 5.08</td><td class="numeric">5.08</td><td class="numeric">1261</td><td>Geometric</td></tr>
+          <tr><td>8-inch round</td><td>⌀8 × 2</td><td>⌀20.32 × 5.08</td><td class="numeric">5.08</td><td class="numeric">1647</td><td>Geometric</td></tr>
+          <tr><td>9-inch round</td><td>⌀9 × 2</td><td>⌀22.86 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2085</td><td>Geometric</td></tr>
+          <tr><td>10-inch round</td><td>⌀10 × 2</td><td>⌀25.40 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2574</td><td>Geometric</td></tr>
+          <tr><td>8×8-inch square</td><td>8×8 × 2</td><td>20.32×20.32 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2098</td><td>Geometric</td></tr>
+          <tr><td>9×9-inch square</td><td>9×9 × 2</td><td>22.86×22.86 × 5.08</td><td class="numeric">5.08</td><td class="numeric">2655</td><td>Geometric</td></tr>
+          <tr><td>9×13-inch rectangular</td><td>9×13 × 2</td><td>22.86×33.02 × 5.08</td><td class="numeric">5.08</td><td class="numeric">3835</td><td>Geometric</td></tr>
+          <tr><td>9×5-inch loaf</td><td>9×5 × 2.5</td><td>22.86×12.70 × 6.35</td><td class="numeric">6.35</td><td class="numeric">1844</td><td>Geometric</td></tr>
+          <tr><td>10-inch Bundt (nominal 12 cups)</td><td>10 × 3.5</td><td>—</td><td class="numeric">—</td><td class="numeric">2844</td><td>Nominal</td></tr>
+          <tr><td>10-inch tube (nominal 16 cups)</td><td>10 × 4</td><td>—</td><td class="numeric">—</td><td class="numeric">3792</td><td>Nominal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How do I read the factor?</dt>
+      <dd>Factor = target pan volume ÷ source pan volume. Above 1 means make more batter; below 1 means make less.</dd>
+      <dt>Why do Bundt and tube pans use nominal capacity?</dt>
+      <dd>Their shapes (flutes, a centre tube) are not a plain cylinder or box, so no geometric formula gives the real capacity; the labelled capacity from a standard conversion chart is used and marked nominal.</dd>
+      <dt>Can it scale each ingredient's weight?</dt>
+      <dd>No. This tool scales one total batter quantity only; for ingredient-ratio conversions use the Baker's Percentage Calculator.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored on a server, or logged. The draft lives only on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
