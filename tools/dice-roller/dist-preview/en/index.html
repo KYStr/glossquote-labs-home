@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Dice Roller | Gloss Tools</title>
+<meta name="description" content="Roll dice from NdM notation with a reproducible seed: per-die results in order plus the total — the same seed always rolls the same dice.">
+<link rel="stylesheet" href="../styles/dice-roller.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Dice Roller</h1>
+  <p class="lede">Enter NdM dice notation and a seed to roll each die in order, with the total. The same seed always rolls the same dice, so any roll can be reproduced and checked.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Notation and seed</h2>
+      <form id="dice-form" novalidate>
+        <div class="field">
+          <label for="field-notation">Dice notation</label>
+          <p class="help" id="help-notation">Format NdM with optional +K or -K, e.g. 2d6+3</p>
+          <input id="field-notation" name="notation" type="text" inputmode="text" autocomplete="off" value="2d6" aria-describedby="help-notation">
+          <p class="field-error" id="error-notation" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-seed">Seed</label>
+          <p class="help" id="help-seed">Leave blank to have a seed generated and shown; reuse it to reproduce the same roll.</p>
+          <input id="field-seed" name="seed" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-seed">
+          <p class="field-error" id="error-seed" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Ready</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Roll dice</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Dice and total</h2>
+      <p class="result-value" id="result-summary"></p>
+      <ol class="rolls-list" id="rolls-list"></ol>
+      <p class="result-echo" id="result-modifier" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Notation format and limits</summary>
+    <p>Notation is NdM with an optional +K or -K modifier, e.g. 2d6+3. With no count the count defaults to 1 (d20 is one 20-sided die); a capital D is accepted and normalized to lowercase d. Dice count 1–100, sides 2–1000, modifier between -10000 and 10000, seed an integer from 0 to 4294967295. Neither notation nor seed is trimmed: spaces or any extra characters are format errors.</p>
+    <p>The tool uses the mulberry32 pseudorandom generator, drawing exactly once per die and reporting results in roll order; the face total is the sum of the dice, and the total is the face total plus the modifier, which may be negative and is never clamped. The downloaded report is always named dice-roller-report.json: compact JSON of the result with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What does "d20" mean?</dt>
+      <dd>With no count, the count defaults to 1 — one 20-sided die.</dd>
+      <dt>Why does the same seed roll the same dice?</dt>
+      <dd>The tool uses the mulberry32 pseudorandom generator; results are fully determined by the seed, so any roll can be reproduced and checked.</dd>
+      <dt>What happens if the seed is blank?</dt>
+      <dd>At run time a cryptographically random seed is generated and shown in the field; reuse it to reproduce the roll.</dd>
+      <dt>Is this true randomness?</dt>
+      <dd>No. It is deterministic pseudorandom output, fine for games, teaching and testing — not for gambling or security.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page: nothing is uploaded, stored on a server, or logged. The draft lives only on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
