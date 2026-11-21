@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>車輛折舊計算｜Gloss Tools</title>
+<meta name="description" content="輸入購入價、年數與殘值下限，用定率遞減、直線法或逐年費率表估算目前車價與逐年折舊；估算僅供規劃參考，不是正式鑑價。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>車輛折舊計算</h1>
+  <p class="lede">輸入購入價、年數與殘值下限，用定率遞減、直線法或逐年費率表估算目前車價與逐年折舊。結果是規劃用估算，不是鑑價。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="car-form" novalidate>
+        <div class="field">
+          <label for="field-method">計算方式</label>
+          <p class="help" id="help-method">三種折舊模型擇一。切換方式只顯示該方式的專屬欄位，其他方式的欄位會保留草稿值，但不會送入計算。</p>
+          <select id="field-method" name="method" aria-describedby="help-method">
+            <option value="declining" selected>定率遞減</option>
+            <option value="straight">直線法</option>
+            <option value="table">逐年費率表</option>
+          </select>
+          <p class="field-error" id="error-method" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">購入價（新臺幣）</label>
+          <p class="help" id="help-price">新車購入價，整數新臺幣，範圍 1–999,999,999。</p>
+          <input id="field-price" name="price" type="text" inputmode="numeric" autocomplete="off" value="880000" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-years">年數</label>
+          <p class="help" id="help-years">逐年表的年數（即車齡），整數，範圍 0–30。0 表示只看目前估值，沒有逐年表。</p>
+          <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" value="5" aria-describedby="help-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-salvagePercent">殘值下限（%）</label>
+          <p class="help" id="help-salvagePercent">殘值下限占購入價的百分比，最多兩位小數，範圍 0–50。三種方式都適用。</p>
+          <input id="field-salvagePercent" name="salvagePercent" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-salvagePercent">
+          <p class="field-error" id="error-salvagePercent" role="alert"></p>
+        </div>
+        <div id="method-fields-declining">
+          <div class="field">
+            <label for="field-rate">年折舊率（%）</label>
+            <p class="help" id="help-rate">每年按前一年年末估值折舊的百分比，最多兩位小數，範圍 0–90。</p>
+            <input id="field-rate" name="rate" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-rate">
+            <p class="field-error" id="error-rate" role="alert"></p>
+          </div>
+        </div>
+        <div id="method-fields-straight" hidden>
+          <div class="field">
+            <label for="field-usefulLife">直線攤提年數</label>
+            <p class="help" id="help-usefulLife">把（購入價 − 殘值下限）平均分攤的年數，整數，範圍 1–30。</p>
+            <input id="field-usefulLife" name="usefulLife" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-usefulLife">
+            <p class="field-error" id="error-usefulLife" role="alert"></p>
+          </div>
+        </div>
+        <div id="method-fields-table" hidden>
+          <div class="field">
+            <label for="field-tableRates">逐年折舊率（%，每行一年）</label>
+            <p class="help" id="help-tableRates">每行一個百分比，最多兩位小數，範圍 0–90；最多 30 行。年數比行數多時，最後一行的費率重複套用到其餘年份。</p>
+            <textarea id="field-tableRates" name="tableRates" rows="10" aria-describedby="help-tableRates">20
+18
+15
+12
+10
+8
+8
+6
+6
+5</textarea>
+            <p class="field-error" id="error-tableRates" role="alert"></p>
+          </div>
+          <p class="table-note" id="table-note">預設逐年折舊率表（第 1–10 年：20%、18%、15%、12%、10%、8%、8%、6%、6%、5%）是常見的二手車經驗法則示意值，不是官方或鑑價機構的估值標準。</p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入購入價與年數，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算折舊</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">目前估值與逐年折舊明細</h2>
+      <p id="summary"></p>
+      <p id="empty-schedule-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="逐年折舊明細" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">年次</th><th scope="col">當年費率</th><th scope="col">當年折舊額</th><th scope="col">年末估值</th><th scope="col">狀態</th></tr>
+          </thead>
+          <tbody id="schedule-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="disclosure">本工具的估算僅供規劃參考，不是正式鑑價；車輛實際市場價值受車況、里程、事故紀錄、市場供需與地區影響，請以專業鑑價或實際成交行情為準。</p>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>三種模型都以整數新臺幣計算，百分比先轉成萬分率整數，全程用整數運算、每年年末四捨五入（.5 進位）。定率遞減用單一固定年率乘以前一年年末估值；直線法把（購入價 − 殘值下限）平均分攤到攤提年數，每年扣固定金額；逐年費率表每年用該年對應行的費率，行數不夠時最後一行費率重複套用，行數多餘時超出部分不使用。每年年末估值都由前一年已捨入的年末估值算出，不是閉合式一次算出。</p>
+    <p>殘值下限在三種模型都生效：估值不會低於下限，碰到下限的那一年起當年折舊額為 0；恰好等於下限的那一年不標示為已達下限，次年起才標示。直線法的當年費率欄顯示 —。</p>
+    <p>輸入只接受 ASCII 數字與一個小數點：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 car-depreciation-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>估值等於行情嗎？</dt>
+      <dd>不等於；估算只用購入價與年數，實際市值受車況、里程與市場供需影響，請以專業鑑價或實際成交行情為準。</dd>
+      <dt>為什麼後幾年折舊變成 0？</dt>
+      <dd>估值已達你設定的殘值下限，本工具不會讓估值低於下限。</dd>
+      <dt>費率表的費率用完了怎麼辦？</dt>
+      <dd>年數比費率行數多時，最後一年的費率會重複套用到其餘年份。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Car Depreciation Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a car's current value and year-by-year depreciation from its purchase price, age and a salvage floor, using declining balance, straight line, or a year-by-year rate table. Estimates are for planning only, not a formal appraisal.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Car Depreciation Calculator</h1>
+  <p class="lede">Estimate a car's current value and year-by-year depreciation from its purchase price, age and a salvage floor, using declining balance, straight line, or a year-by-year rate table. The result is a planning estimate, not an appraisal.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Inputs</h2>
+      <form id="car-form" novalidate>
+        <div class="field">
+          <label for="field-method">Method</label>
+          <p class="help" id="help-method">Choose one of the three depreciation models. Switching methods shows only that method's fields; the other methods' fields keep their draft values but are not sent to the calculation.</p>
+          <select id="field-method" name="method" aria-describedby="help-method">
+            <option value="declining" selected>Declining balance</option>
+            <option value="straight">Straight line</option>
+            <option value="table">Year-by-year rate table</option>
+          </select>
+          <p class="field-error" id="error-method" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">Purchase price (NT$)</label>
+          <p class="help" id="help-price">The new-car purchase price, in whole NT$, from 1 to 999,999,999.</p>
+          <input id="field-price" name="price" type="text" inputmode="numeric" autocomplete="off" value="880000" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-years">Years</label>
+          <p class="help" id="help-years">The number of years in the year-by-year table (the car's age), a whole number from 0 to 30. 0 shows only the current value, with no table.</p>
+          <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" value="5" aria-describedby="help-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-salvagePercent">Salvage floor (%)</label>
+          <p class="help" id="help-salvagePercent">The salvage floor as a percentage of the purchase price, at most two decimal places, from 0 to 50. It applies to all three methods.</p>
+          <input id="field-salvagePercent" name="salvagePercent" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-salvagePercent">
+          <p class="field-error" id="error-salvagePercent" role="alert"></p>
+        </div>
+        <div id="method-fields-declining">
+          <div class="field">
+            <label for="field-rate">Annual rate (%)</label>
+            <p class="help" id="help-rate">The percentage depreciated each year from the previous year's end value, at most two decimal places, from 0 to 90.</p>
+            <input id="field-rate" name="rate" type="text" inputmode="decimal" autocomplete="off" value="15" aria-describedby="help-rate">
+            <p class="field-error" id="error-rate" role="alert"></p>
+          </div>
+        </div>
+        <div id="method-fields-straight" hidden>
+          <div class="field">
+            <label for="field-usefulLife">Straight-line life (years)</label>
+            <p class="help" id="help-usefulLife">The number of years over which (purchase price − salvage floor) is spread evenly, a whole number from 1 to 30.</p>
+            <input id="field-usefulLife" name="usefulLife" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-usefulLife">
+            <p class="field-error" id="error-usefulLife" role="alert"></p>
+          </div>
+        </div>
+        <div id="method-fields-table" hidden>
+          <div class="field">
+            <label for="field-tableRates">Yearly rates (%, one per line)</label>
+            <p class="help" id="help-tableRates">One percentage per line, at most two decimal places, from 0 to 90; at most 30 lines. When there are more years than rows, the last row's rate repeats for the remaining years.</p>
+            <textarea id="field-tableRates" name="tableRates" rows="10" aria-describedby="help-tableRates">20
+18
+15
+12
+10
+8
+8
+6
+6
+5</textarea>
+            <p class="field-error" id="error-tableRates" role="alert"></p>
+          </div>
+          <p class="table-note" id="table-note">The default year-by-year rate table (years 1–10: 20%, 18%, 15%, 12%, 10%, 8%, 8%, 6%, 6%, 5%) is an illustrative common used-car rule of thumb, not an official or appraisal-industry valuation standard.</p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter a purchase price and years, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate depreciation</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Current value and year-by-year depreciation</h2>
+      <p id="summary"></p>
+      <p id="empty-schedule-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="Year-by-year depreciation" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Year</th><th scope="col">Rate that year</th><th scope="col">Depreciation that year</th><th scope="col">End-of-year value</th><th scope="col">Status</th></tr>
+          </thead>
+          <tbody id="schedule-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="disclosure">Estimates from this tool are for planning only and are not a formal appraisal. A vehicle's actual market value depends on its condition, mileage, accident history, market supply and demand, and region; rely on a professional appraisal or actual transaction prices.</p>
+
+  <details class="details">
+    <summary>How the calculation works</summary>
+    <p>All three models calculate in whole NT$: percentages are first converted to integer hundredths of a percent, all arithmetic is integer arithmetic, and each year-end value is rounded half-up (.5 rounds up). Declining balance multiplies a single fixed annual rate by the previous year's end value; straight line spreads (purchase price − salvage floor) evenly over the life in years, deducting the same amount each year; the year-by-year rate table uses each year's row rate, repeating the last row's rate when there are more years than rows, and ignoring extra rows. Each year's end value is computed from the previous year's already-rounded end value, not from a closed form.</p>
+    <p>The salvage floor applies to all three models: the value never goes below the floor, and depreciation becomes 0 from the year the floor is reached. A year that lands exactly on the floor is not marked as at the floor; later years are. The straight-line rate column shows —.</p>
+    <p>Inputs accept ASCII digits and one decimal point only: commas, spaces, signs, exponents and full-width digits are format errors; the tool does not guess for you. The downloaded report is always named car-depreciation-report.json; its contents are the result as compact JSON, with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is the estimate the market price?</dt>
+      <dd>No. The estimate uses only purchase price and age; actual market value depends on condition, mileage and supply and demand — rely on a professional appraisal or actual transaction prices.</dd>
+      <dt>Why does depreciation become 0 in later years?</dt>
+      <dd>The value has reached the salvage floor you set; this tool never values the car below that floor.</dd>
+      <dt>What happens when the rate table runs out?</dt>
+      <dd>When there are more years than rate rows, the last row's rate repeats for the remaining years.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
