@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Calories Burned Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate gross calories burned in one exercise session from body weight, duration and MET values from the 2024 Adult Compendium of Physical Activities, comparing up to three activities.">
+<link rel="stylesheet" href="../styles/calories-burned-calculator.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Calories Burned Calculator</h1>
+  <p class="lede">Estimate gross calories burned in one exercise session from body weight, duration and MET values from the 2024 Adult Compendium of Physical Activities, comparing up to three activities.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Input</h2>
+      <form id="calories-form" novalidate>
+        <div class="field">
+          <label for="field-weight">Weight (kg)</label>
+          <p class="help" id="help-weight">20–500 kg, at most two decimal places (for example 62.5).</p>
+          <input id="field-weight" name="weight" type="text" inputmode="decimal" autocomplete="off" value="60" aria-describedby="help-weight">
+          <p class="field-error" id="error-weight" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-durationMinutes">Duration (minutes)</label>
+          <p class="help" id="help-durationMinutes">1–1440 minutes, at most one decimal place (for example 30 or 45.5).</p>
+          <input id="field-durationMinutes" name="durationMinutes" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-durationMinutes">
+          <p class="field-error" id="error-durationMinutes" role="alert"></p>
+        </div>
+        <fieldset class="field activities" id="activities-group" aria-describedby="help-activities">
+          <legend>Activities (choose up to 3 to compare)</legend>
+          <p class="help" id="help-activities">Choose 1 to 3 activities; each row uses the same weight and the full duration, and the total is the sum of the rows.</p>
+          <div id="activity-list"></div>
+          <p class="field-error" id="error-activities" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">No estimate yet. Enter your weight, duration and activities.</p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report (JSON)</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimated calories burned</h2>
+      <p id="summary"></p>
+      <p class="stale-note" id="stale-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="Estimated calories burned" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Activity</th><th scope="col">MET</th><th scope="col">Calories (kcal)</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+          <tfoot>
+            <tr><th scope="row">Total</th><td></td><td id="total-kcal"></td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="gross-note">Gross totals (including resting metabolism)</p>
+      <p class="disclaimer" id="disclaimer">Calorie figures are estimates: they use MET values from the 2024 Adult Compendium of Physical Activities in the formula MET × weight (kg) × duration (hours) and are gross totals that include resting metabolism. Actual expenditure varies with individual metabolism, movement efficiency and intensity. This result is not medical, weight-loss or dietary advice.</p>
+    </section>
+  </div>
+
+  <section class="panel met-table" aria-labelledby="met-heading">
+    <h2 id="met-heading">Activity MET values (2024 Adult Compendium of Physical Activities)</h2>
+    <p>The table below is the tool's only activity data; MET values follow the 2024 edition as published, with no averaging, combining or adjustment.</p>
+    <noscript><p>JavaScript is required to display the activity list.</p></noscript>
+    <div class="table-scroll" role="region" aria-label="Activity MET values" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">Activity</th><th scope="col">MET</th><th scope="col">Code</th></tr>
+        </thead>
+        <tbody id="met-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="disclaimer" id="page-disclaimer">Calorie figures are estimates: they use MET values from the 2024 Adult Compendium of Physical Activities in the formula MET × weight (kg) × duration (hours) and are gross totals that include resting metabolism. Actual expenditure varies with individual metabolism, movement efficiency and intensity. This result is not medical, weight-loss or dietary advice.</p>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>Calories (kcal) = MET × weight (kg) × duration (hours). MET values come from the 2024 Adult Compendium of Physical Activities, which defines 1 MET as 1 kcal per kilogram per hour. Each row is rounded once to a whole kcal using integer arithmetic (an exact fraction of one half rounds up), and the total is the sum of the rounded rows, so the displayed rows always add up to the displayed total. Results are gross totals that include resting metabolism, not net figures.</p>
+    <p>Weight accepts ASCII digits only, at most two decimal places, 20–500 kg; duration accepts ASCII digits only, at most one decimal place, 1–1440 minutes; commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. The downloaded report is always named calories-burned-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is the number calculated?</dt>
+      <dd>Calories (kcal) = MET × weight (kg) × duration (hours). A MET is the activity's intensity relative to rest; the MET values here come from the 2024 Adult Compendium of Physical Activities, which defines 1 MET as 1 kcal per kilogram per hour.</dd>
+      <dt>Is this gross or net?</dt>
+      <dd>It is gross: it includes the roughly 1 MET you would have spent resting in the same time. For an activity-only net figure, estimate (MET − 1) × weight × hours yourself; the tool has no toggle.</dd>
+      <dt>Why does my watch or treadmill show a different number?</dt>
+      <dd>MET values are population averages for adults aged 19 to 59. Devices estimate with their own sensors and models, and individual metabolism and movement efficiency differ, so disagreement between figures is expected.</dd>
+      <dt>Which edition are the MET values from, and why do other sites differ?</dt>
+      <dd>This tool uses the 2024 edition. The 2024 edition revised many 2011 values (for example brisk walking 4.3 → 4.8 and Hatha yoga 2.5 → 2.3), so sites still citing the older edition produce different results.</dd>
+      <dt>What does the total mean in compare mode?</dt>
+      <dd>Each row uses the same weight and the full duration; the total is the sum of the rows, meaning "each activity done for the full time", not a session split between them.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
