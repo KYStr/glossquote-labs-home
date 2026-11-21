@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Tax-Included Converter | Gloss Tools</title>
+<meta name="description" content="Convert between tax-exclusive and tax-inclusive amounts: enter one amount or several net lines and get net, tax and gross under Taiwan business tax 5% (editable), computed once on the total.">
+<link rel="canonical" href="https://tax-included-converter.glossquote.com/en/">
+<link rel="alternate" hreflang="zh-Hant" href="https://tax-included-converter.glossquote.com/">
+<link rel="alternate" hreflang="en" href="https://tax-included-converter.glossquote.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://tax-included-converter.glossquote.com/">
+<meta property="og:title" content="Tax-Included Converter | Gloss Tools">
+<meta property="og:description" content="Convert between tax-exclusive and tax-inclusive amounts: enter one amount or several net lines and get net, tax and gross under Taiwan business tax 5% (editable), computed once on the total.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tax-included-converter.glossquote.com/en/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/tax-included.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft; nothing is uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Tax-Included Converter</h1>
+  <p class="lede">Before quoting or filling in a three-part uniform invoice, split one amount into net sales, business tax and gross total — or total several net lines, with the tax computed once on the total. Results are estimates, not an issued or filed invoice.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Conversion input</h2>
+      <form id="tax-form" novalidate>
+        <fieldset class="fieldset">
+          <legend>Mode</legend>
+          <p class="help" id="help-mode">Single amount converts one amount; multiple lines totals the net lines and taxes the total once.</p>
+          <div class="choice-group" role="radiogroup" aria-describedby="help-mode">
+            <label><input type="radio" name="mode" id="field-mode-single" value="single" checked> Single amount</label>
+            <label><input type="radio" name="mode" id="field-mode-lines" value="lines"> Multiple lines</label>
+          </div>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-ratePercent">Tax rate (%)</label>
+          <p class="help" id="help-ratePercent">Taiwan business tax is currently 5%. Change it for other rates: at most two decimals, above 0% and up to 100%.</p>
+          <input id="field-ratePercent" name="ratePercent" type="text" inputmode="decimal" autocomplete="off" value="5" aria-describedby="help-ratePercent">
+          <p class="field-error" id="error-ratePercent" role="alert"></p>
+        </div>
+        <fieldset class="fieldset" id="basis-fieldset">
+          <legend>Amount basis</legend>
+          <p class="help" id="help-basis">Whether the amount you enter is net or gross. Net plus tax gives gross; gross is converted back to net, with the tax taken as the difference.</p>
+          <div class="choice-group" role="radiogroup" aria-describedby="help-basis">
+            <label><input type="radio" name="basis" id="field-basis-net" value="net" checked> Net (tax-exclusive)</label>
+            <label><input type="radio" name="basis" id="field-basis-gross" value="gross"> Gross (tax-inclusive)</label>
+          </div>
+          <p class="field-error" id="error-basis" role="alert"></p>
+        </fieldset>
+        <div class="field" id="amount-field">
+          <label for="field-amount">Amount (NT$)</label>
+          <p class="help" id="help-amount">Whole dollars only: no decimals, commas, signs or spaces; maximum NT$999,999,999,999.</p>
+          <input id="field-amount" name="amount" type="text" inputmode="numeric" autocomplete="off" value="10000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field" id="lines-section" hidden>
+          <label id="lines-label">Line amounts (net, one per row)</label>
+          <p class="help" id="help-lines">One net amount per row, at most 20 rows. Tax is computed once on the sum of all lines.</p>
+          <div class="lines-list" id="lines-list" aria-describedby="help-lines"></div>
+          <p class="lines-empty" id="lines-empty" hidden>No lines yet. Choose “Add a row”.</p>
+          <button type="button" id="lines-add-btn" class="button-secondary">Add a row</button>
+          <p class="field-error" id="error-lines" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter an amount or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Net, tax and gross</h2>
+      <div class="result-trio">
+        <div class="result-amount" id="result-net">
+          <h3>Net sales</h3>
+          <p class="value" id="result-net-value"></p>
+          <p class="input-tag" id="result-net-tag" hidden>Your input</p>
+        </div>
+        <div class="result-amount" id="result-tax">
+          <h3>Business tax</h3>
+          <p class="value" id="result-tax-value"></p>
+          <p class="input-tag" id="result-tax-tag" hidden>Your input</p>
+        </div>
+        <div class="result-amount" id="result-gross">
+          <h3>Gross total</h3>
+          <p class="value" id="result-gross-value"></p>
+          <p class="input-tag" id="result-gross-tag" hidden>Your input</p>
+        </div>
+      </div>
+      <p class="result-echo" id="result-echo"></p>
+      <div id="result-lines-wrap" hidden>
+        <table class="result-lines">
+          <caption class="help">Lines (net)</caption>
+          <thead>
+            <tr><th scope="col">Row</th><th scope="col" class="amount">Net amount (NT$)</th></tr>
+          </thead>
+          <tbody id="result-lines-body"></tbody>
+        </table>
+        <p class="result-note">Per-line tax sum: <span id="result-perline-value"></span></p>
+        <p class="result-note">Difference (tax on the total − per-line tax sum): <span id="result-difference-value"></span></p>
+        <p class="result-note same" id="result-same-note" hidden>Same as taxing the total</p>
+      </div>
+      <p class="disclaimer" id="disclaimer">Estimate: under Article 14 of the Value-added and Non-value-added Business Tax Act, tax is computed once on the total sales amount and rounded half-up to the nearest dollar; in lines mode the tax is likewise computed once on the total, and the per-line sum is shown only for comparison. Results are estimates for quoting and filling in an invoice, not an issued or filed invoice.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>Net to gross: tax = net × rate, rounded half-up to the dollar; gross = net + tax. Gross to net: net = gross ÷ (1 + rate), rounded half-up to the dollar; tax = gross − net, so the single rounding is absorbed by the tax and the three figures always balance. Multiple lines: all net lines are summed into the sales amount first, then the tax is computed once on that total; taxing each line separately and adding can differ by NT$1, and the difference is shown. The 5% default is the current levy (the Value-added and Non-value-added Business Tax Act, Article 10, sets a 5–10% range with the rate set by the Executive Yuan; the Ministry of Finance states the current rate is 5%); Article 14 is the rounding rule.</p>
+    <p>Amounts are whole New Taiwan dollars only: no decimals, thousands commas, signs, spaces or exponents; the maximum is NT$999,999,999,999, and the lines subtotal shares that cap. The rate is the only field that may carry decimals — at most two, above 0% and up to 100%. At most 20 lines. The downloaded report is always named tax-included-converter-report.json; its contents are the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Can I use this result to issue an invoice directly?</dt>
+      <dd>No. This is an estimate for quoting and filling in an invoice; issuing a uniform or e-invoice and filing must follow the tax rules.</dd>
+      <dt>Why does the per-line tax sum differ from the tax on the total?</dt>
+      <dd>Because the half-up rounding to the dollar happens only once. Rounding each line separately and adding can differ from rounding the total once by NT$1; the invoice structure taxes the total once, so this tool uses the total and shows the difference.</dd>
+      <dt>Why is the default rate 5%?</dt>
+      <dd>5% is the current Taiwan business tax levy (the Value-added and Non-value-added Business Tax Act, Article 10, sets a 5–10% range with the rate set by the Executive Yuan). Enter another rate for other situations.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored on a server, or recorded. Switching language or leaving the page discards the draft.</p>
+</main>
+</body>
+</html>

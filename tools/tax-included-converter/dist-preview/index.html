@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>含稅未稅換算｜Gloss Tools</title>
+<meta name="description" content="未稅金額與含稅金額雙向換算：輸入一筆金額或多筆未稅明細，按台灣營業稅 5%（可改）一次算出未稅、稅額與含稅三欄。">
+<link rel="canonical" href="https://tax-included-converter.glossquote.com/">
+<link rel="alternate" hreflang="zh-Hant" href="https://tax-included-converter.glossquote.com/">
+<link rel="alternate" hreflang="en" href="https://tax-included-converter.glossquote.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://tax-included-converter.glossquote.com/">
+<meta property="og:title" content="含稅未稅換算｜Gloss Tools">
+<meta property="og:description" content="未稅金額與含稅金額雙向換算：輸入一筆金額或多筆未稅明細，按台灣營業稅 5%（可改）一次算出未稅、稅額與含稅三欄。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tax-included-converter.glossquote.com/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/tax-included.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿；草稿不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>含稅未稅換算</h1>
+  <p class="lede">報價或開三聯式發票前，把一筆金額拆成未稅銷售額、營業稅額、含稅總計三欄；也可以一次算多筆未稅明細，稅額按總額計算一次。結果僅供估算，不是實際開立或申報發票。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">換算輸入</h2>
+      <form id="tax-form" novalidate>
+        <fieldset class="fieldset">
+          <legend>計算模式</legend>
+          <p class="help" id="help-mode">單筆金額換算一筆金額；多筆明細加總未稅明細後按總額計稅一次。</p>
+          <div class="choice-group" role="radiogroup" aria-describedby="help-mode">
+            <label><input type="radio" name="mode" id="field-mode-single" value="single" checked> 單筆金額</label>
+            <label><input type="radio" name="mode" id="field-mode-lines" value="lines"> 多筆明細</label>
+          </div>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-ratePercent">稅率（%）</label>
+          <p class="help" id="help-ratePercent">台灣營業稅現行徵收率 5%。可改為其他稅率，最多兩位小數，0% 不接受，最高 100%。</p>
+          <input id="field-ratePercent" name="ratePercent" type="text" inputmode="decimal" autocomplete="off" value="5" aria-describedby="help-ratePercent">
+          <p class="field-error" id="error-ratePercent" role="alert"></p>
+        </div>
+        <fieldset class="fieldset" id="basis-fieldset">
+          <legend>金額基準</legend>
+          <p class="help" id="help-basis">輸入的金額是未稅還是含稅。未稅加稅得含稅；含稅回推未稅，稅額以減法得出。</p>
+          <div class="choice-group" role="radiogroup" aria-describedby="help-basis">
+            <label><input type="radio" name="basis" id="field-basis-net" value="net" checked> 未稅金額</label>
+            <label><input type="radio" name="basis" id="field-basis-gross" value="gross"> 含稅金額</label>
+          </div>
+          <p class="field-error" id="error-basis" role="alert"></p>
+        </fieldset>
+        <div class="field" id="amount-field">
+          <label for="field-amount">金額（新台幣元）</label>
+          <p class="help" id="help-amount">整數元，不含小數、逗號、正負號或空白；上限 999,999,999,999 元。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="numeric" autocomplete="off" value="10000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <div class="field" id="lines-section" hidden>
+          <label id="lines-label">明細金額（未稅，逐列一筆）</label>
+          <p class="help" id="help-lines">每列一筆未稅金額，最多 20 列。稅額按全部明細加總後計算一次。</p>
+          <div class="lines-list" id="lines-list" aria-describedby="help-lines"></div>
+          <p class="lines-empty" id="lines-empty" hidden>尚未新增明細列，請按「新增一列」。</p>
+          <button type="button" id="lines-add-btn" class="button-secondary">新增一列</button>
+          <p class="field-error" id="error-lines" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">未稅、稅額與含稅</h2>
+      <div class="result-trio">
+        <div class="result-amount" id="result-net">
+          <h3>未稅銷售額</h3>
+          <p class="value" id="result-net-value"></p>
+          <p class="input-tag" id="result-net-tag" hidden>輸入</p>
+        </div>
+        <div class="result-amount" id="result-tax">
+          <h3>營業稅額</h3>
+          <p class="value" id="result-tax-value"></p>
+          <p class="input-tag" id="result-tax-tag" hidden>輸入</p>
+        </div>
+        <div class="result-amount" id="result-gross">
+          <h3>含稅總計</h3>
+          <p class="value" id="result-gross-value"></p>
+          <p class="input-tag" id="result-gross-tag" hidden>輸入</p>
+        </div>
+      </div>
+      <p class="result-echo" id="result-echo"></p>
+      <div id="result-lines-wrap" hidden>
+        <table class="result-lines">
+          <caption class="help">明細（未稅）</caption>
+          <thead>
+            <tr><th scope="col">列</th><th scope="col" class="amount">未稅金額（元）</th></tr>
+          </thead>
+          <tbody id="result-lines-body"></tbody>
+        </table>
+        <p class="result-note">逐項計稅合計：<span id="result-perline-value"></span></p>
+        <p class="result-note">差額（按總額計稅 − 逐項計稅合計）：<span id="result-difference-value"></span></p>
+        <p class="result-note same" id="result-same-note" hidden>與按總額計稅相同</p>
+      </div>
+      <p class="disclaimer" id="disclaimer">估算說明：稅額依加值型及非加值型營業稅法第 14 條，按銷售總額計算一次、尾數四捨五入到元；明細模式的稅額亦按總額計算一次，逐項計稅合計僅供對照。結果僅供報價與填票前估算，不是實際開立或申報發票。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>未稅→含稅：稅額＝未稅 × 稅率，尾數四捨五入到元；含稅＝未稅＋稅額。含稅→未稅：未稅＝含稅 ÷（1＋稅率），尾數四捨五入到元；稅額＝含稅 − 未稅，尾數只捨一次且落在稅額，三元組恆相符。多筆明細：先加總全部未稅明細為銷售額，再按總額計算一次稅額；逐項各算一次稅再加總可能不同，差額會明示。稅率 5% 是現行徵收率（加值型及非加值型營業稅法第 10 條定 5–10% 區間，徵收率由行政院定之；財政部稅務入口網載明目前為 5%），第 14 條是捨入規則。</p>
+    <p>金額一律整數新台幣元，不收小數、千分位逗號、正負號、空白或指數；上限 999,999,999,999 元，明細總和同上限。稅率是唯一可帶小數的欄位，最多兩位小數，範圍大於 0% 至 100%。明細最多 20 列。下載的報告檔名固定為 tax-included-converter-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這份結果可以直接拿去開立發票嗎？</dt>
+      <dd>不行。這是報價與填票前的估算，實際開立統一發票或電子發票與申報請依稅務規定辦理。</dd>
+      <dt>為什麼逐項計稅合計和按總額計稅會不一樣？</dt>
+      <dd>因為稅額尾數四捨五入只做一次。逐項各捨一次再加總，和先加總再捨一次，結果可能差 1 元；發票結構是按總額計算一次，本工具以總額為準、把差額明示出來。</dd>
+      <dt>稅率為什麼預設 5%？</dt>
+      <dd>台灣營業稅現行徵收率為 5%（加值型及非加值型營業稅法第 10 條定 5–10% 區間，徵收率由行政院定之）。其他稅率情境可自行修改稅率欄位。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。切換語言或離開頁面會失去草稿。</p>
+</main>
+</body>
+</html>
