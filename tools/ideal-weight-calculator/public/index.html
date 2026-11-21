@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>理想體重計算｜Gloss Tools</title>
+<meta name="description" content="輸入身高與性別，查 WHO 健康體重範圍、BMI 22 參考體重，以及 Devine、Robinson、Miller、Hamwi 四個已發表公式的理想體重估算，常數全數標明出處。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>理想體重計算</h1>
+  <p class="lede">輸入身高與性別，查這個身高對應的 WHO 健康體重範圍、BMI 22 參考體重，以及 Devine、Robinson、Miller、Hamwi 四個已發表公式的理想體重估算；每個常數都標明原始出處，四個公式並列、不取平均。</p>
+
+  <p class="disclaimer" id="health-disclaimer">這些數字是依身高與性別推算的族群統計參考值，不是個人醫療建議，也不是診斷或減重目標。公式未考慮年齡、肌肉量、體脂、骨架與懷孕等個人差異；如有健康疑問，請諮詢醫師或營養師。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">身高與性別</h2>
+      <form id="ideal-weight-form" novalidate>
+        <div class="field">
+          <label for="field-heightCm">身高（公分）</label>
+          <p class="help" id="help-heightCm">數字，最多一位小數，範圍 130.0–230.0 公分。</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <fieldset class="field radio-field">
+          <legend>性別（公式用）</legend>
+          <p class="help" id="help-sex">四個公式的性別常數是原始文獻的二元分組。</p>
+          <div class="radio-row">
+            <input id="field-sex-male" name="sex" type="radio" value="male" aria-describedby="help-sex">
+            <label for="field-sex-male">男性</label>
+          </div>
+          <div class="radio-row">
+            <input id="field-sex-female" name="sex" type="radio" value="female" checked aria-describedby="help-sex">
+            <label for="field-sex-female">女性</label>
+          </div>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <p class="field-error" id="error-general" role="alert"></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入身高與性別，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算理想體重</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">理想體重估算</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="理想體重估算" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數值</th><th scope="col">備註</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note">四個公式並列呈現，不取平均、不標示「最佳」。英吋換算僅供顯示，公式使用未捨入的精確值。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>公式與出處</summary>
+    <p>健康體重範圍以 WHO 成人正常帶 BMI 18.5–24.9 換算：範圍下限 = 18.5 × 身高（公尺）²，上限 = 24.9 × 身高（公尺）²。BMI 22 參考體重 = 22 × 身高（公尺）²，是台灣臨床與衛教慣用的單點參考，不是官方界值。</p>
+    <p>四個公式皆以 5 英尺（152.4 公分）為基準，每英吋增減固定公斤數；身高以 1 英吋 = 2.54 公分換算，低於 5 英尺時沿同一直線延伸。Devine（1974）：男性 50 + 2.3 公斤／英吋，女性 45.5 + 2.3 公斤／英吋（Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm. 1974;8:650–655）。Robinson（1983）：男性 52 + 1.9，女性 49 + 1.7（Robinson JD, et al. Am J Hosp Pharm. 1983;40:1016–1019）。Miller（1983）：男性 56.2 + 1.41，女性 53.1 + 1.36（Miller DR, et al. Am J Hosp Pharm. 1983;40:1622–1625）。Hamwi（1964）原始發表為磅制：男性 106 磅 + 6 磅／英吋，女性 100 磅 + 5 磅／英吋（Hamwi GJ. In: Danowski TS, ed. Diabetes Mellitus: Diagnosis and Treatment. ADA; 1964:73–78），本工具以磅原生計算後用 1 磅 = 0.45359237 公斤精確換算，不採市面常見的公斤約略常數。四式綜述見 Pai MP, Paloucek FP. Ann Pharmacother. 2000;34:1066–1069。</p>
+    <p>所有輸出只在最後一步以半進位（.5 進位）捨入到小數一位，中途不捨入。下載的報告檔名固定為 ideal-weight-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼四個公式的數字都不同？</dt>
+      <dd>它們來自不同年代與樣本，最初多為藥物劑量設計，沒有哪一個是唯一正解；並列正是為了讓差距可見。</dd>
+      <dt>這裡的健康範圍和台灣國健署的標準一樣嗎？</dt>
+      <dd>下限相同（BMI 18.5)，上限不同：本頁顯示 WHO 的 24.9，國健署成人健康體位是 18.5 ≤ BMI &lt; 24，上限體重會比本頁低。</dd>
+      <dt>身高不到 5 英尺時公式怎麼算？</dt>
+      <dd>四式沿同一直線延伸（每英吋的增減不變）。公式原本以 5 英尺前後的成人為對象，矮個子的結果請當粗略參考。</dd>
+      <dt>為什麼沒有骨架大小的調整？</dt>
+      <dd>只有 Hamwi 原文附帶 ±10% 的骨架建議，其餘三式沒有；沒有單一可引標準可套用到四式，本工具不調整，數字請連同聲明一起看。</dd>
+      <dt>可以把這些數字當減重目標嗎？</dt>
+      <dd>不行。它們是族群統計參考，不是個人醫療建議；個人目標請諮詢醫師或營養師。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ideal Weight Calculator | Gloss Tools</title>
+<meta name="description" content="From height and sex, see the WHO healthy weight range, the BMI-22 reference weight, and ideal weight estimates from the four published Devine, Robinson, Miller and Hamwi formulas, with every constant cited.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Ideal Weight Calculator</h1>
+  <p class="lede">From height and sex, see the WHO healthy weight range for that height, the BMI-22 reference weight, and ideal weight estimates from the four published Devine, Robinson, Miller and Hamwi formulas; every constant is cited, and the four formulas are shown side by side with no average taken.</p>
+
+  <p class="disclaimer" id="health-disclaimer">These figures are population-level statistical references estimated from height and sex only. They are not personal medical advice, a diagnosis, or a weight-loss target. The formulas do not account for age, muscle mass, body fat, frame size, pregnancy, or other individual differences. Consult a physician or registered dietitian with any health concerns.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Height and sex</h2>
+      <form id="ideal-weight-form" novalidate>
+        <div class="field">
+          <label for="field-heightCm">Height (cm)</label>
+          <p class="help" id="help-heightCm">A number with at most one decimal place, from 130.0 to 230.0 cm.</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <fieldset class="field radio-field">
+          <legend>Sex (used by the formulas)</legend>
+          <p class="help" id="help-sex">The sex constants in the four formulas come from the binary groupings of the original papers.</p>
+          <div class="radio-row">
+            <input id="field-sex-male" name="sex" type="radio" value="male" aria-describedby="help-sex">
+            <label for="field-sex-male">Male</label>
+          </div>
+          <div class="radio-row">
+            <input id="field-sex-female" name="sex" type="radio" value="female" checked aria-describedby="help-sex">
+            <label for="field-sex-female">Female</label>
+          </div>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <p class="field-error" id="error-general" role="alert"></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter height and sex, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate ideal weight</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Ideal weight estimates</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Ideal weight estimates" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Value</th><th scope="col">Note</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <p class="result-note">The four formulas are shown side by side, with no average taken and no “best” formula marked. The inch conversion is display only; the formulas use the unrounded exact value.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Formulas and sources</summary>
+    <p>The healthy weight range uses the WHO adult normal band, BMI 18.5–24.9: the lower bound is 18.5 × height (m)² and the upper bound is 24.9 × height (m)². The BMI-22 reference weight is 22 × height (m)², a single-point reference commonly used in Taiwan clinical and health-education practice, not an official cut-off.</p>
+    <p>All four formulas take 5 feet (152.4 cm) as the base and add a fixed number of kilograms per inch over 5 feet; height converts with 1 in = 2.54 cm, and below 5 feet the formulas extend along the same straight line. Devine (1974): men 50 + 2.3 kg/in, women 45.5 + 2.3 kg/in (Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm. 1974;8:650–655). Robinson (1983): men 52 + 1.9, women 49 + 1.7 (Robinson JD, et al. Am J Hosp Pharm. 1983;40:1016–1019). Miller (1983): men 56.2 + 1.41, women 53.1 + 1.36 (Miller DR, et al. Am J Hosp Pharm. 1983;40:1622–1625). Hamwi (1964) was published in pounds: men 106 lb + 6 lb/in, women 100 lb + 5 lb/in (Hamwi GJ. In: Danowski TS, ed. Diabetes Mellitus: Diagnosis and Treatment. ADA; 1964:73–78); this tool computes in pounds first and converts with the exact 1 lb = 0.45359237 kg, rather than the approximate kilogram constants common elsewhere. For an overview of all four, see Pai MP, Paloucek FP. Ann Pharmacother. 2000;34:1066–1069.</p>
+    <p>Every output is rounded half-up (0.5 rounds up) to one decimal place only at the final step, with no intermediate rounding. The downloaded report is always named ideal-weight-report.json; it holds the result as compact JSON with object keys sorted recursively by UTF-16 code unit and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why do the four formulas give different numbers?</dt>
+      <dd>They come from different decades and samples and were mostly designed for drug dosing; none is the single right answer, and showing them side by side makes the spread visible.</dd>
+      <dt>Is this range the same as Taiwan's HPA standard?</dt>
+      <dd>The lower bound matches (BMI 18.5), the upper differs: this page shows the WHO bound 24.9, while Taiwan's HPA healthy band is 18.5 ≤ BMI &lt; 24, giving a lower upper weight.</dd>
+      <dt>What if I am shorter than 5 feet?</dt>
+      <dd>The formulas extend along the same straight line (the per-inch step is unchanged). They were published for adults around 5 feet and taller, so treat results at shorter heights as rough references.</dd>
+      <dt>Why is there no frame-size adjustment?</dt>
+      <dd>Only Hamwi's original note suggests ±10% for frame size; the other formulas have none, and no single citable rule applies it across all four, so this tool does not adjust.</dd>
+      <dt>Can I use these numbers as a weight-loss target?</dt>
+      <dd>No. They are population-level statistical references, not personal medical advice; talk to a physician or registered dietitian about personal goals.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
