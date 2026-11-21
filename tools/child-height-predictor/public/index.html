@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>兒童身高預測｜Gloss Tools</title>
+<meta name="description" content="輸入父親與母親的身高與孩子性別，以父母身高中值法估算孩子成年身高與 ±8.5 公分目標區間；僅為統計估計，不是醫療建議。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>兒童身高預測</h1>
+    <p class="lede">輸入父親與母親的身高和孩子性別，以父母身高中值法（Tanner）估算孩子成年身高與 ±8.5 公分目標區間。只在本機計算，不上傳、不儲存。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-father">父親身高（公分）</label>
+          <input id="input-father" name="fatherHeightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="178" aria-describedby="help-father">
+          <p class="field-help" id="help-father">100.0–230.0 公分，最多一位小數。</p>
+          <p class="field-error" id="error-father" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-mother">母親身高（公分）</label>
+          <input id="input-mother" name="motherHeightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="165" aria-describedby="help-mother">
+          <p class="field-help" id="help-mother">100.0–230.0 公分，最多一位小數。</p>
+          <p class="field-error" id="error-mother" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>孩子性別</legend>
+        <div class="segmented" role="radiogroup" aria-label="孩子性別">
+          <label class="segment">
+            <input type="radio" name="childSex" value="boy" checked>
+            <span>男孩</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="childSex" value="girl">
+            <span>女孩</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-sex" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算預估身高</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入父母身高與孩子性別，或載入範例。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">預估結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>預估成年身高</dt>
+          <dd><span id="result-target"></span> 公分</dd>
+        </div>
+        <div>
+          <dt>目標區間</dt>
+          <dd><span id="result-low"></span>–<span id="result-high"></span> 公分</dd>
+        </div>
+      </dl>
+      <p class="disclaimer" id="result-disclaimer">此為依父母身高推估的統計估計，不是醫療建議，也不是對任何一位兒童的成長診斷或保證。遺傳只是影響成人身高的因素之一；實際身高還受營養、整體健康、睡眠與青春期時間等因素影響，個別兒童完全可能落在預估區間之外。</p>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>公式：男孩（父 ＋ 母 ＋ 13）÷ 2、女孩（父 ＋ 母 − 13）÷ 2，單位公分；目標區間為預估值 ±8.5 公分。</li>
+        <li>身高格式：公分數字，最多一位小數，例如 178 或 172.5；不接受千分位逗號、指數、正負號或前導零。</li>
+        <li>每欄最多 8 個字元，接受範圍 100.0–230.0 公分；結果以四捨五入至一位小數，只捨入一次。</li>
+        <li>不需要輸入孩子的年齡或現在的身高；本方法只用父母身高。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>這個區間是什麼意思？</h3>
+    <p>±8.5 公分是 Tanner 目標區間，約涵蓋第 3 到第 97 百分位；多數孩子會落在區間內，但仍有人會在區間外。</p>
+    <h3>為什麼男孩加 13 公分、女孩減 13 公分？</h3>
+    <p>13 公分是成年男女平均身高差的慣用值，先把父母身高放到同一尺度再平均。</p>
+    <h3>需要輸入孩子現在的身高或年齡嗎？</h3>
+    <p>不需要；本方法只用父母身高。依目前身高追蹤生長百分位不在本工具範圍。</p>
+    <h3>父母身高要填誰的？</h3>
+    <p>親生父母的成年身高；以脫鞋量測的值最準。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 兒童身高預測在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
