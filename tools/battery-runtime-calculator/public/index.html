@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>電池續航計算｜Gloss Tools</title>
+<meta name="description" content="輸入電池容量（mAh 或 Wh）、電壓與負載瓦數，估算可用電量與續航時間，也能反推達到目標續航所需的容量，或計算串並聯電池組的總電量。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>電池續航計算</h1>
+  <p class="lede">輸入電池容量（mAh 或 Wh）、電壓與負載瓦數，估算可用電量與續航時間，也能反推達到目標續航所需的容量，或計算串並聯電池組的總電量。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">電池與負載</h2>
+      <form id="battery-form" novalidate>
+        <fieldset class="field radio-group">
+          <legend>計算模式</legend>
+          <p class="help" id="help-mode">切換模式會移除不適用於新模式的欄位。</p>
+          <label class="radio-option">
+            <input id="field-mode-runtime-mah" name="mode" type="radio" value="runtime-mah" checked aria-describedby="help-mode">
+            用 mAh 計算
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-runtime-wh" name="mode" type="radio" value="runtime-wh" aria-describedby="help-mode">
+            用 Wh 計算
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-solve" name="mode" type="radio" value="solve" aria-describedby="help-mode">
+            反推所需容量
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-pack" name="mode" type="radio" value="pack" aria-describedby="help-mode">
+            電池組組合
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field" id="wrap-capacityMah">
+          <label for="field-capacityMah">電池容量（mAh）</label>
+          <p class="help" id="help-capacityMah">數字，最多 6 位小數，範圍大於 0 至 10,000,000 mAh。</p>
+          <input id="field-capacityMah" name="capacityMah" type="text" inputmode="decimal" autocomplete="off" value="10000" aria-describedby="help-capacityMah">
+          <p class="field-error" id="error-capacityMah" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-capacityWh" hidden>
+          <label for="field-capacityWh">電池容量（Wh）</label>
+          <p class="help" id="help-capacityWh">數字，最多 6 位小數，範圍大於 0 至 100,000 Wh。</p>
+          <input id="field-capacityWh" name="capacityWh" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-capacityWh">
+          <p class="field-error" id="error-capacityWh" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-voltage">
+          <label for="field-voltage">電壓（V）</label>
+          <p class="help" id="help-voltage">數字，最多 6 位小數，範圍大於 0 至 1,000 V。</p>
+          <input id="field-voltage" name="voltage" type="text" inputmode="decimal" autocomplete="off" value="3.7" aria-describedby="help-voltage">
+          <p class="field-error" id="error-voltage" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-targetRuntimeHours" hidden>
+          <label for="field-targetRuntimeHours">目標續航（小時）</label>
+          <p class="help" id="help-targetRuntimeHours">數字，最多 6 位小數，範圍大於 0 至 100,000 小時。</p>
+          <input id="field-targetRuntimeHours" name="targetRuntimeHours" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetRuntimeHours">
+          <p class="field-error" id="error-targetRuntimeHours" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-cellCapacityMah" hidden>
+          <label for="field-cellCapacityMah">單顆電芯容量（mAh）</label>
+          <p class="help" id="help-cellCapacityMah">數字，最多 6 位小數，範圍大於 0 至 10,000,000 mAh。</p>
+          <input id="field-cellCapacityMah" name="cellCapacityMah" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-cellCapacityMah">
+          <p class="field-error" id="error-cellCapacityMah" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-cellVoltage" hidden>
+          <label for="field-cellVoltage">單顆電芯電壓（V）</label>
+          <p class="help" id="help-cellVoltage">數字，最多 6 位小數，範圍大於 0 至 1,000 V。</p>
+          <input id="field-cellVoltage" name="cellVoltage" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-cellVoltage">
+          <p class="field-error" id="error-cellVoltage" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-seriesCount" hidden>
+          <label for="field-seriesCount">串聯數</label>
+          <p class="help" id="help-seriesCount">整數，範圍 1–100 顆。</p>
+          <input id="field-seriesCount" name="seriesCount" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-seriesCount">
+          <p class="field-error" id="error-seriesCount" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-parallelCount" hidden>
+          <label for="field-parallelCount">並聯數</label>
+          <p class="help" id="help-parallelCount">整數，範圍 1–100 顆。</p>
+          <input id="field-parallelCount" name="parallelCount" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-parallelCount">
+          <p class="field-error" id="error-parallelCount" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-loadWatts">
+          <label for="field-loadWatts">負載功率（W）</label>
+          <p class="help" id="help-loadWatts">數字，最多 6 位小數，範圍 0 至 1,000,000 W。填 0 W 時續航顯示為無限。</p>
+          <input id="field-loadWatts" name="loadWatts" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-loadWatts">
+          <p class="field-error" id="error-loadWatts" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-depthOfDischargePercent">
+          <label for="field-depthOfDischargePercent">放電深度（%）</label>
+          <p class="help" id="help-depthOfDischargePercent">放電深度預設 100%。鉛酸電池常以約 50% 為可用上限，此為簡化假設，不依電池種類自動調整。</p>
+          <input id="field-depthOfDischargePercent" name="depthOfDischargePercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-depthOfDischargePercent">
+          <p class="field-error" id="error-depthOfDischargePercent" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入資料，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估算結果</h2>
+      <p id="summary"></p>
+      <dl class="result-list">
+        <div id="row-energy"><dt>總電量</dt><dd id="result-energy"></dd></div>
+        <div id="row-usable"><dt>可用電量</dt><dd id="result-usable"></dd></div>
+        <div id="row-runtime-hours"><dt>續航（小時）</dt><dd id="result-runtime-hours"></dd></div>
+        <div id="row-runtime-hm"><dt>續航（時／分）</dt><dd id="result-runtime-hm"></dd></div>
+        <div id="row-pack-voltage" hidden><dt>電池組電壓</dt><dd id="result-pack-voltage"></dd></div>
+        <div id="row-pack-capacity" hidden><dt>電池組容量</dt><dd id="result-pack-capacity"></dd></div>
+        <div id="row-required-energy" hidden><dt>所需電量</dt><dd id="result-required-energy"></dd></div>
+        <div id="row-required-capacity" hidden><dt>所需容量</dt><dd id="result-required-capacity"></dd></div>
+      </dl>
+      <p class="band-note" id="result-infinite" hidden></p>
+      <p class="band-note" id="result-solve-note" hidden>所需容量以無條件進位至整數 mAh，確保不低於目標續航所需。</p>
+      <p class="disclaimer">本工具為估算：實際續航會因溫度、電池老化、放電速率與裝置效率而不同。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>總電量 Wh = mAh × V ÷ 1000；可用電量為總電量乘以放電深度；續航小時為可用電量除以負載瓦數。電池組的總電壓為單顆電壓乘以串聯數，總容量為單顆容量乘以並聯數，總電量兩種算法一致。反推模式先算所需電量，再換算為所需容量並無條件進位至整數 mAh。全程以精確有理數運算，不用浮點數；顯示值只在輸出時四捨五入（half-up）一次，續航與反推一律以未捨入的精確值計算。續航同時以一位小數小時與時／分顯示，時／分只由單一總分鐘數拆分。輸入只接受 ASCII 數字與最多一個小數點（小數最多 6 位）、串並聯數只接受整數：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 battery-runtime-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>Wh 怎麼換算？</dt>
+      <dd>Wh = mAh × V ÷ 1000。</dd>
+      <dt>為什麼實際續航比較短？</dt>
+      <dd>溫度、老化、放電速率與轉換損耗都會降低可用電量；本工具為估算，可用放電深度粗略反映。</dd>
+      <dt>負載填 0 W 為什麼顯示無限？</dt>
+      <dd>模型中沒有負載就不消耗電量，續航不設上限；這是狀態，不是錯誤。</dd>
+      <dt>有考慮 Peukert 效應嗎？</dt>
+      <dd>沒有。大電流放電時鉛酸電池的有效容量會下降，本工具不模擬此效應。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

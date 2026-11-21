@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Battery Runtime Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate usable energy and runtime from battery capacity in mAh or Wh, voltage and load in watts — or solve for the capacity a target runtime requires, or combine cells in series and parallel.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Battery Runtime Calculator</h1>
+  <p class="lede">Estimate usable energy and runtime from battery capacity in mAh or Wh, voltage and load in watts — or solve for the capacity a target runtime requires, or combine cells in series and parallel.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Battery and load</h2>
+      <form id="battery-form" novalidate>
+        <fieldset class="field radio-group">
+          <legend>Mode</legend>
+          <p class="help" id="help-mode">Switching modes removes fields that do not apply to the new mode.</p>
+          <label class="radio-option">
+            <input id="field-mode-runtime-mah" name="mode" type="radio" value="runtime-mah" checked aria-describedby="help-mode">
+            From mAh
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-runtime-wh" name="mode" type="radio" value="runtime-wh" aria-describedby="help-mode">
+            From Wh
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-solve" name="mode" type="radio" value="solve" aria-describedby="help-mode">
+            Solve required capacity
+          </label>
+          <label class="radio-option">
+            <input id="field-mode-pack" name="mode" type="radio" value="pack" aria-describedby="help-mode">
+            Battery pack
+          </label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field" id="wrap-capacityMah">
+          <label for="field-capacityMah">Capacity (mAh)</label>
+          <p class="help" id="help-capacityMah">A number with at most 6 decimal places, more than 0 and up to 10,000,000 mAh.</p>
+          <input id="field-capacityMah" name="capacityMah" type="text" inputmode="decimal" autocomplete="off" value="10000" aria-describedby="help-capacityMah">
+          <p class="field-error" id="error-capacityMah" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-capacityWh" hidden>
+          <label for="field-capacityWh">Capacity (Wh)</label>
+          <p class="help" id="help-capacityWh">A number with at most 6 decimal places, more than 0 and up to 100,000 Wh.</p>
+          <input id="field-capacityWh" name="capacityWh" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-capacityWh">
+          <p class="field-error" id="error-capacityWh" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-voltage">
+          <label for="field-voltage">Voltage (V)</label>
+          <p class="help" id="help-voltage">A number with at most 6 decimal places, more than 0 and up to 1,000 V.</p>
+          <input id="field-voltage" name="voltage" type="text" inputmode="decimal" autocomplete="off" value="3.7" aria-describedby="help-voltage">
+          <p class="field-error" id="error-voltage" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-targetRuntimeHours" hidden>
+          <label for="field-targetRuntimeHours">Target runtime (hours)</label>
+          <p class="help" id="help-targetRuntimeHours">A number with at most 6 decimal places, more than 0 and up to 100,000 hours.</p>
+          <input id="field-targetRuntimeHours" name="targetRuntimeHours" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-targetRuntimeHours">
+          <p class="field-error" id="error-targetRuntimeHours" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-cellCapacityMah" hidden>
+          <label for="field-cellCapacityMah">Cell capacity (mAh)</label>
+          <p class="help" id="help-cellCapacityMah">A number with at most 6 decimal places, more than 0 and up to 10,000,000 mAh.</p>
+          <input id="field-cellCapacityMah" name="cellCapacityMah" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-cellCapacityMah">
+          <p class="field-error" id="error-cellCapacityMah" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-cellVoltage" hidden>
+          <label for="field-cellVoltage">Cell voltage (V)</label>
+          <p class="help" id="help-cellVoltage">A number with at most 6 decimal places, more than 0 and up to 1,000 V.</p>
+          <input id="field-cellVoltage" name="cellVoltage" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-cellVoltage">
+          <p class="field-error" id="error-cellVoltage" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-seriesCount" hidden>
+          <label for="field-seriesCount">Cells in series</label>
+          <p class="help" id="help-seriesCount">A whole number from 1 to 100 cells.</p>
+          <input id="field-seriesCount" name="seriesCount" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-seriesCount">
+          <p class="field-error" id="error-seriesCount" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-parallelCount" hidden>
+          <label for="field-parallelCount">Cells in parallel</label>
+          <p class="help" id="help-parallelCount">A whole number from 1 to 100 cells.</p>
+          <input id="field-parallelCount" name="parallelCount" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-parallelCount">
+          <p class="field-error" id="error-parallelCount" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-loadWatts">
+          <label for="field-loadWatts">Load (W)</label>
+          <p class="help" id="help-loadWatts">A number with at most 6 decimal places, from 0 to 1,000,000 W. A 0 W load shows unlimited runtime.</p>
+          <input id="field-loadWatts" name="loadWatts" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-loadWatts">
+          <p class="field-error" id="error-loadWatts" role="alert"></p>
+        </div>
+        <div class="field" id="wrap-depthOfDischargePercent">
+          <label for="field-depthOfDischargePercent">Depth of discharge (%)</label>
+          <p class="help" id="help-depthOfDischargePercent">Depth of discharge defaults to 100%. Lead-acid batteries are commonly limited to about 50% usable capacity; this is a simplifying assumption and is not adjusted automatically by battery type.</p>
+          <input id="field-depthOfDischargePercent" name="depthOfDischargePercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-depthOfDischargePercent">
+          <p class="field-error" id="error-depthOfDischargePercent" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your values, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimate</h2>
+      <p id="summary"></p>
+      <dl class="result-list">
+        <div id="row-energy"><dt>Total energy</dt><dd id="result-energy"></dd></div>
+        <div id="row-usable"><dt>Usable energy</dt><dd id="result-usable"></dd></div>
+        <div id="row-runtime-hours"><dt>Runtime (hours)</dt><dd id="result-runtime-hours"></dd></div>
+        <div id="row-runtime-hm"><dt>Runtime (h / min)</dt><dd id="result-runtime-hm"></dd></div>
+        <div id="row-pack-voltage" hidden><dt>Pack voltage</dt><dd id="result-pack-voltage"></dd></div>
+        <div id="row-pack-capacity" hidden><dt>Pack capacity</dt><dd id="result-pack-capacity"></dd></div>
+        <div id="row-required-energy" hidden><dt>Required energy</dt><dd id="result-required-energy"></dd></div>
+        <div id="row-required-capacity" hidden><dt>Required capacity</dt><dd id="result-required-capacity"></dd></div>
+      </dl>
+      <p class="band-note" id="result-infinite" hidden></p>
+      <p class="band-note" id="result-solve-note" hidden>Required capacity is rounded up to the next whole mAh so it never falls short of the target runtime.</p>
+      <p class="disclaimer">This tool gives estimates only: actual runtime varies with temperature, battery age, discharge rate and device efficiency.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How the calculation works</summary>
+    <p>Total energy in Wh = mAh × V ÷ 1000; usable energy is total energy times depth of discharge; runtime in hours is usable energy divided by load in watts. For a pack, total voltage is cell voltage times the series count and total capacity is cell capacity times the parallel count, and both routes to total energy agree. Solve mode first computes the required energy, then converts it to required capacity and rounds up to the next whole mAh. All computation uses exact rational arithmetic, never floating point; displayed values are rounded half-up once, at output only, and runtime and solve results always use the unrounded exact value. Runtime is shown both as hours with one decimal and as hours/minutes, with the hours/minutes split taken from a single total-minutes figure. Inputs accept ASCII digits and at most one decimal point (at most 6 decimal places); series and parallel counts accept whole numbers only. Commas, spaces, signs, exponents and full-width digits are format errors — the tool never guesses. The downloaded report is always named battery-runtime-report.json and holds the result as compact JSON with object keys sorted by UTF-16 code units, recursively, ending in one line feed.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is Wh calculated?</dt>
+      <dd>Wh = mAh × V ÷ 1000.</dd>
+      <dt>Why is real-world runtime shorter?</dt>
+      <dd>Temperature, ageing, discharge rate and conversion losses all reduce usable energy; this tool gives an estimate and the depth-of-discharge input can approximate them.</dd>
+      <dt>Why does a 0 W load show unlimited runtime?</dt>
+      <dd>With no load the model draws no energy, so runtime has no finite limit; this is a status, not an error.</dd>
+      <dt>Is the Peukert effect included?</dt>
+      <dd>No. Effective capacity drops at high discharge rates, especially for lead-acid batteries; this tool does not model that effect.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
