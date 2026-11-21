@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Currency Converter | Gloss Tools</title>
+<meta name="description" content="Convert an amount between two currencies in both directions using a rate you enter, with the inverse rate and a 1 / 10 / 100 / 1000 quick table. This tool does not provide live rates.">
+<link rel="stylesheet" href="../styles/currency-converter.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching languages or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Currency Converter</h1>
+  <p class="lede">Convert an amount between two currencies in both directions using a rate you enter, with the inverse rate and a quick table. This tool does not provide live rates and never connects to fetch one.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Enter the rate and amount</h2>
+      <form id="currency-converter-form" novalidate>
+        <div class="field">
+          <label for="field-fromCode">From currency code</label>
+          <p class="help" id="help-fromCode">Exactly 3 letters, for example USD; upper or lower case, normalized to upper case. Codes are not checked against the ISO 4217 list.</p>
+          <input id="field-fromCode" name="fromCode" type="text" inputmode="latin" autocomplete="off" value="USD" aria-describedby="help-fromCode">
+          <p class="field-error" id="error-fromCode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-toCode">To currency code</label>
+          <p class="help" id="help-toCode">Exactly 3 letters, for example TWD; upper or lower case, normalized to upper case. Using the same code on both sides is allowed.</p>
+          <input id="field-toCode" name="toCode" type="text" inputmode="latin" autocomplete="off" value="TWD" aria-describedby="help-toCode">
+          <p class="field-error" id="error-toCode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rate">Rate (units of the to currency per 1 unit of the from currency)</label>
+          <p class="help" id="help-rate">Greater than 0 and at most 1000000, with at most 6 decimal places. For example, 31.5 means 1 US dollar converts to 31.5 New Taiwan dollars.</p>
+          <input id="field-rate" name="rate" type="text" inputmode="decimal" autocomplete="off" value="31.5" aria-describedby="help-rate">
+          <p class="field-error" id="error-rate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-amount">Amount</label>
+          <p class="help" id="help-amount">0–9999999.99, with at most 2 decimal places.</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <fieldset class="field" id="field-direction" aria-describedby="help-direction">
+          <legend>Direction</legend>
+          <p class="help" id="help-direction">Choose which currency the amount is in.</p>
+          <div class="radio-row">
+            <input type="radio" id="field-direction-a-to-b" name="direction" value="a-to-b" checked>
+            <label for="field-direction-a-to-b">From → To (the amount is in the from currency)</label>
+          </div>
+          <div class="radio-row">
+            <input type="radio" id="field-direction-b-to-a" name="direction" value="b-to-a">
+            <label for="field-direction-b-to-a">To → From (the amount is in the to currency)</label>
+          </div>
+          <p class="field-error" id="error-direction" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter a rate and amount, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+        <p class="disclaimer" id="disclaimer-input">This tool does not fetch or provide live exchange rates. Every conversion uses only the rate you enter; for the rate and fees that will actually apply, check your bank or exchange provider.</p>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Conversion result</h2>
+      <p class="result-value" id="conversion-sentence"></p>
+      <p class="result-line" id="direction-forward"></p>
+      <p class="result-line" id="direction-inverse"></p>
+      <table class="quick-table" id="quick-table">
+        <caption>Quick table</caption>
+        <thead>
+          <tr><th scope="col">From currency</th><th scope="col">To currency</th></tr>
+        </thead>
+        <tbody id="quick-table-body"></tbody>
+      </table>
+      <p class="disclaimer" id="disclaimer">This tool does not fetch or provide live exchange rates. Every conversion uses only the rate you enter; for the rate and fees that will actually apply, check your bank or exchange provider.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it calculates, and the formats used</summary>
+    <p>The rate means “units of the to currency per 1 unit of the from currency”. From → To multiplies the amount by the rate; To → From divides the amount by the rate you entered, exactly, rounding once at the end — never by re-multiplying the rounded inverse rate shown on screen. The inverse rate is display-only, at 6 significant digits (not 6 decimal places). The quick table always converts 1, 10, 100 and 1000 units of the from currency into the to currency, each row rounded independently from its exact product, regardless of the selected direction.</p>
+    <p>All arithmetic is exact integer rational arithmetic (the rate scaled by one million, the amount scaled by one hundred), with half-up rounding (exactly half rounds up), applied once at output. Amounts display with exactly two decimal places, with no thousands separators and no currency symbols. The downloaded report is always named currency-converter-report.json; its content is the result as compact JSON, with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Where does the rate come from?</dt>
+      <dd>From you. This tool never connects to a rate service and ships with no built-in rates; it computes with exactly the rate you enter.</dd>
+      <dt>Why is the reverse direction not computed from the displayed inverse rate?</dt>
+      <dd>The inverse rate is rounded to 6 significant digits for display only. Reverse conversions always divide by the rate you entered, exactly, and round once at the end, so display rounding never accumulates.</dd>
+      <dt>Can I enter any 3 letters as a currency code?</dt>
+      <dd>Yes. Codes are not checked against the ISO 4217 list, because the list changes and a stale list would wrongly reject valid codes; the tool assigns no meaning to a code, and using the same code on both sides is allowed.</dd>
+      <dt>Will the result match what my bank actually charges?</dt>
+      <dd>Not necessarily. Real transactions add fees and a buy/sell spread; enter the rate your bank or provider actually offers you and use the result to check it.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page — nothing is uploaded, stored on a server, or logged. The draft stays only on this page; switching languages or leaving the page discards it.</p>
+</main>
+</body>
+</html>

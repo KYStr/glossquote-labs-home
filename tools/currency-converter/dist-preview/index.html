@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>匯率換算｜Gloss Tools</title>
+<meta name="description" content="用你自己輸入的匯率，把金額在兩種幣別之間雙向換算，附反向匯率與 1、10、100、1000 快速對照表。本工具不提供即時匯率。">
+<link rel="stylesheet" href="./styles/currency-converter.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>匯率換算</h1>
+  <p class="lede">用你自己輸入的匯率，把金額在兩種幣別之間雙向換算，附反向匯率與快速對照表。本工具不提供即時匯率，也不會連線取得匯率。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入匯率與金額</h2>
+      <form id="currency-converter-form" novalidate>
+        <div class="field">
+          <label for="field-fromCode">來源幣別代碼</label>
+          <p class="help" id="help-fromCode">恰好 3 個英文字母，例如 USD；大小寫不拘，會轉為大寫。不對照 ISO 4217 清單驗證。</p>
+          <input id="field-fromCode" name="fromCode" type="text" inputmode="latin" autocomplete="off" value="USD" aria-describedby="help-fromCode">
+          <p class="field-error" id="error-fromCode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-toCode">目標幣別代碼</label>
+          <p class="help" id="help-toCode">恰好 3 個英文字母，例如 TWD；大小寫不拘，會轉為大寫。來源與目標相同也合法。</p>
+          <input id="field-toCode" name="toCode" type="text" inputmode="latin" autocomplete="off" value="TWD" aria-describedby="help-toCode">
+          <p class="field-error" id="error-toCode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rate">匯率（每 1 單位來源幣別可換得的目標幣別數量）</label>
+          <p class="help" id="help-rate">大於 0、不超過 1000000，小數最多 6 位。例如 31.5 表示每 1 美元可換 31.5 新台幣。</p>
+          <input id="field-rate" name="rate" type="text" inputmode="decimal" autocomplete="off" value="31.5" aria-describedby="help-rate">
+          <p class="field-error" id="error-rate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-amount">金額</label>
+          <p class="help" id="help-amount">0–9999999.99，小數最多 2 位。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+        <fieldset class="field" id="field-direction" aria-describedby="help-direction">
+          <legend>換算方向</legend>
+          <p class="help" id="help-direction">選擇金額是哪一種幣別。</p>
+          <div class="radio-row">
+            <input type="radio" id="field-direction-a-to-b" name="direction" value="a-to-b" checked>
+            <label for="field-direction-a-to-b">來源 → 目標（金額是來源幣別）</label>
+          </div>
+          <div class="radio-row">
+            <input type="radio" id="field-direction-b-to-a" name="direction" value="b-to-a">
+            <label for="field-direction-b-to-a">目標 → 來源（金額是目標幣別）</label>
+          </div>
+          <p class="field-error" id="error-direction" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入匯率與金額，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+        <p class="disclaimer" id="disclaimer-input">本工具不會取得或提供即時匯率。所有換算只使用你輸入的匯率；實際交易的匯率與費用，請向你的銀行或匯兌服務商確認。</p>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <p class="result-value" id="conversion-sentence"></p>
+      <p class="result-line" id="direction-forward"></p>
+      <p class="result-line" id="direction-inverse"></p>
+      <table class="quick-table" id="quick-table">
+        <caption>快速對照</caption>
+        <thead>
+          <tr><th scope="col">來源幣別</th><th scope="col">目標幣別</th></tr>
+        </thead>
+        <tbody id="quick-table-body"></tbody>
+      </table>
+      <p class="disclaimer" id="disclaimer">本工具不會取得或提供即時匯率。所有換算只使用你輸入的匯率；實際交易的匯率與費用，請向你的銀行或匯兌服務商確認。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>匯率的方向是「每 1 單位來源幣別可換得的目標幣別數量」。來源 → 目標時金額乘以匯率；目標 → 來源時金額除以你輸入的匯率，精確相除、只在最後捨入一次，絕不用畫面上已捨入的反向匯率回算。反向匯率只供顯示，取 6 位有效數字（不是小數 6 位）。快速對照表固定為來源幣別 1、10、100、1000 單位換算為目標幣別，每列各自從精確乘積獨立捨入，與所選換算方向無關。</p>
+    <p>全程以整數有理數運算（匯率乘以一百萬、金額乘以一百取整數），捨入採半數進位（恰一半進位），只在輸出時捨入一次。金額以固定兩位小數顯示，不加千分位、不加幣別符號。下載的報告檔名固定為 currency-converter-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>匯率從哪裡來？</dt>
+      <dd>由你輸入。本工具不連線到任何匯率服務，也沒有內建匯率；你輸入什麼，就用什麼算。</dd>
+      <dt>反方向為什麼不用畫面上的反向匯率算？</dt>
+      <dd>反向匯率只取 6 位有效數字供顯示；反方向換算一律用你輸入的匯率做精確除法，只在最後捨入一次，所以不會累積顯示捨入的誤差。</dd>
+      <dt>幣別代碼可以打任何 3 個英文字母嗎？</dt>
+      <dd>可以。代碼不對照 ISO 4217 清單驗證，因為清單會變動，過期清單反而會誤拒合法代碼；工具對代碼不賦予語義，來源與目標相同也合法。</dd>
+      <dt>換算結果會和銀行實際扣款一樣嗎？</dt>
+      <dd>不一定。實際交易還有手續費與買入／賣出價差；請把你在銀行或服務商實際面對的匯率輸入，再用結果核對。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在目前頁面，切換語言或離開頁面就會失去。</p>
+</main>
+</body>
+</html>
