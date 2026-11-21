@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>泳池水量計算｜Gloss Tools</title>
+<meta name="description" content="輸入泳池長寬或直徑與深度（斜底可分淺端與深端），算出水量（立方公尺、公升、美制加侖）與注水所需時間。">
+<meta property="og:title" content="泳池水量計算｜Gloss Tools">
+<meta property="og:description" content="輸入泳池長寬或直徑與深度（斜底可分淺端與深端），算出水量（立方公尺、公升、美制加侖）與注水所需時間。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/pool-volume.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿；草稿不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>泳池水量計算</h1>
+  <p class="lede">量好泳池的長寬（或直徑）與深度，選形狀與深度方式，算出水量（立方公尺、公升、美制加侖）與注水所需時間。只算理想形狀的水體體積，不算藥劑投放。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">泳池尺寸</h2>
+      <form id="pool-volume-form" novalidate>
+        <div class="field">
+          <label for="field-shape">形狀</label>
+          <p class="help" id="help-shape">長方形、圓形或橢圓形。切換形狀不會清除已填的數值，未啟用的欄位不影響結果。</p>
+          <select id="field-shape" name="shape" aria-describedby="help-shape">
+            <option value="rectangular" selected>長方形</option>
+            <option value="circular">圓形</option>
+            <option value="oval">橢圓形</option>
+          </select>
+          <p class="field-error" id="error-shape" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-depthMode">深度方式</label>
+          <p class="help" id="help-depthMode">單一深度，或斜底（淺端＋深端取平均）。切換方式不會清除已填的數值。</p>
+          <select id="field-depthMode" name="depthMode" aria-describedby="help-depthMode">
+            <option value="single" selected>單一深度</option>
+            <option value="sloped">斜底（淺端＋深端）</option>
+          </select>
+          <p class="field-error" id="error-depthMode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lengthM">長度（公尺）</label>
+          <p class="help" id="help-lengthM">長方形與橢圓形時啟用。0.1–100 公尺，最多兩位小數。</p>
+          <input id="field-lengthM" name="lengthM" type="text" inputmode="decimal" autocomplete="off" value="8" aria-describedby="help-lengthM">
+          <p class="field-error" id="error-lengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-widthM">寬度（公尺）</label>
+          <p class="help" id="help-widthM">長方形與橢圓形時啟用。0.1–100 公尺，最多兩位小數。</p>
+          <input id="field-widthM" name="widthM" type="text" inputmode="decimal" autocomplete="off" value="4" aria-describedby="help-widthM">
+          <p class="field-error" id="error-widthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-diameterM">直徑（公尺）</label>
+          <p class="help" id="help-diameterM">圓形時啟用。0.1–100 公尺，最多兩位小數。</p>
+          <input id="field-diameterM" name="diameterM" type="text" inputmode="decimal" autocomplete="off" value="5" aria-describedby="help-diameterM">
+          <p class="field-error" id="error-diameterM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-depthM">深度（公尺）</label>
+          <p class="help" id="help-depthM">單一深度時啟用。0.1–10 公尺，最多兩位小數。</p>
+          <input id="field-depthM" name="depthM" type="text" inputmode="decimal" autocomplete="off" value="1.5" aria-describedby="help-depthM">
+          <p class="field-error" id="error-depthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-shallowDepthM">淺端深度（公尺）</label>
+          <p class="help" id="help-shallowDepthM">斜底時啟用。0.1–10 公尺，最多兩位小數；不可大於深端深度。</p>
+          <input id="field-shallowDepthM" name="shallowDepthM" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-shallowDepthM">
+          <p class="field-error" id="error-shallowDepthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-deepDepthM">深端深度（公尺）</label>
+          <p class="help" id="help-deepDepthM">斜底時啟用。0.1–10 公尺，最多兩位小數。</p>
+          <input id="field-deepDepthM" name="deepDepthM" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-deepDepthM">
+          <p class="field-error" id="error-deepDepthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flowRateLMin">注水流速（公升／分鐘，選填）</label>
+          <p class="help" id="help-flowRateLMin">選填，留空表示不算注水時間。0.1–10000 公升／分鐘，最多兩位小數。</p>
+          <input id="field-flowRateLMin" name="flowRateLMin" type="text" inputmode="decimal" autocomplete="off" value="40" aria-describedby="help-flowRateLMin">
+          <p class="field-error" id="error-flowRateLMin" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入泳池尺寸，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算水量</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">水量結果</h2>
+      <p class="result-value" id="result-volume-m3"></p>
+      <p class="result-line" id="result-avg-depth"></p>
+      <p class="result-line" id="result-volume-litres"></p>
+      <p class="result-line" id="result-volume-gallons"></p>
+      <p class="result-line" id="result-fill"></p>
+      <p class="disclaimer" id="disclaimer">以理想形狀與垂直池壁估算；未計池壁厚度、台階與實際水位（水面通常低於池緣），請把結果當估算值。</p>
+      <p class="disclaimer" id="precision-note">公升與立方公尺都由未捨入的水量各自捨入一次；公升是較精確的數字。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>平均深度：單一深度直接採用該深度；斜底取淺端與深端深度的平均（先加後除）。長方形均勻斜底時平均深度是精確值。體積：長方形為（長 × 寬）× 平均深度；圓形以半徑 r ＝ 直徑 ÷ 2，（π × r）× r × 平均深度；橢圓形以半軸 a ＝ 長 ÷ 2、b ＝ 寬 ÷ 2，（π × a）× b × 平均深度。π 取雙精度 Math.PI。</p>
+    <p>立方公尺捨入到小數 2 位、公升與美制加侖捨入到整數、注水總分鐘捨入到整數，都由同一個未捨入水量各自捨入一次（半數進位）；1 立方公尺 ＝ 1000 公升，1 美制加侖 ＝ 3.785411784 公升。注水時間由單一已捨入總分鐘拆成小時與分鐘，分鐘永遠是 0–59。下載的報告檔名固定為 pool-volume-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>斜底池怎麼算？</dt>
+      <dd>取淺端與深端深度的平均；長方形均勻斜底時這是精確值，起伏不均勻的池底只是估算。</dd>
+      <dt>為什麼公升不等於立方公尺顯示值 × 1000？</dt>
+      <dd>兩者都由同一個未捨入水量各自捨入一次；小池可能出現立方公尺顯示 0、公升 1，公升是較精確的數字。</dd>
+      <dt>可以算加氯等藥劑用量嗎？</dt>
+      <dd>不行。本工具只算水量，藥劑投放不在範圍內。</dd>
+      <dt>腎形或不規則池可以算嗎？</dt>
+      <dd>不支援。只支援長方形、圓形與橢圓形的理想形狀。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在目前頁面，切換語言或離開頁面就會失去。</p>
+</main>
+</body>
+</html>
