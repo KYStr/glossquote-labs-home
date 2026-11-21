@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>閱讀時間估算｜Gloss Tools</title>
+<meta name="description" content="貼上中文、英文或混寫的稿子，依釘版計數規則與可調速度，估算靜讀與朗讀各需要多久。">
+<meta property="og:title" content="閱讀時間估算｜Gloss Tools">
+<meta property="og:description" content="貼上中文、英文或混寫的稿子，依釘版計數規則與可調速度，估算靜讀與朗讀各需要多久。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/reading-time.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>閱讀時間估算</h1>
+  <p class="lede">貼上中文、英文或混寫的稿子，估算讀者靜讀要多久、自己朗讀錄音又要多久。漢字逐字計、英文以空白分詞，四個速度都可以改成你自己的速度。結果是估算值，不是實際計時。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">本文與速度</h2>
+      <form id="reading-time-form" novalidate>
+        <div class="field">
+          <label for="field-text">本文</label>
+          <p class="help" id="help-text">上限 100,000 個 UTF-16 單位；計數以 Unicode code point 為準。只含空白也合法，計數為 0。</p>
+          <textarea id="field-text" name="text" autocomplete="off" aria-describedby="help-text"></textarea>
+          <p class="field-error" id="error-text" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-zhSilentRate">中文靜讀（字/分）</label>
+          <p class="help" id="help-zhSilentRate">50–2000 字/分，預設 400。可調慣例值，不是自然常數。</p>
+          <input id="field-zhSilentRate" name="zhSilentRate" type="text" inputmode="numeric" autocomplete="off" value="400" aria-describedby="help-zhSilentRate">
+          <p class="field-error" id="error-zhSilentRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-zhSpeakRate">中文朗讀（字/分）</label>
+          <p class="help" id="help-zhSpeakRate">50–1200 字/分，預設 240。可調慣例值，不是自然常數。</p>
+          <input id="field-zhSpeakRate" name="zhSpeakRate" type="text" inputmode="numeric" autocomplete="off" value="240" aria-describedby="help-zhSpeakRate">
+          <p class="field-error" id="error-zhSpeakRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-enSilentRate">英文靜讀（詞/分）</label>
+          <p class="help" id="help-enSilentRate">50–1000 詞/分，預設 200。可調慣例值，不是自然常數。</p>
+          <input id="field-enSilentRate" name="enSilentRate" type="text" inputmode="numeric" autocomplete="off" value="200" aria-describedby="help-enSilentRate">
+          <p class="field-error" id="error-enSilentRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-enSpeakRate">英文朗讀（詞/分）</label>
+          <p class="help" id="help-enSpeakRate">50–600 詞/分，預設 150。可調慣例值，不是自然常數。</p>
+          <input id="field-enSpeakRate" name="enSpeakRate" type="text" inputmode="numeric" autocomplete="off" value="150" aria-describedby="help-enSpeakRate">
+          <p class="field-error" id="error-enSpeakRate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入本文，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">估算閱讀時間</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">字數與時間估算</h2>
+      <p class="result-counts" id="counts"></p>
+      <p class="result-time" id="silent-time"></p>
+      <p class="result-time" id="speak-time"></p>
+      <p class="result-echo" id="rates-echo"></p>
+      <p class="result-echo" id="rules-echo"></p>
+      <p class="zero-note" id="zero-note" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>漢字數：code point 落在 U+3400–U+4DBF、U+4E00–U+9FFF、U+F900–U+FAFF、U+20000–U+2A6DF 四個區段之一者計 1。擴展平面字元（如 U+20000）計 1 個字。英文詞數：以空白集合切分 token，token 內含至少一個 ASCII 字母或數字者計 1 詞；don't、2026-11-09、well-known 各算 1 詞。同一 token 可同時貢獻漢字數與 1 個詞數。時間換算以精確有理數計算，總秒數只捨入一次（half-up）：靜讀秒數 = 60 × 漢字數 / 中文靜讀速度 + 60 × 英文詞數 / 英文靜讀速度，朗讀同理。顯示為 M:SS，滿一小時為 H:MM:SS；0 秒顯示 0:00。</p>
+    <p>已知限制：日文假名（U+3040–U+30FF）與韓文音節（U+AC00–U+D7AF）既不在漢字區段、也不含 ASCII 字母數字，純假名或純韓文本文會得到計數 0；漢字標點（U+3000–U+303F）與全形字元（U+FF00–U+FF60）同理不計。下載的報告檔名固定為 reading-time-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>中文為什麼數字數不分詞？</dt>
+      <dd>中文沒有空格分詞，本工具以字數乘上可調的字/分速度估算；要逐詞頻率請用字詞頻率工具。</dd>
+      <dt>朗讀時間可以保證錄音長度嗎？</dt>
+      <dd>不行，這是依平均速度的估算，停頓與語氣都會改變實際長度，本工具也不會真的發出聲音。</dd>
+      <dt>英文的連字號詞怎麼算？</dt>
+      <dd>只以空白分詞，well-known 算 1 詞；全形字母數字不算英文詞。</dd>
+      <dt>速度預設值是哪來的？</dt>
+      <dd>是常見公開範圍內選定的可調慣例值，不是自然常數，請改成你自己的速度。</dd>
+      <dt>日文或韓文本文為什麼計數是 0？</dt>
+      <dd>v1 的漢字區段只含表意文字，假名與韓文音節不在其中，也不是英文詞，頁面會提示此限制。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只保留在目前頁面，離開頁面即丟棄。</p>
+</main>
+</body>
+</html>

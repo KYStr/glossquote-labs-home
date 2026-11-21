@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Reading Time Estimator | Gloss Tools</title>
+<meta name="description" content="Paste Chinese, English or mixed text and estimate silent reading and read-aloud time from pinned counting rules and adjustable speeds.">
+<meta property="og:title" content="Reading Time Estimator | Gloss Tools">
+<meta property="og:description" content="Paste Chinese, English or mixed text and estimate silent reading and read-aloud time from pinned counting rules and adjustable speeds.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/reading-time.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards your draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Reading Time Estimator</h1>
+  <p class="lede">Paste Chinese, English or mixed text to estimate how long it takes to read silently, and how long it takes to read aloud for a recording. Chinese characters are counted one by one, English is split on whitespace, and all four speeds can be set to your own pace. The result is an estimate, not a stopwatch reading.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Text and speeds</h2>
+      <form id="reading-time-form" novalidate>
+        <div class="field">
+          <label for="field-text">Text</label>
+          <p class="help" id="help-text">At most 100,000 UTF-16 code units; counting uses Unicode code points. Whitespace-only text is allowed and counts as zero.</p>
+          <textarea id="field-text" name="text" autocomplete="off" aria-describedby="help-text"></textarea>
+          <p class="field-error" id="error-text" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-zhSilentRate">Chinese silent (characters/min)</label>
+          <p class="help" id="help-zhSilentRate">50–2000 characters per minute, default 400. An adjustable convention, not a constant of nature.</p>
+          <input id="field-zhSilentRate" name="zhSilentRate" type="text" inputmode="numeric" autocomplete="off" value="400" aria-describedby="help-zhSilentRate">
+          <p class="field-error" id="error-zhSilentRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-zhSpeakRate">Chinese speaking (characters/min)</label>
+          <p class="help" id="help-zhSpeakRate">50–1200 characters per minute, default 240. An adjustable convention, not a constant of nature.</p>
+          <input id="field-zhSpeakRate" name="zhSpeakRate" type="text" inputmode="numeric" autocomplete="off" value="240" aria-describedby="help-zhSpeakRate">
+          <p class="field-error" id="error-zhSpeakRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-enSilentRate">English silent (words/min)</label>
+          <p class="help" id="help-enSilentRate">50–1000 words per minute, default 200. An adjustable convention, not a constant of nature.</p>
+          <input id="field-enSilentRate" name="enSilentRate" type="text" inputmode="numeric" autocomplete="off" value="200" aria-describedby="help-enSilentRate">
+          <p class="field-error" id="error-enSilentRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-enSpeakRate">English speaking (words/min)</label>
+          <p class="help" id="help-enSpeakRate">50–600 words per minute, default 150. An adjustable convention, not a constant of nature.</p>
+          <input id="field-enSpeakRate" name="enSpeakRate" type="text" inputmode="numeric" autocomplete="off" value="150" aria-describedby="help-enSpeakRate">
+          <p class="field-error" id="error-enSpeakRate" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter your text, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Estimate reading time</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Counts and time estimates</h2>
+      <p class="result-counts" id="counts"></p>
+      <p class="result-time" id="silent-time"></p>
+      <p class="result-time" id="speak-time"></p>
+      <p class="result-echo" id="rates-echo"></p>
+      <p class="result-echo" id="rules-echo"></p>
+      <p class="zero-note" id="zero-note" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the display format</summary>
+    <p>Chinese characters: a code point in U+3400–U+4DBF, U+4E00–U+9FFF, U+F900–U+FAFF or U+20000–U+2A6DF counts as 1. An astral character (such as U+20000) counts as 1 character. English words: tokens are split on whitespace; a token counts as 1 word when it contains at least one ASCII letter or digit — don't, 2026-11-09 and well-known each count as 1 word. One token can contribute to both counts at once. Times use exact rational arithmetic and are rounded half-up exactly once, on the total: silent seconds = 60 × Chinese characters / Chinese silent rate + 60 × English words / English silent rate, and likewise for speaking. Display is M:SS, switching to H:MM:SS at one hour; 0 seconds shows as 0:00.</p>
+    <p>Known limits: Japanese kana (U+3040–U+30FF) and Korean syllables (U+AC00–U+D7AF) are in neither the CJK ranges nor ASCII letters or digits, so pure kana or pure Korean text counts as zero; CJK punctuation (U+3000–U+303F) and full-width characters (U+FF00–U+FF60) likewise do not count. The downloaded report is always named reading-time-report.json; its content is the result as compact JSON with object keys sorted by UTF-16 code units, recursively, and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why count characters instead of words for Chinese?</dt>
+      <dd>Chinese text has no spaces between words, so this tool multiplies the character count by an adjustable characters-per-minute rate. For per-word frequencies, use the frequency counter.</dd>
+      <dt>Can the speaking time guarantee my recording length?</dt>
+      <dd>No. It is an estimate from average rates; pauses and delivery change the real duration, and this tool never plays audio.</dd>
+      <dt>How are hyphenated English words counted?</dt>
+      <dd>Tokens are split on whitespace only, so well-known counts as 1 word; full-width letters and digits do not count as English words.</dd>
+      <dt>Where do the default speeds come from?</dt>
+      <dd>They are adjustable conventions chosen inside commonly published ranges, not constants of nature; set them to your own pace.</dd>
+      <dt>Why does Japanese or Korean text count as zero?</dt>
+      <dd>In v1 the character ranges cover ideographs only; kana and Hangul syllables are neither CJK ideographs here nor English words, and the page discloses this limit.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, stored on a server, or logged. The draft lives only in the current page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
