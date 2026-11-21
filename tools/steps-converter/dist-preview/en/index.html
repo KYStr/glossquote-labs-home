@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Steps Converter | Gloss Tools</title>
+<meta name="description" content="Convert a step count to distance with a measured stride or a height-based estimate, plus an optional weight-based walking calorie estimate.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Steps Converter</h1>
+  <p class="lede">Convert a step count to distance with a measured stride or a height-based estimate, plus an optional weight-based walking calorie estimate. Stride and calories are estimates, not precise measurements.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Steps and stride</h2>
+      <form id="steps-form" novalidate>
+        <div class="field">
+          <label for="field-steps">Steps</label>
+          <p class="help" id="help-steps">A whole number, 0–99,999,999 steps, with no decimal point or sign.</p>
+          <input id="field-steps" name="steps" type="text" inputmode="numeric" autocomplete="off" value="10000" aria-describedby="help-steps">
+          <p class="field-error" id="error-steps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-strideSource">Stride source</label>
+          <p class="help" id="help-strideSource">“Height estimate” uses height × 0.414 for the stride; “Measured stride” uses a stride you measured yourself.</p>
+          <select id="field-strideSource" name="strideSource" aria-describedby="help-strideSource">
+            <option value="measured">Measured stride</option>
+            <option value="height" selected>Height estimate</option>
+          </select>
+          <p class="field-error" id="error-strideSource" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-strideCm">Stride (cm)</label>
+          <p class="help" id="help-strideCm">Enabled only for “Measured stride”. 20.0–150.0 cm, at most two decimal places.</p>
+          <input id="field-strideCm" name="strideCm" type="text" inputmode="decimal" autocomplete="off" value="70" aria-describedby="help-strideCm" disabled>
+          <p class="field-error" id="error-strideCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-heightCm">Height (cm)</label>
+          <p class="help" id="help-heightCm">Enabled only for “Height estimate”. 80.0–250.0 cm, at most one decimal place.</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="170" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-calories">Estimate calories</label>
+          <p class="help" id="help-calories">When on, weight is required; calories use 0.75 kcal per kg per km (gross).</p>
+          <select id="field-calories" name="calories" aria-describedby="help-calories">
+            <option value="off" selected>Off</option>
+            <option value="on">Estimate calories</option>
+          </select>
+          <p class="field-error" id="error-calories" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">Weight (kg)</label>
+          <p class="help" id="help-weightKg">Enabled only while “Estimate calories” is on. 20.0–500.0 kg, at most one decimal place.</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="65" aria-describedby="help-weightKg" disabled>
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">No conversion yet. Enter a step count, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert steps</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Distance and stride</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Distance and stride" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Value</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="disclaimer" id="disclaimer">Stride and calories are estimates. The height-based stride uses 0.414 × height; calories use 0.75 kcal per kg per km (gross, including resting metabolism). Actual values vary with pace, terrain and the individual.</p>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>All calculation uses exact rational arithmetic, with no floating-point intermediates. The height-based stride is height × 207/500 (that is, 0.414); distance in km is steps × stride in cm ÷ 100,000; calories in kcal are 3/4 × weight in kg × the unrounded distance in km. Each output is rounded half-up once, from the exact value: stride to 1 decimal place, distance to 2 decimal places, steps per km to a whole number, calories to a whole number; the display-rounded values never feed back into any calculation.</p>
+    <p>Inputs accept ASCII digits and one decimal point only: commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. Steps must be a whole number; a leading zero (for example 007) is not accepted. The downloaded report is always named steps-converter-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Where does the stride estimate come from?</dt>
+      <dd>Height mode uses stride = height × 0.414 (an ACSM regression average; individual values run about 0.413–0.415 and vary with pace). If you know your stride, measured mode is more accurate.</dd>
+      <dt>How accurate is the calorie figure?</dt>
+      <dd>It is a gross estimate (0.75 kcal/kg/km); MET tables put ordinary walking at about 0.73–0.77, and the net cost above resting is about 0.5. Individual error can reach ±20%; treat it as a rough guide.</dd>
+      <dt>Why does my watch show a different distance?</dt>
+      <dd>Watches use their own stride calibration or GPS. This tool uses exactly the stride shown, so a different stride gives a different distance.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
