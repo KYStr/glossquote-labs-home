@@ -24,9 +24,10 @@ Environment: Node v24.22.1, Linux, zero dependencies. All commands run in
 - Production base: `codex/initial-publication` at
   `c8ca5fd3bdfd3322891e58e42d710cc2ca4fe33a`.
 - Production candidate: branch
-  `muse/ideal-weight-calculator-production-20261109` (head SHA and draft
-  PR number recorded in the builder's report; this file was written
-  before the push and updated in the follow-up docs commit).
+  `muse/ideal-weight-calculator-production-20261109`, draft PR #346
+  (https://github.com/KYStr/glossquote-labs-home/pull/346). Code commit
+  `b9cab81bf2da05bded9490656045e8f121bc4266`; the PR head SHA after the
+  docs-only follow-up commit is recorded in the builder's report.
 
 ## Commands and results
 

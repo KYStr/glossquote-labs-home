@@ -14,9 +14,12 @@
 - Production base: `codex/initial-publication` at
   `c8ca5fd3bdfd3322891e58e42d710cc2ca4fe33a` (fetched 2026-11-21).
 - Production candidate: branch
-  `muse/ideal-weight-calculator-production-20261109`, draft PR against
-  `codex/initial-publication` (PR number and head SHA in VERIFICATION.md
-  and the builder's report).
+  `muse/ideal-weight-calculator-production-20261109`, draft PR
+  https://github.com/KYStr/glossquote-labs-home/pull/346 against
+  `codex/initial-publication`. Code commit
+  `b9cab81bf2da05bded9490656045e8f121bc4266`; the PR head also carries a
+  docs-only follow-up commit recording the PR number and head SHA (see
+  VERIFICATION.md).
 - Scope of this candidate: only `tools/ideal-weight-calculator/`.
 
 ## What was built
