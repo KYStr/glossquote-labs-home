@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Pet Feeding Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate daily calories, grams, cups and per-meal amounts for your dog or cat from its weight, life stage and food energy density, using the veterinary RER/DER method.">
+<link rel="stylesheet" href="../styles/pet-feeding.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Pet Feeding Calculator</h1>
+  <p class="lede">Estimate daily calories, grams, cups and per-meal amounts for your dog or cat from its weight, life stage and food energy density, using the veterinary RER/DER method. The result is a starting point — adjust it by body condition.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Pet and food</h2>
+      <form id="pet-feeding-form" novalidate>
+        <div class="field">
+          <label for="field-species">Species</label>
+          <p class="help" id="help-species">Choose dog or cat; the life-stage list follows the species.</p>
+          <select id="field-species" name="species" aria-describedby="help-species">
+            <option value="dog" selected>Dog</option>
+            <option value="cat">Cat</option>
+          </select>
+          <p class="field-error" id="error-species" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lifeStage">Life stage</label>
+          <p class="help" id="help-lifeStage">Only the stages for this species are listed; switching species while the current stage does not belong to the new species returns to that species’ adult neutered stage.</p>
+          <select id="field-lifeStage" name="lifeStage" aria-describedby="help-lifeStage">
+            <option value="puppy-under-4-months">Puppy (under 4 months)</option>
+            <option value="puppy-4-months-to-adult">Puppy (4 months to adult)</option>
+            <option value="adult-intact">Adult dog, intact</option>
+            <option value="adult-neutered" selected>Adult dog, neutered</option>
+            <option value="adult-inactive">Adult dog, inactive or obesity-prone</option>
+            <option value="weight-loss">Weight loss (at ideal weight)</option>
+          </select>
+          <p class="field-error" id="error-lifeStage" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">Weight (kg)</label>
+          <p class="help" id="help-weightKg">Dogs 0.5–100 kg, cats 0.5–20 kg; at most two decimal places. For the weight-loss row, enter the target weight.</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-foodKcalPer100g">Food energy: kcal per 100 g (required)</label>
+          <p class="help" id="help-foodKcalPer100g">The kcal per 100 g printed on the label, 20–900 kcal; at most two decimal places.</p>
+          <input id="field-foodKcalPer100g" name="foodKcalPer100g" type="text" inputmode="decimal" autocomplete="off" value="360" aria-describedby="help-foodKcalPer100g">
+          <p class="field-error" id="error-foodKcalPer100g" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-foodKcalPerCup">Food energy: kcal per cup (optional)</label>
+          <p class="help" id="help-foodKcalPerCup">The kcal per cup printed on the label, 50–1500 kcal; at most two decimal places. Leave blank to skip cups.</p>
+          <input id="field-foodKcalPerCup" name="foodKcalPerCup" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-foodKcalPerCup">
+          <p class="field-error" id="error-foodKcalPerCup" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mealsPerDay">Meals per day</label>
+          <p class="help" id="help-mealsPerDay">A whole number from 1 to 6; the per-meal integers always add up to the daily amount, with the remainder going to the earlier meals.</p>
+          <input id="field-mealsPerDay" name="mealsPerDay" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="help-mealsPerDay">
+          <p class="field-error" id="error-mealsPerDay" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Not calculated yet — enter the details or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate daily feeding amount</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <p class="disclaimer" id="disclaimer">This tool estimates daily calories and food amounts from published veterinary nutrition guidelines, as a starting point only. An individual pet's actual needs can differ from the estimate by up to 50%. Let body condition score (BCS) and your veterinarian's advice govern actual feeding, and adjust portions as your pet's weight and condition change.</p>
+      <h2 id="results-heading">Daily calories and food amount</h2>
+      <p class="result-summary" id="result-der"></p>
+      <p class="result-summary" id="result-grams"></p>
+      <p class="result-summary" id="result-cups" hidden></p>
+      <p class="result-detail" id="result-rer"></p>
+      <p class="result-multiplier" id="result-multiplier"></p>
+      <p class="weight-loss-note" id="weight-loss-note" hidden></p>
+      <h3 class="meals-heading">Per-meal amounts</h3>
+      <table class="meals-table">
+        <thead>
+          <tr><th scope="col">Meal</th><th scope="col">Calories (kcal)</th><th scope="col">Food (g)</th><th scope="col">Food (cups)</th></tr>
+        </thead>
+        <tbody id="meals-body"></tbody>
+      </table>
+      <p class="cups-note" id="cups-note" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>Resting energy requirement RER = 70 × (weight in kg)^0.75; the daily requirement DER = RER × a life-stage factor. The factor table comes from the MSD Veterinary Manual table “Daily Maintenance Energy Requirements for Dogs and Cats” (verified 2026-11-09, cross-checked against OSU VMC, the Pet Nutrition Alliance, and Small Animal Clinical Nutrition, 5th ed.). RER and DER are each rounded to whole kcal; daily grams are converted from the rounded DER (DER × 100 ÷ kcal per 100 g) and rounded to whole grams; cups are rounded to two decimals.</p>
+    <p>Numbers take at most two decimal places; spaces, signs, exponents and leading zeros are not accepted (except 0 itself). Pregnancy, lactation, working dogs, critical care, weight-gain prescriptions and senior pets are out of scope: published guidelines give ranges only for those, with no single pinnable value. The downloaded report is always named pet-feeding-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code unit and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What is RER?</dt>
+      <dd>Resting energy requirement: RER = 70 × (weight in kg)^0.75, the daily calories a resting pet needs for basic body functions; the daily requirement (DER) multiplies RER by a life-stage factor.</dd>
+      <dt>Why does this differ from the feeding guide on the bag?</dt>
+      <dd>Bag guides assume an average pet eating that product; this tool estimates from your pet's weight and life stage. Both are starting points — individual needs vary by up to 50%, so adjust by body condition.</dd>
+      <dt>Cups or grams — which is more accurate?</dt>
+      <dd>Grams are more accurate. Cup amounts vary with kibble size and how the cup is filled; use the kcal-per-cup figure printed on your food's label.</dd>
+      <dt>Can I use this for a pregnant or nursing pet?</dt>
+      <dd>No. Needs during gestation and lactation vary widely by stage and litter size, and published guidelines give ranges only — ask your veterinarian.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page: nothing is uploaded, nothing is stored on a server, and your input is not recorded. The draft stays in this page only and is discarded when you leave it.</p>
+</main>
+</body>
+</html>

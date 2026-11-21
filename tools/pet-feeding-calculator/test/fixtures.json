@@ -1,0 +1,826 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-pet-feeding-calculator-20261109",
+  "slug": "pet-feeding-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "dog-neutered-default",
+      "kind": "core",
+      "purpose": "預設草稿：已絕育成犬，只給每 100 公克熱量；克數恰整除，每餐克數餘數由第一餐吸收。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "adult-neutered",
+          "multiplier": 1.6,
+          "rerKcal": 394,
+          "derKcal": 630,
+          "gramsPerDay": 175,
+          "cupsPerDay": null,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            315,
+            315
+          ],
+          "perMealGrams": [
+            88,
+            87
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "dog-intact-cups",
+      "kind": "core",
+      "purpose": "未絕育成犬，同時給每杯熱量；輸出每日杯數與每餐杯數。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-intact",
+        "weightKg": "20",
+        "foodKcalPer100g": "380",
+        "foodKcalPerCup": "420",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "adult-intact",
+          "multiplier": 1.8,
+          "rerKcal": 662,
+          "derKcal": 1192,
+          "gramsPerDay": 314,
+          "cupsPerDay": 2.84,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            596,
+            596
+          ],
+          "perMealGrams": [
+            157,
+            157
+          ],
+          "perMealCups": [
+            1.42,
+            1.42
+          ]
+        }
+      }
+    },
+    {
+      "id": "cat-neutered",
+      "kind": "core",
+      "purpose": "已絕育成貓；DER 距捨入邊界僅 0.031 kcal（仍遠大於雙精度 pow 誤差），每餐克數帶餘數。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "adult-neutered",
+        "weightKg": "4.5",
+        "foodKcalPer100g": "400",
+        "foodKcalPerCup": "390",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "adult-neutered",
+          "multiplier": 1.2,
+          "rerKcal": 216,
+          "derKcal": 260,
+          "gramsPerDay": 65,
+          "cupsPerDay": 0.67,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            130,
+            130
+          ],
+          "perMealGrams": [
+            33,
+            32
+          ],
+          "perMealCups": [
+            0.33,
+            0.33
+          ]
+        }
+      }
+    },
+    {
+      "id": "cat-kitten",
+      "kind": "core",
+      "purpose": "幼貓 2.5 倍；三餐熱量與克數恰均分。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "kitten",
+        "weightKg": "1.2",
+        "foodKcalPer100g": "420",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "kitten",
+          "multiplier": 2.5,
+          "rerKcal": 80,
+          "derKcal": 201,
+          "gramsPerDay": 48,
+          "cupsPerDay": null,
+          "mealsPerDay": 3,
+          "perMealKcal": [
+            67,
+            67,
+            67
+          ],
+          "perMealGrams": [
+            16,
+            16,
+            16
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "dog-puppy-under-4-months",
+      "kind": "core",
+      "purpose": "幼犬 4 個月以下 3.0 倍；每餐熱量餘數由前幾餐依序吸收。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "puppy-under-4-months",
+        "weightKg": "2",
+        "foodKcalPer100g": "400",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "puppy-under-4-months",
+          "multiplier": 3.0,
+          "rerKcal": 118,
+          "derKcal": 353,
+          "gramsPerDay": 88,
+          "cupsPerDay": null,
+          "mealsPerDay": 3,
+          "perMealKcal": [
+            118,
+            118,
+            117
+          ],
+          "perMealGrams": [
+            30,
+            29,
+            29
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "dog-puppy-4-months",
+      "kind": "core",
+      "purpose": "幼犬 4 個月至成犬 2.0 倍。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "puppy-4-months-to-adult",
+        "weightKg": "8",
+        "foodKcalPer100g": "350",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "puppy-4-months-to-adult",
+          "multiplier": 2.0,
+          "rerKcal": 333,
+          "derKcal": 666,
+          "gramsPerDay": 190,
+          "cupsPerDay": null,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            333,
+            333
+          ],
+          "perMealGrams": [
+            95,
+            95
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "dog-weight-loss",
+      "kind": "core",
+      "purpose": "犬減重列 1.0 倍，以輸入的目標體重計算；單餐。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "weight-loss",
+        "weightKg": "12",
+        "foodKcalPer100g": "320",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "weight-loss",
+          "multiplier": 1.0,
+          "rerKcal": 451,
+          "derKcal": 451,
+          "gramsPerDay": 141,
+          "cupsPerDay": null,
+          "mealsPerDay": 1,
+          "perMealKcal": [
+            451
+          ],
+          "perMealGrams": [
+            141
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "cat-weight-loss",
+      "kind": "core",
+      "purpose": "貓減重列 0.8 倍，與犬減重倍率不同（物種別表）。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "weight-loss",
+        "weightKg": "6",
+        "foodKcalPer100g": "330",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "weight-loss",
+          "multiplier": 0.8,
+          "rerKcal": 268,
+          "derKcal": 215,
+          "gramsPerDay": 65,
+          "cupsPerDay": null,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            108,
+            107
+          ],
+          "perMealGrams": [
+            33,
+            32
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "cat-intact-cups",
+      "kind": "core",
+      "purpose": "未絕育成貓；克數恰整除、杯數為兩位小數整值。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "adult-intact",
+        "weightKg": "5",
+        "foodKcalPer100g": "410",
+        "foodKcalPerCup": "400",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "adult-intact",
+          "multiplier": 1.4,
+          "rerKcal": 234,
+          "derKcal": 328,
+          "gramsPerDay": 80,
+          "cupsPerDay": 0.82,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            164,
+            164
+          ],
+          "perMealGrams": [
+            40,
+            40
+          ],
+          "perMealCups": [
+            0.41,
+            0.41
+          ]
+        }
+      }
+    },
+    {
+      "id": "dog-inactive",
+      "kind": "core",
+      "purpose": "犬活動量低／易胖列 1.4 倍（MSD 單一公告值）；單餐。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-inactive",
+        "weightKg": "15",
+        "foodKcalPer100g": "300",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "1"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "adult-inactive",
+          "multiplier": 1.4,
+          "rerKcal": 534,
+          "derKcal": 747,
+          "gramsPerDay": 249,
+          "cupsPerDay": null,
+          "mealsPerDay": 1,
+          "perMealKcal": [
+            747
+          ],
+          "perMealGrams": [
+            249
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "cat-max-weight",
+      "kind": "core",
+      "purpose": "貓體重上限 20 kg 邊界合法；貓活動量低列 1.0 倍。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "adult-inactive",
+        "weightKg": "20",
+        "foodKcalPer100g": "250",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "adult-inactive",
+          "multiplier": 1.0,
+          "rerKcal": 662,
+          "derKcal": 662,
+          "gramsPerDay": 265,
+          "cupsPerDay": null,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            331,
+            331
+          ],
+          "perMealGrams": [
+            133,
+            132
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "dog-min-weight-puppy",
+      "kind": "core",
+      "purpose": "犬體重下限 0.5 kg 邊界合法；四餐分配，熱量餘數由第一餐吸收。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "puppy-under-4-months",
+        "weightKg": "0.5",
+        "foodKcalPer100g": "450",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "4"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "dog",
+          "lifeStage": "puppy-under-4-months",
+          "multiplier": 3.0,
+          "rerKcal": 42,
+          "derKcal": 125,
+          "gramsPerDay": 28,
+          "cupsPerDay": null,
+          "mealsPerDay": 4,
+          "perMealKcal": [
+            32,
+            31,
+            31,
+            31
+          ],
+          "perMealGrams": [
+            7,
+            7,
+            7,
+            7
+          ],
+          "perMealCups": null
+        }
+      }
+    },
+    {
+      "id": "cat-decimal-density",
+      "kind": "core",
+      "purpose": "每 100 公克與每杯熱量皆帶一位小數的合法輸入。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "adult-neutered",
+        "weightKg": "3.8",
+        "foodKcalPer100g": "362.5",
+        "foodKcalPerCup": "355.5",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "species": "cat",
+          "lifeStage": "adult-neutered",
+          "multiplier": 1.2,
+          "rerKcal": 191,
+          "derKcal": 229,
+          "gramsPerDay": 63,
+          "cupsPerDay": 0.64,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            115,
+            114
+          ],
+          "perMealGrams": [
+            32,
+            31
+          ],
+          "perMealCups": [
+            0.32,
+            0.32
+          ]
+        }
+      }
+    },
+    {
+      "id": "err-stage-species-mismatch",
+      "kind": "core",
+      "purpose": "貓選到犬專屬生命階段，回 ENUM（lifeStage）。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "puppy-under-4-months",
+        "weightKg": "3",
+        "foodKcalPer100g": "380",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "lifeStage",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-stage-unknown",
+      "kind": "core",
+      "purpose": "不存在的生命階段值（senior 不在本表），回 ENUM（lifeStage）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "senior",
+        "weightKg": "10",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "lifeStage",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-weight-range-cat",
+      "kind": "core",
+      "purpose": "貓體重 25 kg 超過物種上限 20 kg，回 RANGE（weightKg）。",
+      "input": {
+        "species": "cat",
+        "lifeStage": "adult-neutered",
+        "weightKg": "25",
+        "foodKcalPer100g": "400",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "weightKg",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-weight-format",
+      "kind": "core",
+      "purpose": "體重三位小數違反最多兩位小數文法，回 DECIMAL_FORMAT（weightKg）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10.005",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "weightKg",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-density-empty",
+      "kind": "core",
+      "purpose": "必填的每 100 公克熱量留空，回 EMPTY（foodKcalPer100g）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10",
+        "foodKcalPer100g": "",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "foodKcalPer100g",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-cup-format",
+      "kind": "core",
+      "purpose": "選填的每杯熱量一旦填寫仍須合文法，三位小數回 DECIMAL_FORMAT（foodKcalPerCup）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "12.345",
+        "mealsPerDay": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "foodKcalPerCup",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-meals-range",
+      "kind": "core",
+      "purpose": "每日餐數 7 超過上限 6，回 RANGE（mealsPerDay）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "7"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "mealsPerDay",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "err-schema-extra-field",
+      "kind": "core",
+      "purpose": "多出未知欄位 treatsKcal，回 SCHEMA（field 為 null）。",
+      "input": {
+        "species": "dog",
+        "lifeStage": "adult-neutered",
+        "weightKg": "10",
+        "foodKcalPer100g": "360",
+        "foodKcalPerCup": "",
+        "mealsPerDay": "2",
+        "treatsKcal": "50"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "species": "dog",
+          "lifeStage": "adult-neutered",
+          "weightKg": "10",
+          "foodKcalPer100g": "360",
+          "foodKcalPerCup": "",
+          "mealsPerDay": "2"
+        },
+        "edit": {
+          "species": "dog",
+          "lifeStage": "adult-neutered",
+          "weightKg": "0.1",
+          "foodKcalPer100g": "360",
+          "foodKcalPerCup": "",
+          "mealsPerDay": "2"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "weightKg",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "species": "cat",
+          "lifeStage": "adult-neutered",
+          "weightKg": "4.5",
+          "foodKcalPer100g": "400",
+          "foodKcalPerCup": "390",
+          "mealsPerDay": "2"
+        },
+        "lateResult": {
+          "species": "cat",
+          "lifeStage": "adult-neutered",
+          "multiplier": 1.2,
+          "rerKcal": 216,
+          "derKcal": 260,
+          "gramsPerDay": 65,
+          "cupsPerDay": 0.67,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            130,
+            130
+          ],
+          "perMealGrams": [
+            33,
+            32
+          ],
+          "perMealCups": [
+            0.33,
+            0.33
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "species": "cat",
+            "lifeStage": "adult-neutered",
+            "weightKg": "4.5",
+            "foodKcalPer100g": "400",
+            "foodKcalPerCup": "390",
+            "mealsPerDay": "2"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "species": "dog",
+            "lifeStage": "adult-neutered",
+            "weightKg": "10",
+            "foodKcalPer100g": "360",
+            "foodKcalPerCup": "",
+            "mealsPerDay": "2"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "species": "dog",
+          "lifeStage": "adult-intact",
+          "weightKg": "20",
+          "foodKcalPer100g": "380",
+          "foodKcalPerCup": "420",
+          "mealsPerDay": "2"
+        },
+        "newerDraft": {
+          "species": "dog",
+          "lifeStage": "adult-intact",
+          "weightKg": "20",
+          "foodKcalPer100g": "380",
+          "foodKcalPerCup": "420",
+          "mealsPerDay": "9"
+        },
+        "olderLateResult": {
+          "species": "dog",
+          "lifeStage": "adult-intact",
+          "multiplier": 1.8,
+          "rerKcal": 662,
+          "derKcal": 1192,
+          "gramsPerDay": 314,
+          "cupsPerDay": 2.84,
+          "mealsPerDay": 2,
+          "perMealKcal": [
+            596,
+            596
+          ],
+          "perMealGrams": [
+            157,
+            157
+          ],
+          "perMealCups": [
+            1.42,
+            1.42
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "mealsPerDay",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "mealsPerDay",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
