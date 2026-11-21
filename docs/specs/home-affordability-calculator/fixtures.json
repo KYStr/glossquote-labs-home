@@ -1,0 +1,573 @@
+{
+ "cases": [
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 36000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 9575358,
+     "maxLoanAmount": 7575358,
+     "maxMonthlyPayment": 28000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "typical-taipei",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "典型情境：年收入 120 萬、頭期款 200 萬、利率 2%、30 年、無其他債務，前端上限綁定"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 21000,
+     "backEndPctAtMax": 36.0,
+     "bindingCap": "back",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 21.0,
+     "maxHomePrice": 7681518,
+     "maxLoanAmount": 5681518,
+     "maxMonthlyPayment": 21000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "debts-bind-back-end",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "15000",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "每月其他債務 15,000 元，後端上限綁定"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 22000,
+     "backEndPctAtMax": 34.7,
+     "bindingCap": "front",
+     "frontEndLimit": 21000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 6040000,
+     "maxLoanAmount": 5040000,
+     "maxMonthlyPayment": 21000,
+     "monthlyGrossIncome": 75000
+    }
+   },
+   "id": "zero-rate",
+   "input": {
+    "annualIncome": "900000",
+    "backEndCapPct": "36",
+    "downPayment": "1000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "0",
+    "otherDebts": "5000",
+    "years": "20"
+   },
+   "kind": "core",
+   "purpose": "零利率，最高貸款為月付乘以期數，可全手算"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 18000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 14000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 662665,
+     "maxLoanAmount": 162665,
+     "maxMonthlyPayment": 14000,
+     "monthlyGrossIncome": 50000
+    }
+   },
+   "id": "one-year-term",
+   "input": {
+    "annualIncome": "600000",
+    "backEndCapPct": "36",
+    "downPayment": "500000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "6",
+    "otherDebts": "0",
+    "years": "1"
+   },
+   "kind": "core",
+   "purpose": "一年期，12 期年金反推"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 36000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 5815937,
+     "maxLoanAmount": 3815937,
+     "maxMonthlyPayment": 28000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "high-rate",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "8",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "利率 8%，30 年，最高房價大幅下降"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 36000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 7575358,
+     "maxLoanAmount": 7575358,
+     "maxMonthlyPayment": 28000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "zero-down-payment",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "0",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "零頭期款，最高房價等於最高貸款"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": false,
+     "backEndLimit": -2000,
+     "backEndPctAtMax": 40.0,
+     "bindingCap": "back",
+     "frontEndLimit": 14000,
+     "frontEndPctAtMax": 0.0,
+     "maxHomePrice": 500000,
+     "maxLoanAmount": 0,
+     "maxMonthlyPayment": 0,
+     "monthlyGrossIncome": 50000
+    }
+   },
+   "id": "debts-exceed-back-cap",
+   "input": {
+    "annualIncome": "600000",
+    "backEndCapPct": "36",
+    "downPayment": "500000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "20000",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "其他債務超過後端上限，無貸款額度，affordable 為 false"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 30000,
+     "backEndPctAtMax": 30.0,
+     "bindingCap": "equal",
+     "frontEndLimit": 30000,
+     "frontEndPctAtMax": 30.0,
+     "maxHomePrice": 10116455,
+     "maxLoanAmount": 8116455,
+     "maxMonthlyPayment": 30000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "equal-caps",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "30",
+    "downPayment": "2000000",
+    "frontEndCapPct": "30",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "前後端上限相等，bindingCap 為 equal"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 30000,
+     "backEndPctAtMax": 35.0,
+     "bindingCap": "front",
+     "frontEndLimit": 25000,
+     "frontEndPctAtMax": 25.0,
+     "maxHomePrice": 6507772,
+     "maxLoanAmount": 4507772,
+     "maxMonthlyPayment": 25000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "id": "custom-caps",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "40",
+    "downPayment": "2000000",
+    "frontEndCapPct": "25",
+    "mortgageRate": "3",
+    "otherDebts": "10000",
+    "years": "20"
+   },
+   "kind": "core",
+   "purpose": "自訂上限 25/40，利率 3%、20 年"
+  },
+  {
+   "expected": {
+    "ok": true,
+    "result": {
+     "affordable": true,
+     "backEndLimit": 30000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 23333,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 7812708,
+     "maxLoanAmount": 6312708,
+     "maxMonthlyPayment": 23333,
+     "monthlyGrossIncome": 83333
+    }
+   },
+   "id": "income-not-divisible",
+   "input": {
+    "annualIncome": "1000000",
+    "backEndCapPct": "36",
+    "downPayment": "1500000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "年收入 1,000,000 元，月收入非整數，四捨五入邊界"
+  },
+  {
+   "expected": {
+    "error": {
+     "code": "CAP_ORDER",
+     "field": "backEndCapPct",
+     "row": null
+    },
+    "ok": false
+   },
+   "id": "cap-order-error",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "25",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "後端上限 25% 低於前端上限 28%，CAP_ORDER"
+  },
+  {
+   "expected": {
+    "error": {
+     "code": "RANGE",
+     "field": "mortgageRate",
+     "row": null
+    },
+    "ok": false
+   },
+   "id": "rate-out-of-range",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "31",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "房貸利率 31%，RANGE"
+  },
+  {
+   "expected": {
+    "error": {
+     "code": "RANGE",
+     "field": "annualIncome",
+     "row": null
+    },
+    "ok": false
+   },
+   "id": "income-zero",
+   "input": {
+    "annualIncome": "0",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "年收入為 0，低於下限 1，RANGE"
+  },
+  {
+   "expected": {
+    "error": {
+     "code": "DECIMAL_FORMAT",
+     "field": "frontEndCapPct",
+     "row": null
+    },
+    "ok": false
+   },
+   "id": "too-many-decimals",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28.123",
+    "mortgageRate": "2",
+    "otherDebts": "0",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "前端上限 3 位小數，DECIMAL_FORMAT"
+  },
+  {
+   "expected": {
+    "error": {
+     "code": "INTEGER_FORMAT",
+     "field": "otherDebts",
+     "row": null
+    },
+    "ok": false
+   },
+   "id": "negative-debts",
+   "input": {
+    "annualIncome": "1200000",
+    "backEndCapPct": "36",
+    "downPayment": "2000000",
+    "frontEndCapPct": "28",
+    "mortgageRate": "2",
+    "otherDebts": "-1",
+    "years": "30"
+   },
+   "kind": "core",
+   "purpose": "其他債務為負數，INTEGER_FORMAT"
+  },
+  {
+   "expected": {
+    "afterEdit": {
+     "reportAvailable": false,
+     "state": "dirty"
+    },
+    "afterRerun": {
+     "error": {
+      "code": "RANGE",
+      "field": "mortgageRate",
+      "row": null
+     },
+     "reportAvailable": false,
+     "state": "error"
+    },
+    "afterRun": {
+     "reportAvailable": true,
+     "state": "success"
+    }
+   },
+   "id": "state-dirty-error",
+   "input": {
+    "edit": {
+     "annualIncome": "1200000",
+     "backEndCapPct": "36",
+     "downPayment": "2000000",
+     "frontEndCapPct": "28",
+     "mortgageRate": "31",
+     "otherDebts": "0",
+     "years": "3"
+    },
+    "initial": {
+     "annualIncome": "1200000",
+     "backEndCapPct": "36",
+     "downPayment": "2000000",
+     "frontEndCapPct": "28",
+     "mortgageRate": "0",
+     "otherDebts": "0",
+     "years": "3"
+    }
+   },
+   "kind": "controller",
+   "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+  },
+  {
+   "expected": {
+    "afterCancel": {
+     "draft": {
+      "annualIncome": "1200000",
+      "backEndCapPct": "36",
+      "downPayment": "2000000",
+      "frontEndCapPct": "28",
+      "mortgageRate": "0",
+      "otherDebts": "0",
+      "years": "3"
+     },
+     "reportAvailable": false,
+     "state": "cancelled"
+    },
+    "afterLateResult": {
+     "reportAvailable": false,
+     "state": "cancelled"
+    },
+    "afterReset": {
+     "draft": {
+      "annualIncome": "1200000",
+      "backEndCapPct": "36",
+      "downPayment": "2000000",
+      "frontEndCapPct": "28",
+      "mortgageRate": "2",
+      "otherDebts": "0",
+      "years": "30"
+     },
+     "reportAvailable": false,
+     "state": "empty"
+    },
+    "whilePending": {
+     "reportAvailable": false,
+     "state": "busy"
+    }
+   },
+   "id": "state-cancel-late",
+   "input": {
+    "draft": {
+     "annualIncome": "1200000",
+     "backEndCapPct": "36",
+     "downPayment": "2000000",
+     "frontEndCapPct": "28",
+     "mortgageRate": "0",
+     "otherDebts": "0",
+     "years": "3"
+    },
+    "lateResult": {
+     "affordable": true,
+     "backEndLimit": 36000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 3008000,
+     "maxLoanAmount": 1008000,
+     "maxMonthlyPayment": 28000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "kind": "controller",
+   "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+  },
+  {
+   "expected": {
+    "afterNewerResult": {
+     "error": {
+      "code": "RANGE",
+      "field": "mortgageRate",
+      "row": null
+     },
+     "reportAvailable": false,
+     "state": "error"
+    },
+    "afterOlderLateResult": {
+     "error": {
+      "code": "RANGE",
+      "field": "mortgageRate",
+      "row": null
+     },
+     "reportAvailable": false,
+     "state": "error"
+    }
+   },
+   "id": "state-replace-late",
+   "input": {
+    "newerDraft": {
+     "annualIncome": "1200000",
+     "backEndCapPct": "36",
+     "downPayment": "2000000",
+     "frontEndCapPct": "28",
+     "mortgageRate": "31",
+     "otherDebts": "0",
+     "years": "3"
+    },
+    "olderDraft": {
+     "annualIncome": "1200000",
+     "backEndCapPct": "36",
+     "downPayment": "2000000",
+     "frontEndCapPct": "28",
+     "mortgageRate": "0",
+     "otherDebts": "0",
+     "years": "3"
+    },
+    "olderLateResult": {
+     "affordable": true,
+     "backEndLimit": 36000,
+     "backEndPctAtMax": 28.0,
+     "bindingCap": "front",
+     "frontEndLimit": 28000,
+     "frontEndPctAtMax": 28.0,
+     "maxHomePrice": 3008000,
+     "maxLoanAmount": 1008000,
+     "maxMonthlyPayment": 28000,
+     "monthlyGrossIncome": 100000
+    }
+   },
+   "kind": "controller",
+   "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+  }
+ ],
+ "productChecks": "NOT_RUN",
+ "schemaVersion": 1,
+ "slug": "home-affordability-calculator",
+ "specId": "spec-home-affordability-calculator-20261121"
+}
