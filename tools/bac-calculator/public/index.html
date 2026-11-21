@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>酒精濃度估算｜Gloss Tools</title>
+<meta name="description" content="輸入性別、體重、飲酒量與經過時間，用 Widmark 公式推估血液酒精濃度，並對照台灣酒駕行政與刑事門檻。僅供推估，喝酒不開車。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>酒精濃度估算</h1>
+  <p class="lede">輸入性別、體重、飲酒量與經過時間，用 Widmark 公式推估血液酒精濃度，並對照台灣酒駕行政與刑事門檻。僅供推估，喝酒不開車。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">性別與體重</h2>
+      <form id="bac-form" novalidate>
+        <fieldset class="field radio-group">
+          <legend>性別</legend>
+          <p class="help" id="help-sex">性別決定 Widmark 分布係數：男性 0.68，女性 0.55。</p>
+          <label class="radio-option">
+            <input id="field-sex-male" name="sex" type="radio" value="male" checked aria-describedby="help-sex">
+            男性
+          </label>
+          <label class="radio-option">
+            <input id="field-sex-female" name="sex" type="radio" value="female" aria-describedby="help-sex">
+            女性
+          </label>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-weightKg">體重（kg）</label>
+          <p class="help" id="help-weightKg">整數或一位小數，範圍 20–500 kg。</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="70" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <h2>飲料清單（容量與酒精濃度）</h2>
+        <div id="drink-rows"></div>
+        <p class="field-error" id="error-drinks" role="alert"></p>
+        <button type="button" id="add-drink-btn" class="button-secondary">新增一杯</button>
+        <div class="field">
+          <label for="field-elapsedMinutes">距開始飲用的經過時間（分鐘）</label>
+          <p class="help" id="help-elapsedMinutes">整數，範圍 0–1440 分鐘。全部飲料視為在開始飲用時一次攝入，之後以每小時 0.15 g/L 線性代謝。</p>
+          <input id="field-elapsedMinutes" name="elapsedMinutes" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-elapsedMinutes">
+          <p class="field-error" id="error-elapsedMinutes" role="alert"></p>
+        </div>
+        <p class="short-disclaimer">僅供推估，喝酒不開車</p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入資料，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">估算酒精濃度</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">推估濃度與法定區間</h2>
+      <p id="summary"></p>
+      <dl class="result-list">
+        <div><dt>目前推估濃度（g/L）</dt><dd id="result-bac-gl"></dd></div>
+        <div><dt>目前推估濃度（%）</dt><dd id="result-bac-percent"></dd></div>
+        <div><dt>吐氣酒精濃度換算（mg/L）</dt><dd id="result-breath"></dd></div>
+        <div><dt>法定區間</dt><dd id="result-band"></dd></div>
+        <div><dt>未代謝前濃度（g/L）</dt><dd id="result-peak"></dd></div>
+        <div><dt>純酒精總量</dt><dd id="result-alcohol"></dd></div>
+        <div><dt>代謝至行政門檻以下的推估時間</dt><dd id="result-to-admin"></dd></div>
+        <div><dt>代謝歸零的推估時間</dt><dd id="result-to-zero"></dd></div>
+      </dl>
+      <p class="band-note">區間以未捨入的推估值判定</p>
+      <p class="disclaimer">本工具僅依 Widmark 公式推估，不是醫療或執法測量。實際酒精濃度因個人體質、飲食、服藥與飲用速度差異很大。只要喝酒，就不要開車或騎車；本工具的任何結果都不能當作可以安全駕駛的依據。</p>
+    </section>
+  </div>
+
+  <section class="panel thresholds" aria-labelledby="thresholds-heading">
+    <h2 id="thresholds-heading">台灣酒駕法定門檻對照</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">區間</th><th scope="col">吐氣酒精濃度</th><th scope="col">血液酒精濃度</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">未達行政罰門檻</th><td>未達 0.15 mg/L</td><td>未達 0.03%</td></tr>
+        <tr><th scope="row">行政罰區間</th><td>0.15 mg/L 以上</td><td>0.03% 以上</td></tr>
+        <tr><th scope="row">刑事責任區間</th><td>0.25 mg/L 以上</td><td>0.05% 以上</td></tr>
+      </tbody>
+    </table>
+    <p>行政門檻依道路交通管理處罰條例第 35 條與道路交通安全規則第 114 條；刑事門檻依刑法第 185 條之 3。吐氣濃度以血液：吐氣 = 2000:1 換算，是依法規成對門檻換算的參考值，不是儀器量測值。</p>
+  </section>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>計算順序固定：純酒精克數為各杯容量 × 酒精濃度 × 0.789 g/ml 的加總；未代謝前濃度為純酒精克數除以（分布係數 × 體重），分布係數男性 0.68、女性 0.55；目前濃度為未代謝前濃度減去每小時 0.15 g/L 的線性代謝，下限為零。百分比為濃度除以 10，吐氣換算為濃度除以 2。全程以精確有理數運算，不用浮點數；顯示值各只四捨五入（half-up）一次，法定區間與剩餘分鐘一律以未捨入的精確值判定與計算。</p>
+    <p>剩餘分鐘為使濃度降至目標所需的最小整數分鐘：每 g/L 需 400 分鐘代謝，向上取整。輸入只接受 ASCII 數字與最多一個小數點：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 bac-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>低於 0.15 mg/L 就可以開車嗎？</dt>
+      <dd>不行。門檻只是處罰的起點，酒精從第一口就影響反應與判斷，而且本工具只是推估，誤差可能讓你實際上已超過門檻。</dd>
+      <dt>喝水、咖啡或運動可以加速代謝嗎？</dt>
+      <dd>不行。酒精以約每小時 0.15 g/L 的固定速率代謝，喝水、咖啡、沖冷水或運動都不會讓它變快，只有時間有效。</dd>
+      <dt>吐氣濃度是怎麼換算的？</dt>
+      <dd>台灣法規以成對數值定義門檻：吐氣 0.15 mg/L 對應血液 0.03%，0.25 mg/L 對應 0.05%，兩者都是血液：吐氣 = 2000:1。本工具以同樣比例換算，結果是參考值，不是儀器量測。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。飲酒資料屬敏感個人資料，本工具不會把它送出頁面。</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BAC Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate blood alcohol concentration with the Widmark formula from sex, weight, drinks and elapsed time, with Taiwan's administrative and criminal DUI thresholds for reference. Estimate only — never drink and drive.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>BAC Calculator</h1>
+  <p class="lede">Estimate blood alcohol concentration with the Widmark formula from sex, weight, drinks and elapsed time, with Taiwan's administrative and criminal DUI thresholds for reference. Estimate only — never drink and drive.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Sex and body weight</h2>
+      <form id="bac-form" novalidate>
+        <fieldset class="field radio-group">
+          <legend>Sex</legend>
+          <p class="help" id="help-sex">Sex sets the Widmark distribution factor: 0.68 for men, 0.55 for women.</p>
+          <label class="radio-option">
+            <input id="field-sex-male" name="sex" type="radio" value="male" checked aria-describedby="help-sex">
+            Male
+          </label>
+          <label class="radio-option">
+            <input id="field-sex-female" name="sex" type="radio" value="female" aria-describedby="help-sex">
+            Female
+          </label>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-weightKg">Body weight (kg)</label>
+          <p class="help" id="help-weightKg">A whole number or one decimal place, range 20–500 kg.</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="70" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <h2>Drinks (volume and ABV)</h2>
+        <div id="drink-rows"></div>
+        <p class="field-error" id="error-drinks" role="alert"></p>
+        <button type="button" id="add-drink-btn" class="button-secondary">Add a drink</button>
+        <div class="field">
+          <label for="field-elapsedMinutes">Minutes since drinking started</label>
+          <p class="help" id="help-elapsedMinutes">A whole number, range 0–1440 minutes. All drinks are treated as consumed at once when drinking started, then eliminated linearly at 0.15 g/L per hour.</p>
+          <input id="field-elapsedMinutes" name="elapsedMinutes" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-elapsedMinutes">
+          <p class="field-error" id="error-elapsedMinutes" role="alert"></p>
+        </div>
+        <p class="short-disclaimer">Estimate only. Never drink and drive.</p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter your drinks, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Estimate BAC</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimated BAC and legal band</h2>
+      <p id="summary"></p>
+      <dl class="result-list">
+        <div><dt>Current estimated BAC (g/L)</dt><dd id="result-bac-gl"></dd></div>
+        <div><dt>Current estimated BAC (%)</dt><dd id="result-bac-percent"></dd></div>
+        <div><dt>Breath alcohol equivalent (mg/L)</dt><dd id="result-breath"></dd></div>
+        <div><dt>Legal band</dt><dd id="result-band"></dd></div>
+        <div><dt>Pre-elimination BAC (g/L)</dt><dd id="result-peak"></dd></div>
+        <div><dt>Total pure alcohol</dt><dd id="result-alcohol"></dd></div>
+        <div><dt>Estimated time to fall below the administrative threshold</dt><dd id="result-to-admin"></dd></div>
+        <div><dt>Estimated time to reach zero</dt><dd id="result-to-zero"></dd></div>
+      </dl>
+      <p class="band-note">Band is decided on the unrounded estimate.</p>
+      <p class="disclaimer">This tool only estimates with the Widmark formula; it is not a medical or law-enforcement measurement. Actual alcohol concentration varies widely with body composition, food, medication and drinking speed. If you drink, do not drive or ride; no result from this tool is evidence that driving is safe.</p>
+    </section>
+  </div>
+
+  <section class="panel thresholds" aria-labelledby="thresholds-heading">
+    <h2 id="thresholds-heading">Taiwan DUI thresholds</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">Band</th><th scope="col">Breath alcohol</th><th scope="col">Blood alcohol</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Below the administrative threshold</th><td>Below 0.15 mg/L</td><td>Below 0.03%</td></tr>
+        <tr><th scope="row">Administrative-penalty band</th><td>0.15 mg/L and above</td><td>0.03% and above</td></tr>
+        <tr><th scope="row">Criminal-liability band</th><td>0.25 mg/L and above</td><td>0.05% and above</td></tr>
+      </tbody>
+    </table>
+    <p>The administrative threshold follows Article 35 of the Road Traffic Management and Penalty Act and Article 114 of the Road Traffic Safety Rules; the criminal threshold follows Article 185-3 of the Criminal Code. The breath figure is converted at a blood-to-breath ratio of 2000:1, a reference value derived from the statutes' paired thresholds, not an instrument reading.</p>
+  </section>
+
+  <details class="details">
+    <summary>How it is calculated, and the input format</summary>
+    <p>The order is fixed: total pure alcohol in grams is the sum over drinks of volume × ABV × 0.789 g/ml; the pre-elimination concentration is the pure alcohol divided by (distribution factor × body weight), with the factor 0.68 for men and 0.55 for women; the current concentration is the pre-elimination concentration minus linear elimination at 0.15 g/L per hour, floored at zero. Percent is the concentration divided by 10, and the breath figure is the concentration divided by 2. All computation uses exact rational arithmetic, never floating point; each displayed value rounds half-up exactly once, while the legal band and the remaining minutes are always decided and computed from the unrounded exact value.</p>
+    <p>Remaining minutes are the smallest whole number of minutes needed for the concentration to fall to the target: 400 minutes per g/L, rounded up. Inputs accept ASCII digits and at most one decimal point: commas, spaces, signs, exponents and full-width digits are format errors, and the tool never guesses. The downloaded report is always named bac-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is below 0.15 mg/L OK to drive?</dt>
+      <dd>No. The threshold is only where penalties start; alcohol impairs reaction and judgment from the first drink, and this tool is only an estimate — error could put you over the threshold in reality.</dd>
+      <dt>Can water, coffee or exercise speed up elimination?</dt>
+      <dd>No. Alcohol is eliminated at a roughly fixed 0.15 g/L per hour; water, coffee, cold showers and exercise do not speed it up. Only time works.</dd>
+      <dt>How is the breath figure converted?</dt>
+      <dd>Taiwan's statutes define thresholds in pairs — breath 0.15 mg/L with blood 0.03%, and breath 0.25 mg/L with blood 0.05% — both give a blood-to-breath ratio of 2000:1. This tool converts with the same ratio; the result is a reference value, not an instrument reading.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is calculated locally in this page; your input is never uploaded, stored, or logged. Drinking data is sensitive personal data, and this tool never sends it out of the page.</p>
+</main>
+</body>
+</html>
