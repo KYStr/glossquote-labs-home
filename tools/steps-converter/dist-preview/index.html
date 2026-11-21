@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>步數換算｜Gloss Tools</title>
+<meta name="description" content="把計步器的步數換算成距離：用身高推估步幅或輸入自己的步幅，還可加開體重估算步行消耗的熱量（估算值）。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>步數換算</h1>
+  <p class="lede">把計步器的步數換算成距離：用身高推估步幅或輸入自己的步幅，還可加開體重估算步行消耗的熱量。步幅與熱量都是估算值，不是精確測量。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">步數與步幅</h2>
+      <form id="steps-form" novalidate>
+        <div class="field">
+          <label for="field-steps">步數</label>
+          <p class="help" id="help-steps">整數，0–99,999,999 步，不能有小數點或符號。</p>
+          <input id="field-steps" name="steps" type="text" inputmode="numeric" autocomplete="off" value="10000" aria-describedby="help-steps">
+          <p class="field-error" id="error-steps" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-strideSource">步幅來源</label>
+          <p class="help" id="help-strideSource">選「身高推估」時用身高 × 0.414 估步幅；選「實測步幅」時填自己量過的步幅。</p>
+          <select id="field-strideSource" name="strideSource" aria-describedby="help-strideSource">
+            <option value="measured">實測步幅</option>
+            <option value="height" selected>身高推估</option>
+          </select>
+          <p class="field-error" id="error-strideSource" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-strideCm">步幅（公分）</label>
+          <p class="help" id="help-strideCm">僅選「實測步幅」時啟用。20.0–150.0 公分，最多兩位小數。</p>
+          <input id="field-strideCm" name="strideCm" type="text" inputmode="decimal" autocomplete="off" value="70" aria-describedby="help-strideCm" disabled>
+          <p class="field-error" id="error-strideCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-heightCm">身高（公分）</label>
+          <p class="help" id="help-heightCm">僅選「身高推估」時啟用。80.0–250.0 公分，最多一位小數。</p>
+          <input id="field-heightCm" name="heightCm" type="text" inputmode="decimal" autocomplete="off" value="170" aria-describedby="help-heightCm">
+          <p class="field-error" id="error-heightCm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-calories">估算熱量</label>
+          <p class="help" id="help-calories">打開時需要體重，用每公斤每公里 0.75 kcal 估算總消耗。</p>
+          <select id="field-calories" name="calories" aria-describedby="help-calories">
+            <option value="off" selected>不估算</option>
+            <option value="on">估算熱量</option>
+          </select>
+          <p class="field-error" id="error-calories" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">體重（公斤）</label>
+          <p class="help" id="help-weightKg">僅打開「估算熱量」時啟用。20.0–500.0 公斤，最多一位小數。</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="65" aria-describedby="help-weightKg" disabled>
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。請輸入步數，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算步數</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">距離與步幅</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="距離與步幅" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">項目</th><th scope="col">數值</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="disclaimer" id="disclaimer">步幅與熱量皆為估算值。身高推估步幅採 0.414 × 身高；熱量採每公斤每公里 0.75 kcal（總消耗，含休息代謝），實際值因步速、地形與個人差異而不同。</p>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>計算全程以精確有理數進行，不用浮點中繼。身高推估步幅為身高 × 207/500（即 0.414）；距離（公里）為步數 × 步幅（公分）÷ 100,000；熱量（大卡）為 3/4 × 體重（公斤）× 未捨入的距離（公里）。每個輸出只在最後由精確值四捨五入一次：步幅取 1 位小數、距離取 2 位小數、每公里步數取整數、熱量取整數；顯示用的捨入值不會回饋任何計算。</p>
+    <p>輸入只接受 ASCII 數字與一個小數點：逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。步數必須是整數，前導零（例如 007）不接受。下載的報告檔名固定為 steps-converter-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>步幅怎麼來的？</dt>
+      <dd>身高模式用步幅 = 身高 × 0.414（ACSM 迴歸平均，個人值約在 0.413–0.415 並隨步速變動）；知道自己的步幅時用實測模式更準。</dd>
+      <dt>熱量準嗎？</dt>
+      <dd>這是總消耗估算（0.75 kcal/kg/km），由 MET 表推得的一般步速範圍約 0.73–0.77；扣除休息代謝的淨消耗約 0.5。個人誤差可達 ±20%，只作概略參考。</dd>
+      <dt>為什麼和手錶的距離不一樣？</dt>
+      <dd>手錶用自己的步幅校準或 GPS；本工具只用畫面上顯示的步幅計算，步幅不同結果就不同。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
