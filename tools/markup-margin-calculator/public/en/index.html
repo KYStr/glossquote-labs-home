@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Markup &amp; Margin Calculator | Gloss Tools</title>
+<meta name="description" content="Enter cost and price to get markup and margin together, or work backwards from a target markup or margin to the required price. All arithmetic is exact integer cents and milli-percent; percentages display to two decimals.">
+<link rel="stylesheet" href="../styles/markup-margin.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Markup &amp; Margin Calculator</h1>
+  <p class="lede">Enter cost and price to get markup and margin together, or work backwards from a target markup or margin to the required price. All arithmetic is exact integer cents and milli-percent; percentages display to two decimals.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Pricing inputs</h2>
+      <form id="markup-margin-form" novalidate>
+        <fieldset class="field">
+          <legend>Mode</legend>
+          <p class="help" id="help-mode">Choose how to calculate. Switching mode clears the fields that do not belong to the new mode.</p>
+          <label class="choice"><input type="radio" id="field-mode-report" name="mode" value="report" checked aria-describedby="help-mode"> Both rates from cost and price</label>
+          <label class="choice"><input type="radio" id="field-mode-solve-markup" name="mode" value="solve-markup" aria-describedby="help-mode"> Price from target markup</label>
+          <label class="choice"><input type="radio" id="field-mode-solve-margin" name="mode" value="solve-margin" aria-describedby="help-mode"> Price from target margin</label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-cost">Cost</label>
+          <p class="help" id="help-cost">Cost, 0.01–999999.99, at most two decimal places.</p>
+          <input id="field-cost" name="cost" type="text" inputmode="decimal" autocomplete="off" value="80.00" aria-describedby="help-cost">
+          <p class="field-error" id="error-cost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">Selling price</label>
+          <p class="help" id="help-price">Only for “Both rates from cost and price”. Selling price, 0–999999.99, at most two decimal places.</p>
+          <input id="field-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="100.00" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-markupPercent">Target markup (%)</label>
+          <p class="help" id="help-markupPercent">Only for “Price from target markup”. Target markup, 0–99999.999%, at most three decimal places.</p>
+          <input id="field-markupPercent" name="markupPercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-markupPercent">
+          <p class="field-error" id="error-markupPercent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-marginPercent">Target margin (%)</label>
+          <p class="help" id="help-marginPercent">Only for “Price from target margin”. Target margin, 0–99999.999%, at most three decimal places; at or above 100% there is no finite price.</p>
+          <input id="field-marginPercent" name="marginPercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-marginPercent">
+          <p class="field-error" id="error-marginPercent" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter cost and price, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Markup and margin</h2>
+      <p class="result-value" id="result-summary"></p>
+      <dl class="result-list">
+        <div><dt>Selling price</dt><dd id="result-price"></dd></div>
+        <div><dt>Profit per unit</dt><dd id="result-profit"></dd></div>
+        <div><dt>Markup</dt><dd id="result-markup"></dd></div>
+        <div><dt>Margin</dt><dd id="result-margin"></dd></div>
+      </dl>
+      <p class="result-note" id="result-note"></p>
+    </section>
+  </div>
+
+  <section class="panel reference" aria-labelledby="reference-heading">
+    <h2 id="reference-heading">Margin ↔ markup reference</h2>
+    <p>Derived from the identity “markup = margin ÷ (100 − margin)”, shown to two decimals.</p>
+    <table>
+      <thead><tr><th scope="col">Margin</th><th scope="col">Markup</th></tr></thead>
+      <tbody>
+        <tr><td>0%</td><td>0.00%</td></tr>
+        <tr><td>10%</td><td>11.11%</td></tr>
+        <tr><td>20%</td><td>25.00%</td></tr>
+        <tr><td>25%</td><td>33.33%</td></tr>
+        <tr><td>30%</td><td>42.86%</td></tr>
+        <tr><td>40%</td><td>66.67%</td></tr>
+        <tr><td>50%</td><td>100.00%</td></tr>
+        <tr><td>60%</td><td>150.00%</td></tr>
+        <tr><td>70%</td><td>233.33%</td></tr>
+        <tr><td>75%</td><td>300.00%</td></tr>
+        <tr><td>80%</td><td>400.00%</td></tr>
+        <tr><td>90%</td><td>900.00%</td></tr>
+        <tr><td>95%</td><td>1900.00%</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>Markup = (price − cost) ÷ cost; margin = (price − cost) ÷ price. Price from markup: price = cost × (1 + markup). Price from margin: price = cost ÷ (1 − margin). Money is exact integer cents and percentages are exact milli-percent, rounded only at the pinned positions; percentages display to two decimals. In solve modes the other rate is derived from the rounded price. The downloaded report is always named markup-margin-report.json; its content is the result as compact JSON with object keys sorted by UTF-16 code units recursively and one trailing line feed.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How are markup and margin different?</dt>
+      <dd>Markup and margin use the same profit over different bases: markup divides by cost, margin by price. When the price is above cost, margin is always smaller than markup, and margin can never reach 100%.</dd>
+      <dt>Why is a 100% target margin unsolvable?</dt>
+      <dd>A 100% margin means the profit equals the whole price, so the cost would have to be zero; with any positive cost the price would need to be infinite, so the tool reports no solution instead of an input error.</dd>
+      <dt>What happens when the price is below cost?</dt>
+      <dd>It is still calculated: the profit and both percentages come out negative and are flagged as below cost — a valid report, not an error.</dd>
+      <dt>Why can the margin display as 100.00%?</dt>
+      <dd>When the cost is tiny next to the price, the exact margin is very close to but below 100%; rounded to two decimals for display it shows 100.00%, while the exact value is always below 100%.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page — nothing is uploaded, stored on a server, or logged. The draft exists only on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>

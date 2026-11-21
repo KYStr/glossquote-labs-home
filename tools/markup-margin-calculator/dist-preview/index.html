@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>加價率與毛利率換算｜Gloss Tools</title>
+<meta name="description" content="輸入成本與售價，同時算出加價率與毛利率；或反過來，由目標加價率、目標毛利率反推售價。全程以整數分與千分之一百分比精確運算，百分比顯示至小數點後兩位。">
+<link rel="stylesheet" href="./styles/markup-margin.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>加價率與毛利率換算</h1>
+  <p class="lede">輸入成本與售價，同時算出加價率與毛利率；或反過來，由目標加價率、目標毛利率反推售價。全程以整數分與千分之一百分比精確運算，百分比顯示至小數點後兩位。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">定價輸入</h2>
+      <form id="markup-margin-form" novalidate>
+        <fieldset class="field">
+          <legend>計算方式</legend>
+          <p class="help" id="help-mode">選擇計算方式。切換模式會清空不屬於新模式的欄位。</p>
+          <label class="choice"><input type="radio" id="field-mode-report" name="mode" value="report" checked aria-describedby="help-mode"> 由成本與售價算兩率</label>
+          <label class="choice"><input type="radio" id="field-mode-solve-markup" name="mode" value="solve-markup" aria-describedby="help-mode"> 由加價率求售價</label>
+          <label class="choice"><input type="radio" id="field-mode-solve-margin" name="mode" value="solve-margin" aria-describedby="help-mode"> 由毛利率求售價</label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-cost">成本</label>
+          <p class="help" id="help-cost">成本，0.01–999999.99，最多兩位小數。</p>
+          <input id="field-cost" name="cost" type="text" inputmode="decimal" autocomplete="off" value="80.00" aria-describedby="help-cost">
+          <p class="field-error" id="error-cost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">售價</label>
+          <p class="help" id="help-price">僅「由成本與售價算兩率」時啟用。售價，0–999999.99，最多兩位小數。</p>
+          <input id="field-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="100.00" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-markupPercent">目標加價率（%）</label>
+          <p class="help" id="help-markupPercent">僅「由加價率求售價」時啟用。目標加價率，0–99999.999%，最多三位小數。</p>
+          <input id="field-markupPercent" name="markupPercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-markupPercent">
+          <p class="field-error" id="error-markupPercent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-marginPercent">目標毛利率（%）</label>
+          <p class="help" id="help-marginPercent">僅「由毛利率求售價」時啟用。目標毛利率，0–99999.999%，最多三位小數；達到或超過 100% 時沒有有限售價。</p>
+          <input id="field-marginPercent" name="marginPercent" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-marginPercent">
+          <p class="field-error" id="error-marginPercent" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入成本與售價，或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">加價率與毛利率</h2>
+      <p class="result-value" id="result-summary"></p>
+      <dl class="result-list">
+        <div><dt>售價</dt><dd id="result-price"></dd></div>
+        <div><dt>單位利潤</dt><dd id="result-profit"></dd></div>
+        <div><dt>加價率</dt><dd id="result-markup"></dd></div>
+        <div><dt>毛利率</dt><dd id="result-margin"></dd></div>
+      </dl>
+      <p class="result-note" id="result-note"></p>
+    </section>
+  </div>
+
+  <section class="panel reference" aria-labelledby="reference-heading">
+    <h2 id="reference-heading">毛利率 ↔ 加價率對照</h2>
+    <p>由恆等式「加價率 ＝ 毛利率 ÷（100 − 毛利率）」推導，顯示至小數兩位。</p>
+    <table>
+      <thead><tr><th scope="col">毛利率</th><th scope="col">加價率</th></tr></thead>
+      <tbody>
+        <tr><td>0%</td><td>0.00%</td></tr>
+        <tr><td>10%</td><td>11.11%</td></tr>
+        <tr><td>20%</td><td>25.00%</td></tr>
+        <tr><td>25%</td><td>33.33%</td></tr>
+        <tr><td>30%</td><td>42.86%</td></tr>
+        <tr><td>40%</td><td>66.67%</td></tr>
+        <tr><td>50%</td><td>100.00%</td></tr>
+        <tr><td>60%</td><td>150.00%</td></tr>
+        <tr><td>70%</td><td>233.33%</td></tr>
+        <tr><td>75%</td><td>300.00%</td></tr>
+        <tr><td>80%</td><td>400.00%</td></tr>
+        <tr><td>90%</td><td>900.00%</td></tr>
+        <tr><td>95%</td><td>1900.00%</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>加價率 ＝（售價 − 成本）÷ 成本；毛利率 ＝（售價 − 成本）÷ 售價。由加價率求售價：售價 ＝ 成本 ×（1 ＋ 加價率）。由毛利率求售價：售價 ＝ 成本 ÷（1 − 毛利率）。金額以整數分、百分比以千分之一百分比精確運算，只在釘版位置捨入一次；百分比顯示至小數兩位。求解模式的另一率由四捨五入後的售價回算。下載的報告檔名固定為 markup-margin-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>加價率和毛利率有什麼不同？</dt>
+      <dd>兩者利潤相同，分母不同：加價率除以成本，毛利率除以售價。售價高於成本時毛利率恆小於加價率，且毛利率永遠到不了 100%。</dd>
+      <dt>為什麼目標毛利率 100% 求不出售價？</dt>
+      <dd>毛利率 100% 表示利潤等於全部售價，也就是成本必須為零；成本為正時售價要無限大才行，所以本工具回報無解，而不是輸入錯誤。</dd>
+      <dt>售價低於成本時會發生什麼事？</dt>
+      <dd>照常計算，利潤與兩個百分比為負值並標示低於成本；這是有效的報表結果，不是錯誤。</dd>
+      <dt>毛利率顯示 100.00% 是怎麼回事？</dt>
+      <dd>成本相對售價極小時，精確毛利率非常接近但小於 100%，顯示捨入至小數兩位後呈現 100.00%；精確值永遠小於 100%。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>
