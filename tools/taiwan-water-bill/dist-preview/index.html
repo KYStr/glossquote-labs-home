@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>台灣水費試算｜Gloss Tools</title>
+<meta name="description" content="依台灣自來水公司現行水價表，以水表口徑與一期用水度數試算基本費、四段累進用水費與水源保育與回饋費，並可加計自填的污水下水道使用費與清除處理費。">
+<link rel="canonical" href="https://taiwan-water-bill.glossquote.com/">
+<meta property="og:title" content="台灣水費試算｜Gloss Tools">
+<meta property="og:description" content="依台灣自來水公司現行水價表，以水表口徑與一期用水度數試算基本費、四段累進用水費與水源保育與回饋費，並可加計自填的污水下水道使用費與清除處理費。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://taiwan-water-bill.glossquote.com/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/taiwan-water-bill.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">草稿只留在這個頁面，離開即丟棄，不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>台灣水費試算</h1>
+  <p class="lede">選擇抄表週期與水表口徑，輸入一期用水度數，試算台灣自來水公司的基本費、四段累進用水費與水源保育與回饋費；也可依自家帳單填入污水下水道使用費與清除處理費的每度費率。</p>
+  <p class="scope-note">本工具僅適用台灣自來水公司用戶；臺北自來水事業處轄區費率不同。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">用水資料</h2>
+      <form id="water-bill-form" novalidate>
+        <div class="field">
+          <label for="field-cycle">抄表週期</label>
+          <p class="help" id="help-cycle">每月抄表或隔月抄表。度數是一整個抄表週期的總度數，不做每月平均。</p>
+          <select id="field-cycle" name="cycle" aria-describedby="help-cycle">
+            <option value="monthly">每月抄表</option>
+            <option value="bimonthly" selected>隔月抄表</option>
+          </select>
+          <p class="field-error" id="error-cycle" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-diameterMm">水表口徑</label>
+          <p class="help" id="help-diameterMm">帳單上印的水表口徑，單位為公厘。</p>
+          <select id="field-diameterMm" name="diameterMm" aria-describedby="help-diameterMm">
+            <option value="13">13 公厘</option>
+            <option value="20" selected>20 公厘</option>
+            <option value="25">25 公厘</option>
+            <option value="40">40 公厘</option>
+            <option value="50">50 公厘</option>
+            <option value="75">75 公厘</option>
+            <option value="100">100 公厘</option>
+            <option value="150">150 公厘</option>
+            <option value="200">200 公厘</option>
+            <option value="250">250 公厘</option>
+            <option value="300">300 公厘</option>
+            <option value="350">350 公厘</option>
+            <option value="400+">400 公厘以上</option>
+          </select>
+          <p class="field-error" id="error-diameterMm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-usageM3">本期用水度數</label>
+          <p class="help" id="help-usageM3">整數度（立方公尺），0–999,999 度。1 度＝1 立方公尺＝1,000 公升。</p>
+          <input id="field-usageM3" name="usageM3" type="text" inputmode="numeric" autocomplete="off" value="30" aria-describedby="help-usageM3">
+          <p class="field-error" id="error-usageM3" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sewerRateNt">污水下水道使用費率（選填）</label>
+          <p class="help" id="help-sewerRateNt">每度費率（元／度），0–99.99，最多兩位小數。依自家帳單填寫，未被徵收請留空。</p>
+          <input id="field-sewerRateNt" name="sewerRateNt" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sewerRateNt">
+          <p class="field-error" id="error-sewerRateNt" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wasteRateNt">清除處理費率（選填）</label>
+          <p class="help" id="help-wasteRateNt">每度費率（元／度），0–99.99，最多兩位小數。依自家帳單填寫，未被徵收請留空。</p>
+          <input id="field-wasteRateNt" name="wasteRateNt" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-wasteRateNt">
+          <p class="field-error" id="error-wasteRateNt" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入用水度數，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算水費</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">費用明細</h2>
+      <p class="result-value" id="total-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <h3>逐段用水費</h3>
+      <table class="tiers-table">
+        <thead>
+          <tr><th scope="col">段別</th><th scope="col">度數</th><th scope="col">單價（元／度）</th><th scope="col">小計（元）</th></tr>
+        </thead>
+        <tbody id="tiers-body"></tbody>
+      </table>
+      <div class="breakdown-list" id="breakdown-list"></div>
+      <p class="rounding-note" id="rounding-note"></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與費率表</summary>
+    <p>用水費以官方公式計算：單價 × 度數 − 累進差額；逐段小計的總和與公式值相同。基本費依抄表週期與水表口徑查表。水源保育與回饋費＝未稅用水費 × 5%，只按用水費計算、不含基本費，四捨五入至元。污水下水道使用費與清除處理費＝自填費率 × 度數，四捨五入至元；未填寫者不計入總額，並在明細標示「未計入」。應繳總額＝水費小計四捨五入至元＋水源保育與回饋費＋污水下水道使用費＋清除處理費。內含營業稅＝（基本費＋用水費）÷ 1.05 × 5%，只作資訊列，不另加收。</p>
+    <h3>四段累進用水費</h3>
+    <table class="rate-table">
+      <thead>
+        <tr><th scope="col">段別</th><th scope="col">單價（元／度）</th><th scope="col">每月抄表度數</th><th scope="col">每月累進差額（元）</th><th scope="col">隔月抄表度數</th><th scope="col">隔月累進差額（元）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>一</td><td>7.35</td><td>1–10</td><td>0</td><td>1–20</td><td>0</td></tr>
+        <tr><td>二</td><td>9.45</td><td>11–30</td><td>21</td><td>21–60</td><td>42</td></tr>
+        <tr><td>三</td><td>11.55</td><td>31–50</td><td>84</td><td>61–100</td><td>168</td></tr>
+        <tr><td>四</td><td>12.075</td><td>51 以上</td><td>110.25</td><td>101 以上</td><td>220.5</td></tr>
+      </tbody>
+    </table>
+    <h3>基本費（元，含 5% 營業稅）</h3>
+    <table class="rate-table">
+      <thead>
+        <tr><th scope="col">口徑（公厘）</th><th scope="col">每月抄表</th><th scope="col">隔月抄表</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>13</td><td>17.85</td><td>35.7</td></tr>
+        <tr><td>20</td><td>35.7</td><td>71.4</td></tr>
+        <tr><td>25</td><td>66.15</td><td>132.3</td></tr>
+        <tr><td>40</td><td>196.35</td><td>392.7</td></tr>
+        <tr><td>50</td><td>357</td><td>714</td></tr>
+        <tr><td>75</td><td>963.9</td><td>1,927.8</td></tr>
+        <tr><td>100</td><td>1,909.95</td><td>3,819.9</td></tr>
+        <tr><td>150</td><td>5,301.45</td><td>10,602.9</td></tr>
+        <tr><td>200</td><td>10,531.5</td><td>21,063</td></tr>
+        <tr><td>250</td><td>18,599.7</td><td>37,199.4</td></tr>
+        <tr><td>300</td><td>29,184.75</td><td>58,369.5</td></tr>
+        <tr><td>350</td><td>41,626.2</td><td>83,252.4</td></tr>
+        <tr><td>400 以上</td><td>58,119.6</td><td>116,239.2</td></tr>
+      </tbody>
+    </table>
+    <p>下載的報告檔名固定為 taiwan-water-bill-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這是台水的費率嗎？北水一樣嗎？</dt>
+      <dd>僅台水；臺北自來水事業處是另一套價表。</dd>
+      <dt>「度」是什麼？</dt>
+      <dd>1 度＝1 立方公尺＝1,000 公升。</dd>
+      <dt>為什麼試算和帳單可能不同？</dt>
+      <dd>污水與清除處理費率因縣市與是否接用下水道而異，未填寫者不在總額內；估表、特殊用水類別與月中異動未納入模型。</dd>
+      <dt>水源保育與回饋費怎麼算？</dt>
+      <dd>未稅用水費的 5%，只按用水費計算、不含基本費，四捨五入至元。</dd>
+    </dl>
+  </section>
+
+  <p class="source-note">費率來源：台灣自來水公司《本公司目前水費及各項服務費收費標準》（水價自民國 86 年 5 月 1 日實施，含 5% 營業稅），2026-11-09 查閱。費率如經公告調整，本頁將隨之更新；實際金額以台水帳單為準。</p>
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在這個頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>

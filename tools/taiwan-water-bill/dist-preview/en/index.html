@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Taiwan Water Bill Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a Taiwan Water Corporation bill from meter diameter and one period's usage: basic charge, four-tier usage charge and the conservation levy, with optional self-entered sewer and waste rates.">
+<link rel="canonical" href="https://taiwan-water-bill.glossquote.com/en/">
+<meta property="og:title" content="Taiwan Water Bill Calculator | Gloss Tools">
+<meta property="og:description" content="Estimate a Taiwan Water Corporation bill from meter diameter and one period's usage: basic charge, four-tier usage charge and the conservation levy, with optional self-entered sewer and waste rates.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://taiwan-water-bill.glossquote.com/en/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/taiwan-water-bill.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Your draft stays on this page and is discarded when you leave; nothing is uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Taiwan Water Bill Calculator</h1>
+  <p class="lede">Choose the meter-reading cycle and meter diameter, enter one period's water usage, and estimate the Taiwan Water Corporation basic charge, four-tier usage charge and water conservation levy. You can also add the sewer and waste rates from your own bill, per cubic metre.</p>
+  <p class="scope-note">This calculator covers Taiwan Water Corporation customers only; Taipei Water Department rates differ.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Usage details</h2>
+      <form id="water-bill-form" novalidate>
+        <div class="field">
+          <label for="field-cycle">Meter-reading cycle</label>
+          <p class="help" id="help-cycle">Monthly or every two months. Usage is the total for one whole reading period, not a monthly average.</p>
+          <select id="field-cycle" name="cycle" aria-describedby="help-cycle">
+            <option value="monthly">Monthly</option>
+            <option value="bimonthly" selected>Every two months</option>
+          </select>
+          <p class="field-error" id="error-cycle" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-diameterMm">Meter diameter</label>
+          <p class="help" id="help-diameterMm">The meter diameter printed on your bill, in millimetres.</p>
+          <select id="field-diameterMm" name="diameterMm" aria-describedby="help-diameterMm">
+            <option value="13">13 mm</option>
+            <option value="20" selected>20 mm</option>
+            <option value="25">25 mm</option>
+            <option value="40">40 mm</option>
+            <option value="50">50 mm</option>
+            <option value="75">75 mm</option>
+            <option value="100">100 mm</option>
+            <option value="150">150 mm</option>
+            <option value="200">200 mm</option>
+            <option value="250">250 mm</option>
+            <option value="300">300 mm</option>
+            <option value="350">350 mm</option>
+            <option value="400+">400 mm and above</option>
+          </select>
+          <p class="field-error" id="error-diameterMm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-usageM3">Usage this period</label>
+          <p class="help" id="help-usageM3">Whole degrees (cubic metres), 0–999,999. One degree is 1 m³, i.e. 1,000 litres.</p>
+          <input id="field-usageM3" name="usageM3" type="text" inputmode="numeric" autocomplete="off" value="30" aria-describedby="help-usageM3">
+          <p class="field-error" id="error-usageM3" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sewerRateNt">Sewer usage rate (optional)</label>
+          <p class="help" id="help-sewerRateNt">Rate per degree (NT$/m³), 0–99.99, at most two decimal places. Copy the rate from your bill; leave blank if not levied.</p>
+          <input id="field-sewerRateNt" name="sewerRateNt" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-sewerRateNt">
+          <p class="field-error" id="error-sewerRateNt" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wasteRateNt">Waste treatment rate (optional)</label>
+          <p class="help" id="help-wasteRateNt">Rate per degree (NT$/m³), 0–99.99, at most two decimal places. Copy the rate from your bill; leave blank if not levied.</p>
+          <input id="field-wasteRateNt" name="wasteRateNt" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-wasteRateNt">
+          <p class="field-error" id="error-wasteRateNt" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter the usage, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate water bill</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Charge breakdown</h2>
+      <p class="result-value" id="total-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <h3>Tiered usage charge</h3>
+      <table class="tiers-table">
+        <thead>
+          <tr><th scope="col">Tier</th><th scope="col">Degrees</th><th scope="col">Unit price (NT$/m³)</th><th scope="col">Subtotal (NT$)</th></tr>
+        </thead>
+        <tbody id="tiers-body"></tbody>
+      </table>
+      <div class="breakdown-list" id="breakdown-list"></div>
+      <p class="rounding-note" id="rounding-note"></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the rate table</summary>
+    <p>The usage charge follows the official formula: unit price × degrees − progressive difference; the tier subtotals sum to the same value. The basic charge is looked up by reading cycle and meter diameter. The water conservation and feedback levy is 5% of the tax-excluded usage charge (the usage charge only, never the basic fee), rounded to the nearest yuan. The sewer and waste fees are the entered rate × degrees, rounded to the nearest yuan; if no rate is entered they are excluded from the total and shown as “Not included”. The total payable is the water subtotal rounded to the nearest yuan, plus the conservation levy, the sewer fee and the waste fee. Business tax, (basic charge + usage charge) ÷ 1.05 × 5%, is an information row only and is never added.</p>
+    <h3>Four-tier usage charge</h3>
+    <table class="rate-table">
+      <thead>
+        <tr><th scope="col">Tier</th><th scope="col">Unit price (NT$/m³)</th><th scope="col">Monthly degrees</th><th scope="col">Monthly difference (NT$)</th><th scope="col">Bimonthly degrees</th><th scope="col">Bimonthly difference (NT$)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>7.35</td><td>1–10</td><td>0</td><td>1–20</td><td>0</td></tr>
+        <tr><td>2</td><td>9.45</td><td>11–30</td><td>21</td><td>21–60</td><td>42</td></tr>
+        <tr><td>3</td><td>11.55</td><td>31–50</td><td>84</td><td>61–100</td><td>168</td></tr>
+        <tr><td>4</td><td>12.075</td><td>51 and above</td><td>110.25</td><td>101 and above</td><td>220.5</td></tr>
+      </tbody>
+    </table>
+    <h3>Basic charge (NT$, 5% business tax included)</h3>
+    <table class="rate-table">
+      <thead>
+        <tr><th scope="col">Diameter (mm)</th><th scope="col">Monthly</th><th scope="col">Every two months</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>13</td><td>17.85</td><td>35.7</td></tr>
+        <tr><td>20</td><td>35.7</td><td>71.4</td></tr>
+        <tr><td>25</td><td>66.15</td><td>132.3</td></tr>
+        <tr><td>40</td><td>196.35</td><td>392.7</td></tr>
+        <tr><td>50</td><td>357</td><td>714</td></tr>
+        <tr><td>75</td><td>963.9</td><td>1,927.8</td></tr>
+        <tr><td>100</td><td>1,909.95</td><td>3,819.9</td></tr>
+        <tr><td>150</td><td>5,301.45</td><td>10,602.9</td></tr>
+        <tr><td>200</td><td>10,531.5</td><td>21,063</td></tr>
+        <tr><td>250</td><td>18,599.7</td><td>37,199.4</td></tr>
+        <tr><td>300</td><td>29,184.75</td><td>58,369.5</td></tr>
+        <tr><td>350</td><td>41,626.2</td><td>83,252.4</td></tr>
+        <tr><td>400 and above</td><td>58,119.6</td><td>116,239.2</td></tr>
+      </tbody>
+    </table>
+    <p>The downloaded report is always named taiwan-water-bill-report.json and holds the compact JSON of the result, with object keys sorted recursively by UTF-16 code unit and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is this the Taipei tariff too?</dt>
+      <dd>No — Taipei Water Department uses its own rate table.</dd>
+      <dt>What is a “degree”?</dt>
+      <dd>One degree is 1 m³, i.e. 1,000 litres.</dd>
+      <dt>Why can my bill differ?</dt>
+      <dd>Sewer and waste rates vary by municipality and sewer connection and are excluded unless entered; estimated readings, special user classes and mid-period changes are not modelled.</dd>
+      <dt>How is the conservation levy computed?</dt>
+      <dd>5% of the tax-excluded usage charge (the usage charge only, never the basic fee), rounded to the nearest yuan.</dd>
+    </dl>
+  </section>
+
+  <p class="source-note">Rates: Taiwan Water Corporation, Current Water Rates and Service Charges (tariff in force since 1 May 1997, 5% business tax included), retrieved 9 Nov 2026. If the tariff is officially revised this page's table will be updated; your actual bill governs.</p>
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, stored on a server, or recorded. Your draft stays on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
