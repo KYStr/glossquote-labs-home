@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>最大攝氧量估算｜Gloss Tools</title>
+<meta name="description" content="以 Cooper 12 分鐘跑或 1.5 英里跑的成績估算最大攝氧量（VO₂max），並可依年齡與性別對照 Cooper Institute 體適能分級（近似常模）。">
+<link rel="canonical" href="https://vo2max-calculator.glossquote.com/">
+<meta property="og:title" content="最大攝氧量估算｜Gloss Tools">
+<meta property="og:description" content="以 Cooper 12 分鐘跑或 1.5 英里跑的成績估算最大攝氧量（VO₂max），並可依年齡與性別對照 Cooper Institute 體適能分級（近似常模）。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vo2max-calculator.glossquote.com/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/vo2max.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">草稿只存在這台裝置的瀏覽器裡，不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>最大攝氧量估算</h1>
+  <p class="lede">輸入 Cooper 12 分鐘跑的距離，或 1.5 英里跑的時間，估算最大攝氧量（VO₂max）。可選擇性填入年齡與性別，對照 Cooper Institute 體適能分級。結果是估算值，不是實驗室測量。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">測驗成績</h2>
+      <form id="vo2max-form" novalidate>
+        <div class="field">
+          <label for="field-test">測驗</label>
+          <p class="help" id="help-test">選擇測驗：Cooper 12 分鐘跑或 1.5 英里跑。切換測驗不會清除已填的數值。</p>
+          <select id="field-test" name="test" aria-describedby="help-test">
+            <option value="cooper12" selected>Cooper 12 分鐘跑</option>
+            <option value="mile15">1.5 英里跑</option>
+          </select>
+          <p class="field-error" id="error-test" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-distanceMeters">距離（公尺）</label>
+          <p class="help" id="help-distanceMeters">僅 Cooper 12 分鐘跑時啟用。12 分鐘內跑的距離，0–10,000 公尺，最多一位小數。</p>
+          <input id="field-distanceMeters" name="distanceMeters" type="text" inputmode="decimal" autocomplete="off" value="2400" aria-describedby="help-distanceMeters">
+          <p class="field-error" id="error-distanceMeters" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-time">時間</label>
+          <p class="help" id="help-time">僅 1.5 英里跑時啟用。格式為 分:秒 或 時:分:秒，例如 12:00 或 1:00:00；4:00–60:00。</p>
+          <input id="field-time" name="time" type="text" inputmode="numeric" autocomplete="off" value="12:00" aria-describedby="help-time">
+          <p class="field-error" id="error-time" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-age">年齡</label>
+          <p class="help" id="help-age">選填。13–99 歲的整數；需與性別一起填寫才能分級。</p>
+          <input id="field-age" name="age" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-age">
+          <p class="field-error" id="error-age" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sex">性別</label>
+          <p class="help" id="help-sex">選填。需與年齡一起填寫才能分級。</p>
+          <select id="field-sex" name="sex" aria-describedby="help-sex">
+            <option value="" selected>未填寫</option>
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
+          <p class="field-error" id="error-sex" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">準備就緒</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算最大攝氧量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估算結果</h2>
+      <p class="result-value" id="vo2max-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <p class="result-classification" id="result-classification"></p>
+      <p class="disclaimer" id="disclaimer">估算值：實地測驗公式的估算，與實驗室氣體分析相比誤差約 ±10%，適合追蹤個人變化而非醫學判斷。分級來自 Cooper Institute 常模，為群體近似值，不同出版品略有差異；請把等級當作參考，不要當成醫療門檻。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>Cooper 12 分鐘跑：VO₂max =（距離（公尺）− 504.9）/ 44.73（Cooper 1968）。1.5 英里跑：VO₂max = 483 / 時間（分鐘）+ 3.5（ACSM 發布形式）。結果四捨五入（半數進位）到小數 1 位，只捨入一次；分級查詢使用捨入後的值。距離 504.9 公尺以下時 Cooper 公式會給出 0 或負值，沒有體適能意義，工具會直接指出距離超出可估算範圍。</p>
+    <p>分級來自 Cooper Institute 年齡／性別常模（Heywood 1998 轉載，近似值），共六級：非常弱、弱、普通、良好、優秀、卓越。只在年齡與性別都填寫時才分級；只填一個時工具會要求兩個一起填。下載的報告檔名固定為 vo2max-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這是實驗室測量嗎？</dt>
+      <dd>不是。這是實地測驗公式的估算值，與實驗室氣體分析相比誤差約 ±10%，適合追蹤個人變化而非醫學判斷。</dd>
+      <dt>為什麼距離太短會無法估算？</dt>
+      <dd>Cooper 公式在 504.9 公尺以下會給出 0 或負值，沒有體適能意義，所以工具會直接指出距離超出可估算範圍。</dd>
+      <dt>分級表有多精確？</dt>
+      <dd>分級來自 Cooper Institute 常模，是群體近似值，不同出版品略有差異；請把等級當參考，不要當成醫療門檻。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只保存在這台裝置瀏覽器的 localStorage 裡。</p>
+</main>
+</body>
+</html>
