@@ -94,8 +94,8 @@ anchor was 27; the correct sum is 26 — the implementation was right).
 
 ## Next owner
 
-Independent reviewer: verify this same candidate commit (see
-VERIFICATION.md for the candidate SHA and PR) against the nine
+Independent reviewer: verify this same candidate commit (the PR head;
+see VERIFICATION.md for the branch and PR) against the nine
 acceptance facets in SPEC.md, with real-browser evidence for the
 facets this build records as NOT_RUN. Do not merge or publish before
 that review.

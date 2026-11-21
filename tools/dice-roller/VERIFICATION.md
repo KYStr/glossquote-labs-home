@@ -3,8 +3,11 @@
 ## Candidate
 
 - Branch: `muse/dice-roller-production-20261109`
-- Candidate SHA: (filled after push; see the PR head)
-- PR: (filled after push)
+- Base commit: `c8ca5fd3bdfd3322891e58e42d710cc2ca4fe33a`
+  (`codex/initial-publication` at build time)
+- PR: https://github.com/KYStr/glossquote-labs-home/pull/363 (draft, #363)
+- Candidate: the PR head at submission (the single commit on this
+  branch, plus this verification record)
 - Spec source: `5dccd3dcfbe72aa52c9a892391a44719e9de3f9a` (spec PR #260)
 - Fixtures SHA-256: `189ee1c7a7ed35082a3816695183422f1c03ddc5d7f0fd011dee26141d27b792`
   (matches the spec commit's `fixtures.json` exactly)
