@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Baby Feeding Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a baby's daily and per-feed milk volume from body weight, using the NHS 111 Wales guideline of 150–200 ml per kg per day (default 150), with per-feed amounts that sum exactly to the daily total. General information only — not medical advice.">
+<link rel="stylesheet" href="../styles/baby-feeding.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">The draft lives only on this page and is discarded when you leave; nothing is uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Baby Feeding Calculator</h1>
+  <p class="lede">Enter your baby's weight and feeds per day to estimate roughly how much milk is needed in a day — and about how much per feed — using the NHS 111 Wales guideline of 150–200 ml per kg per day (default 150). General information only — not medical advice.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Baby and feeds</h2>
+      <form id="baby-feeding-form" novalidate>
+        <div class="field">
+          <label for="field-weight">Baby's weight (kg)</label>
+          <p class="help" id="help-weight">1–15 kg, at most two decimal places.</p>
+          <input id="field-weight" name="weight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-weight">
+          <p class="field-error" id="error-weight" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-factor">Milk per kg per day (ml)</label>
+          <p class="help" id="help-factor">Guideline range 150–200, default 150. A whole number from 150 to 200.</p>
+          <input id="field-factor" name="factor" type="text" inputmode="numeric" autocomplete="off" value="150" aria-describedby="help-factor">
+          <p class="field-error" id="error-factor" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feedsPerDay">Feeds per day</label>
+          <p class="help" id="help-feedsPerDay">A whole number from 1 to 24 feeds per day.</p>
+          <input id="field-feedsPerDay" name="feedsPerDay" type="text" inputmode="numeric" autocomplete="off" value="8" aria-describedby="help-feedsPerDay">
+          <p class="field-error" id="error-feedsPerDay" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ageMonths">Age in months (optional, label only)</label>
+          <p class="help" id="help-ageMonths">Age does not change the result. A whole number from 0 to 24 months.</p>
+          <input id="field-ageMonths" name="ageMonths" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-ageMonths">
+          <p class="field-error" id="error-ageMonths" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter your baby's weight, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate daily amount</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Daily total and amount per feed</h2>
+      <p class="result-value" id="total-value"></p>
+      <p class="result-echo" id="average-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <p class="result-age" id="result-age" hidden></p>
+      <div class="result-notices" id="result-notices" hidden></div>
+      <ol class="feed-list" id="feed-list" aria-label="Amount per feed"></ol>
+      <p class="disclaimer" id="disclaimer"></p>
+      <p class="source-note" id="source"></p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="guidance-heading">
+    <h2 id="guidance-heading">Disclaimer and guideline source</h2>
+    <p class="disclaimer">This tool only estimates milk volume from a published general feeding guideline. It is not medical advice and does not replace a clinician's judgement. Every baby needs a different amount: feed in response to your baby's hunger and fullness cues, and follow the individual advice of your paediatrician, midwife or health visitor. For babies who are preterm, low birth weight, unwell or have a medical condition, follow your clinician's instructions exactly.</p>
+    <p class="source-note">Guideline source: NHS 111 Wales, 'Infant formula: common questions' (page last updated 19 Apr 2021; retrieved 9 Nov 2026): by the end of their first week, most babies need around 150 to 200 ml per kilo of their weight a day until they're 6 months old. This tool's default of 150 is the lower bound of that range; it can be adjusted between 150 and 200.</p>
+  </section>
+
+  <details class="details">
+    <summary>How it is calculated, and formats</summary>
+    <p>Daily total = weight (kg) × milk per kg per day (ml), rounded half-up (exactly .5 rounds up) to a whole number of ml. The total is split evenly across the day's feeds; any remainder is distributed 1 ml at a time to the earliest feeds, so the per-feed amounts sum exactly to the daily total. The per-feed average is the unrounded average rounded half-up (exactly .05 rounds up) to one decimal place.</p>
+    <p>Age is label-only and never changes the factor or the total: at 0 months it shows a reminder that newborns need much smaller amounts in the first few days; at 7–24 months it shows a reminder that the cited guideline covers babies up to about 6 months old. The downloaded report is always named baby-feeding-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Where does the 150 ml figure come from?</dt>
+      <dd>NHS 111 Wales publishes a range of 150–200 ml per kg per day; this tool defaults to the lower bound, 150, adjustable within the range.</dd>
+      <dt>Why doesn't the amount change with age?</dt>
+      <dd>The cited guideline gives a single range (end of the first week to about 6 months) with no age table, so age never adjusts the factor; it only controls reminder notices.</dd>
+      <dt>Do the per-feed amounts add up to the daily total?</dt>
+      <dd>Yes; any remainder is distributed 1 ml at a time to the earliest feeds, so they sum exactly.</dd>
+      <dt>Is this medical advice?</dt>
+      <dd>No; it is a general estimate from a published guideline — follow your baby's cues and your paediatrician's individual advice.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page: nothing is uploaded, nothing is stored on a server, and your input is not recorded. The draft lives only on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
