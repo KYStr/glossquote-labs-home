@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>寵物餵食量計算｜Gloss Tools</title>
+<meta name="description" content="依獸醫營養指引的 RER／DER 公式，輸入寵物體重、生命階段與飼料熱量，算出每日熱量、克數、杯數與每餐餵食量。">
+<link rel="stylesheet" href="./styles/pet-feeding.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>寵物餵食量計算</h1>
+  <p class="lede">依獸醫營養指引的 RER／DER 公式，輸入寵物體重、生命階段與飼料熱量，算出每日熱量、克數、杯數與每餐餵食量。結果是估算起點，請依體態調整。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">寵物與飼料</h2>
+      <form id="pet-feeding-form" novalidate>
+        <div class="field">
+          <label for="field-species">物種</label>
+          <p class="help" id="help-species">選擇狗或貓；生命階段選單會跟著切換。</p>
+          <select id="field-species" name="species" aria-describedby="help-species">
+            <option value="dog" selected>狗</option>
+            <option value="cat">貓</option>
+          </select>
+          <p class="field-error" id="error-species" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lifeStage">生命階段</label>
+          <p class="help" id="help-lifeStage">只列出該物種的階段；切換物種時若目前階段不屬於新物種，會自動回到該物種的成犬・已絕育／成貓・已絕育。</p>
+          <select id="field-lifeStage" name="lifeStage" aria-describedby="help-lifeStage">
+            <option value="puppy-under-4-months">幼犬（4 個月以下）</option>
+            <option value="puppy-4-months-to-adult">幼犬（4 個月至成犬）</option>
+            <option value="adult-intact">成犬・未絕育</option>
+            <option value="adult-neutered" selected>成犬・已絕育</option>
+            <option value="adult-inactive">成犬・活動量低或易胖</option>
+            <option value="weight-loss">減重（以理想體重計）</option>
+          </select>
+          <p class="field-error" id="error-lifeStage" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-weightKg">體重（公斤）</label>
+          <p class="help" id="help-weightKg">狗 0.5–100 公斤，貓 0.5–20 公斤；最多兩位小數。減重列請輸入目標體重。</p>
+          <input id="field-weightKg" name="weightKg" type="text" inputmode="decimal" autocomplete="off" value="10" aria-describedby="help-weightKg">
+          <p class="field-error" id="error-weightKg" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-foodKcalPer100g">飼料熱量：每 100 公克（大卡，必填）</label>
+          <p class="help" id="help-foodKcalPer100g">包裝上的每 100 公克熱量，20–900 大卡；最多兩位小數。</p>
+          <input id="field-foodKcalPer100g" name="foodKcalPer100g" type="text" inputmode="decimal" autocomplete="off" value="360" aria-describedby="help-foodKcalPer100g">
+          <p class="field-error" id="error-foodKcalPer100g" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-foodKcalPerCup">飼料熱量：每杯（大卡，選填）</label>
+          <p class="help" id="help-foodKcalPerCup">包裝上的每杯熱量，50–1500 大卡；最多兩位小數。留空就不算杯數。</p>
+          <input id="field-foodKcalPerCup" name="foodKcalPerCup" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-foodKcalPerCup">
+          <p class="field-error" id="error-foodKcalPerCup" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mealsPerDay">每日餐數</label>
+          <p class="help" id="help-mealsPerDay">1–6 餐的整數；逐餐整數合計恆等於全日量，餘數由較早的餐吸收。</p>
+          <input id="field-mealsPerDay" name="mealsPerDay" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="help-mealsPerDay">
+          <p class="field-error" id="error-mealsPerDay" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算，請輸入資料或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算每日餵食量</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <p class="disclaimer" id="disclaimer">本工具依公開獸醫營養指引估算每日熱量與餵食量，僅供參考。個別寵物的實際需求與估算值差距可達 50%；請以體態評分（BCS）與獸醫師的建議為準，並依寵物的體重與體態變化調整餵食量。</p>
+      <h2 id="results-heading">每日熱量與餵食量</h2>
+      <p class="result-summary" id="result-der"></p>
+      <p class="result-summary" id="result-grams"></p>
+      <p class="result-summary" id="result-cups" hidden></p>
+      <p class="result-detail" id="result-rer"></p>
+      <p class="result-multiplier" id="result-multiplier"></p>
+      <p class="weight-loss-note" id="weight-loss-note" hidden></p>
+      <h3 class="meals-heading">逐餐分配</h3>
+      <table class="meals-table">
+        <thead>
+          <tr><th scope="col">餐次</th><th scope="col">熱量（大卡）</th><th scope="col">飼料（公克）</th><th scope="col">飼料（杯）</th></tr>
+        </thead>
+        <tbody id="meals-body"></tbody>
+      </table>
+      <p class="cups-note" id="cups-note" hidden></p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>靜止能量需求 RER = 70 × 體重（公斤）的 0.75 次方；每日總需求 DER = RER × 生命階段倍率。倍率表來自 MSD Veterinary Manual「Daily Maintenance Energy Requirements for Dogs and Cats」（2026-11-09 查證，交叉核對 OSU VMC、Pet Nutrition Alliance、Small Animal Clinical Nutrition 第 5 版）。RER 與 DER 各四捨五入到整數大卡；每日克數以已捨入的 DER 換算（DER × 100 ÷ 每 100 公克熱量），四捨五入到整數克；杯數四捨五入到小數 2 位。</p>
+    <p>數字最多兩位小數，不接受空白、正負號、指數或前置零（0 本身除外）。懷孕、哺乳、工作犬、重症、增重處方與老齡不在本工具範圍：公開指引對這些情況只給範圍，沒有單一可釘版的值。下載的報告檔名固定為 pet-feeding-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>RER 是什麼？</dt>
+      <dd>靜止能量需求 RER = 70 × 體重（公斤）的 0.75 次方，是寵物休息時維持基本生理機能的每日熱量；每日總需求 DER 再乘上生命階段倍率。</dd>
+      <dt>為什麼和飼料包裝上的建議量不同？</dt>
+      <dd>包裝建議依該產品的平均假設，本工具依你的寵物體重與生命階段估算；兩者都是起點，個別差異可達 50%，請依體態調整。</dd>
+      <dt>杯數和克數哪個準？</dt>
+      <dd>克數較準。杯量會隨飼料顆粒與裝填方式變動；每杯熱量請以該飼料包裝標示為準。</dd>
+      <dt>可以用在懷孕或哺乳中的寵物嗎？</dt>
+      <dd>不行。懷孕與哺乳的需求依週數與幼崽數量大幅變動，公開指引只給範圍，請諮詢獸醫師。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在目前頁面，離開頁面即丟棄。</p>
+</main>
+</body>
+</html>
