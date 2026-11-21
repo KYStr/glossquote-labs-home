@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>嬰兒奶量計算｜Gloss Tools</title>
+<meta name="description" content="依寶寶體重估算每日與每餐奶量：以 NHS 111 Wales 公布的每公斤每日 150–200 ml 指引為據（預設 150），每餐分配加總恰好等於每日總量。僅供一般參考，不是醫療建議。">
+<link rel="stylesheet" href="./styles/baby-feeding.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">草稿只存在這個頁面，離開即丟棄，不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>嬰兒奶量計算</h1>
+  <p class="lede">輸入寶寶的體重與每日餵食次數，依 NHS 111 Wales 公布的每公斤每日 150–200 ml 指引（預設 150）估算一天大約需要多少奶、分成幾餐一餐大概多少。僅供一般參考，不是醫療建議。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">寶寶與餵食</h2>
+      <form id="baby-feeding-form" novalidate>
+        <div class="field">
+          <label for="field-weight">寶寶體重（公斤）</label>
+          <p class="help" id="help-weight">1–15 公斤，最多兩位小數。</p>
+          <input id="field-weight" name="weight" type="text" inputmode="decimal" autocomplete="off" value="" aria-describedby="help-weight">
+          <p class="field-error" id="error-weight" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-factor">每公斤每日奶量（ml）</label>
+          <p class="help" id="help-factor">指引範圍 150–200，預設 150。150–200 的整數。</p>
+          <input id="field-factor" name="factor" type="text" inputmode="numeric" autocomplete="off" value="150" aria-describedby="help-factor">
+          <p class="field-error" id="error-factor" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feedsPerDay">每日餵食次數</label>
+          <p class="help" id="help-feedsPerDay">每日 1–24 餐的整數。</p>
+          <input id="field-feedsPerDay" name="feedsPerDay" type="text" inputmode="numeric" autocomplete="off" value="8" aria-describedby="help-feedsPerDay">
+          <p class="field-error" id="error-feedsPerDay" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ageMonths">月齡（選填，僅供標示）</label>
+          <p class="help" id="help-ageMonths">月齡不影響計算結果。0–24 個月的整數。</p>
+          <input id="field-ageMonths" name="ageMonths" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-ageMonths">
+          <p class="field-error" id="error-ageMonths" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入寶寶體重，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算每日奶量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每日總量與每餐奶量</h2>
+      <p class="result-value" id="total-value"></p>
+      <p class="result-echo" id="average-value"></p>
+      <p class="result-echo" id="result-echo"></p>
+      <p class="result-age" id="result-age" hidden></p>
+      <div class="result-notices" id="result-notices" hidden></div>
+      <ol class="feed-list" id="feed-list" aria-label="每餐奶量"></ol>
+      <p class="disclaimer" id="disclaimer"></p>
+      <p class="source-note" id="source"></p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="guidance-heading">
+    <h2 id="guidance-heading">免責聲明與指引來源</h2>
+    <p class="disclaimer">本工具僅依公開的一般餵食指引估算奶量，不是醫療建議，也不能取代醫師的診斷。每個寶寶需要的奶量都不同，請依寶寶的饑餓與飽足訊號餵食，並遵循您的兒科醫師、助產師或健康訪視員的個別建議。早產、低出生體重、正在生病或有健康狀況的寶寶，請完全依照醫療人員的指示餵食。</p>
+    <p class="source-note">指引來源：NHS 111 Wales《Infant formula: common questions》（頁面最後更新 2021-04-19，2026-11-09 查閱）：大多數寶寶在出生第一週結束後、到約 6 個月大之前，每天約需要每公斤體重 150 至 200 ml 的奶。本工具的預設值 150 是該範圍的下限，可在 150–200 間調整。</p>
+  </section>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>每日總量 = 體重（公斤）× 每公斤每日奶量（ml），以四捨五入（恰 .5 進位）取整數 ml。總量依每日餵食次數平均分配，除不盡的餘數以 1 ml 為單位依序分給最前面的幾餐，總和恰好等於每日總量。每餐平均是未捨入平均四捨五入（恰 .05 進位）到 1 位小數。</p>
+    <p>月齡只用來標示與顯示適用範圍提醒，不改變係數或總量：月齡 0 個月時提醒新生兒最初幾天的奶量小得多；月齡 7–24 個月時提醒引用指引的適用期間到約 6 個月。下載的報告檔名固定為 baby-feeding-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>150 ml 這個數字是從哪裡來的？</dt>
+      <dd>NHS 111 Wales 公布的範圍是每公斤每日 150–200 ml；本工具預設取範圍下限 150，可在範圍內調整。</dd>
+      <dt>為什麼奶量不會依月齡改變？</dt>
+      <dd>引用指引只給單一範圍（第一週結束後到約 6 個月）、未公布月齡對照表，所以月齡不調整係數，只用來顯示適用範圍提醒。</dd>
+      <dt>每餐奶量加起來會等於每日總量嗎？</dt>
+      <dd>會；除不盡的餘數以 1 ml 為單位依序分給最前面的幾餐，總和恰好相等。</dd>
+      <dt>這算是醫療建議嗎？</dt>
+      <dd>不是；這只是依公開指引的一般估算，請依寶寶的訊號與兒科醫師的個別建議餵食。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>
