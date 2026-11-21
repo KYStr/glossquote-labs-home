@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Child Height Predictor | Gloss Tools</title>
+<meta name="description" content="Estimate a child's adult height from the father's and mother's heights with the mid-parental (Tanner) method, shown with the ±8.5 cm target range. A statistical estimate, not medical advice.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Child Height Predictor</h1>
+    <p class="lede">Enter the father's and mother's heights and the child's sex to estimate the child's adult height with the mid-parental (Tanner) method, shown with the ±8.5 cm target range. Computed on your device only — nothing is uploaded or stored.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-father">Father's height (cm)</label>
+          <input id="input-father" name="fatherHeightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="178" aria-describedby="help-father">
+          <p class="field-help" id="help-father">100.0–230.0 cm, at most one decimal place.</p>
+          <p class="field-error" id="error-father" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-mother">Mother's height (cm)</label>
+          <input id="input-mother" name="motherHeightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="165" aria-describedby="help-mother">
+          <p class="field-help" id="help-mother">100.0–230.0 cm, at most one decimal place.</p>
+          <p class="field-error" id="error-mother" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>Child's sex</legend>
+        <div class="segmented" role="radiogroup" aria-label="Child's sex">
+          <label class="segment">
+            <input type="radio" name="childSex" value="boy" checked>
+            <span>Boy</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="childSex" value="girl">
+            <span>Girl</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-sex" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate predicted height</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter both parents' heights and the child's sex, or load the example.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Predicted result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Predicted adult height</dt>
+          <dd><span id="result-target"></span> cm</dd>
+        </div>
+        <div>
+          <dt>Target range</dt>
+          <dd><span id="result-low"></span>–<span id="result-high"></span> cm</dd>
+        </div>
+      </dl>
+      <p class="disclaimer" id="result-disclaimer">This is a statistical estimate based on the parents' heights. It is not medical advice and is not a diagnosis or guarantee for any individual child. Genetics is only one of many factors that influence adult height; nutrition, overall health, sleep and the timing of puberty also matter, and an individual child may well finish outside the estimated range.</p>
+    </section>
+
+    <details class="rules">
+      <summary>Rules and limits</summary>
+      <ul>
+        <li>Formula: boy (father + mother + 13) ÷ 2, girl (father + mother − 13) ÷ 2, in cm; the target range is the estimate ±8.5 cm.</li>
+        <li>Height format: a number in cm with at most one decimal place, such as 178 or 172.5. No thousands commas, exponents, signs, or leading zeros.</li>
+        <li>Each field holds at most 8 characters; the accepted range is 100.0–230.0 cm. Results are rounded half-up to one decimal place, once only.</li>
+        <li>The child's age or current height is not needed; this method uses only the parents' heights.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>What does the range mean?</h3>
+    <p>The ±8.5 cm target range spans roughly the 3rd to 97th percentile; most children finish inside it, but some finish outside it.</p>
+    <h3>Why add 13 cm for a boy and subtract it for a girl?</h3>
+    <p>13 cm is the conventional average adult height difference between men and women; it puts both parents' heights on the child's scale before averaging.</p>
+    <h3>Do I need my child's current height or age?</h3>
+    <p>No. This method uses only the two parents' heights. Tracking growth percentiles from a child's current height is out of scope.</p>
+    <h3>Whose heights should I enter?</h3>
+    <p>The biological parents' adult heights; barefoot measured values are best.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The Child Height Predictor runs offline on your device. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
