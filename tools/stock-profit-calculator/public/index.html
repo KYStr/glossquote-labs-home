@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>股票損益計算｜Gloss Tools</title>
+<meta name="description" content="輸入台股買入價、賣出價與股數，逐項算出買賣手續費、最低手續費、證交稅、淨損益、報酬率與損益兩平賣出價；費率與稅率可依自己的券商調整。">
+<meta property="og:title" content="股票損益計算｜Gloss Tools">
+<meta property="og:description" content="輸入台股買入價、賣出價與股數，逐項算出買賣手續費、最低手續費、證交稅、淨損益、報酬率與損益兩平賣出價；費率與稅率可依自己的券商調整。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/stock-profit.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>股票損益計算</h1>
+  <p class="lede">輸入台股買入價、賣出價與股數，逐項算出買賣手續費、最低手續費、證交稅、淨損益、報酬率與損益兩平賣出價。費率與稅率可依自己的券商調整；全部計算都在這個頁面本機進行。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">交易與費用參數</h2>
+      <form id="stock-profit-form" novalidate>
+        <div class="field">
+          <label for="field-buyPrice">買入價格（元／股）</label>
+          <p class="help" id="help-buyPrice">0.01–999,999.99 元，最多小數 2 位。</p>
+          <input id="field-buyPrice" name="buyPrice" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-buyPrice">
+          <p class="field-error" id="error-buyPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-buyQty">買入數量</label>
+          <p class="help" id="help-buyQty">1–999,999 的整數；單位見下一欄。</p>
+          <input id="field-buyQty" name="buyQty" type="text" inputmode="numeric" autocomplete="off" value="1000" aria-describedby="help-buyQty">
+          <p class="field-error" id="error-buyQty" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-buyUnit">買入單位</label>
+          <p class="help" id="help-buyUnit">1 張 = 1000 股。</p>
+          <select id="field-buyUnit" name="buyUnit" aria-describedby="help-buyUnit">
+            <option value="share" selected>股</option>
+            <option value="lot">張</option>
+          </select>
+          <p class="field-error" id="error-buyUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellPrice">賣出價格（元／股）</label>
+          <p class="help" id="help-sellPrice">0.01–999,999.99 元，最多小數 2 位。</p>
+          <input id="field-sellPrice" name="sellPrice" type="text" inputmode="decimal" autocomplete="off" value="110" aria-describedby="help-sellPrice">
+          <p class="field-error" id="error-sellPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellQty">賣出數量</label>
+          <p class="help" id="help-sellQty">1–999,999 的整數；不可超過買入股數。</p>
+          <input id="field-sellQty" name="sellQty" type="text" inputmode="numeric" autocomplete="off" value="1000" aria-describedby="help-sellQty">
+          <p class="field-error" id="error-sellQty" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellUnit">賣出單位</label>
+          <p class="help" id="help-sellUnit">1 張 = 1000 股。</p>
+          <select id="field-sellUnit" name="sellUnit" aria-describedby="help-sellUnit">
+            <option value="share" selected>股</option>
+            <option value="lot">張</option>
+          </select>
+          <p class="field-error" id="error-sellUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feeRatePct">手續費率（%）</label>
+          <p class="help" id="help-feeRatePct">0–1%，最多小數 4 位；預設 0.1425% 是證交所營業細則第 94 條基準，可依券商修改。</p>
+          <input id="field-feeRatePct" name="feeRatePct" type="text" inputmode="decimal" autocomplete="off" value="0.1425" aria-describedby="help-feeRatePct">
+          <p class="field-error" id="error-feeRatePct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feeDiscount">手續費折讓</label>
+          <p class="help" id="help-feeDiscount">大於 0、小於等於 1；1 = 無折讓，0.6 = 6 折。折讓只套用在手續費，證交稅不打折。</p>
+          <input id="field-feeDiscount" name="feeDiscount" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-feeDiscount">
+          <p class="field-error" id="error-feeDiscount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-minFeeTwd">每筆最低手續費（元）</label>
+          <p class="help" id="help-minFeeTwd">0–99,999 元的整數；預設 20 元是券商慣例、非法定。</p>
+          <input id="field-minFeeTwd" name="minFeeTwd" type="text" inputmode="numeric" autocomplete="off" value="20" aria-describedby="help-minFeeTwd">
+          <p class="field-error" id="error-minFeeTwd" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxMode">證交稅模式</label>
+          <p class="help" id="help-taxMode">現股當沖只適用同一券商、同一帳戶、同一交易日、同種同量的現股沖銷。</p>
+          <select id="field-taxMode" name="taxMode" aria-describedby="help-taxMode">
+            <option value="standard" selected>一般</option>
+            <option value="day">現股當沖</option>
+          </select>
+          <p class="field-error" id="error-taxMode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxRatePct">證交稅率（%）</label>
+          <p class="help" id="help-taxRatePct">0–1%，最多小數 4 位；預設 0.3%。現股當沖時以 0.15% 計（施行至 2027-12-31），此欄仍需填寫但不採用。</p>
+          <input id="field-taxRatePct" name="taxRatePct" type="text" inputmode="decimal" autocomplete="off" value="0.3" aria-describedby="help-taxRatePct">
+          <p class="field-error" id="error-taxRatePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入資料或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算損益</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">損益明細</h2>
+      <p class="result-value" id="net-value"></p>
+      <p class="result-echo" id="return-value"></p>
+      <p class="profit-word" id="profit-word"></p>
+      <dl class="breakdown">
+        <div><dt>買入金額</dt><dd id="result-buy-gross"></dd></div>
+        <div><dt>買入手續費</dt><dd id="result-buy-fee"></dd></div>
+        <div><dt>買入總成本</dt><dd id="result-buy-total"></dd></div>
+        <div><dt>賣出金額</dt><dd id="result-sell-gross"></dd></div>
+        <div><dt>賣出手續費</dt><dd id="result-sell-fee"></dd></div>
+        <div><dt>證券交易稅</dt><dd id="result-sell-tax"></dd></div>
+        <div><dt>賣出淨額</dt><dd id="result-sell-net"></dd></div>
+        <div><dt>賣出部分成本</dt><dd id="result-cost-basis"></dd></div>
+        <div><dt>剩餘股數</dt><dd id="result-remaining-shares"></dd></div>
+        <div><dt>損益兩平賣出價</dt><dd id="result-breakeven"></dd></div>
+        <div><dt>適用證交稅率</dt><dd id="result-effective-tax"></dd></div>
+      </dl>
+      <p class="disclaimer" id="disclaimer">試算結果不構成投資建議；費率、稅率與最低費可能調整，實際收費以券商對帳單為準。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>買入手續費與賣出手續費各為成交金額 × 手續費率 × 折讓，四捨五入到整數元後，再與每筆最低手續費取較大者；最低費在折讓與進位之後才適用。賣出另課證券交易稅：成交金額 × 稅率，四捨五入到整數元，無最低額、不打折。現股當沖模式以 0.15% 計稅。部分賣出時，賣出部分成本按股數比例分攤買入總成本，不先進位；淨損益與報酬率以精確分數計算後再取整。損益兩平賣出價是使賣出淨額恰達賣出部分成本的最小賣出價，以「分」為步進代回同一費用模型驗證。</p>
+    <p>下載的報告檔名固定為 stock-profit-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，2 位小數欄位恰寫 2 位，整數欄位寫整數，結尾一個換行。金額一律為新台幣元。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>最低手續費 20 元是法律規定的嗎？</dt>
+      <dd>不是。它是券商自訂並申報證交所備查的每筆最低費用，20 元是整股交易的普遍約定，零股常為 1 元；請依你的券商修改。</dd>
+      <dt>手續費折讓怎麼填？</dt>
+      <dd>填你實際支付的比例：無折讓填 1、6 折填 0.6、2.8 折填 0.28。折讓只套用在手續費，證交稅不打折。</dd>
+      <dt>當沖稅率 0.15% 一直都有嗎？</dt>
+      <dd>只適用現股當沖（同券商、同帳戶、同日、同種同量），依證券交易稅條例第 2 條之 2 施行至 2027 年 12 月 31 日；資券當沖仍為 0.3%。</dd>
+      <dt>為什麼和券商 App 的損益不一樣？</dt>
+      <dd>常見原因是折讓的結算方式（逐筆或按月退還）、費用尾數處理或最低費不同。請把參數改成你的券商條件再比對，實際收費以對帳單為準。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只保留在目前頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>

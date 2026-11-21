@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Stock Profit Calculator | Gloss Tools</title>
+<meta name="description" content="Work out a Taiwan stock trade line by line: buy and sell brokerage fees with the per-order minimum, securities transaction tax, net profit or loss, return %, and the breakeven sell price, with rates you can adjust to your broker.">
+<meta property="og:title" content="Stock Profit Calculator | Gloss Tools">
+<meta property="og:description" content="Work out a Taiwan stock trade line by line: buy and sell brokerage fees with the per-order minimum, securities transaction tax, net profit or loss, return %, and the breakeven sell price, with rates you can adjust to your broker.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/stock-profit.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Stock Profit Calculator</h1>
+  <p class="lede">Enter a Taiwan stock buy price, sell price and share count to work out the buy and sell brokerage fees, the per-order minimum fee, the securities transaction tax, net profit or loss, return %, and the breakeven sell price, line by line. Adjust the rates to your own broker; all calculation happens locally on this page.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Trade and cost parameters</h2>
+      <form id="stock-profit-form" novalidate>
+        <div class="field">
+          <label for="field-buyPrice">Buy price (NT$ / share)</label>
+          <p class="help" id="help-buyPrice">NT$ 0.01–999,999.99, at most 2 decimal places.</p>
+          <input id="field-buyPrice" name="buyPrice" type="text" inputmode="decimal" autocomplete="off" value="100" aria-describedby="help-buyPrice">
+          <p class="field-error" id="error-buyPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-buyQty">Buy quantity</label>
+          <p class="help" id="help-buyQty">A whole number from 1 to 999,999; the unit is in the next field.</p>
+          <input id="field-buyQty" name="buyQty" type="text" inputmode="numeric" autocomplete="off" value="1000" aria-describedby="help-buyQty">
+          <p class="field-error" id="error-buyQty" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-buyUnit">Buy unit</label>
+          <p class="help" id="help-buyUnit">1 lot = 1,000 shares.</p>
+          <select id="field-buyUnit" name="buyUnit" aria-describedby="help-buyUnit">
+            <option value="share" selected>Shares</option>
+            <option value="lot">Lots</option>
+          </select>
+          <p class="field-error" id="error-buyUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellPrice">Sell price (NT$ / share)</label>
+          <p class="help" id="help-sellPrice">NT$ 0.01–999,999.99, at most 2 decimal places.</p>
+          <input id="field-sellPrice" name="sellPrice" type="text" inputmode="decimal" autocomplete="off" value="110" aria-describedby="help-sellPrice">
+          <p class="field-error" id="error-sellPrice" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellQty">Sell quantity</label>
+          <p class="help" id="help-sellQty">A whole number from 1 to 999,999; it cannot exceed the buy shares.</p>
+          <input id="field-sellQty" name="sellQty" type="text" inputmode="numeric" autocomplete="off" value="1000" aria-describedby="help-sellQty">
+          <p class="field-error" id="error-sellQty" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sellUnit">Sell unit</label>
+          <p class="help" id="help-sellUnit">1 lot = 1,000 shares.</p>
+          <select id="field-sellUnit" name="sellUnit" aria-describedby="help-sellUnit">
+            <option value="share" selected>Shares</option>
+            <option value="lot">Lots</option>
+          </select>
+          <p class="field-error" id="error-sellUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feeRatePct">Brokerage fee rate (%)</label>
+          <p class="help" id="help-feeRatePct">0–1%, at most 4 decimal places; the 0.1425% default is the TWSE Operating Rules Art. 94 benchmark — adjust it to your broker.</p>
+          <input id="field-feeRatePct" name="feeRatePct" type="text" inputmode="decimal" autocomplete="off" value="0.1425" aria-describedby="help-feeRatePct">
+          <p class="field-error" id="error-feeRatePct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-feeDiscount">Fee discount</label>
+          <p class="help" id="help-feeDiscount">More than 0 and at most 1; 1 = no discount, 0.6 = 40% off. The discount applies to brokerage fees only, never to the transaction tax.</p>
+          <input id="field-feeDiscount" name="feeDiscount" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-feeDiscount">
+          <p class="field-error" id="error-feeDiscount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-minFeeTwd">Minimum fee per order (NT$)</label>
+          <p class="help" id="help-minFeeTwd">A whole number from 0 to 99,999; the NT$20 default is a broker convention, not a statutory amount.</p>
+          <input id="field-minFeeTwd" name="minFeeTwd" type="text" inputmode="numeric" autocomplete="off" value="20" aria-describedby="help-minFeeTwd">
+          <p class="field-error" id="error-minFeeTwd" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxMode">Transaction tax mode</label>
+          <p class="help" id="help-taxMode">Cash day trading covers the same broker, account, trading day, stock and quantity only.</p>
+          <select id="field-taxMode" name="taxMode" aria-describedby="help-taxMode">
+            <option value="standard" selected>Standard</option>
+            <option value="day">Cash day trade</option>
+          </select>
+          <p class="field-error" id="error-taxMode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-taxRatePct">Transaction tax rate (%)</label>
+          <p class="help" id="help-taxRatePct">0–1%, at most 4 decimal places; the 0.3% default applies to shares. A cash day trade is taxed at 0.15% (in force through 31 Dec 2027); this field is still validated but not used then.</p>
+          <input id="field-taxRatePct" name="taxRatePct" type="text" inputmode="decimal" autocomplete="off" value="0.3" aria-describedby="help-taxRatePct">
+          <p class="field-error" id="error-taxRatePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter your trade or load the example</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate profit &amp; loss</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Profit &amp; loss breakdown</h2>
+      <p class="result-value" id="net-value"></p>
+      <p class="result-echo" id="return-value"></p>
+      <p class="profit-word" id="profit-word"></p>
+      <dl class="breakdown">
+        <div><dt>Buy gross</dt><dd id="result-buy-gross"></dd></div>
+        <div><dt>Buy brokerage fee</dt><dd id="result-buy-fee"></dd></div>
+        <div><dt>Total buy cost</dt><dd id="result-buy-total"></dd></div>
+        <div><dt>Sell gross</dt><dd id="result-sell-gross"></dd></div>
+        <div><dt>Sell brokerage fee</dt><dd id="result-sell-fee"></dd></div>
+        <div><dt>Securities transaction tax</dt><dd id="result-sell-tax"></dd></div>
+        <div><dt>Sell net proceeds</dt><dd id="result-sell-net"></dd></div>
+        <div><dt>Cost basis of shares sold</dt><dd id="result-cost-basis"></dd></div>
+        <div><dt>Remaining shares</dt><dd id="result-remaining-shares"></dd></div>
+        <div><dt>Breakeven sell price</dt><dd id="result-breakeven"></dd></div>
+        <div><dt>Effective transaction tax rate</dt><dd id="result-effective-tax"></dd></div>
+      </dl>
+      <p class="disclaimer" id="disclaimer">Results are estimates, not investment advice. Rates and minimum fees may change; your broker's statement governs.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>Each brokerage fee is the trade amount × fee rate × discount, rounded half-up to whole NT dollars, then compared with the per-order minimum fee — the minimum applies after the discount and after rounding. The sell side also pays securities transaction tax: trade amount × tax rate, rounded half-up to whole NT dollars, with no minimum and no discount. Cash day trades are taxed at 0.15%. For a partial sell, the cost basis of the sold shares is the total buy cost apportioned by share count, without rounding first; net profit or loss and return % are computed from the exact fraction and rounded only at the end. The breakeven sell price is the smallest sell price, in NT$0.01 steps, whose sell net reaches the sold cost basis under the same fee model.</p>
+    <p>The downloaded report is always named stock-profit-report.json. It is the result as compact JSON with object keys sorted by UTF-16 code units, two-decimal fields written with exactly two decimals, integer fields as integers, and one trailing line feed. All amounts are in New Taiwan dollars.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is the NT$20 minimum fee set by law?</dt>
+      <dd>No. Each broker sets its own per-order minimum, filed with the TWSE; NT$20 is the common round-lot convention and odd lots are often NT$1. Adjust it to your broker.</dd>
+      <dt>How do I enter my fee discount?</dt>
+      <dd>Enter the fraction you actually pay: 1 for none, 0.6 for 40% off. The discount applies to brokerage fees only, never to the transaction tax.</dd>
+      <dt>Is the 0.15% day-trading rate permanent?</dt>
+      <dd>It covers cash day trades only (same broker, account, day, stock and quantity) under Article 2-2 of the Securities Transaction Tax Act, in force through 31 Dec 2027; margin day trades stay at 0.3%.</dd>
+      <dt>Why does my broker app show a different figure?</dt>
+      <dd>Usual causes are how discounts settle (per trade or monthly rebate), fee rounding, or a different minimum fee. Match the parameters to your broker; the statement governs.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored on a server, or logged. The draft lives only on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
