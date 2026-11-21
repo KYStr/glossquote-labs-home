@@ -1,0 +1,2591 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-retirement-withdrawal-calculator-20261121",
+  "slug": "retirement-withdrawal-calculator",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "linear-no-growth",
+      "kind": "core",
+      "purpose": "無報酬無通膨：線性耗盡，整整 20 年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "0",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "20.00",
+          "fullYears": 20,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "950000.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "950000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "900000.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "900000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "850000.00",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "850000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "800000.00",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "800000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "750000.00",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "750000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "700000.00",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "700000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "650000.00",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "650000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "600000.00",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "600000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "550000.00",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "550000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "500000.00",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "500000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "450000.00",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "450000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "400000.00",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "400000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "350000.00",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "350000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "300000.00",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "300000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "250000.00",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "250000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "200000.00",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "200000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "150000.00",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "150000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "100000.00",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "100000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "50000.00",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "50000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "exact-depletion",
+      "kind": "core",
+      "purpose": "最後一年結束時餘額恰好為零，不生零元部分年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "200000",
+        "annualWithdrawal": "100000",
+        "returnRatePct": "0",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "2.00",
+          "fullYears": 2,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "200000.00",
+              "withdrawal": "100000.00",
+              "returnAmount": "0.00",
+              "endBalance": "100000.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "100000.00",
+              "withdrawal": "100000.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "partial-final-year",
+      "kind": "core",
+      "purpose": "首年提領超過組合：0 整年＋0.83 部分年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "100000",
+        "annualWithdrawal": "120000",
+        "returnRatePct": "0",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "0.83",
+          "fullYears": 0,
+          "partialYearFraction": "0.83",
+          "finalPartialWithdrawal": "100000.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "100000.00",
+              "withdrawal": "100000.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-withdrawal",
+      "kind": "core",
+      "purpose": "年提領為 0：永不耗盡，無年度表",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "0",
+        "returnRatePct": "5",
+        "inflationRatePct": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "never",
+          "yearsUntilDepletion": null,
+          "fullYears": 0,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": []
+        }
+      }
+    },
+    {
+      "id": "zero-portfolio",
+      "kind": "core",
+      "purpose": "組合為 0 且有提領：0.00 年，一列零元部分年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "0",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "5",
+        "inflationRatePct": "2"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "0.00",
+          "fullYears": 0,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "0.00",
+              "withdrawal": "0.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "growth-extends",
+      "kind": "core",
+      "purpose": "5% 報酬延長壽命：62 整年＋0.41 部分年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "5",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "62.41",
+          "fullYears": 62,
+          "partialYearFraction": "0.41",
+          "finalPartialWithdrawal": "20309.84",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "47500.00",
+              "endBalance": "997500.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "997500.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "47375.00",
+              "endBalance": "994875.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "994875.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "47243.75",
+              "endBalance": "992118.75",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "992118.75",
+              "withdrawal": "50000.00",
+              "returnAmount": "47105.94",
+              "endBalance": "989224.69",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "989224.69",
+              "withdrawal": "50000.00",
+              "returnAmount": "46961.23",
+              "endBalance": "986185.92",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "986185.92",
+              "withdrawal": "50000.00",
+              "returnAmount": "46809.30",
+              "endBalance": "982995.22",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "982995.22",
+              "withdrawal": "50000.00",
+              "returnAmount": "46649.76",
+              "endBalance": "979644.98",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "979644.98",
+              "withdrawal": "50000.00",
+              "returnAmount": "46482.25",
+              "endBalance": "976127.23",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "976127.23",
+              "withdrawal": "50000.00",
+              "returnAmount": "46306.36",
+              "endBalance": "972433.59",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "972433.59",
+              "withdrawal": "50000.00",
+              "returnAmount": "46121.68",
+              "endBalance": "968555.27",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "968555.27",
+              "withdrawal": "50000.00",
+              "returnAmount": "45927.76",
+              "endBalance": "964483.03",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "964483.03",
+              "withdrawal": "50000.00",
+              "returnAmount": "45724.15",
+              "endBalance": "960207.18",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "960207.18",
+              "withdrawal": "50000.00",
+              "returnAmount": "45510.36",
+              "endBalance": "955717.54",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "955717.54",
+              "withdrawal": "50000.00",
+              "returnAmount": "45285.88",
+              "endBalance": "951003.42",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "951003.42",
+              "withdrawal": "50000.00",
+              "returnAmount": "45050.17",
+              "endBalance": "946053.59",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "946053.59",
+              "withdrawal": "50000.00",
+              "returnAmount": "44802.68",
+              "endBalance": "940856.27",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "940856.27",
+              "withdrawal": "50000.00",
+              "returnAmount": "44542.81",
+              "endBalance": "935399.08",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "935399.08",
+              "withdrawal": "50000.00",
+              "returnAmount": "44269.95",
+              "endBalance": "929669.03",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "929669.03",
+              "withdrawal": "50000.00",
+              "returnAmount": "43983.45",
+              "endBalance": "923652.48",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "923652.48",
+              "withdrawal": "50000.00",
+              "returnAmount": "43682.62",
+              "endBalance": "917335.10",
+              "partial": false
+            },
+            {
+              "year": 21,
+              "startBalance": "917335.10",
+              "withdrawal": "50000.00",
+              "returnAmount": "43366.76",
+              "endBalance": "910701.86",
+              "partial": false
+            },
+            {
+              "year": 22,
+              "startBalance": "910701.86",
+              "withdrawal": "50000.00",
+              "returnAmount": "43035.09",
+              "endBalance": "903736.95",
+              "partial": false
+            },
+            {
+              "year": 23,
+              "startBalance": "903736.95",
+              "withdrawal": "50000.00",
+              "returnAmount": "42686.85",
+              "endBalance": "896423.80",
+              "partial": false
+            },
+            {
+              "year": 24,
+              "startBalance": "896423.80",
+              "withdrawal": "50000.00",
+              "returnAmount": "42321.19",
+              "endBalance": "888744.99",
+              "partial": false
+            },
+            {
+              "year": 25,
+              "startBalance": "888744.99",
+              "withdrawal": "50000.00",
+              "returnAmount": "41937.25",
+              "endBalance": "880682.24",
+              "partial": false
+            },
+            {
+              "year": 26,
+              "startBalance": "880682.24",
+              "withdrawal": "50000.00",
+              "returnAmount": "41534.11",
+              "endBalance": "872216.35",
+              "partial": false
+            },
+            {
+              "year": 27,
+              "startBalance": "872216.35",
+              "withdrawal": "50000.00",
+              "returnAmount": "41110.82",
+              "endBalance": "863327.17",
+              "partial": false
+            },
+            {
+              "year": 28,
+              "startBalance": "863327.17",
+              "withdrawal": "50000.00",
+              "returnAmount": "40666.36",
+              "endBalance": "853993.53",
+              "partial": false
+            },
+            {
+              "year": 29,
+              "startBalance": "853993.53",
+              "withdrawal": "50000.00",
+              "returnAmount": "40199.68",
+              "endBalance": "844193.21",
+              "partial": false
+            },
+            {
+              "year": 30,
+              "startBalance": "844193.21",
+              "withdrawal": "50000.00",
+              "returnAmount": "39709.66",
+              "endBalance": "833902.87",
+              "partial": false
+            },
+            {
+              "year": 31,
+              "startBalance": "833902.87",
+              "withdrawal": "50000.00",
+              "returnAmount": "39195.14",
+              "endBalance": "823098.01",
+              "partial": false
+            },
+            {
+              "year": 32,
+              "startBalance": "823098.01",
+              "withdrawal": "50000.00",
+              "returnAmount": "38654.90",
+              "endBalance": "811752.91",
+              "partial": false
+            },
+            {
+              "year": 33,
+              "startBalance": "811752.91",
+              "withdrawal": "50000.00",
+              "returnAmount": "38087.65",
+              "endBalance": "799840.56",
+              "partial": false
+            },
+            {
+              "year": 34,
+              "startBalance": "799840.56",
+              "withdrawal": "50000.00",
+              "returnAmount": "37492.03",
+              "endBalance": "787332.59",
+              "partial": false
+            },
+            {
+              "year": 35,
+              "startBalance": "787332.59",
+              "withdrawal": "50000.00",
+              "returnAmount": "36866.63",
+              "endBalance": "774199.22",
+              "partial": false
+            },
+            {
+              "year": 36,
+              "startBalance": "774199.22",
+              "withdrawal": "50000.00",
+              "returnAmount": "36209.96",
+              "endBalance": "760409.18",
+              "partial": false
+            },
+            {
+              "year": 37,
+              "startBalance": "760409.18",
+              "withdrawal": "50000.00",
+              "returnAmount": "35520.46",
+              "endBalance": "745929.64",
+              "partial": false
+            },
+            {
+              "year": 38,
+              "startBalance": "745929.64",
+              "withdrawal": "50000.00",
+              "returnAmount": "34796.48",
+              "endBalance": "730726.12",
+              "partial": false
+            },
+            {
+              "year": 39,
+              "startBalance": "730726.12",
+              "withdrawal": "50000.00",
+              "returnAmount": "34036.31",
+              "endBalance": "714762.43",
+              "partial": false
+            },
+            {
+              "year": 40,
+              "startBalance": "714762.43",
+              "withdrawal": "50000.00",
+              "returnAmount": "33238.12",
+              "endBalance": "698000.55",
+              "partial": false
+            },
+            {
+              "year": 41,
+              "startBalance": "698000.55",
+              "withdrawal": "50000.00",
+              "returnAmount": "32400.03",
+              "endBalance": "680400.58",
+              "partial": false
+            },
+            {
+              "year": 42,
+              "startBalance": "680400.58",
+              "withdrawal": "50000.00",
+              "returnAmount": "31520.03",
+              "endBalance": "661920.61",
+              "partial": false
+            },
+            {
+              "year": 43,
+              "startBalance": "661920.61",
+              "withdrawal": "50000.00",
+              "returnAmount": "30596.03",
+              "endBalance": "642516.64",
+              "partial": false
+            },
+            {
+              "year": 44,
+              "startBalance": "642516.64",
+              "withdrawal": "50000.00",
+              "returnAmount": "29625.83",
+              "endBalance": "622142.47",
+              "partial": false
+            },
+            {
+              "year": 45,
+              "startBalance": "622142.47",
+              "withdrawal": "50000.00",
+              "returnAmount": "28607.12",
+              "endBalance": "600749.59",
+              "partial": false
+            },
+            {
+              "year": 46,
+              "startBalance": "600749.59",
+              "withdrawal": "50000.00",
+              "returnAmount": "27537.48",
+              "endBalance": "578287.07",
+              "partial": false
+            },
+            {
+              "year": 47,
+              "startBalance": "578287.07",
+              "withdrawal": "50000.00",
+              "returnAmount": "26414.35",
+              "endBalance": "554701.42",
+              "partial": false
+            },
+            {
+              "year": 48,
+              "startBalance": "554701.42",
+              "withdrawal": "50000.00",
+              "returnAmount": "25235.07",
+              "endBalance": "529936.49",
+              "partial": false
+            },
+            {
+              "year": 49,
+              "startBalance": "529936.49",
+              "withdrawal": "50000.00",
+              "returnAmount": "23996.82",
+              "endBalance": "503933.31",
+              "partial": false
+            },
+            {
+              "year": 50,
+              "startBalance": "503933.31",
+              "withdrawal": "50000.00",
+              "returnAmount": "22696.67",
+              "endBalance": "476629.98",
+              "partial": false
+            },
+            {
+              "year": 51,
+              "startBalance": "476629.98",
+              "withdrawal": "50000.00",
+              "returnAmount": "21331.50",
+              "endBalance": "447961.48",
+              "partial": false
+            },
+            {
+              "year": 52,
+              "startBalance": "447961.48",
+              "withdrawal": "50000.00",
+              "returnAmount": "19898.07",
+              "endBalance": "417859.55",
+              "partial": false
+            },
+            {
+              "year": 53,
+              "startBalance": "417859.55",
+              "withdrawal": "50000.00",
+              "returnAmount": "18392.98",
+              "endBalance": "386252.53",
+              "partial": false
+            },
+            {
+              "year": 54,
+              "startBalance": "386252.53",
+              "withdrawal": "50000.00",
+              "returnAmount": "16812.63",
+              "endBalance": "353065.16",
+              "partial": false
+            },
+            {
+              "year": 55,
+              "startBalance": "353065.16",
+              "withdrawal": "50000.00",
+              "returnAmount": "15153.26",
+              "endBalance": "318218.42",
+              "partial": false
+            },
+            {
+              "year": 56,
+              "startBalance": "318218.42",
+              "withdrawal": "50000.00",
+              "returnAmount": "13410.92",
+              "endBalance": "281629.34",
+              "partial": false
+            },
+            {
+              "year": 57,
+              "startBalance": "281629.34",
+              "withdrawal": "50000.00",
+              "returnAmount": "11581.47",
+              "endBalance": "243210.81",
+              "partial": false
+            },
+            {
+              "year": 58,
+              "startBalance": "243210.81",
+              "withdrawal": "50000.00",
+              "returnAmount": "9660.54",
+              "endBalance": "202871.35",
+              "partial": false
+            },
+            {
+              "year": 59,
+              "startBalance": "202871.35",
+              "withdrawal": "50000.00",
+              "returnAmount": "7643.57",
+              "endBalance": "160514.92",
+              "partial": false
+            },
+            {
+              "year": 60,
+              "startBalance": "160514.92",
+              "withdrawal": "50000.00",
+              "returnAmount": "5525.75",
+              "endBalance": "116040.67",
+              "partial": false
+            },
+            {
+              "year": 61,
+              "startBalance": "116040.67",
+              "withdrawal": "50000.00",
+              "returnAmount": "3302.03",
+              "endBalance": "69342.70",
+              "partial": false
+            },
+            {
+              "year": 62,
+              "startBalance": "69342.70",
+              "withdrawal": "50000.00",
+              "returnAmount": "967.14",
+              "endBalance": "20309.84",
+              "partial": false
+            },
+            {
+              "year": 63,
+              "startBalance": "20309.84",
+              "withdrawal": "20309.84",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "inflation-erodes",
+      "kind": "core",
+      "purpose": "3% 通膨侵蝕：24 整年＋0.94 部分年",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "5",
+        "inflationRatePct": "3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "24.94",
+          "fullYears": 24,
+          "partialYearFraction": "0.94",
+          "finalPartialWithdrawal": "95297.18",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "47500.00",
+              "endBalance": "997500.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "997500.00",
+              "withdrawal": "51500.00",
+              "returnAmount": "47300.00",
+              "endBalance": "993300.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "993300.00",
+              "withdrawal": "53045.00",
+              "returnAmount": "47012.75",
+              "endBalance": "987267.75",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "987267.75",
+              "withdrawal": "54636.35",
+              "returnAmount": "46631.57",
+              "endBalance": "979262.97",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "979262.97",
+              "withdrawal": "56275.44",
+              "returnAmount": "46149.38",
+              "endBalance": "969136.91",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "969136.91",
+              "withdrawal": "57963.70",
+              "returnAmount": "45558.66",
+              "endBalance": "956731.87",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "956731.87",
+              "withdrawal": "59702.61",
+              "returnAmount": "44851.46",
+              "endBalance": "941880.72",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "941880.72",
+              "withdrawal": "61493.69",
+              "returnAmount": "44019.35",
+              "endBalance": "924406.38",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "924406.38",
+              "withdrawal": "63338.50",
+              "returnAmount": "43053.39",
+              "endBalance": "904121.27",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "904121.27",
+              "withdrawal": "65238.66",
+              "returnAmount": "41944.13",
+              "endBalance": "880826.74",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "880826.74",
+              "withdrawal": "67195.82",
+              "returnAmount": "40681.55",
+              "endBalance": "854312.47",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "854312.47",
+              "withdrawal": "69211.69",
+              "returnAmount": "39255.04",
+              "endBalance": "824355.82",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "824355.82",
+              "withdrawal": "71288.04",
+              "returnAmount": "37653.39",
+              "endBalance": "790721.17",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "790721.17",
+              "withdrawal": "73426.69",
+              "returnAmount": "35864.72",
+              "endBalance": "753159.20",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "753159.20",
+              "withdrawal": "75629.49",
+              "returnAmount": "33876.49",
+              "endBalance": "711406.20",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "711406.20",
+              "withdrawal": "77898.37",
+              "returnAmount": "31675.39",
+              "endBalance": "665183.22",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "665183.22",
+              "withdrawal": "80235.32",
+              "returnAmount": "29247.40",
+              "endBalance": "614195.30",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "614195.30",
+              "withdrawal": "82642.38",
+              "returnAmount": "26577.65",
+              "endBalance": "558130.57",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "558130.57",
+              "withdrawal": "85121.65",
+              "returnAmount": "23650.45",
+              "endBalance": "496659.37",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "496659.37",
+              "withdrawal": "87675.30",
+              "returnAmount": "20449.20",
+              "endBalance": "429433.27",
+              "partial": false
+            },
+            {
+              "year": 21,
+              "startBalance": "429433.27",
+              "withdrawal": "90305.56",
+              "returnAmount": "16956.39",
+              "endBalance": "356084.10",
+              "partial": false
+            },
+            {
+              "year": 22,
+              "startBalance": "356084.10",
+              "withdrawal": "93014.73",
+              "returnAmount": "13153.47",
+              "endBalance": "276222.84",
+              "partial": false
+            },
+            {
+              "year": 23,
+              "startBalance": "276222.84",
+              "withdrawal": "95805.17",
+              "returnAmount": "9020.88",
+              "endBalance": "189438.55",
+              "partial": false
+            },
+            {
+              "year": 24,
+              "startBalance": "189438.55",
+              "withdrawal": "98679.33",
+              "returnAmount": "4537.96",
+              "endBalance": "95297.18",
+              "partial": false
+            },
+            {
+              "year": 25,
+              "startBalance": "95297.18",
+              "withdrawal": "95297.18",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "negative-return",
+      "kind": "core",
+      "purpose": "−5% 報酬：8 整年＋0.24 部分年，報酬欄為負",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "500000",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "-5",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "8.24",
+          "fullYears": 8,
+          "partialYearFraction": "0.24",
+          "finalPartialWithdrawal": "11959.63",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "500000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "-22500.00",
+              "endBalance": "427500.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "427500.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "-18875.00",
+              "endBalance": "358625.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "358625.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "-15431.25",
+              "endBalance": "293193.75",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "293193.75",
+              "withdrawal": "50000.00",
+              "returnAmount": "-12159.69",
+              "endBalance": "231034.06",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "231034.06",
+              "withdrawal": "50000.00",
+              "returnAmount": "-9051.70",
+              "endBalance": "171982.36",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "171982.36",
+              "withdrawal": "50000.00",
+              "returnAmount": "-6099.12",
+              "endBalance": "115883.24",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "115883.24",
+              "withdrawal": "50000.00",
+              "returnAmount": "-3294.16",
+              "endBalance": "62589.08",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "62589.08",
+              "withdrawal": "50000.00",
+              "returnAmount": "-629.45",
+              "endBalance": "11959.63",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "11959.63",
+              "withdrawal": "11959.63",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "beyond-horizon",
+      "kind": "core",
+      "purpose": "提領遠低於報酬：100 年內不耗盡，表列滿 100 列",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "10000",
+        "returnRatePct": "5",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "depletion",
+          "depletionStatus": "beyond-horizon",
+          "yearsUntilDepletion": null,
+          "fullYears": 100,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "49500.00",
+              "endBalance": "1039500.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "1039500.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "51475.00",
+              "endBalance": "1080975.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "1080975.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "53548.75",
+              "endBalance": "1124523.75",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "1124523.75",
+              "withdrawal": "10000.00",
+              "returnAmount": "55726.19",
+              "endBalance": "1170249.94",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "1170249.94",
+              "withdrawal": "10000.00",
+              "returnAmount": "58012.50",
+              "endBalance": "1218262.44",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "1218262.44",
+              "withdrawal": "10000.00",
+              "returnAmount": "60413.12",
+              "endBalance": "1268675.56",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "1268675.56",
+              "withdrawal": "10000.00",
+              "returnAmount": "62933.78",
+              "endBalance": "1321609.34",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "1321609.34",
+              "withdrawal": "10000.00",
+              "returnAmount": "65580.47",
+              "endBalance": "1377189.81",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "1377189.81",
+              "withdrawal": "10000.00",
+              "returnAmount": "68359.49",
+              "endBalance": "1435549.30",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "1435549.30",
+              "withdrawal": "10000.00",
+              "returnAmount": "71277.47",
+              "endBalance": "1496826.77",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "1496826.77",
+              "withdrawal": "10000.00",
+              "returnAmount": "74341.34",
+              "endBalance": "1561168.11",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "1561168.11",
+              "withdrawal": "10000.00",
+              "returnAmount": "77558.41",
+              "endBalance": "1628726.52",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "1628726.52",
+              "withdrawal": "10000.00",
+              "returnAmount": "80936.33",
+              "endBalance": "1699662.85",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "1699662.85",
+              "withdrawal": "10000.00",
+              "returnAmount": "84483.14",
+              "endBalance": "1774145.99",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "1774145.99",
+              "withdrawal": "10000.00",
+              "returnAmount": "88207.30",
+              "endBalance": "1852353.29",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "1852353.29",
+              "withdrawal": "10000.00",
+              "returnAmount": "92117.66",
+              "endBalance": "1934470.95",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "1934470.95",
+              "withdrawal": "10000.00",
+              "returnAmount": "96223.55",
+              "endBalance": "2020694.50",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "2020694.50",
+              "withdrawal": "10000.00",
+              "returnAmount": "100534.73",
+              "endBalance": "2111229.23",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "2111229.23",
+              "withdrawal": "10000.00",
+              "returnAmount": "105061.46",
+              "endBalance": "2206290.69",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "2206290.69",
+              "withdrawal": "10000.00",
+              "returnAmount": "109814.53",
+              "endBalance": "2306105.22",
+              "partial": false
+            },
+            {
+              "year": 21,
+              "startBalance": "2306105.22",
+              "withdrawal": "10000.00",
+              "returnAmount": "114805.26",
+              "endBalance": "2410910.48",
+              "partial": false
+            },
+            {
+              "year": 22,
+              "startBalance": "2410910.48",
+              "withdrawal": "10000.00",
+              "returnAmount": "120045.52",
+              "endBalance": "2520956.00",
+              "partial": false
+            },
+            {
+              "year": 23,
+              "startBalance": "2520956.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "125547.80",
+              "endBalance": "2636503.80",
+              "partial": false
+            },
+            {
+              "year": 24,
+              "startBalance": "2636503.80",
+              "withdrawal": "10000.00",
+              "returnAmount": "131325.19",
+              "endBalance": "2757828.99",
+              "partial": false
+            },
+            {
+              "year": 25,
+              "startBalance": "2757828.99",
+              "withdrawal": "10000.00",
+              "returnAmount": "137391.45",
+              "endBalance": "2885220.44",
+              "partial": false
+            },
+            {
+              "year": 26,
+              "startBalance": "2885220.44",
+              "withdrawal": "10000.00",
+              "returnAmount": "143761.02",
+              "endBalance": "3018981.46",
+              "partial": false
+            },
+            {
+              "year": 27,
+              "startBalance": "3018981.46",
+              "withdrawal": "10000.00",
+              "returnAmount": "150449.07",
+              "endBalance": "3159430.53",
+              "partial": false
+            },
+            {
+              "year": 28,
+              "startBalance": "3159430.53",
+              "withdrawal": "10000.00",
+              "returnAmount": "157471.53",
+              "endBalance": "3306902.06",
+              "partial": false
+            },
+            {
+              "year": 29,
+              "startBalance": "3306902.06",
+              "withdrawal": "10000.00",
+              "returnAmount": "164845.10",
+              "endBalance": "3461747.16",
+              "partial": false
+            },
+            {
+              "year": 30,
+              "startBalance": "3461747.16",
+              "withdrawal": "10000.00",
+              "returnAmount": "172587.36",
+              "endBalance": "3624334.52",
+              "partial": false
+            },
+            {
+              "year": 31,
+              "startBalance": "3624334.52",
+              "withdrawal": "10000.00",
+              "returnAmount": "180716.73",
+              "endBalance": "3795051.25",
+              "partial": false
+            },
+            {
+              "year": 32,
+              "startBalance": "3795051.25",
+              "withdrawal": "10000.00",
+              "returnAmount": "189252.56",
+              "endBalance": "3974303.81",
+              "partial": false
+            },
+            {
+              "year": 33,
+              "startBalance": "3974303.81",
+              "withdrawal": "10000.00",
+              "returnAmount": "198215.19",
+              "endBalance": "4162519.00",
+              "partial": false
+            },
+            {
+              "year": 34,
+              "startBalance": "4162519.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "207625.95",
+              "endBalance": "4360144.95",
+              "partial": false
+            },
+            {
+              "year": 35,
+              "startBalance": "4360144.95",
+              "withdrawal": "10000.00",
+              "returnAmount": "217507.25",
+              "endBalance": "4567652.20",
+              "partial": false
+            },
+            {
+              "year": 36,
+              "startBalance": "4567652.20",
+              "withdrawal": "10000.00",
+              "returnAmount": "227882.61",
+              "endBalance": "4785534.81",
+              "partial": false
+            },
+            {
+              "year": 37,
+              "startBalance": "4785534.81",
+              "withdrawal": "10000.00",
+              "returnAmount": "238776.74",
+              "endBalance": "5014311.55",
+              "partial": false
+            },
+            {
+              "year": 38,
+              "startBalance": "5014311.55",
+              "withdrawal": "10000.00",
+              "returnAmount": "250215.58",
+              "endBalance": "5254527.13",
+              "partial": false
+            },
+            {
+              "year": 39,
+              "startBalance": "5254527.13",
+              "withdrawal": "10000.00",
+              "returnAmount": "262226.36",
+              "endBalance": "5506753.49",
+              "partial": false
+            },
+            {
+              "year": 40,
+              "startBalance": "5506753.49",
+              "withdrawal": "10000.00",
+              "returnAmount": "274837.67",
+              "endBalance": "5771591.16",
+              "partial": false
+            },
+            {
+              "year": 41,
+              "startBalance": "5771591.16",
+              "withdrawal": "10000.00",
+              "returnAmount": "288079.56",
+              "endBalance": "6049670.72",
+              "partial": false
+            },
+            {
+              "year": 42,
+              "startBalance": "6049670.72",
+              "withdrawal": "10000.00",
+              "returnAmount": "301983.54",
+              "endBalance": "6341654.26",
+              "partial": false
+            },
+            {
+              "year": 43,
+              "startBalance": "6341654.26",
+              "withdrawal": "10000.00",
+              "returnAmount": "316582.71",
+              "endBalance": "6648236.97",
+              "partial": false
+            },
+            {
+              "year": 44,
+              "startBalance": "6648236.97",
+              "withdrawal": "10000.00",
+              "returnAmount": "331911.85",
+              "endBalance": "6970148.82",
+              "partial": false
+            },
+            {
+              "year": 45,
+              "startBalance": "6970148.82",
+              "withdrawal": "10000.00",
+              "returnAmount": "348007.44",
+              "endBalance": "7308156.26",
+              "partial": false
+            },
+            {
+              "year": 46,
+              "startBalance": "7308156.26",
+              "withdrawal": "10000.00",
+              "returnAmount": "364907.81",
+              "endBalance": "7663064.07",
+              "partial": false
+            },
+            {
+              "year": 47,
+              "startBalance": "7663064.07",
+              "withdrawal": "10000.00",
+              "returnAmount": "382653.20",
+              "endBalance": "8035717.27",
+              "partial": false
+            },
+            {
+              "year": 48,
+              "startBalance": "8035717.27",
+              "withdrawal": "10000.00",
+              "returnAmount": "401285.86",
+              "endBalance": "8427003.13",
+              "partial": false
+            },
+            {
+              "year": 49,
+              "startBalance": "8427003.13",
+              "withdrawal": "10000.00",
+              "returnAmount": "420850.16",
+              "endBalance": "8837853.29",
+              "partial": false
+            },
+            {
+              "year": 50,
+              "startBalance": "8837853.29",
+              "withdrawal": "10000.00",
+              "returnAmount": "441392.66",
+              "endBalance": "9269245.95",
+              "partial": false
+            },
+            {
+              "year": 51,
+              "startBalance": "9269245.95",
+              "withdrawal": "10000.00",
+              "returnAmount": "462962.30",
+              "endBalance": "9722208.25",
+              "partial": false
+            },
+            {
+              "year": 52,
+              "startBalance": "9722208.25",
+              "withdrawal": "10000.00",
+              "returnAmount": "485610.41",
+              "endBalance": "10197818.66",
+              "partial": false
+            },
+            {
+              "year": 53,
+              "startBalance": "10197818.66",
+              "withdrawal": "10000.00",
+              "returnAmount": "509390.93",
+              "endBalance": "10697209.59",
+              "partial": false
+            },
+            {
+              "year": 54,
+              "startBalance": "10697209.59",
+              "withdrawal": "10000.00",
+              "returnAmount": "534360.48",
+              "endBalance": "11221570.07",
+              "partial": false
+            },
+            {
+              "year": 55,
+              "startBalance": "11221570.07",
+              "withdrawal": "10000.00",
+              "returnAmount": "560578.50",
+              "endBalance": "11772148.57",
+              "partial": false
+            },
+            {
+              "year": 56,
+              "startBalance": "11772148.57",
+              "withdrawal": "10000.00",
+              "returnAmount": "588107.43",
+              "endBalance": "12350256.00",
+              "partial": false
+            },
+            {
+              "year": 57,
+              "startBalance": "12350256.00",
+              "withdrawal": "10000.00",
+              "returnAmount": "617012.80",
+              "endBalance": "12957268.80",
+              "partial": false
+            },
+            {
+              "year": 58,
+              "startBalance": "12957268.80",
+              "withdrawal": "10000.00",
+              "returnAmount": "647363.44",
+              "endBalance": "13594632.24",
+              "partial": false
+            },
+            {
+              "year": 59,
+              "startBalance": "13594632.24",
+              "withdrawal": "10000.00",
+              "returnAmount": "679231.61",
+              "endBalance": "14263863.85",
+              "partial": false
+            },
+            {
+              "year": 60,
+              "startBalance": "14263863.85",
+              "withdrawal": "10000.00",
+              "returnAmount": "712693.19",
+              "endBalance": "14966557.04",
+              "partial": false
+            },
+            {
+              "year": 61,
+              "startBalance": "14966557.04",
+              "withdrawal": "10000.00",
+              "returnAmount": "747827.85",
+              "endBalance": "15704384.89",
+              "partial": false
+            },
+            {
+              "year": 62,
+              "startBalance": "15704384.89",
+              "withdrawal": "10000.00",
+              "returnAmount": "784719.24",
+              "endBalance": "16479104.13",
+              "partial": false
+            },
+            {
+              "year": 63,
+              "startBalance": "16479104.13",
+              "withdrawal": "10000.00",
+              "returnAmount": "823455.21",
+              "endBalance": "17292559.34",
+              "partial": false
+            },
+            {
+              "year": 64,
+              "startBalance": "17292559.34",
+              "withdrawal": "10000.00",
+              "returnAmount": "864127.97",
+              "endBalance": "18146687.31",
+              "partial": false
+            },
+            {
+              "year": 65,
+              "startBalance": "18146687.31",
+              "withdrawal": "10000.00",
+              "returnAmount": "906834.37",
+              "endBalance": "19043521.68",
+              "partial": false
+            },
+            {
+              "year": 66,
+              "startBalance": "19043521.68",
+              "withdrawal": "10000.00",
+              "returnAmount": "951676.08",
+              "endBalance": "19985197.76",
+              "partial": false
+            },
+            {
+              "year": 67,
+              "startBalance": "19985197.76",
+              "withdrawal": "10000.00",
+              "returnAmount": "998759.89",
+              "endBalance": "20973957.65",
+              "partial": false
+            },
+            {
+              "year": 68,
+              "startBalance": "20973957.65",
+              "withdrawal": "10000.00",
+              "returnAmount": "1048197.88",
+              "endBalance": "22012155.53",
+              "partial": false
+            },
+            {
+              "year": 69,
+              "startBalance": "22012155.53",
+              "withdrawal": "10000.00",
+              "returnAmount": "1100107.78",
+              "endBalance": "23102263.31",
+              "partial": false
+            },
+            {
+              "year": 70,
+              "startBalance": "23102263.31",
+              "withdrawal": "10000.00",
+              "returnAmount": "1154613.17",
+              "endBalance": "24246876.48",
+              "partial": false
+            },
+            {
+              "year": 71,
+              "startBalance": "24246876.48",
+              "withdrawal": "10000.00",
+              "returnAmount": "1211843.82",
+              "endBalance": "25448720.30",
+              "partial": false
+            },
+            {
+              "year": 72,
+              "startBalance": "25448720.30",
+              "withdrawal": "10000.00",
+              "returnAmount": "1271936.02",
+              "endBalance": "26710656.32",
+              "partial": false
+            },
+            {
+              "year": 73,
+              "startBalance": "26710656.32",
+              "withdrawal": "10000.00",
+              "returnAmount": "1335032.82",
+              "endBalance": "28035689.14",
+              "partial": false
+            },
+            {
+              "year": 74,
+              "startBalance": "28035689.14",
+              "withdrawal": "10000.00",
+              "returnAmount": "1401284.46",
+              "endBalance": "29426973.60",
+              "partial": false
+            },
+            {
+              "year": 75,
+              "startBalance": "29426973.60",
+              "withdrawal": "10000.00",
+              "returnAmount": "1470848.68",
+              "endBalance": "30887822.28",
+              "partial": false
+            },
+            {
+              "year": 76,
+              "startBalance": "30887822.28",
+              "withdrawal": "10000.00",
+              "returnAmount": "1543891.11",
+              "endBalance": "32421713.39",
+              "partial": false
+            },
+            {
+              "year": 77,
+              "startBalance": "32421713.39",
+              "withdrawal": "10000.00",
+              "returnAmount": "1620585.67",
+              "endBalance": "34032299.06",
+              "partial": false
+            },
+            {
+              "year": 78,
+              "startBalance": "34032299.06",
+              "withdrawal": "10000.00",
+              "returnAmount": "1701114.95",
+              "endBalance": "35723414.01",
+              "partial": false
+            },
+            {
+              "year": 79,
+              "startBalance": "35723414.01",
+              "withdrawal": "10000.00",
+              "returnAmount": "1785670.70",
+              "endBalance": "37499084.71",
+              "partial": false
+            },
+            {
+              "year": 80,
+              "startBalance": "37499084.71",
+              "withdrawal": "10000.00",
+              "returnAmount": "1874454.24",
+              "endBalance": "39363538.95",
+              "partial": false
+            },
+            {
+              "year": 81,
+              "startBalance": "39363538.95",
+              "withdrawal": "10000.00",
+              "returnAmount": "1967676.95",
+              "endBalance": "41321215.90",
+              "partial": false
+            },
+            {
+              "year": 82,
+              "startBalance": "41321215.90",
+              "withdrawal": "10000.00",
+              "returnAmount": "2065560.80",
+              "endBalance": "43376776.70",
+              "partial": false
+            },
+            {
+              "year": 83,
+              "startBalance": "43376776.70",
+              "withdrawal": "10000.00",
+              "returnAmount": "2168338.84",
+              "endBalance": "45535115.54",
+              "partial": false
+            },
+            {
+              "year": 84,
+              "startBalance": "45535115.54",
+              "withdrawal": "10000.00",
+              "returnAmount": "2276255.78",
+              "endBalance": "47801371.32",
+              "partial": false
+            },
+            {
+              "year": 85,
+              "startBalance": "47801371.32",
+              "withdrawal": "10000.00",
+              "returnAmount": "2389568.57",
+              "endBalance": "50180939.89",
+              "partial": false
+            },
+            {
+              "year": 86,
+              "startBalance": "50180939.89",
+              "withdrawal": "10000.00",
+              "returnAmount": "2508546.99",
+              "endBalance": "52679486.88",
+              "partial": false
+            },
+            {
+              "year": 87,
+              "startBalance": "52679486.88",
+              "withdrawal": "10000.00",
+              "returnAmount": "2633474.34",
+              "endBalance": "55302961.22",
+              "partial": false
+            },
+            {
+              "year": 88,
+              "startBalance": "55302961.22",
+              "withdrawal": "10000.00",
+              "returnAmount": "2764648.06",
+              "endBalance": "58057609.28",
+              "partial": false
+            },
+            {
+              "year": 89,
+              "startBalance": "58057609.28",
+              "withdrawal": "10000.00",
+              "returnAmount": "2902380.46",
+              "endBalance": "60949989.74",
+              "partial": false
+            },
+            {
+              "year": 90,
+              "startBalance": "60949989.74",
+              "withdrawal": "10000.00",
+              "returnAmount": "3046999.49",
+              "endBalance": "63986989.23",
+              "partial": false
+            },
+            {
+              "year": 91,
+              "startBalance": "63986989.23",
+              "withdrawal": "10000.00",
+              "returnAmount": "3198849.46",
+              "endBalance": "67175838.69",
+              "partial": false
+            },
+            {
+              "year": 92,
+              "startBalance": "67175838.69",
+              "withdrawal": "10000.00",
+              "returnAmount": "3358291.93",
+              "endBalance": "70524130.62",
+              "partial": false
+            },
+            {
+              "year": 93,
+              "startBalance": "70524130.62",
+              "withdrawal": "10000.00",
+              "returnAmount": "3525706.53",
+              "endBalance": "74039837.15",
+              "partial": false
+            },
+            {
+              "year": 94,
+              "startBalance": "74039837.15",
+              "withdrawal": "10000.00",
+              "returnAmount": "3701491.86",
+              "endBalance": "77731329.01",
+              "partial": false
+            },
+            {
+              "year": 95,
+              "startBalance": "77731329.01",
+              "withdrawal": "10000.00",
+              "returnAmount": "3886066.45",
+              "endBalance": "81607395.46",
+              "partial": false
+            },
+            {
+              "year": 96,
+              "startBalance": "81607395.46",
+              "withdrawal": "10000.00",
+              "returnAmount": "4079869.77",
+              "endBalance": "85677265.23",
+              "partial": false
+            },
+            {
+              "year": 97,
+              "startBalance": "85677265.23",
+              "withdrawal": "10000.00",
+              "returnAmount": "4283363.26",
+              "endBalance": "89950628.49",
+              "partial": false
+            },
+            {
+              "year": 98,
+              "startBalance": "89950628.49",
+              "withdrawal": "10000.00",
+              "returnAmount": "4497031.42",
+              "endBalance": "94437659.91",
+              "partial": false
+            },
+            {
+              "year": 99,
+              "startBalance": "94437659.91",
+              "withdrawal": "10000.00",
+              "returnAmount": "4721383.00",
+              "endBalance": "99149042.91",
+              "partial": false
+            },
+            {
+              "year": 100,
+              "startBalance": "99149042.91",
+              "withdrawal": "10000.00",
+              "returnAmount": "4956952.15",
+              "endBalance": "104095995.06",
+              "partial": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "four-percent-rule",
+      "kind": "core",
+      "purpose": "4% 法則：年支出 60 萬→目標 1,500 萬，現有組合恰達標",
+      "input": {
+        "mode": "four-percent",
+        "annualSpending": "600000",
+        "currentPortfolio": "15000000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "four-percent",
+          "annualSpending": "600000.00",
+          "targetPortfolio": "15000000.00",
+          "currentPortfolio": "15000000.00",
+          "impliedWithdrawalRatePct": "4.00",
+          "shortfall": "0.00",
+          "meetsRule": true
+        }
+      }
+    },
+    {
+      "id": "four-percent-shortfall",
+      "kind": "core",
+      "purpose": "4% 法則：組合 1,000 萬，短少 500 萬，隱含提領率 6.00%",
+      "input": {
+        "mode": "four-percent",
+        "annualSpending": "600000",
+        "currentPortfolio": "10000000"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "four-percent",
+          "annualSpending": "600000.00",
+          "targetPortfolio": "15000000.00",
+          "currentPortfolio": "10000000.00",
+          "impliedWithdrawalRatePct": "6.00",
+          "shortfall": "5000000.00",
+          "meetsRule": false
+        }
+      }
+    },
+    {
+      "id": "four-percent-no-current",
+      "kind": "core",
+      "purpose": "4% 法則：未填現有組合，只給目標，隱含值皆為 null",
+      "input": {
+        "mode": "four-percent",
+        "annualSpending": "480000",
+        "currentPortfolio": ""
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "four-percent",
+          "annualSpending": "480000.00",
+          "targetPortfolio": "12000000.00",
+          "currentPortfolio": null,
+          "impliedWithdrawalRatePct": null,
+          "shortfall": null,
+          "meetsRule": null
+        }
+      }
+    },
+    {
+      "id": "rate-too-high",
+      "kind": "core",
+      "purpose": "報酬率 101 超出 −50～100 上限",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "50000",
+        "returnRatePct": "101",
+        "inflationRatePct": "0"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "returnRatePct",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "bad-decimal-places",
+      "kind": "core",
+      "purpose": "年提領小數超過 2 位",
+      "input": {
+        "mode": "depletion",
+        "portfolioValue": "1000000",
+        "annualWithdrawal": "50000.123",
+        "returnRatePct": "5",
+        "inflationRatePct": "2"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_PLACES",
+          "field": "annualWithdrawal",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "zero-spending",
+      "kind": "core",
+      "purpose": "4% 法則年支出為 0：無意義，RANGE",
+      "input": {
+        "mode": "four-percent",
+        "annualSpending": "0",
+        "currentPortfolio": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "annualSpending",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "mode": "depletion",
+          "portfolioValue": "1000000",
+          "annualWithdrawal": "50000",
+          "returnRatePct": "0",
+          "inflationRatePct": "0"
+        },
+        "edit": {
+          "mode": "depletion",
+          "portfolioValue": "1000000",
+          "annualWithdrawal": "50000",
+          "returnRatePct": "101",
+          "inflationRatePct": "0"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "returnRatePct",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "mode": "depletion",
+          "portfolioValue": "1000000",
+          "annualWithdrawal": "50000",
+          "returnRatePct": "0",
+          "inflationRatePct": "0"
+        },
+        "lateResult": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "20.00",
+          "fullYears": 20,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "950000.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "950000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "900000.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "900000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "850000.00",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "850000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "800000.00",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "800000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "750000.00",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "750000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "700000.00",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "700000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "650000.00",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "650000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "600000.00",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "600000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "550000.00",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "550000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "500000.00",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "500000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "450000.00",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "450000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "400000.00",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "400000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "350000.00",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "350000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "300000.00",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "300000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "250000.00",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "250000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "200000.00",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "200000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "150000.00",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "150000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "100000.00",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "100000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "50000.00",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "50000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": false
+            }
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "depletion",
+            "portfolioValue": "1000000",
+            "annualWithdrawal": "50000",
+            "returnRatePct": "0",
+            "inflationRatePct": "0"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "depletion",
+            "portfolioValue": "",
+            "annualWithdrawal": "",
+            "returnRatePct": "5",
+            "inflationRatePct": "2"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "mode": "depletion",
+          "portfolioValue": "1000000",
+          "annualWithdrawal": "50000",
+          "returnRatePct": "0",
+          "inflationRatePct": "0"
+        },
+        "newerDraft": {
+          "mode": "depletion",
+          "portfolioValue": "1000000",
+          "annualWithdrawal": "50000",
+          "returnRatePct": "101",
+          "inflationRatePct": "0"
+        },
+        "olderLateResult": {
+          "mode": "depletion",
+          "depletionStatus": "depleted",
+          "yearsUntilDepletion": "20.00",
+          "fullYears": 20,
+          "partialYearFraction": "0.00",
+          "finalPartialWithdrawal": "0.00",
+          "yearlyTable": [
+            {
+              "year": 1,
+              "startBalance": "1000000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "950000.00",
+              "partial": false
+            },
+            {
+              "year": 2,
+              "startBalance": "950000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "900000.00",
+              "partial": false
+            },
+            {
+              "year": 3,
+              "startBalance": "900000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "850000.00",
+              "partial": false
+            },
+            {
+              "year": 4,
+              "startBalance": "850000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "800000.00",
+              "partial": false
+            },
+            {
+              "year": 5,
+              "startBalance": "800000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "750000.00",
+              "partial": false
+            },
+            {
+              "year": 6,
+              "startBalance": "750000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "700000.00",
+              "partial": false
+            },
+            {
+              "year": 7,
+              "startBalance": "700000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "650000.00",
+              "partial": false
+            },
+            {
+              "year": 8,
+              "startBalance": "650000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "600000.00",
+              "partial": false
+            },
+            {
+              "year": 9,
+              "startBalance": "600000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "550000.00",
+              "partial": false
+            },
+            {
+              "year": 10,
+              "startBalance": "550000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "500000.00",
+              "partial": false
+            },
+            {
+              "year": 11,
+              "startBalance": "500000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "450000.00",
+              "partial": false
+            },
+            {
+              "year": 12,
+              "startBalance": "450000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "400000.00",
+              "partial": false
+            },
+            {
+              "year": 13,
+              "startBalance": "400000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "350000.00",
+              "partial": false
+            },
+            {
+              "year": 14,
+              "startBalance": "350000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "300000.00",
+              "partial": false
+            },
+            {
+              "year": 15,
+              "startBalance": "300000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "250000.00",
+              "partial": false
+            },
+            {
+              "year": 16,
+              "startBalance": "250000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "200000.00",
+              "partial": false
+            },
+            {
+              "year": 17,
+              "startBalance": "200000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "150000.00",
+              "partial": false
+            },
+            {
+              "year": 18,
+              "startBalance": "150000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "100000.00",
+              "partial": false
+            },
+            {
+              "year": 19,
+              "startBalance": "100000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "50000.00",
+              "partial": false
+            },
+            {
+              "year": 20,
+              "startBalance": "50000.00",
+              "withdrawal": "50000.00",
+              "returnAmount": "0.00",
+              "endBalance": "0.00",
+              "partial": false
+            }
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "returnRatePct",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "returnRatePct",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
