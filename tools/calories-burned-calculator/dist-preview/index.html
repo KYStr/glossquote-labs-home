@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>運動熱量消耗計算｜Gloss Tools</title>
+<meta name="description" content="以 2024 年成人身體活動彙編的 MET 值，依體重與運動時間估算單次運動的總熱量消耗，最多同時比較三種活動。">
+<link rel="stylesheet" href="./styles/calories-burned-calculator.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>運動熱量消耗計算</h1>
+  <p class="lede">以 2024 年成人身體活動彙編的 MET 值，依體重與運動時間估算單次運動的總熱量消耗，最多同時比較三種活動。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="calories-form" novalidate>
+        <div class="field">
+          <label for="field-weight">體重（公斤）</label>
+          <p class="help" id="help-weight">20–500 kg，最多兩位小數（例如 62.5）。</p>
+          <input id="field-weight" name="weight" type="text" inputmode="decimal" autocomplete="off" value="60" aria-describedby="help-weight">
+          <p class="field-error" id="error-weight" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-durationMinutes">運動時間（分鐘）</label>
+          <p class="help" id="help-durationMinutes">1–1440 分鐘，最多一位小數（例如 30 或 45.5）。</p>
+          <input id="field-durationMinutes" name="durationMinutes" type="text" inputmode="decimal" autocomplete="off" value="30" aria-describedby="help-durationMinutes">
+          <p class="field-error" id="error-durationMinutes" role="alert"></p>
+        </div>
+        <fieldset class="field activities" id="activities-group" aria-describedby="help-activities">
+          <legend>活動（最多選 3 項比較）</legend>
+          <p class="help" id="help-activities">選擇 1 至 3 項活動；每一列都以同一個體重與完整時間計算，合計是各列相加。</p>
+          <div id="activity-list"></div>
+          <p class="field-error" id="error-activities" role="alert"></p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。請輸入體重、運動時間並選擇活動。</p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告（JSON）</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估算消耗熱量</h2>
+      <p id="summary"></p>
+      <p class="stale-note" id="stale-note" hidden></p>
+      <div class="table-scroll" role="region" aria-label="估算消耗熱量" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">活動</th><th scope="col">MET</th><th scope="col">熱量（kcal）</th></tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+          <tfoot>
+            <tr><th scope="row">合計</th><td></td><td id="total-kcal"></td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="gross-note">以上為總消耗（含休息代謝）</p>
+      <p class="disclaimer" id="disclaimer">本工具的熱量為估算值：依 2024 年成人身體活動彙編（2024 Adult Compendium of Physical Activities）的 MET 值，以「MET × 體重（kg）× 時間（小時）」計算，為包含休息代謝的總消耗。實際消耗因個人代謝、動作效率與強度而異，本結果不作為醫療、減重或飲食處方。</p>
+    </section>
+  </div>
+
+  <section class="panel met-table" aria-labelledby="met-heading">
+    <h2 id="met-heading">活動 MET 值（2024 年成人身體活動彙編）</h2>
+    <p>下表為本工具唯一的活動資料，MET 值依 2024 年版原文使用，未經平均、合併或調整。</p>
+    <noscript><p>需要啟用 JavaScript 才能顯示活動列表。</p></noscript>
+    <div class="table-scroll" role="region" aria-label="活動 MET 值" tabindex="0">
+      <table>
+        <thead>
+          <tr><th scope="col">活動</th><th scope="col">MET</th><th scope="col">編號</th></tr>
+        </thead>
+        <tbody id="met-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="disclaimer" id="page-disclaimer">本工具的熱量為估算值：依 2024 年成人身體活動彙編（2024 Adult Compendium of Physical Activities）的 MET 值，以「MET × 體重（kg）× 時間（小時）」計算，為包含休息代謝的總消耗。實際消耗因個人代謝、動作效率與強度而異，本結果不作為醫療、減重或飲食處方。</p>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>熱量（kcal）＝ MET × 體重（kg）× 時間（小時）。MET 值來自 2024 年成人身體活動彙編，1 MET 依該彙編定義為每公斤每小時 1 kcal。每一列以整數運算一次四捨五入到整數 kcal（小數恰為 0.5 時進位），合計是各列四捨五入後相加，因此顯示的各列一定加總等於合計。結果是包含休息代謝的總消耗，不是淨消耗。</p>
+    <p>體重只接受 ASCII 數字、最多兩位小數，20–500 kg；時間只接受 ASCII 數字、最多一位小數，1–1440 分鐘；逗號、空白、正負號、指數與全形數字都是格式錯誤，工具不會替你猜。下載的報告檔名固定為 calories-burned-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這個數字是怎麼算出來的？</dt>
+      <dd>熱量（kcal）＝ MET × 體重（kg）× 時間（小時）。MET 是活動強度相對於休息的倍數；本工具的 MET 值來自 2024 年成人身體活動彙編，公式中的 1 MET 依該彙編定義為每公斤每小時 1 kcal。</dd>
+      <dt>這是總消耗還是淨消耗？</dt>
+      <dd>是總消耗，已包含同一段時間休息也會消耗的約 1 MET。若只想看活動本身的淨消耗，可用（MET − 1）× 體重 × 時間自行估算；本工具不提供切換。</dd>
+      <dt>為什麼和我的手錶或跑步機數字不一樣？</dt>
+      <dd>MET 值是 19–59 歲成人的群體平均，不同裝置用各自的感測與模型估算，個人代謝與動作效率也會造成差異；各方數字不同是預期內的。</dd>
+      <dt>MET 值是哪個版本？為什麼和別的網站不同？</dt>
+      <dd>本工具採用 2024 年版。2024 年版修訂了許多 2011 年版的數值（例如快走 4.3 → 4.8、哈達瑜伽 2.5 → 2.3），仍引用舊版的網站會算出不同的結果。</dd>
+      <dt>比較模式的合計是什麼意思？</dt>
+      <dd>每一列都以同一個體重與完整時間計算；合計是各列的相加，表示「每項都做滿該時間」的總和，不是把時間分配給各活動。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
