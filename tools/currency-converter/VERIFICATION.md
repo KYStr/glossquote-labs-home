@@ -9,8 +9,9 @@ Spec fixtures SHA-256:
 `fe03d36865e7295f94a037dc306e756fa647972d57e6d5ff7030483410343463`
 Environment: Node v24.22.1, no runtime dependencies, no browser.
 
-Candidate commit: (filled in after push)
-Product PR: (filled in after push)
+Product PR: https://github.com/KYStr/glossquote-labs-home/pull/361
+(DRAFT, against `codex/initial-publication`; the candidate commit is
+the PR head — see the build report for its SHA)
 
 ## Commands run (all in `tools/currency-converter/`)
 

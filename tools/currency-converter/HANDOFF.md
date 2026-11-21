@@ -18,8 +18,9 @@ quick table. The tool never fetches, provides, or implies a live rate.
 - Base commit (branch point): `c8ca5fd3bdfd3322891e58e42d710cc2ca4fe33a`
   (`codex/initial-publication` at build time)
 - Branch: `muse/currency-converter-production-20261109`
-- Candidate commit: (filled in after push — see VERIFICATION.md)
-- Product PR: (filled in after push — see VERIFICATION.md)
+- Product PR: https://github.com/KYStr/glossquote-labs-home/pull/361
+  (DRAFT, against `codex/initial-publication`; the candidate commit
+  is the PR head — see the build report for its SHA)
 
 ## Files changed (only `tools/currency-converter/`)
 
