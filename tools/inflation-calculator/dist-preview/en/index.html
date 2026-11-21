@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Inflation Calculator | Gloss Tools</title>
+<meta name="description" content="Convert an amount between price levels with a constant annual inflation rate or two CPI index values — future nominal value and real purchasing power.">
+<link rel="stylesheet" href="../styles/inflation.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Inflation Calculator</h1>
+  <p class="lede">Convert an amount to another price level: project a future nominal amount and real purchasing power with a constant annual inflation rate, or convert an equivalent amount with two Consumer Price Index values.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Inputs</h2>
+      <form id="inflation-form" novalidate>
+        <fieldset class="mode-group">
+          <legend>Mode</legend>
+          <label class="mode-option" for="mode-rate">
+            <input type="radio" id="mode-rate" name="mode" value="rate" checked>
+            Constant rate
+          </label>
+          <label class="mode-option" for="mode-cpi">
+            <input type="radio" id="mode-cpi" name="mode" value="cpi">
+            CPI index
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-amount">Amount</label>
+          <p class="help" id="help-amount">The amount to convert, 0–999,999,999.99, at most two decimal places.</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+
+        <div id="group-rate">
+          <div class="field">
+            <label for="field-annualRatePercent">Annual inflation rate (%)</label>
+            <p class="help" id="help-annualRatePercent">The same rate assumed every year, above −100% and at most 1000%, at most three decimal places. A negative value means deflation.</p>
+            <input id="field-annualRatePercent" name="annualRatePercent" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-annualRatePercent">
+            <p class="field-error" id="error-annualRatePercent" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-years">Years</label>
+            <p class="help" id="help-years">A whole number of years, 0–200.</p>
+            <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-years">
+            <p class="field-error" id="error-years" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="group-cpi" hidden>
+          <div class="field">
+            <label for="field-cpiFrom">Starting CPI index</label>
+            <p class="help" id="help-cpiFrom">The Consumer Price Index of the starting period, above 0 and at most 99,999.999, at most three decimal places.</p>
+            <input id="field-cpiFrom" name="cpiFrom" type="text" inputmode="decimal" autocomplete="off" value="100.0" aria-describedby="help-cpiFrom">
+            <p class="field-error" id="error-cpiFrom" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-cpiTo">Ending CPI index</label>
+            <p class="help" id="help-cpiTo">The Consumer Price Index of the ending period, above 0 and at most 99,999.999, at most three decimal places. It may be lower than the starting index.</p>
+            <input id="field-cpiTo" name="cpiTo" type="text" inputmode="decimal" autocomplete="off" value="102.0" aria-describedby="help-cpiTo">
+            <p class="field-error" id="error-cpiTo" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-labelFrom">Start period label</label>
+            <p class="help" id="help-labelFrom">For example 2015. After trimming spaces it must be 1–24 characters.</p>
+            <input id="field-labelFrom" name="labelFrom" type="text" autocomplete="off" value="" aria-describedby="help-labelFrom">
+            <p class="field-error" id="error-labelFrom" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-labelTo">End period label</label>
+            <p class="help" id="help-labelTo">For example 2025. After trimming spaces it must be 1–24 characters.</p>
+            <input id="field-labelTo" name="labelTo" type="text" autocomplete="off" value="" aria-describedby="help-labelTo">
+            <p class="field-error" id="error-labelTo" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-yearsBetween">Years between (optional)</label>
+            <p class="help" id="help-yearsBetween">The years between the two periods, a whole number from 1–200. Leave blank to skip the equivalent annual rate.</p>
+            <input id="field-yearsBetween" name="yearsBetween" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-yearsBetween">
+            <p class="field-error" id="error-yearsBetween" role="alert"></p>
+          </div>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter values, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate conversion</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Conversion result</h2>
+      <div id="result-rate" hidden>
+        <dl class="summary">
+          <div>
+            <dt>Future nominal amount</dt>
+            <dd id="result-future-value"></dd>
+          </div>
+          <div>
+            <dt>Real purchasing power</dt>
+            <dd id="result-purchasing-power"></dd>
+          </div>
+          <div>
+            <dt>Cumulative inflation</dt>
+            <dd id="result-cumulative"></dd>
+          </div>
+        </dl>
+        <h3>Year-by-year table</h3>
+        <div class="table-scroll" tabindex="0" aria-label="Year-by-year table, scrollable region">
+          <table>
+            <caption>Nominal amount and real purchasing power each year</caption>
+            <thead>
+              <tr>
+                <th scope="col">Year</th>
+                <th scope="col">Nominal amount</th>
+                <th scope="col">Real purchasing power</th>
+              </tr>
+            </thead>
+            <tbody id="year-table-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button type="button" id="page-prev" class="button-secondary">Previous page</button>
+          <p id="page-label" role="status" aria-live="polite"></p>
+          <button type="button" id="page-next" class="button-secondary">Next page</button>
+        </div>
+        <p class="range-note" id="range-note" hidden>Rows showing “—” for purchasing power are beyond the computable range.</p>
+      </div>
+      <div id="result-cpi" hidden>
+        <p class="result-period" id="result-period"></p>
+        <dl class="summary">
+          <div>
+            <dt>Converted amount</dt>
+            <dd id="result-adjusted-amount"></dd>
+          </div>
+          <div>
+            <dt>Cumulative inflation</dt>
+            <dd id="result-cpi-cumulative"></dd>
+          </div>
+          <div id="result-equivalent-row">
+            <dt>Equivalent annual rate</dt>
+            <dd id="result-equivalent-rate"></dd>
+          </div>
+        </dl>
+      </div>
+      <p class="method-note" id="method-note">Constant-rate mode assumes the same inflation rate every year — a simplification. CPI mode results depend on the index source and periods you enter.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it calculates, and the formats</summary>
+    <p>Constant-rate mode: first the base 1 + annual rate ÷ 100, then the factor Math.pow(base, years); the future nominal amount is amount × factor, real purchasing power is amount ÷ factor, and cumulative inflation is (factor − 1) × 100%. Each year-table row k is recomputed independently with Math.pow(base, k), never by iterative multiplication. CPI mode: the ratio is ending index ÷ starting index; the converted amount is amount × ratio, the cumulative change is (ratio − 1) × 100%; when years between are given, the equivalent annual rate is (ratio raised to 1 ÷ years − 1) × 100%.</p>
+    <p>Amounts and cumulative percentages round to 2 decimal places, the equivalent annual rate to 4, each output rounded exactly once from the unrounded value. Negative values round half up toward positive infinity. When the factor underflows to 0, purchasing power shows “—” for beyond the computable range. The downloaded report is always named inflation-calculator-report.json; its content is the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing line feed.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What does constant-rate mode assume?</dt>
+      <dd>The same rate every year, compounded; real inflation varies year by year.</dd>
+      <dt>Where do CPI values come from?</dt>
+      <dd>The tool bundles no CPI data; enter officially published indices (such as DGBAS CPI) and label the periods.</dd>
+      <dt>Can the rate be negative?</dt>
+      <dd>Yes; a rate above −100% models deflation — the future nominal amount shrinks and purchasing power rises.</dd>
+      <dt>What is the equivalent annual rate?</dt>
+      <dd>The constant yearly rate that compounds to the total CPI change; it needs the years between the two indices.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, nothing is stored on a server, and your input is not recorded. The draft lives only in this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
