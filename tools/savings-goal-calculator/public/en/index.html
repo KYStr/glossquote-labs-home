@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Savings Goal Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a goal, current savings and an assumed annual rate to find the monthly deposit you need, or the months a fixed deposit takes to reach the goal. End-of-month deposits and exact rational arithmetic; results are not a guarantee of returns.">
+<link rel="stylesheet" href="../styles/savings-goal.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">The draft lives only on this page; leaving or switching language discards it. Nothing is uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Savings Goal Calculator</h1>
+  <p class="lede">Enter a goal amount, your current savings and an assumed annual rate to find the monthly deposit you need, or the months a fixed deposit takes to reach the goal. Deposits are always made at the end of the month, and the rate is only your assumption — not a promise of returns.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Savings plan inputs</h2>
+      <form id="savings-goal-form" novalidate>
+        <div class="field">
+          <label for="field-mode">Solve mode</label>
+          <p class="help" id="help-mode">Choose the question to solve: find the monthly deposit, or find the months needed. Switching modes keeps the shared fields.</p>
+          <select id="field-mode" name="mode" aria-describedby="help-mode">
+            <option value="payment" selected>Find the monthly deposit</option>
+            <option value="months">Find the months needed</option>
+          </select>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetAmount">Goal amount</label>
+          <p class="help" id="help-targetAmount">The amount you want to reach, 0.01–999,999,999.99, at most 2 decimal places.</p>
+          <input id="field-targetAmount" name="targetAmount" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-targetAmount">
+          <p class="field-error" id="error-targetAmount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-initialAmount">Current savings</label>
+          <p class="help" id="help-initialAmount">What you have saved so far, 0–999,999,999.99, at most 2 decimal places.</p>
+          <input id="field-initialAmount" name="initialAmount" type="text" inputmode="decimal" autocomplete="off" value="10000" aria-describedby="help-initialAmount">
+          <p class="field-error" id="error-initialAmount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-annualRate">Annual rate (%)</label>
+          <p class="help" id="help-annualRate">Your assumed annual rate, 0–100%, at most 2 decimal places. The rate is only an assumption, not a guarantee of returns.</p>
+          <input id="field-annualRate" name="annualRate" type="text" inputmode="decimal" autocomplete="off" value="3" aria-describedby="help-annualRate">
+          <p class="field-error" id="error-annualRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-months">Term (months)</label>
+          <p class="help" id="help-months">Only used for “Find the monthly deposit”. 1–600 months.</p>
+          <input id="field-months" name="months" type="text" inputmode="numeric" autocomplete="off" value="60" aria-describedby="help-months">
+          <p class="field-error" id="error-months" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-monthlyPayment">Monthly deposit</label>
+          <p class="help" id="help-monthlyPayment">Only used for “Find the months needed”. The fixed amount deposited each month, 0–999,999,999.99, at most 2 decimal places.</p>
+          <input id="field-monthlyPayment" name="monthlyPayment" type="text" inputmode="decimal" autocomplete="off" value="3000" aria-describedby="help-monthlyPayment">
+          <p class="field-error" id="error-monthlyPayment" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter your inputs or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate savings plan</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Savings plan result</h2>
+      <p class="result-summary" id="result-summary"></p>
+      <p class="result-classification" id="status-sentence" hidden></p>
+      <dl class="result-details" id="result-details">
+        <div id="row-months" hidden><dt>Term (months)</dt><dd id="value-months"></dd></div>
+        <div id="row-monthlyPayment" hidden><dt>Monthly deposit needed</dt><dd id="value-monthlyPayment"></dd></div>
+        <div id="row-totalDeposits" hidden><dt>Total deposits</dt><dd id="value-totalDeposits"></dd></div>
+        <div id="row-totalInterest" hidden><dt>Total interest</dt><dd id="value-totalInterest"></dd></div>
+        <div id="row-finalBalance" hidden><dt>Final balance</dt><dd id="value-finalBalance"></dd></div>
+        <div id="row-monthsRequired" hidden><dt>Months required</dt><dd id="value-monthsRequired"></dd></div>
+        <div id="row-finalMonthPayment" hidden><dt>Final month deposit</dt><dd id="value-finalMonthPayment"></dd></div>
+        <div id="row-balanceIfFullPayment" hidden><dt>Balance if paying in full</dt><dd id="value-balanceIfFullPayment"></dd></div>
+      </dl>
+      <p class="disclaimer" id="disclosure">報酬率為假設值，試算結果不保證實際收益。 / The rate is an assumption; results do not guarantee actual returns.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and formats</summary>
+    <p>Deposits are always made at the end of the month (ordinary annuity): a deposit made this month starts earning interest next month. Mode A solves the monthly deposit from the term with the closed-form annuity formula; mode B solves the months to reach the goal with a logarithmic estimate corrected by exact rational comparison. All arithmetic uses integer cents and integer basis points exactly — no floating point decides any digit. Monthly amounts and the final month's smaller deposit are always rounded up to the cent; balances are shown half-up. The solving horizon is 1,200 months (100 years); beyond it the tool reports out of range instead of an astronomical month count. The downloaded report is always named savings-goal-report.json and holds the input and result as compact JSON, object keys sorted recursively by UTF-16 code units, with one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>When are deposits made?</dt>
+      <dd>At the end of each month (ordinary annuity); a deposit starts earning interest the following month.</dd>
+      <dt>Why is the monthly amount rounded up to the cent?</dt>
+      <dd>So the plan never falls a cent short; depositing the displayed amount ends at or slightly above the goal. The final month's smaller deposit follows the same rule, so the displayed interest can be under a cent below the exact figure.</dd>
+      <dt>Is the return guaranteed?</dt>
+      <dd>No. The rate is your own assumption and the result is only a projection under it, not a promise of any actual return.</dd>
+      <dt>How is this different from the Compound Interest Calculator?</dt>
+      <dd>That tool simulates growth month by month with a full table, and its answers come from that cent-rounded simulation; this tool solves only the two inverse questions with unrounded closed-form math, so the two can differ by a few cents on the same inputs.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page — nothing is uploaded, stored on a server, or logged. The draft lives only on this page; leaving or switching language discards it.</p>
+</main>
+</body>
+</html>

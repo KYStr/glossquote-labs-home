@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>儲蓄目標計算｜Gloss Tools</title>
+<meta name="description" content="輸入目標金額、目前存款與假設年利率，算出每月要存多少，或以固定月存金額算出幾個月達標；月底存款、精確有理數運算，結果不保證收益。">
+<link rel="stylesheet" href="./styles/savings-goal.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">草稿只存在這個頁面，離開或切換語言即丟棄，不會上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>儲蓄目標計算</h1>
+  <p class="lede">輸入目標金額、目前存款與假設年利率，算出每月要存多少，或以固定月存金額算出幾個月達標。存款一律月底存入，利率只是你的假設，不是收益保證。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">儲蓄計畫輸入</h2>
+      <form id="savings-goal-form" novalidate>
+        <div class="field">
+          <label for="field-mode">求解模式</label>
+          <p class="help" id="help-mode">選擇要求解的問題：算每月要存多少，或算幾個月達標。切換模式不會清除共用欄位。</p>
+          <select id="field-mode" name="mode" aria-describedby="help-mode">
+            <option value="payment" selected>算每月要存多少</option>
+            <option value="months">算幾個月達標</option>
+          </select>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetAmount">目標金額</label>
+          <p class="help" id="help-targetAmount">想存到的金額，0.01–999,999,999.99 元，最多 2 位小數。</p>
+          <input id="field-targetAmount" name="targetAmount" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-targetAmount">
+          <p class="field-error" id="error-targetAmount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-initialAmount">目前存款</label>
+          <p class="help" id="help-initialAmount">現在已經存有的金額，0–999,999,999.99 元，最多 2 位小數。</p>
+          <input id="field-initialAmount" name="initialAmount" type="text" inputmode="decimal" autocomplete="off" value="10000" aria-describedby="help-initialAmount">
+          <p class="field-error" id="error-initialAmount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-annualRate">年利率（%）</label>
+          <p class="help" id="help-annualRate">假設的年利率，0–100%，最多 2 位小數。利率只是假設，不是收益保證。</p>
+          <input id="field-annualRate" name="annualRate" type="text" inputmode="decimal" autocomplete="off" value="3" aria-describedby="help-annualRate">
+          <p class="field-error" id="error-annualRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-months">期限（月）</label>
+          <p class="help" id="help-months">僅「算每月要存多少」時啟用。1–600 個月。</p>
+          <input id="field-months" name="months" type="text" inputmode="numeric" autocomplete="off" value="60" aria-describedby="help-months">
+          <p class="field-error" id="error-months" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-monthlyPayment">每月存款</label>
+          <p class="help" id="help-monthlyPayment">僅「算幾個月達標」時啟用。每月固定存入的金額，0–999,999,999.99 元，最多 2 位小數。</p>
+          <input id="field-monthlyPayment" name="monthlyPayment" type="text" inputmode="decimal" autocomplete="off" value="3000" aria-describedby="help-monthlyPayment">
+          <p class="field-error" id="error-monthlyPayment" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入或載入範例</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算儲蓄計畫</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">儲蓄計畫結果</h2>
+      <p class="result-summary" id="result-summary"></p>
+      <p class="result-classification" id="status-sentence" hidden></p>
+      <dl class="result-details" id="result-details">
+        <div id="row-months" hidden><dt>期限（月）</dt><dd id="value-months"></dd></div>
+        <div id="row-monthlyPayment" hidden><dt>每月需存金額</dt><dd id="value-monthlyPayment"></dd></div>
+        <div id="row-totalDeposits" hidden><dt>總存款</dt><dd id="value-totalDeposits"></dd></div>
+        <div id="row-totalInterest" hidden><dt>總利息</dt><dd id="value-totalInterest"></dd></div>
+        <div id="row-finalBalance" hidden><dt>期末餘額</dt><dd id="value-finalBalance"></dd></div>
+        <div id="row-monthsRequired" hidden><dt>達標月數</dt><dd id="value-monthsRequired"></dd></div>
+        <div id="row-finalMonthPayment" hidden><dt>最後一月需存金額</dt><dd id="value-finalMonthPayment"></dd></div>
+        <div id="row-balanceIfFullPayment" hidden><dt>全額存入時餘額</dt><dd id="value-balanceIfFullPayment"></dd></div>
+      </dl>
+      <p class="disclaimer" id="disclosure">報酬率為假設值，試算結果不保證實際收益。 / The rate is an assumption; results do not guarantee actual returns.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>存款一律在每月月底存入（普通年金）：本月存入的錢下個月才開始計息。模式 A 用閉式年金公式由期限解出每月需存金額，模式 B 用對數估計加精確有理數校正解出達標月數；全部運算以整數分與整數基點精確計算，不以浮點決定任何一位數字。每月金額與最後一月的尾款一律無條件進位到分，餘額以半數進位顯示；達標月數上限為 1200 個月（100 年），超過時回報超出範圍而非輸出天文數字。下載的報告檔名固定為 savings-goal-report.json，內容是輸入與結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>存款是什麼時候存入？</dt>
+      <dd>每月月底（普通年金），本月存入的錢下個月才開始計息。</dd>
+      <dt>為什麼每月金額無條件進位到分？</dt>
+      <dd>避免差不到一分錢沒達標；照顯示金額存，期末餘額會等於或略高於目標。最後一月的尾款也是同樣規則，所以顯示利息可能比精確值少不到一分。</dd>
+      <dt>報酬率是保證的嗎？</dt>
+      <dd>不是。利率是你輸入的假設，結果只是該假設下的試算，不保證任何實際收益。</dd>
+      <dt>和複利計算機有什麼不同？</dt>
+      <dd>複利計算機逐月模擬成長並提供每月明細，答案來自逐月進位到分的模擬；本工具只解兩個反問題，用不捨入的閉式公式精確計算，因此同樣輸入下兩者答案可能差幾分錢。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面，離開或切換語言即丟棄。</p>
+</main>
+</body>
+</html>
