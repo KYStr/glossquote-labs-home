@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Photo Print Size Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a photo's pixel dimensions and a target DPI to find its largest printable size, the effective DPI and quality band at each standard size, or the pixels a chosen size requires.">
+<link rel="stylesheet" href="../styles/photo-print-size.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Photo Print Size Calculator</h1>
+  <p class="lede">Enter a photo's pixel width and height and a target DPI to find its largest printable size, the effective DPI and quality band at each standard size, or the pixels a chosen size requires. No photo upload — everything is computed offline on this page.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Print size</h2>
+      <form id="photo-print-size-form" novalidate>
+        <div class="field">
+          <fieldset aria-describedby="help-mode">
+            <legend>Mode</legend>
+            <p class="help" id="help-mode">Choose what to calculate: the largest print size, the pixels a size requires, or the effective DPI at a size.</p>
+            <div class="mode-options">
+              <label><input type="radio" id="field-mode-max" name="mode" value="max" checked>Largest print size</label>
+              <label><input type="radio" id="field-mode-need" name="mode" value="need">Required pixels</label>
+              <label><input type="radio" id="field-mode-check" name="mode" value="check">Effective DPI</label>
+            </div>
+          </fieldset>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-pixelsW">Pixel width</label>
+          <p class="help" id="help-pixelsW">Enabled only in “Largest print size” and “Effective DPI” modes. The pixel width from the photo file's properties, a whole number from 1 to 200,000.</p>
+          <input id="field-pixelsW" name="pixelsW" type="text" inputmode="numeric" autocomplete="off" value="6000" aria-describedby="help-pixelsW">
+          <p class="field-error" id="error-pixelsW" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-pixelsH">Pixel height</label>
+          <p class="help" id="help-pixelsH">Enabled only in “Largest print size” and “Effective DPI” modes. The pixel height from the photo file's properties, a whole number from 1 to 200,000.</p>
+          <input id="field-pixelsH" name="pixelsH" type="text" inputmode="numeric" autocomplete="off" value="4000" aria-describedby="help-pixelsH">
+          <p class="field-error" id="error-pixelsH" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dpi">Target DPI</label>
+          <p class="help" id="help-dpi">Enabled only in “Largest print size” and “Required pixels” modes. From 1 to 1200, at most two decimal places; tap a preset to fill it in.</p>
+          <input id="field-dpi" name="dpi" type="text" inputmode="decimal" autocomplete="off" value="300" aria-describedby="help-dpi">
+          <div class="dpi-presets">
+            <button type="button" id="dpi-preset-150" data-dpi="150">150</button>
+            <button type="button" id="dpi-preset-240" data-dpi="240">240</button>
+            <button type="button" id="dpi-preset-300" data-dpi="300">300</button>
+          </div>
+          <p class="field-error" id="error-dpi" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sizeId">Standard size</label>
+          <p class="help" id="help-sizeId">Enabled only in “Required pixels” and “Effective DPI” modes. The size table is orientation-free: long side to long side, short side to short side.</p>
+          <select id="field-sizeId" name="sizeId" aria-describedby="help-sizeId">
+            <option value="3x5">3×5 photo (5 × 3 in)</option>
+            <option value="4x6" selected>4×6 photo (6 × 4 in)</option>
+            <option value="5x7">5×7 photo (7 × 5 in)</option>
+            <option value="6x8">6×8 photo (8 × 6 in)</option>
+            <option value="8x10">8×10 photo (10 × 8 in)</option>
+            <option value="10x12">10×12 photo (12 × 10 in)</option>
+            <option value="A5">A5 (21.0 × 14.8 cm)</option>
+            <option value="A4">A4 (29.7 × 21.0 cm)</option>
+            <option value="A3">A3 (42.0 × 29.7 cm)</option>
+          </select>
+          <p class="field-error" id="error-sizeId" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter pixel dimensions and a target DPI, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate print sizes</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Result</h2>
+      <p class="result-value" id="result-summary"></p>
+      <p class="result-sub" id="result-sub"></p>
+      <div class="table-wrap" id="result-details"></div>
+      <p class="disclaimer" id="disclaimer">Quality bands are common rules of thumb for typical viewing distances, not an industry standard.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and formats</summary>
+    <p>There are nine standard sizes: 3×5, 4×6, 5×7, 6×8, 8×10 and 10×12 photos, plus A5, A4 and A3. Matching is orientation-free: the image's long side goes to the paper's long side, the short side to the short side. The largest printable size is the pixel count divided by the target DPI, in inches to 2 decimals and in centimetres to 1 decimal; the pixels a size requires are the size in inches times the target DPI, rounded up; each side's DPI is the pixels divided by that side in inches, and the effective DPI is the smaller side, rounded to 1 decimal. Quality bands follow the rounded effective DPI: 300 and above Excellent, 200 and above Good, 150 and above Acceptable, anything below Poor.</p>
+    <p>The downloaded report is always named photo-print-size-report.json. Its content is the result as compact JSON, with object keys sorted by UTF-16 code units recursively and one trailing line feed. This tool assumes full-frame printing without cropping and computes per-side DPI for the whole frame. A print shop may crop or add borders instead; check with the shop.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why do landscape and portrait photos get the same verdicts?</dt>
+      <dd>The size table is orientation-free — long side to long side, short side to short side — so orientation never changes printability.</dd>
+      <dt>Are the quality bands an industry standard?</dt>
+      <dd>No. They are common rules of thumb for a typical viewing distance (about arm's length); large prints are usually viewed from farther away, so below 150 DPI can still look fine.</dd>
+      <dt>What if the photo's aspect ratio differs from the paper's?</dt>
+      <dd>This tool assumes full-frame printing without cropping and computes per-side DPI for the whole frame. A print shop may crop or add borders instead; check with the shop.</dd>
+      <dt>Do I need to upload my photo?</dt>
+      <dd>No, and there is no upload feature. You only type the pixel width and height from the file's properties; everything is computed offline on this page.</dd>
+      <dt>What about viewing on a screen?</dt>
+      <dd>Screen sharpness is the Screen PPI Calculator's job; this tool only covers printing on paper.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is computed locally on this page. Nothing is uploaded, nothing is stored on a server, and your input is not logged. The draft stays on this page only and is discarded when you leave.</p>
+</main>
+</body>
+</html>

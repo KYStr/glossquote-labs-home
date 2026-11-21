@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>照片沖印尺寸計算｜Gloss Tools</title>
+<meta name="description" content="輸入照片像素與目標 DPI，算出最大可沖印尺寸、各標準尺寸的實際 DPI 與品質分級，或反推指定尺寸需要的像素。">
+<link rel="stylesheet" href="./styles/photo-print-size.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>照片沖印尺寸計算</h1>
+  <p class="lede">輸入照片的像素寬高與目標 DPI，算出最大可沖印尺寸、各標準尺寸的實際 DPI 與品質分級，或反推指定尺寸需要的像素。不用上傳照片，全部計算都在這個頁面離線完成。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">沖印尺寸</h2>
+      <form id="photo-print-size-form" novalidate>
+        <div class="field">
+          <fieldset aria-describedby="help-mode">
+            <legend>模式</legend>
+            <p class="help" id="help-mode">選擇要算什麼：最大可印尺寸、指定尺寸的需求像素，或指定尺寸的實際 DPI。</p>
+            <div class="mode-options">
+              <label><input type="radio" id="field-mode-max" name="mode" value="max" checked>最大可印尺寸</label>
+              <label><input type="radio" id="field-mode-need" name="mode" value="need">需求像素</label>
+              <label><input type="radio" id="field-mode-check" name="mode" value="check">實際 DPI</label>
+            </div>
+          </fieldset>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-pixelsW">像素寬</label>
+          <p class="help" id="help-pixelsW">僅「最大可印尺寸」與「實際 DPI」模式啟用。照片檔案資訊裡的像素寬，1–200,000 的整數。</p>
+          <input id="field-pixelsW" name="pixelsW" type="text" inputmode="numeric" autocomplete="off" value="6000" aria-describedby="help-pixelsW">
+          <p class="field-error" id="error-pixelsW" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-pixelsH">像素高</label>
+          <p class="help" id="help-pixelsH">僅「最大可印尺寸」與「實際 DPI」模式啟用。照片檔案資訊裡的像素高，1–200,000 的整數。</p>
+          <input id="field-pixelsH" name="pixelsH" type="text" inputmode="numeric" autocomplete="off" value="4000" aria-describedby="help-pixelsH">
+          <p class="field-error" id="error-pixelsH" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dpi">目標 DPI</label>
+          <p class="help" id="help-dpi">僅「最大可印尺寸」與「需求像素」模式啟用。1–1200，最多兩位小數；點按預設值可直接填入。</p>
+          <input id="field-dpi" name="dpi" type="text" inputmode="decimal" autocomplete="off" value="300" aria-describedby="help-dpi">
+          <div class="dpi-presets">
+            <button type="button" id="dpi-preset-150" data-dpi="150">150</button>
+            <button type="button" id="dpi-preset-240" data-dpi="240">240</button>
+            <button type="button" id="dpi-preset-300" data-dpi="300">300</button>
+          </div>
+          <p class="field-error" id="error-dpi" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sizeId">標準尺寸</label>
+          <p class="help" id="help-sizeId">僅「需求像素」與「實際 DPI」模式啟用。尺寸表方向無關，長邊對長邊、短邊對短邊。</p>
+          <select id="field-sizeId" name="sizeId" aria-describedby="help-sizeId">
+            <option value="3x5">3×5 相片（5 × 3 英寸）</option>
+            <option value="4x6" selected>4×6 相片（6 × 4 英寸）</option>
+            <option value="5x7">5×7 相片（7 × 5 英寸）</option>
+            <option value="6x8">6×8 相片（8 × 6 英寸）</option>
+            <option value="8x10">8×10 相片（10 × 8 英寸）</option>
+            <option value="10x12">10×12 相片（12 × 10 英寸）</option>
+            <option value="A5">A5（21.0 × 14.8 公分）</option>
+            <option value="A4">A4（29.7 × 21.0 公分）</option>
+            <option value="A3">A3（42.0 × 29.7 公分）</option>
+          </select>
+          <p class="field-error" id="error-sizeId" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入像素與目標 DPI，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算沖印尺寸</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">計算結果</h2>
+      <p class="result-value" id="result-summary"></p>
+      <p class="result-sub" id="result-sub"></p>
+      <div class="table-wrap" id="result-details"></div>
+      <p class="disclaimer" id="disclaimer">品質分級是依一般觀看距離的常見經驗值，不是業界標準。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>標準尺寸共九種：3×5、4×6、5×7、6×8、8×10、10×12 相片，以及 A5、A4、A3。比對方向無關，影像長邊對紙張長邊、短邊對短邊。最大可印尺寸為像素除以目標 DPI，英寸取小數 2 位、公分取小數 1 位；指定尺寸的需求像素為尺寸英寸乘以目標 DPI 後無條件進位；每邊 DPI 為像素除以該邊英寸，有效 DPI 取兩邊較小者、四捨五入到小數 1 位。品質分級依捨入後的有效 DPI：300 以上極佳、200 以上良好、150 以上可接受、其餘不足。</p>
+    <p>下載的報告檔名固定為 photo-print-size-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。本工具假設全幅列印、不裁切，逐邊 DPI 以完整畫面計算；實際送印時店家可能裁切或加白邊，請以店家說明為準。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼橫式和直式照片的判定一樣？</dt>
+      <dd>尺寸表方向無關，長邊對長邊、短邊對短邊，橫直式不影響可印性。</dd>
+      <dt>品質分級是業界標準嗎？</dt>
+      <dd>不是，是依一般觀看距離（約手臂長度）的常見經驗值；大尺寸照片通常站得更遠看，低於 150 DPI 也可能可接受。</dd>
+      <dt>照片比例和紙張比例不同會怎樣？</dt>
+      <dd>本工具假設全幅列印、不裁切，逐邊 DPI 以完整畫面計算；實際送印時店家可能裁切或加白邊，請以店家說明為準。</dd>
+      <dt>需要上傳照片嗎？</dt>
+      <dd>不用，也沒有上傳功能；只要在檔案資訊裡查到的像素寬高數字，全部計算都在本頁離線完成。</dd>
+      <dt>螢幕上看照片要算哪個？</dt>
+      <dd>螢幕的細緻度看「螢幕 PPI 計算」，本工具只處理印到紙上的 DPI。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只留在目前頁面，離開頁面即丟棄。</p>
+</main>
+</body>
+</html>
