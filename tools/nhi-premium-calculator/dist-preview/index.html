@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>健保費試算｜Gloss Tools</title>
+<meta name="description" content="以健保署 115 年投保金額分級表與保險費負擔金額表，試算第一類受僱者的投保級距、本人與眷屬保費、投保單位與政府負擔。">
+<link rel="canonical" href="https://nhi-premium.glossquote.com/">
+<meta property="og:title" content="健保費試算｜Gloss Tools">
+<meta property="og:description" content="以健保署 115 年投保金額分級表與保險費負擔金額表，試算第一類受僱者的投保級距、本人與眷屬保費、投保單位與政府負擔。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nhi-premium.glossquote.com/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/nhi-premium.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">草稿只存在這個頁面，不會儲存或上傳。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>健保費試算</h1>
+  <p class="lede">輸入月薪資總額與眷屬人數，對照健保投保金額分級表，試算每月本人與眷屬保費、投保單位負擔與政府補助。只適用第一類公、民營事業受僱者，結果是估算值，不是健保署核定的應繳金額。</p>
+  <p class="version-note">參數版本：健保署 115 年 1 月 1 日生效公告版（費率 5.17%、平均眷口數 0.56、眷屬最多計 3 口）。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">月薪資總額、眷屬人數</h2>
+      <form id="nhi-premium-form" novalidate>
+        <div class="field">
+          <label for="field-monthlySalary">月薪資總額（新臺幣元）</label>
+          <p class="help" id="help-monthlySalary">整數，1–99,999,999 元，不可含小數、符號或空白。</p>
+          <input id="field-monthlySalary" name="monthlySalary" type="text" inputmode="numeric" autocomplete="off" value="45000" aria-describedby="help-monthlySalary">
+          <p class="field-error" id="error-monthlySalary" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dependents">眷屬人數</label>
+          <p class="help" id="help-dependents">依附投保的眷屬人數，整數 0–99 人；超過 3 人以 3 人計。</p>
+          <input id="field-dependents" name="dependents" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-dependents">
+          <p class="field-error" id="error-dependents" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">準備就緒</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">試算健保費</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">投保級距與每月保費</h2>
+      <p class="result-summary"><span id="grade-label">投保等級</span> <span id="grade-value"></span> · <span id="insured-amount-label">投保金額</span> <span id="insured-amount-value"></span></p>
+      <p class="result-summary"><span id="employee-total-label">員工合計保費</span> <span id="employee-total-value"></span></p>
+      <dl class="result-rows">
+        <div class="result-row"><dt>本人保費</dt><dd id="self-premium-value"></dd></div>
+        <div class="result-row"><dt>每位眷屬保費</dt><dd id="dependent-premium-value"></dd></div>
+        <div class="result-row"><dt>計費眷屬人數</dt><dd id="dependents-charged-value"></dd></div>
+        <div class="result-row"><dt>投保單位負擔</dt><dd id="employer-premium-value"></dd></div>
+        <div class="result-row"><dt>政府補助</dt><dd id="government-premium-value"></dd></div>
+      </dl>
+      <p class="cap-notice" id="cap-notice" hidden></p>
+      <p class="disclaimer" id="disclaimer">依健保署 115 年 1 月 1 日生效公告表試算，僅供估算。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>投保金額分級表共 58 級（29,500–313,000 元），取月薪所落的最小級距；月薪高於 313,000 元按第 58 級計費，低於 29,500 元按第 1 級計費。保險費率 5.17%，負擔比率本人 30%、投保單位 60%、政府 10%。本人保費與每位眷屬保費為投保金額 × 5.17% × 30%，四捨五入至整數元（恰 0.5 進位），只捨入一次；員工合計為每人保費 ×（1 ＋計費眷屬數），不再捨入。投保單位與政府按平均眷口數 0.56 人、即 1.56 人份計算，與個人實際眷屬數無關：投保單位為投保金額 × 5.17% × 60% × 1.56、政府為投保金額 × 5.17% × 10% × 1.56，全程不先捨入、只在最後一次四捨五入。眷屬計費上限 3 人。全部金額單位為新臺幣元、整數。下載的報告檔名固定為 nhi-premium-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>眷屬超過 3 人怎麼算？</dt>
+      <dd>依全民健康保險法第 18 條，眷屬保費由被保險人繳納，超過 3 口以 3 口計。</dd>
+      <dt>公司負擔為什麼和我的眷屬人數無關？</dt>
+      <dd>投保單位與政府依公告平均眷口數 0.56 人計算（合計 1.56 人份），不隨個人實際眷屬數變動。</dd>
+      <dt>有算二代健保補充保費嗎？</dt>
+      <dd>沒有。本工具只試算一般保險費；獎金等補充保費不在範圍。</dd>
+      <dt>這是健保署核定的金額嗎？</dt>
+      <dd>本工具依健保署 115 年 1 月 1 日生效的公告表試算，僅供估算；投保金額申報、部分工時與月中加退保等情形以健保署核定為準。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>

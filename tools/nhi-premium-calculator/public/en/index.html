@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>NHI Premium Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a Category 1 employee's Taiwan NHI payroll bracket and the monthly premiums for the insured, dependents, employer and government, from the NHIA tables effective January 1, 2026.">
+<link rel="canonical" href="https://nhi-premium.glossquote.com/en/">
+<meta property="og:title" content="NHI Premium Calculator | Gloss Tools">
+<meta property="og:description" content="Estimate a Category 1 employee's Taiwan NHI payroll bracket and the monthly premiums for the insured, dependents, employer and government, from the NHIA tables effective January 1, 2026.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nhi-premium.glossquote.com/en/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/nhi-premium.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">The draft stays on this page only. It is never stored or uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>NHI Premium Calculator</h1>
+  <p class="lede">Enter your monthly salary total and number of dependents to find your NHI insured-amount bracket and estimate the monthly premiums for yourself and your dependents, plus the employer share and government subsidy. For Category 1 private-sector employees only. The result is an estimate, not the amount the NHIA will bill.</p>
+  <p class="version-note">Parameters: NHIA tables effective January 1, 2026 (premium rate 5.17%, average dependents 0.56, at most 3 dependents charged).</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Monthly salary total and dependents</h2>
+      <form id="nhi-premium-form" novalidate>
+        <div class="field">
+          <label for="field-monthlySalary">Monthly salary total (NTD)</label>
+          <p class="help" id="help-monthlySalary">A whole number, 1–99,999,999 NTD, with no decimals, symbols or spaces.</p>
+          <input id="field-monthlySalary" name="monthlySalary" type="text" inputmode="numeric" autocomplete="off" value="45000" aria-describedby="help-monthlySalary">
+          <p class="field-error" id="error-monthlySalary" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dependents">Dependents</label>
+          <p class="help" id="help-dependents">Number of enrolled dependents, a whole number from 0 to 99; only the first 3 are charged.</p>
+          <input id="field-dependents" name="dependents" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-dependents">
+          <p class="field-error" id="error-dependents" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Ready</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate NHI premium</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Insured grade and monthly premiums</h2>
+      <p class="result-summary"><span id="grade-label">Insured grade</span> <span id="grade-value"></span> · <span id="insured-amount-label">Insured amount</span> <span id="insured-amount-value"></span></p>
+      <p class="result-summary"><span id="employee-total-label">Employee total premium</span> <span id="employee-total-value"></span></p>
+      <dl class="result-rows">
+        <div class="result-row"><dt>Insured person's premium</dt><dd id="self-premium-value"></dd></div>
+        <div class="result-row"><dt>Premium per dependent</dt><dd id="dependent-premium-value"></dd></div>
+        <div class="result-row"><dt>Dependents charged</dt><dd id="dependents-charged-value"></dd></div>
+        <div class="result-row"><dt>Employer share</dt><dd id="employer-premium-value"></dd></div>
+        <div class="result-row"><dt>Government subsidy</dt><dd id="government-premium-value"></dd></div>
+      </dl>
+      <p class="cap-notice" id="cap-notice" hidden></p>
+      <p class="disclaimer" id="disclaimer">Estimated from NHIA tables effective January 1, 2026.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>The insured-amount table has 58 grades (NTD 29,500–313,000); the salary takes the smallest grade whose amount covers it. A salary above NTD 313,000 uses grade 58; below NTD 29,500 it uses grade 1. The premium rate is 5.17% and the burden shares are insured 30%, employer 60%, government 10%. The insured person's premium and the premium per dependent are the insured amount × 5.17% × 30%, rounded half up to whole NTD (exactly 0.5 rounds up), once only; the employee total is the per-person premium × (1 + dependents charged), with no second rounding. The employer and government shares use the announced average of 0.56 dependents — 1.56 persons in total — and do not depend on your actual number of dependents: the employer share is the insured amount × 5.17% × 60% × 1.56 and the government subsidy is the insured amount × 5.17% × 10% × 1.56, each rounded half up once at the end with no intermediate rounding. At most 3 dependents are charged. All amounts are whole New Taiwan dollars. The downloaded report is always named nhi-premium-report.json; its contents are the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing line feed.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What if I have more than three dependents?</dt>
+      <dd>Under Article 18 of the National Health Insurance Act, dependents beyond the first three are not charged.</dd>
+      <dt>Why doesn't the employer's share depend on my dependents?</dt>
+      <dd>The employer and government shares use the announced average of 0.56 dependents (1.56 persons in total), not your actual number of dependents.</dd>
+      <dt>Does this include the supplementary premium?</dt>
+      <dd>No. This tool estimates the regular premium only; the second-generation supplementary premium on bonuses and other income is out of scope.</dd>
+      <dt>Is this the amount the NHIA will bill?</dt>
+      <dd>It is an estimate from the NHIA tables effective January 1, 2026. Reported salary basis, part-time work and mid-month enrollment changes follow the NHIA's own determination.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored on a server, or logged. The draft stays on this page and is discarded when you leave.</p>
+</main>
+</body>
+</html>
