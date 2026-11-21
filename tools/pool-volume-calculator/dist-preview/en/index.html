@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Pool Volume Calculator | Gloss Tools</title>
+<meta name="description" content="Enter a pool's length and width or diameter and depth (shallow and deep ends for sloped floors) to get its water volume in cubic metres, litres, and US gallons, plus fill time.">
+<meta property="og:title" content="Pool Volume Calculator | Gloss Tools">
+<meta property="og:description" content="Enter a pool's length and width or diameter and depth (shallow and deep ends for sloped floors) to get its water volume in cubic metres, litres, and US gallons, plus fill time.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../styles/pool-volume.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft; nothing is uploaded.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Pool Volume Calculator</h1>
+  <p class="lede">Measure your pool's length and width (or diameter) and depth, pick a shape and a depth entry, and get its water volume in cubic metres, litres, and US gallons, plus fill time. It calculates the volume of ideal shapes only — not chemical dosing.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Pool dimensions</h2>
+      <form id="pool-volume-form" novalidate>
+        <div class="field">
+          <label for="field-shape">Shape</label>
+          <p class="help" id="help-shape">Rectangular, circular, or oval. Switching shape does not clear what you entered; inactive fields do not affect the result.</p>
+          <select id="field-shape" name="shape" aria-describedby="help-shape">
+            <option value="rectangular" selected>Rectangular</option>
+            <option value="circular">Circular</option>
+            <option value="oval">Oval</option>
+          </select>
+          <p class="field-error" id="error-shape" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-depthMode">Depth entry</label>
+          <p class="help" id="help-depthMode">Single depth, or sloped floor (shallow + deep ends, averaged). Switching entry does not clear what you entered.</p>
+          <select id="field-depthMode" name="depthMode" aria-describedby="help-depthMode">
+            <option value="single" selected>Single depth</option>
+            <option value="sloped">Sloped floor (shallow + deep ends)</option>
+          </select>
+          <p class="field-error" id="error-depthMode" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-lengthM">Length (m)</label>
+          <p class="help" id="help-lengthM">Enabled for rectangular and oval shapes. 0.1–100 m, at most two decimal places.</p>
+          <input id="field-lengthM" name="lengthM" type="text" inputmode="decimal" autocomplete="off" value="8" aria-describedby="help-lengthM">
+          <p class="field-error" id="error-lengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-widthM">Width (m)</label>
+          <p class="help" id="help-widthM">Enabled for rectangular and oval shapes. 0.1–100 m, at most two decimal places.</p>
+          <input id="field-widthM" name="widthM" type="text" inputmode="decimal" autocomplete="off" value="4" aria-describedby="help-widthM">
+          <p class="field-error" id="error-widthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-diameterM">Diameter (m)</label>
+          <p class="help" id="help-diameterM">Enabled for the circular shape. 0.1–100 m, at most two decimal places.</p>
+          <input id="field-diameterM" name="diameterM" type="text" inputmode="decimal" autocomplete="off" value="5" aria-describedby="help-diameterM">
+          <p class="field-error" id="error-diameterM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-depthM">Depth (m)</label>
+          <p class="help" id="help-depthM">Enabled for single depth. 0.1–10 m, at most two decimal places.</p>
+          <input id="field-depthM" name="depthM" type="text" inputmode="decimal" autocomplete="off" value="1.5" aria-describedby="help-depthM">
+          <p class="field-error" id="error-depthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-shallowDepthM">Shallow-end depth (m)</label>
+          <p class="help" id="help-shallowDepthM">Enabled for sloped floors. 0.1–10 m, at most two decimal places; must not exceed the deep-end depth.</p>
+          <input id="field-shallowDepthM" name="shallowDepthM" type="text" inputmode="decimal" autocomplete="off" value="1" aria-describedby="help-shallowDepthM">
+          <p class="field-error" id="error-shallowDepthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-deepDepthM">Deep-end depth (m)</label>
+          <p class="help" id="help-deepDepthM">Enabled for sloped floors. 0.1–10 m, at most two decimal places.</p>
+          <input id="field-deepDepthM" name="deepDepthM" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-deepDepthM">
+          <p class="field-error" id="error-deepDepthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flowRateLMin">Fill rate (L/min, optional)</label>
+          <p class="help" id="help-flowRateLMin">Optional; leave blank to skip fill time. 0.1–10000 L/min, at most two decimal places.</p>
+          <input id="field-flowRateLMin" name="flowRateLMin" type="text" inputmode="decimal" autocomplete="off" value="40" aria-describedby="help-flowRateLMin">
+          <p class="field-error" id="error-flowRateLMin" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter the pool dimensions, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate volume</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Volume result</h2>
+      <p class="result-value" id="result-volume-m3"></p>
+      <p class="result-line" id="result-avg-depth"></p>
+      <p class="result-line" id="result-volume-litres"></p>
+      <p class="result-line" id="result-volume-gallons"></p>
+      <p class="result-line" id="result-fill"></p>
+      <p class="disclaimer" id="disclaimer">Estimated for an ideal shape with vertical walls. Wall thickness, steps, and the actual water level (usually below the rim) are not included; treat the result as an estimate.</p>
+      <p class="disclaimer" id="precision-note">Litres and cubic metres are each rounded once from the same unrounded volume; the litre figure is the more precise one.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and formats</summary>
+    <p>Average depth: a single depth is used as-is; a sloped floor averages the shallow- and deep-end depths (add first, then divide by 2). For a uniformly sloped rectangular floor the average is exact. Volume: rectangular is (length × width) × average depth; circular uses radius r = diameter ÷ 2, ((π × r) × r) × average depth; oval uses semi-axes a = length ÷ 2 and b = width ÷ 2, ((π × a) × b) × average depth. π is the double-precision Math.PI.</p>
+    <p>Cubic metres are rounded to 2 decimals, litres and US gallons to whole numbers, and total fill minutes to a whole number — each rounded once (half-up) from the same unrounded volume; 1 m³ = 1000 litres and 1 US gallon = 3.785411784 litres. Fill time is split once from the single rounded total minutes into hours and minutes, so minutes are always 0–59. The downloaded report is always named pool-volume-report.json; its contents are the result as compact JSON with object keys sorted recursively by UTF-16 code units and one trailing newline.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is a sloped floor handled?</dt>
+      <dd>The shallow- and deep-end depths are averaged; for a uniformly sloped rectangular floor this is exact, and only an estimate for uneven floors.</dd>
+      <dt>Why don't litres equal the displayed cubic metres × 1000?</dt>
+      <dd>Both are rounded once from the same unrounded volume; for a tiny pool the display can read 0 m³ and 1 litre, and the litre figure is the more precise one.</dd>
+      <dt>Can it work out chemical dosing, such as chlorine?</dt>
+      <dd>No. This tool calculates water volume only; chemical dosing is out of scope.</dd>
+      <dt>Can it handle kidney-shaped or irregular pools?</dt>
+      <dd>No. Only ideal rectangular, circular, and oval shapes are supported.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored on a server, or logged. The draft stays on this page only — switching language or leaving the page discards it.</p>
+</main>
+</body>
+</html>
