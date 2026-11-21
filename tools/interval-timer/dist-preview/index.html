@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>間歇計時器｜Gloss Tools</title>
+<meta name="description" content="先算好準備、運動、休息秒數與回合數的完整多段節目表與總時長，再以同一份節目表驅動間歇計時：暫停不計時，段界提示清楚。">
+<link rel="canonical" href="https://interval-timer.glossquote.com/">
+<meta property="og:title" content="間歇計時器｜Gloss Tools">
+<meta property="og:description" content="先算好準備、運動、休息秒數與回合數的完整多段節目表與總時長，再以同一份節目表驅動間歇計時：暫停不計時，段界提示清楚。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://interval-timer.glossquote.com/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./styles/interval-timer.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>間歇計時器</h1>
+  <p class="lede">先把一整份多段節目算清楚：準備幾秒、每回合運動與休息幾秒、共幾回合、最後一回合後是否再休息。節目表建好後，同一份節目表驅動計時：暫停期間不計時，段落切換時提示。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">節目設定</h2>
+      <form id="interval-timer-form" novalidate>
+        <div class="field">
+          <label for="field-prepareSeconds">準備（秒）</label>
+          <p class="help" id="help-prepareSeconds">準備秒數，0–3,600 秒；0 表示不設準備段。</p>
+          <input id="field-prepareSeconds" name="prepareSeconds" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-prepareSeconds">
+          <p class="field-error" id="error-prepareSeconds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-workSeconds">運動（秒）</label>
+          <p class="help" id="help-workSeconds">每回合運動秒數，1–3,600 秒。</p>
+          <input id="field-workSeconds" name="workSeconds" type="text" inputmode="numeric" autocomplete="off" value="30" aria-describedby="help-workSeconds">
+          <p class="field-error" id="error-workSeconds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-restSeconds">休息（秒）</label>
+          <p class="help" id="help-restSeconds">每回合休息秒數，0–3,600 秒；0 表示不設休息段。</p>
+          <input id="field-restSeconds" name="restSeconds" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-restSeconds">
+          <p class="field-error" id="error-restSeconds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rounds">回合數</label>
+          <p class="help" id="help-rounds">回合數，1–99。</p>
+          <input id="field-rounds" name="rounds" type="text" inputmode="numeric" autocomplete="off" value="8" aria-describedby="help-rounds">
+          <p class="field-error" id="error-rounds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-finalRest">最後一回合休息</label>
+          <p class="help" id="help-finalRest">最後一回合後是否再休息一段。預設不含。</p>
+          <select id="field-finalRest" name="finalRest" aria-describedby="help-finalRest">
+            <option value="skip" selected>不含</option>
+            <option value="include">含</option>
+          </select>
+          <p class="field-error" id="error-finalRest" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入節目設定，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">建立節目表</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+
+      <section class="timer-panel" id="timer-panel" aria-labelledby="timer-heading" hidden>
+        <h2 id="timer-heading">計時</h2>
+        <p class="timer-phase" id="timer-phase"></p>
+        <p class="timer-segment" id="timer-segment"></p>
+        <p class="timer-remaining" id="timer-remaining"></p>
+        <p class="timer-total" id="timer-total-remaining"></p>
+        <p class="timer-cue" id="timer-cue" aria-live="polite"></p>
+        <div class="actions">
+          <button type="button" id="timer-start-btn" class="button-primary">開始</button>
+          <button type="button" id="timer-pause-btn" class="button-secondary">暫停</button>
+          <button type="button" id="timer-resume-btn" class="button-secondary">繼續</button>
+          <button type="button" id="timer-skip-btn" class="button-secondary">跳過本段</button>
+          <button type="button" id="timer-reset-btn" class="button-secondary">重設計時</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">節目表與總時長</h2>
+      <dl class="summary">
+        <div><dt>總時長</dt><dd id="summary-total"></dd></div>
+        <div><dt>段數</dt><dd id="summary-count"></dd></div>
+        <div><dt>回合數</dt><dd id="summary-rounds"></dd></div>
+      </dl>
+      <ol class="segment-list" id="segment-list" aria-label="節目表段落"></ol>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>節目表與計時方式說明</summary>
+    <p>節目表先放準備段（準備秒數大於 0 時），再依序放每一回合的運動段與休息段；休息段只在休息秒數大於 0、且該回合不是最後一回合、或最後一回合休息選「含」時才出現。零長度段一律省略。總時長等於準備秒數加上回合數乘以運動秒數，再加上休息段數乘以休息秒數。</p>
+    <p>計時核心只吃「活動毫秒數」：暫停期間不計入，繼續後從暫停時的讀數接續。剩餘秒數一律無條件進位顯示，段內剩餘永不提前顯示 0；讀數恰等於段界時屬於下一段。下載的報告檔名固定為 interval-timer-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>最後一回合後要不要休息？</dt>
+      <dd>由「最後一回合休息」選項決定，預設不含；選「含」會在最後一回合後再加一段休息。</dd>
+      <dt>暫停時計時會繼續嗎？</dt>
+      <dd>不會。計時核心只吃活動毫秒數，暫停期間不計入；繼續後從暫停時的讀數接續。</dd>
+      <dt>段落切換時會有提示嗎？</dt>
+      <dd>會。段落切換時畫面會顯示新段落名稱並播報，裝置允許時也會發出短提示音；節目結束時提示音較長。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器。草稿只留在目前頁面，切換語言或離開頁面就會失去。</p>
+</main>
+</body>
+</html>
