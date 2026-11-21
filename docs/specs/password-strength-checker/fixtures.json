@@ -1,0 +1,719 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-password-strength-checker-20261121",
+  "slug": "password-strength-checker",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "troubador-strong",
+      "kind": "core",
+      "purpose": "四類字元、無扣分：強",
+      "input": {
+        "password": "Tr0ub4dor&3"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 11,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 72.1,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 72.1,
+          "band": "strong",
+          "crackTimeOnline": {
+            "zh": "16038314310056.9 年",
+            "en": "16038314310056.9 years"
+          },
+          "crackTimeOffline": {
+            "zh": "16038.3 年",
+            "en": "16038.3 years"
+          },
+          "suggestions": [
+            "S_LENGTH"
+          ]
+        }
+      }
+    },
+    {
+      "id": "common-password",
+      "kind": "core",
+      "purpose": "常見密碼＋字典詞＋單一字元類，扣分觸頂",
+      "input": {
+        "password": "password"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 8,
+          "classes": [
+            "lowercase"
+          ],
+          "pool": 26,
+          "baseEntropyBits": 37.6,
+          "penalties": [
+            {
+              "code": "COMMON_PASSWORD",
+              "bits": 30
+            },
+            {
+              "code": "DICTIONARY_WORD",
+              "bits": 12
+            },
+            {
+              "code": "SINGLE_CLASS",
+              "bits": 8
+            }
+          ],
+          "totalPenaltyBits": 40,
+          "finalEntropyBits": 0.0,
+          "band": "very weak",
+          "crackTimeOnline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "crackTimeOffline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "suggestions": [
+            "S_COMMON",
+            "S_DICT",
+            "S_LENGTH",
+            "S_CLASSES"
+          ]
+        }
+      }
+    },
+    {
+      "id": "common-numeric",
+      "kind": "core",
+      "purpose": "常見純數字＋序列＋鍵盤行＋過短，扣分觸頂",
+      "input": {
+        "password": "123456"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 6,
+          "classes": [
+            "digits"
+          ],
+          "pool": 10,
+          "baseEntropyBits": 19.9,
+          "penalties": [
+            {
+              "code": "COMMON_PASSWORD",
+              "bits": 30
+            },
+            {
+              "code": "SEQUENCE",
+              "bits": 8
+            },
+            {
+              "code": "KEYBOARD_WALK",
+              "bits": 8
+            },
+            {
+              "code": "SHORT_LENGTH",
+              "bits": 10
+            },
+            {
+              "code": "SINGLE_CLASS",
+              "bits": 8
+            }
+          ],
+          "totalPenaltyBits": 40,
+          "finalEntropyBits": 0.0,
+          "band": "very weak",
+          "crackTimeOnline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "crackTimeOffline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "suggestions": [
+            "S_COMMON",
+            "S_SEQ",
+            "S_LENGTH",
+            "S_CLASSES"
+          ]
+        }
+      }
+    },
+    {
+      "id": "passphrase-dictionary",
+      "kind": "core",
+      "purpose": "長密碼片語：字典詞扣分仍非常強",
+      "input": {
+        "password": "correct horse battery staple"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 28,
+          "classes": [
+            "lowercase",
+            "other"
+          ],
+          "pool": 58,
+          "baseEntropyBits": 164.0,
+          "penalties": [
+            {
+              "code": "DICTIONARY_WORD",
+              "bits": 12
+            },
+            {
+              "code": "DICTIONARY_WORD",
+              "bits": 12
+            }
+          ],
+          "totalPenaltyBits": 24,
+          "finalEntropyBits": 140.0,
+          "band": "very strong",
+          "crackTimeOnline": {
+            "zh": "4416674826058268000000000000000000.0 年",
+            "en": "4416674826058268000000000000000000.0 years"
+          },
+          "crackTimeOffline": {
+            "zh": "4416674826058268000000000.0 年",
+            "en": "4416674826058268000000000.0 years"
+          },
+          "suggestions": [
+            "S_DICT",
+            "S_CLASSES"
+          ]
+        }
+      }
+    },
+    {
+      "id": "leet-lookalike",
+      "kind": "core",
+      "purpose": "形似常見密碼但無 leet 還原：不扣分，普通",
+      "input": {
+        "password": "P@ssw0rd!"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 9,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 59.0,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 59.0,
+          "band": "fair",
+          "crackTimeOnline": {
+            "zh": "1826693894.0 年",
+            "en": "1826693894.0 years"
+          },
+          "crackTimeOffline": {
+            "zh": "1.8 年",
+            "en": "1.8 years"
+          },
+          "suggestions": [
+            "S_LENGTH"
+          ]
+        }
+      }
+    },
+    {
+      "id": "random-12",
+      "kind": "core",
+      "purpose": "12 字元隨機四類：強，無建議",
+      "input": {
+        "password": "aB3$xY9!qW2#"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 12,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 78.7,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 78.7,
+          "band": "strong",
+          "crackTimeOnline": {
+            "zh": "1555810476713867.0 年",
+            "en": "1555810476713867.0 years"
+          },
+          "crackTimeOffline": {
+            "zh": "1555810.5 年",
+            "en": "1555810.5 years"
+          },
+          "suggestions": []
+        }
+      }
+    },
+    {
+      "id": "random-16",
+      "kind": "core",
+      "purpose": "16 字元隨機四類：非常強，無建議",
+      "input": {
+        "password": "Xq7!mZ2#kL9$vN4&"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 16,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 104.9,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 104.9,
+          "band": "very strong",
+          "crackTimeOnline": {
+            "zh": "119934071716924380000000.0 年",
+            "en": "119934071716924380000000.0 years"
+          },
+          "crackTimeOffline": {
+            "zh": "119934071716924.4 年",
+            "en": "119934071716924.4 years"
+          },
+          "suggestions": []
+        }
+      }
+    },
+    {
+      "id": "common-keyboard",
+      "kind": "core",
+      "purpose": "常見密碼＋字典詞＋鍵盤行：非常弱",
+      "input": {
+        "password": "qwerty123"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 9,
+          "classes": [
+            "lowercase",
+            "digits"
+          ],
+          "pool": 36,
+          "baseEntropyBits": 46.5,
+          "penalties": [
+            {
+              "code": "COMMON_PASSWORD",
+              "bits": 30
+            },
+            {
+              "code": "DICTIONARY_WORD",
+              "bits": 12
+            },
+            {
+              "code": "KEYBOARD_WALK",
+              "bits": 8
+            }
+          ],
+          "totalPenaltyBits": 40,
+          "finalEntropyBits": 6.5,
+          "band": "very weak",
+          "crackTimeOnline": {
+            "zh": "9.1 秒",
+            "en": "9.1 seconds"
+          },
+          "crackTimeOffline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "suggestions": [
+            "S_COMMON",
+            "S_DICT",
+            "S_SEQ",
+            "S_LENGTH",
+            "S_CLASSES"
+          ]
+        }
+      }
+    },
+    {
+      "id": "repeated-pattern",
+      "kind": "core",
+      "purpose": "重複片段扣分：強",
+      "input": {
+        "password": "Aa1!Aa1!Aa1!"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 12,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 78.7,
+          "penalties": [
+            {
+              "code": "REPEATED_PATTERN",
+              "bits": 10
+            }
+          ],
+          "totalPenaltyBits": 10,
+          "finalEntropyBits": 68.7,
+          "band": "strong",
+          "crackTimeOnline": {
+            "zh": "1519346168665.9 年",
+            "en": "1519346168665.9 years"
+          },
+          "crackTimeOffline": {
+            "zh": "1519.3 年",
+            "en": "1519.3 years"
+          },
+          "suggestions": [
+            "S_REPEAT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "dictionary-year",
+      "kind": "core",
+      "purpose": "字典詞＋年份扣分：普通",
+      "input": {
+        "password": "Summer2024!"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 11,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 72.1,
+          "penalties": [
+            {
+              "code": "DICTIONARY_WORD",
+              "bits": 12
+            },
+            {
+              "code": "YEAR",
+              "bits": 6
+            }
+          ],
+          "totalPenaltyBits": 18,
+          "finalEntropyBits": 54.1,
+          "band": "fair",
+          "crackTimeOnline": {
+            "zh": "61181313.7 年",
+            "en": "61181313.7 years"
+          },
+          "crackTimeOffline": {
+            "zh": "22.3 天",
+            "en": "22.3 days"
+          },
+          "suggestions": [
+            "S_DICT",
+            "S_YEAR",
+            "S_LENGTH"
+          ]
+        }
+      }
+    },
+    {
+      "id": "sequence-weak",
+      "kind": "core",
+      "purpose": "序列＋鍵盤行雙重扣分：非常弱",
+      "input": {
+        "password": "abcd1234"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 8,
+          "classes": [
+            "lowercase",
+            "digits"
+          ],
+          "pool": 36,
+          "baseEntropyBits": 41.4,
+          "penalties": [
+            {
+              "code": "SEQUENCE",
+              "bits": 8
+            },
+            {
+              "code": "KEYBOARD_WALK",
+              "bits": 8
+            }
+          ],
+          "totalPenaltyBits": 16,
+          "finalEntropyBits": 25.4,
+          "band": "very weak",
+          "crackTimeOnline": {
+            "zh": "51.2 天",
+            "en": "51.2 days"
+          },
+          "crackTimeOffline": {
+            "zh": "<1 秒",
+            "en": "<1 second"
+          },
+          "suggestions": [
+            "S_SEQ",
+            "S_LENGTH",
+            "S_CLASSES"
+          ]
+        }
+      }
+    },
+    {
+      "id": "non-ascii",
+      "kind": "core",
+      "purpose": "非 ASCII 計入 other 類＋年份扣分：非常強",
+      "input": {
+        "password": "Pässwörd€2024!"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "passwordLength": 14,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols",
+            "other"
+          ],
+          "pool": 126,
+          "baseEntropyBits": 97.7,
+          "penalties": [
+            {
+              "code": "YEAR",
+              "bits": 6
+            }
+          ],
+          "totalPenaltyBits": 6,
+          "finalEntropyBits": 91.7,
+          "band": "very strong",
+          "crackTimeOnline": {
+            "zh": "12745199425239998000.0 年",
+            "en": "12745199425239998000.0 years"
+          },
+          "crackTimeOffline": {
+            "zh": "12745199425.2 年",
+            "en": "12745199425.2 years"
+          },
+          "suggestions": [
+            "S_YEAR"
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-password",
+      "kind": "core",
+      "purpose": "空密碼為 EMPTY 錯誤",
+      "input": {
+        "password": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "password",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "too-long-password",
+      "kind": "core",
+      "purpose": "129 碼超過上限為 INPUT_LIMIT 錯誤",
+      "input": {
+        "password": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "password",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為空密碼，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "password": "Tr0ub4dor&3"
+        },
+        "edit": {
+          "password": ""
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "password",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "password": "Tr0ub4dor&3"
+        },
+        "lateResult": {
+          "passwordLength": 11,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 72.1,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 72.1,
+          "band": "strong",
+          "crackTimeOnline": {
+            "zh": "16038314310056.9 年",
+            "en": "16038314310056.9 years"
+          },
+          "crackTimeOffline": {
+            "zh": "16038.3 年",
+            "en": "16038.3 years"
+          },
+          "suggestions": [
+            "S_LENGTH"
+          ]
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "password": "Tr0ub4dor&3"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "password": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "password": "Tr0ub4dor&3"
+        },
+        "newerDraft": {
+          "password": ""
+        },
+        "olderLateResult": {
+          "passwordLength": 11,
+          "classes": [
+            "lowercase",
+            "uppercase",
+            "digits",
+            "symbols"
+          ],
+          "pool": 94,
+          "baseEntropyBits": 72.1,
+          "penalties": [],
+          "totalPenaltyBits": 0,
+          "finalEntropyBits": 72.1,
+          "band": "strong",
+          "crackTimeOnline": {
+            "zh": "16038314310056.9 年",
+            "en": "16038314310056.9 years"
+          },
+          "crackTimeOffline": {
+            "zh": "16038.3 年",
+            "en": "16038.3 years"
+          },
+          "suggestions": [
+            "S_LENGTH"
+          ]
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "password",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "EMPTY",
+            "field": "password",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
