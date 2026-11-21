@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Breakeven Calculator | Gloss Tools</title>
+<meta name="description" content="Enter fixed costs, price per unit and variable cost per unit to find the breakeven volume and revenue, margin of safety and contribution margin ratio.">
+<link rel="stylesheet" href="../styles/breakeven.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Breakeven Calculator</h1>
+  <p class="lede">Enter monthly fixed costs, price per unit and variable cost per unit to find how many units you must sell, and how much revenue you need, to break even; add an expected volume to see the margin of safety and expected profit. All amounts use one currency of your choice; the tool does not convert or label a currency.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Costs and price</h2>
+      <form id="breakeven-form" novalidate>
+        <div class="field">
+          <label for="field-fixedCost">Fixed costs</label>
+          <p class="help" id="help-fixedCost">Monthly fixed costs, such as rent, subscriptions and wages. 0–999,999,999.99, up to two decimal places.</p>
+          <input id="field-fixedCost" name="fixedCost" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-fixedCost">
+          <p class="field-error" id="error-fixedCost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">Price per unit</label>
+          <p class="help" id="help-price">The selling price of one unit. 0.01–999,999,999.99, up to two decimal places; it must be above the variable cost per unit.</p>
+          <input id="field-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="400" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-variableCost">Variable cost per unit</label>
+          <p class="help" id="help-variableCost">The variable cost of one unit, such as materials, packaging and delivery. 0–999,999,999.99, up to two decimal places; it must be below the price per unit.</p>
+          <input id="field-variableCost" name="variableCost" type="text" inputmode="decimal" autocomplete="off" value="150" aria-describedby="help-variableCost">
+          <p class="field-error" id="error-variableCost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-expectedUnits">Expected sales volume (optional)</label>
+          <p class="help" id="help-expectedUnits">Optional. How many units you expect to sell, a whole number from 0 to 100,000,000; leave blank to skip the margin of safety.</p>
+          <input id="field-expectedUnits" name="expectedUnits" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-expectedUnits">
+          <p class="field-error" id="error-expectedUnits" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter fixed costs, price per unit and variable cost per unit, or load the example.</p>
+        <p class="notice" id="semantic-notice" tabindex="-1" hidden></p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate breakeven</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Breakeven result</h2>
+      <p class="result-value" id="result-summary"></p>
+      <dl class="result-list">
+        <dt>Contribution margin per unit</dt>
+        <dd id="result-contribution"></dd>
+        <dt>Contribution margin ratio</dt>
+        <dd id="result-ratio"></dd>
+        <dt>Breakeven volume (exact)</dt>
+        <dd id="result-units-exact"></dd>
+        <dd class="note">Exact figure, for reference only</dd>
+        <dt>Breakeven volume (whole units)</dt>
+        <dd id="result-units"></dd>
+        <dd class="note">Use this figure</dd>
+        <dt>Breakeven revenue (exact)</dt>
+        <dd id="result-revenue-exact"></dd>
+        <dd class="note">Exact figure, for reference only</dd>
+        <dt>Breakeven revenue (whole units)</dt>
+        <dd id="result-revenue"></dd>
+        <dd class="note">Use this figure</dd>
+      </dl>
+      <div id="result-margin" hidden>
+        <h3>Margin of safety</h3>
+        <p id="result-margin-units"></p>
+        <p id="result-margin-percent"></p>
+        <p id="result-expected-profit"></p>
+        <p class="warning" id="below-warning" hidden></p>
+      </div>
+      <p class="disclaimer" id="disclaimer">Amounts are computed exactly in integer cents, without floating point; the breakeven volume is always rounded up — one unit fewer still loses money. The downloaded report is always named breakeven-report.json and holds the result as compact JSON, with object keys sorted recursively by UTF-16 code unit and one trailing line feed.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the formats</summary>
+    <p>Contribution margin per unit = price per unit − variable cost per unit; contribution margin ratio = contribution margin per unit ÷ price per unit; breakeven volume (exact) = fixed costs ÷ contribution margin per unit; the whole-unit figure is the exact figure rounded up, or 0 when fixed costs are 0; breakeven revenue (exact) = fixed costs × price per unit ÷ contribution margin per unit, rounded to the cent; whole-unit revenue = whole-unit volume × price per unit. Margin of safety = expected volume − breakeven volume (whole units), with the percentage over the expected volume; expected profit = expected volume × contribution margin per unit − fixed costs. Displayed rounding always uses half-up, applied exactly once to the unrounded rational value.</p>
+    <p>Amount format: digits, at most one decimal point, 1–2 decimal places; no sign, space, thousands separator or exponent; no leading zeros in the integer part except a lone 0. Expected volume is a whole number. When the price is at or below the variable cost there is no breakeven point, and the tool says so instead of showing a number.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why is the breakeven volume always rounded up?</dt>
+      <dd>Selling one unit fewer leaves part of the fixed costs uncovered, so it still loses money; the whole-unit figure is the first volume that does not lose money.</dd>
+      <dt>Why are there two revenue figures?</dt>
+      <dd>The exact figure assumes fractional units could be sold; the whole-unit figure is the actual revenue at the first volume that breaks even, and they differ by less than one unit's price.</dd>
+      <dt>What if the price is at or below variable cost?</dt>
+      <dd>Each unit contributes zero or less, so no volume can cover fixed costs and no breakeven point exists; the tool explains this instead of showing a number.</dd>
+      <dt>What is the margin of safety?</dt>
+      <dd>How far the expected volume sits above (or below) the breakeven volume, in units and percent, together with the profit or loss at that volume.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page: nothing is uploaded, stored on a server, or logged. The draft exists only in this page; switching language or leaving the page discards it.</p>
+</main>
+</body>
+</html>

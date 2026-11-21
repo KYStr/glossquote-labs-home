@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>損益平衡計算｜Gloss Tools</title>
+<meta name="description" content="輸入固定成本、單位售價與單位變動成本，算出損益平衡銷量與營收、安全邊際與邊際貢獻率。">
+<link rel="stylesheet" href="./styles/breakeven.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>損益平衡計算</h1>
+  <p class="lede">輸入每月固定成本、單位售價與單位變動成本，算出至少賣幾件、做到多少營收才打平；填入預期銷量，還能看到安全邊際與預期利潤。所有金額採同一幣別，由你自理，本工具不換算、不標示幣別。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">成本與售價</h2>
+      <form id="breakeven-form" novalidate>
+        <div class="field">
+          <label for="field-fixedCost">固定成本</label>
+          <p class="help" id="help-fixedCost">每月固定成本，例如租金、訂閱、薪資。0–999,999,999.99，最多兩位小數。</p>
+          <input id="field-fixedCost" name="fixedCost" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-fixedCost">
+          <p class="field-error" id="error-fixedCost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-price">單位售價</label>
+          <p class="help" id="help-price">每賣一件的售價。0.01–999,999,999.99，最多兩位小數；必須高於單位變動成本。</p>
+          <input id="field-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="400" aria-describedby="help-price">
+          <p class="field-error" id="error-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-variableCost">單位變動成本</label>
+          <p class="help" id="help-variableCost">每賣一件的變動成本，例如材料、包裝、運費。0–999,999,999.99，最多兩位小數；必須低於單位售價。</p>
+          <input id="field-variableCost" name="variableCost" type="text" inputmode="decimal" autocomplete="off" value="150" aria-describedby="help-variableCost">
+          <p class="field-error" id="error-variableCost" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-expectedUnits">預期銷量（選填）</label>
+          <p class="help" id="help-expectedUnits">選填。預期會賣出的件數，0–100,000,000 的整數；空白表示不計算安全邊際。</p>
+          <input id="field-expectedUnits" name="expectedUnits" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-expectedUnits">
+          <p class="field-error" id="error-expectedUnits" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入固定成本、單位售價與單位變動成本，或載入範例。</p>
+        <p class="notice" id="semantic-notice" tabindex="-1" hidden></p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算損益平衡</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">損益平衡結果</h2>
+      <p class="result-value" id="result-summary"></p>
+      <dl class="result-list">
+        <dt>單位邊際貢獻</dt>
+        <dd id="result-contribution"></dd>
+        <dt>邊際貢獻率</dt>
+        <dd id="result-ratio"></dd>
+        <dt>損益平衡銷量（理論值）</dt>
+        <dd id="result-units-exact"></dd>
+        <dd class="note">理論值，僅供參考</dd>
+        <dt>損益平衡銷量（整數單位）</dt>
+        <dd id="result-units"></dd>
+        <dd class="note">可直接採用</dd>
+        <dt>損益平衡營收（理論值）</dt>
+        <dd id="result-revenue-exact"></dd>
+        <dd class="note">理論值，僅供參考</dd>
+        <dt>損益平衡營收（整數單位）</dt>
+        <dd id="result-revenue"></dd>
+        <dd class="note">可直接採用</dd>
+      </dl>
+      <div id="result-margin" hidden>
+        <h3>安全邊際</h3>
+        <p id="result-margin-units"></p>
+        <p id="result-margin-percent"></p>
+        <p id="result-expected-profit"></p>
+        <p class="warning" id="below-warning" hidden></p>
+      </div>
+      <p class="disclaimer" id="disclaimer">金額以整數分精確運算，不經浮點數；損益平衡銷量恆無條件進位，少賣一件仍是虧損。下載的報告檔名固定為 breakeven-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>單位邊際貢獻＝單位售價 − 單位變動成本；邊際貢獻率＝單位邊際貢獻 ÷ 單位售價；損益平衡銷量（理論值）＝固定成本 ÷ 單位邊際貢獻；整數單位值為理論值無條件進位，固定成本為 0 時是 0；損益平衡營收（理論值）＝固定成本 × 單位售價 ÷ 單位邊際貢獻，捨入到分；整數單位營收＝整數單位銷量 × 單位售價。安全邊際＝預期銷量 − 損益平衡銷量（整數單位值），百分比以預期銷量為分母；預期利潤＝預期銷量 × 單位邊際貢獻 − 固定成本。顯示捨入一律採半數進位（half-up），只捨入一次、只來自未捨入的有理數。</p>
+    <p>金額格式：數字、至多一個小數點、1–2 位小數，不接受正負號、空白、千分位或指數；整數部分除單獨 0 外不接受前導零。預期銷量為整數。售價等於或低於變動成本時沒有損益平衡點，工具會直接說明而不給數字。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼損益平衡銷量要無條件進位？</dt>
+      <dd>少賣一個單位就還有固定成本沒攤平，仍是虧損；整數單位值是第一個不虧的銷量。</dd>
+      <dt>為什麼有兩個營收數字？</dt>
+      <dd>理論值假設可以賣出小數單位；整數單位值是第一個打平銷量的實際營收，兩者只差不到一個單位的售價。</dd>
+      <dt>售價等於或低於變動成本時會怎樣？</dt>
+      <dd>每個單位貢獻零或負數，賣再多也攤不平固定成本，數學上沒有損益平衡點，本工具直接說明而不給數字。</dd>
+      <dt>安全邊際是什麼？</dt>
+      <dd>預期銷量高出（或低於）損益平衡銷量的單位數與百分比，並附該銷量下的預期利潤或虧損。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在目前頁面，切換語言或離開頁面就會失去。</p>
+</main>
+</body>
+</html>
