@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Group Generator | Gloss Tools</title>
+<meta name="description" content="Paste a name list, choose a group count or a group size, and deal everyone into balanced groups with a reproducible seeded shuffle.">
+<link rel="stylesheet" href="../styles/group-generator.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving the page discards the draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Group Generator</h1>
+  <p class="lede">Paste a name list, choose a group count or a group size, and deal everyone into balanced groups with a seeded shuffle. Everyone lands in exactly one group, and the same list and seed always give the same groups.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Names and grouping</h2>
+      <form id="group-generator-form" novalidate>
+        <div class="field">
+          <label for="field-names">Names (one per line)</label>
+          <p class="help" id="help-names">One name per line, at most 500 names; each name at most 40 characters. Duplicate names are kept as separate people, and blank lines are skipped.</p>
+          <textarea id="field-names" name="names" rows="8" autocomplete="off" aria-describedby="help-names"></textarea>
+          <p class="names-count" id="names-count">0 names kept</p>
+          <p class="field-error" id="error-names" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>Grouping mode</legend>
+          <p class="help" id="help-mode">Group by number of groups, or by people per group (the group count is then balanced automatically).</p>
+          <div class="radio-group" aria-describedby="help-mode">
+            <label><input type="radio" id="field-mode-count" name="mode" value="count" checked>By number of groups</label>
+            <label><input type="radio" id="field-mode-size" name="mode" value="size">By group size</label>
+          </div>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-groupCount">Number of groups</label>
+          <p class="help" id="help-groupCount">1 to 500, and no more than the number of names. Only enabled for “By number of groups”.</p>
+          <input id="field-groupCount" name="groupCount" type="text" inputmode="numeric" autocomplete="off" value="3" aria-describedby="help-groupCount">
+          <p class="field-error" id="error-groupCount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-groupSize">People per group</label>
+          <p class="help" id="help-groupSize">1 to 500. Only enabled for “By group size”; when there are fewer names, everyone forms a single group.</p>
+          <input id="field-groupSize" name="groupSize" type="text" inputmode="numeric" autocomplete="off" value="4" aria-describedby="help-groupSize" disabled>
+          <p class="field-error" id="error-groupSize" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-seed">Seed (blank = auto-generate)</label>
+          <p class="help" id="help-seed">Leave blank to have a seed generated and shown; reuse it to reproduce the same groups.</p>
+          <input id="field-seed" name="seed" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-seed">
+          <p class="field-error" id="error-seed" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Enter a name list, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Generate groups</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="download-report-btn" class="button-secondary" hidden>Download report</button>
+          <button type="button" id="download-text-btn" class="button-secondary" hidden>Download text list</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Groups</h2>
+      <p class="result-summary" id="result-summary"></p>
+      <div id="groups-list"></div>
+      <p class="disclaimer" id="fairness-note">Names are shuffled with the seed and dealt round-robin: everyone lands in exactly one group, group sizes differ by at most one, and the same list and seed always give the same groups.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How grouping works, and the download formats</summary>
+    <p>The list is shuffled with a seeded mulberry32 generator (a full Fisher–Yates shuffle, exactly one draw per position), then dealt round-robin: shuffled position t goes to group (t mod K) + 1. Group sizes differ by at most one, the larger groups always come first, and in “By group size” mode no group exceeds the requested size. Each line is one name; spaces, tabs and full-width spaces are trimmed from both ends, blank lines are skipped, and duplicate names are kept.</p>
+    <p>The report is always named group-generator-report.json: the result as compact JSON with object keys sorted by UTF-16 code units recursively and one trailing line feed. The text list is always named group-generator-groups.txt: one heading and its members per group, exactly one blank line between groups and no trailing line feed.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Do the same list and seed give the same groups?</dt>
+      <dd>Yes. The shuffle depends only on the seed, so reruns and other devices match.</dd>
+      <dt>What about two people with the same name?</dt>
+      <dd>Duplicate names are kept as separate people and grouped independently; they are never merged or dropped.</dd>
+      <dt>What if I leave the seed blank?</dt>
+      <dd>The app generates a seed and shows it, so you can reproduce the same groups later.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">Everything is computed locally in this page: nothing is uploaded, nothing is stored on a server, and your input is not recorded. The draft lives only in this page and is discarded when you leave it.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>隨機分組產生器｜Gloss Tools</title>
+<meta name="description" content="貼上名單、選組數或每組人數，用可重現的種子洗牌平均分組，每人恰好一組。">
+<link rel="stylesheet" href="./styles/group-generator.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>隨機分組產生器</h1>
+  <p class="lede">貼上名單，指定組數或每組人數，用種子洗牌後輪流發牌，分成平均的小組。每人恰好一組，相同名單與種子會得到相同分組。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">名單與分組設定</h2>
+      <form id="group-generator-form" novalidate>
+        <div class="field">
+          <label for="field-names">名單（每行一人）</label>
+          <p class="help" id="help-names">每行一人，最多 500 人；每名最多 40 字。同名會保留為不同的人，空行會略過。</p>
+          <textarea id="field-names" name="names" rows="8" autocomplete="off" aria-describedby="help-names"></textarea>
+          <p class="names-count" id="names-count">已保留 0 人</p>
+          <p class="field-error" id="error-names" role="alert"></p>
+        </div>
+        <fieldset class="field">
+          <legend>分組方式</legend>
+          <p class="help" id="help-mode">依組數分組，或依每組人數分組（組數自動取平衡值）。</p>
+          <div class="radio-group" aria-describedby="help-mode">
+            <label><input type="radio" id="field-mode-count" name="mode" value="count" checked>依組數</label>
+            <label><input type="radio" id="field-mode-size" name="mode" value="size">依每組人數</label>
+          </div>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+        <div class="field">
+          <label for="field-groupCount">組數</label>
+          <p class="help" id="help-groupCount">1 到 500，且不可大於人數。只在「依組數」時啟用。</p>
+          <input id="field-groupCount" name="groupCount" type="text" inputmode="numeric" autocomplete="off" value="3" aria-describedby="help-groupCount">
+          <p class="field-error" id="error-groupCount" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-groupSize">每組人數</label>
+          <p class="help" id="help-groupSize">1 到 500。只在「依每組人數」時啟用；人數不足時只成一組。</p>
+          <input id="field-groupSize" name="groupSize" type="text" inputmode="numeric" autocomplete="off" value="4" aria-describedby="help-groupSize" disabled>
+          <p class="field-error" id="error-groupSize" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-seed">種子（留空自動產生）</label>
+          <p class="help" id="help-seed">留空時會自動產生一個種子並顯示出來，之後可用同一種子重現相同分組。</p>
+          <input id="field-seed" name="seed" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-seed">
+          <p class="field-error" id="error-seed" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入名單，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">隨機分組</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-report-btn" class="button-secondary" hidden>下載報告</button>
+          <button type="button" id="download-text-btn" class="button-secondary" hidden>下載文字名單</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">分組結果</h2>
+      <p class="result-summary" id="result-summary"></p>
+      <div id="groups-list"></div>
+      <p class="disclaimer" id="fairness-note">以種子洗牌後依序輪流發牌，每人恰好一組、各組人數最多差 1；相同名單與種子會得到相同分組。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>分組方式與格式說明</summary>
+    <p>先以種子 mulberry32 洗牌（完整 Fisher–Yates，每個位置恰取一次亂數），再依序輪流發牌：第 t 位成員進入第 (t mod K) + 1 組。各組人數最多差 1，較大的組恆在前面；依每組人數分組時，每組人數不會超過指定值。名單每行一人，修剪每行兩端的半形空白、Tab 與全形空白後，空行略過、同名保留。</p>
+    <p>下載的報告檔名固定為 group-generator-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。文字名單檔名固定為 group-generator-groups.txt，逐組輸出標題與成員，組間恰一個空行、全文無結尾換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>同樣的名單和種子會得到一樣的分組嗎？</dt>
+      <dd>會。洗牌只由種子決定，重跑或換裝置都相同。</dd>
+      <dt>有兩個同名的人怎麼辦？</dt>
+      <dd>同名會保留成兩個人，各自獨立分組，不會被合併或刪除。</dd>
+      <dt>種子留空會怎樣？</dt>
+      <dd>app 會產生一個種子並顯示出來，之後可用同一種子重現。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在目前頁面，離開頁面即丟棄。</p>
+</main>
+</body>
+</html>
