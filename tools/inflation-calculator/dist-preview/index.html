@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src blob:; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>通膨計算機｜Gloss Tools</title>
+<meta name="description" content="以固定年通膨率或兩期消費者物價指數，換算金額的未來名目值與實質購買力。">
+<link rel="stylesheet" href="./styles/inflation.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>通膨計算機</h1>
+  <p class="lede">把一筆金額換算到另一個物價水準：用固定年通膨率推算未來的名目金額與實質購買力，或用兩期消費者物價指數換算等值金額。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入</h2>
+      <form id="inflation-form" novalidate>
+        <fieldset class="mode-group">
+          <legend>模式</legend>
+          <label class="mode-option" for="mode-rate">
+            <input type="radio" id="mode-rate" name="mode" value="rate" checked>
+            固定通膨率
+          </label>
+          <label class="mode-option" for="mode-cpi">
+            <input type="radio" id="mode-cpi" name="mode" value="cpi">
+            CPI 指數
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-amount">金額</label>
+          <p class="help" id="help-amount">要換算的金額，0–999,999,999.99，最多兩位小數。</p>
+          <input id="field-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="100000" aria-describedby="help-amount">
+          <p class="field-error" id="error-amount" role="alert"></p>
+        </div>
+
+        <div id="group-rate">
+          <div class="field">
+            <label for="field-annualRatePercent">年通膨率（%）</label>
+            <p class="help" id="help-annualRatePercent">每年相同的通膨率假設，大於 −100% 且不超過 1000%，最多三位小數。負值代表通縮。</p>
+            <input id="field-annualRatePercent" name="annualRatePercent" type="text" inputmode="decimal" autocomplete="off" value="2" aria-describedby="help-annualRatePercent">
+            <p class="field-error" id="error-annualRatePercent" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-years">年數</label>
+            <p class="help" id="help-years">0–200 的整數年。</p>
+            <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="help-years">
+            <p class="field-error" id="error-years" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="group-cpi" hidden>
+          <div class="field">
+            <label for="field-cpiFrom">起始 CPI 指數</label>
+            <p class="help" id="help-cpiFrom">起始期的消費者物價指數，大於 0 且不超過 99,999.999，最多三位小數。</p>
+            <input id="field-cpiFrom" name="cpiFrom" type="text" inputmode="decimal" autocomplete="off" value="100.0" aria-describedby="help-cpiFrom">
+            <p class="field-error" id="error-cpiFrom" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-cpiTo">目標 CPI 指數</label>
+            <p class="help" id="help-cpiTo">目標期的消費者物價指數，大於 0 且不超過 99,999.999，最多三位小數。可以小於起始指數。</p>
+            <input id="field-cpiTo" name="cpiTo" type="text" inputmode="decimal" autocomplete="off" value="102.0" aria-describedby="help-cpiTo">
+            <p class="field-error" id="error-cpiTo" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-labelFrom">起始期標籤</label>
+            <p class="help" id="help-labelFrom">例如 2015。去除前後空格後需為 1–24 個字元。</p>
+            <input id="field-labelFrom" name="labelFrom" type="text" autocomplete="off" value="" aria-describedby="help-labelFrom">
+            <p class="field-error" id="error-labelFrom" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-labelTo">目標期標籤</label>
+            <p class="help" id="help-labelTo">例如 2025。去除前後空格後需為 1–24 個字元。</p>
+            <input id="field-labelTo" name="labelTo" type="text" autocomplete="off" value="" aria-describedby="help-labelTo">
+            <p class="field-error" id="error-labelTo" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-yearsBetween">相隔年數（選填）</label>
+            <p class="help" id="help-yearsBetween">兩期相隔的年數，1–200 的整數。留空就不計算等值年通膨率。</p>
+            <input id="field-yearsBetween" name="yearsBetween" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-yearsBetween">
+            <p class="field-error" id="error-yearsBetween" role="alert"></p>
+          </div>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">請輸入數字，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算換算</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <div id="result-rate" hidden>
+        <dl class="summary">
+          <div>
+            <dt>未來名目金額</dt>
+            <dd id="result-future-value"></dd>
+          </div>
+          <div>
+            <dt>實質購買力</dt>
+            <dd id="result-purchasing-power"></dd>
+          </div>
+          <div>
+            <dt>累計通膨變化</dt>
+            <dd id="result-cumulative"></dd>
+          </div>
+        </dl>
+        <h3>逐年表</h3>
+        <div class="table-scroll" tabindex="0" aria-label="逐年表，可捲動區域">
+          <table>
+            <caption>每年名目金額與實質購買力</caption>
+            <thead>
+              <tr>
+                <th scope="col">年</th>
+                <th scope="col">名目金額</th>
+                <th scope="col">實質購買力</th>
+              </tr>
+            </thead>
+            <tbody id="year-table-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button type="button" id="page-prev" class="button-secondary">上一頁</button>
+          <p id="page-label" role="status" aria-live="polite"></p>
+          <button type="button" id="page-next" class="button-secondary">下一頁</button>
+        </div>
+        <p class="range-note" id="range-note" hidden>購買力顯示「—」的列已超出可計算範圍。</p>
+      </div>
+      <div id="result-cpi" hidden>
+        <p class="result-period" id="result-period"></p>
+        <dl class="summary">
+          <div>
+            <dt>換算金額</dt>
+            <dd id="result-adjusted-amount"></dd>
+          </div>
+          <div>
+            <dt>累計通膨變化</dt>
+            <dd id="result-cpi-cumulative"></dd>
+          </div>
+          <div id="result-equivalent-row">
+            <dt>等值年通膨率</dt>
+            <dd id="result-equivalent-rate"></dd>
+          </div>
+        </dl>
+      </div>
+      <p class="method-note" id="method-note">固定利率模式假設通膨率每年相同，是簡化模型；CPI 模式的結果取決於你輸入的指數來源與期別。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與格式說明</summary>
+    <p>固定利率模式：先算基數 1 ＋ 年通膨率 ÷ 100，再以 Math.pow（基數，年數）得到因子；未來名目金額為金額 × 因子，實質購買力為金額 ÷ 因子，累計通膨為（因子 − 1）× 100%。逐年表第 k 列以 Math.pow（基數，k）獨立重算，不用迭代乘法。CPI 模式：比率為目標指數 ÷ 起始指數；換算金額為金額 × 比率，累計變化為（比率 − 1）× 100%；給了相隔年數時，等值年率為（比率的 1／年數次方 − 1）× 100%。</p>
+    <p>金額與累計百分比四捨五入到小數 2 位，等值年率到小數 4 位，每個輸出只從未捨入的值捨入一次。負數逢半向正無窮方向進位。因子下溢為 0 時，購買力顯示「—」，代表超出可計算範圍。下載的報告檔名固定為 inflation-calculator-report.json，內容是結果的精簡 JSON，物件鍵按 UTF-16 碼元升序遞迴排列，結尾一個換行。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>固定利率模式假設什麼？</dt>
+      <dd>每年同一個通膨率、逐年複利；實際通膨逐年不同。</dd>
+      <dt>CPI 指數從哪裡來？</dt>
+      <dd>本工具不內建任何 CPI 資料；請填官方發布的指數（例如主計總處 CPI），並在標籤註明期別。</dd>
+      <dt>可以輸入負通膨率嗎？</dt>
+      <dd>可以；大於 −100% 的負值代表通縮，未來名目金額會比現在小、購買力上升。</dd>
+      <dt>等值年通膨率是什麼？</dt>
+      <dd>把兩期 CPI 的總變化，換算成每年相同、複利後得到相同總變化的年率；需要相隔年數才計算。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存到伺服器、不記錄你的輸入。草稿只存在這個頁面，離開即丟棄。</p>
+</main>
+</body>
+</html>
