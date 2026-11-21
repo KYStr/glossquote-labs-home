@@ -1,0 +1,663 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-dice-roller-20261109",
+  "slug": "dice-roller",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "example-2d6",
+      "kind": "core",
+      "purpose": "範例：2d6、種子 42，逐顆 4、3",
+      "input": {
+        "notation": "2d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      }
+    },
+    {
+      "id": "modifier-plus",
+      "kind": "core",
+      "purpose": "同種子同骰數，rolls 與範例相同，僅總和加修正",
+      "input": {
+        "notation": "2d6+3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "2d6+3",
+          "count": 2,
+          "sides": 6,
+          "modifier": 3,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 10
+        }
+      }
+    },
+    {
+      "id": "implicit-count-d20",
+      "kind": "core",
+      "purpose": "省略骰數預設 1 顆，正規化為 1d20",
+      "input": {
+        "notation": "d20",
+        "seed": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "1d20",
+          "count": 1,
+          "sides": 20,
+          "modifier": 0,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "negative-modifier",
+      "kind": "core",
+      "purpose": "負修正可使總和為負，不夾限",
+      "input": {
+        "notation": "1d20-25",
+        "seed": "7"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "1d20-25",
+          "count": 1,
+          "sides": 20,
+          "modifier": -25,
+          "seed": 7,
+          "rolls": [
+            1
+          ],
+          "sum": 1,
+          "total": -24
+        }
+      }
+    },
+    {
+      "id": "uppercase-d",
+      "kind": "core",
+      "purpose": "大寫 D 接受，正規化為小寫 d",
+      "input": {
+        "notation": "3D8",
+        "seed": "20261109"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "3d8",
+          "count": 3,
+          "sides": 8,
+          "modifier": 0,
+          "seed": 20261109,
+          "rolls": [
+            5,
+            2,
+            6
+          ],
+          "sum": 13,
+          "total": 13
+        }
+      }
+    },
+    {
+      "id": "seed-zero",
+      "kind": "core",
+      "purpose": "種子 0 合法且決定性",
+      "input": {
+        "notation": "3d6",
+        "seed": "0"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "3d6",
+          "count": 3,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 0,
+          "rolls": [
+            2,
+            1,
+            2
+          ],
+          "sum": 5,
+          "total": 5
+        }
+      }
+    },
+    {
+      "id": "caps-max",
+      "kind": "core",
+      "purpose": "骰數、面數、修正、種子四項同時達上限",
+      "input": {
+        "notation": "100d1000+10000",
+        "seed": "4294967295"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "expression": "100d1000+10000",
+          "count": 100,
+          "sides": 1000,
+          "modifier": 10000,
+          "seed": 4294967295,
+          "rolls": [
+            897,
+            190,
+            716,
+            945,
+            846,
+            540,
+            681,
+            476,
+            136,
+            989,
+            872,
+            190,
+            344,
+            739,
+            476,
+            757,
+            916,
+            103,
+            144,
+            393,
+            921,
+            924,
+            792,
+            853,
+            116,
+            92,
+            516,
+            276,
+            308,
+            20,
+            455,
+            254,
+            515,
+            435,
+            210,
+            397,
+            540,
+            607,
+            149,
+            268,
+            888,
+            797,
+            29,
+            277,
+            296,
+            748,
+            630,
+            753,
+            166,
+            962,
+            877,
+            987,
+            621,
+            426,
+            388,
+            524,
+            904,
+            254,
+            600,
+            402,
+            896,
+            164,
+            884,
+            218,
+            38,
+            677,
+            563,
+            567,
+            727,
+            239,
+            451,
+            796,
+            302,
+            562,
+            1000,
+            324,
+            402,
+            468,
+            754,
+            893,
+            897,
+            423,
+            647,
+            460,
+            482,
+            212,
+            235,
+            937,
+            268,
+            155,
+            871,
+            231,
+            78,
+            603,
+            142,
+            128,
+            334,
+            597,
+            551,
+            805
+          ],
+          "sum": 51508,
+          "total": 61508
+        }
+      }
+    },
+    {
+      "id": "empty-notation",
+      "kind": "core",
+      "purpose": "骰式空白回 EMPTY",
+      "input": {
+        "notation": "",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "notation",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "notation-missing-sides",
+      "kind": "core",
+      "purpose": "2d 結尾缺面數，NOTATION 位置為字串長度",
+      "input": {
+        "notation": "2d",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 2
+        }
+      }
+    },
+    {
+      "id": "notation-bad-character",
+      "kind": "core",
+      "purpose": "2x6 在 x 處回 NOTATION",
+      "input": {
+        "notation": "2x6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 1
+        }
+      }
+    },
+    {
+      "id": "notation-space",
+      "kind": "core",
+      "purpose": "骰式內空白不修剪，回 NOTATION",
+      "input": {
+        "notation": "2d6 +3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 3
+        }
+      }
+    },
+    {
+      "id": "notation-double-sign",
+      "kind": "core",
+      "purpose": "2d6++3 第二個正號回 NOTATION",
+      "input": {
+        "notation": "2d6++3",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "NOTATION",
+          "field": "notation",
+          "row": null,
+          "position": 4
+        }
+      }
+    },
+    {
+      "id": "count-zero",
+      "kind": "core",
+      "purpose": "骰數 0 回 RANGE/count",
+      "input": {
+        "notation": "0d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      }
+    },
+    {
+      "id": "count-over-cap",
+      "kind": "core",
+      "purpose": "骰數 101 回 RANGE/count",
+      "input": {
+        "notation": "101d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "count"
+        }
+      }
+    },
+    {
+      "id": "sides-below-min",
+      "kind": "core",
+      "purpose": "面數 1 回 RANGE/sides",
+      "input": {
+        "notation": "2d1",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      }
+    },
+    {
+      "id": "sides-over-cap",
+      "kind": "core",
+      "purpose": "面數 1001 回 RANGE/sides",
+      "input": {
+        "notation": "2d1001",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "sides"
+        }
+      }
+    },
+    {
+      "id": "modifier-over-cap",
+      "kind": "core",
+      "purpose": "修正 10001 回 RANGE/modifier",
+      "input": {
+        "notation": "2d6+10001",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "notation",
+          "row": null,
+          "component": "modifier"
+        }
+      }
+    },
+    {
+      "id": "notation-too-long",
+      "kind": "core",
+      "purpose": "骰式超過 32 單位先回 INPUT_LIMIT",
+      "input": {
+        "notation": "12345678901234567890123456789012d6",
+        "seed": "42"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "notation",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "seed-empty-core",
+      "kind": "core",
+      "purpose": "核心收到空種子回 EMPTY（核心不自產種子）",
+      "input": {
+        "notation": "2d6",
+        "seed": ""
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "seed",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "seed-leading-zero",
+      "kind": "core",
+      "purpose": "種子前導零回 INTEGER_FORMAT",
+      "input": {
+        "notation": "2d6",
+        "seed": "042"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "seed",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "seed-over-range",
+      "kind": "core",
+      "purpose": "種子 4294967296 回 RANGE",
+      "input": {
+        "notation": "2d6",
+        "seed": "4294967296"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "seed",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "edit": {
+          "notation": "2d",
+          "seed": "42"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "lateResult": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": "42"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "notation": "2d6",
+            "seed": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "notation": "2d6",
+          "seed": "42"
+        },
+        "newerDraft": {
+          "notation": "2d",
+          "seed": "42"
+        },
+        "olderLateResult": {
+          "expression": "2d6",
+          "count": 2,
+          "sides": 6,
+          "modifier": 0,
+          "seed": 42,
+          "rolls": [
+            4,
+            3
+          ],
+          "sum": 7,
+          "total": 7
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "NOTATION",
+            "field": "notation",
+            "row": null,
+            "position": 2
+          }
+        }
+      }
+    }
+  ]
+}
