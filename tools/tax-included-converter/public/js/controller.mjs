@@ -1,0 +1,281 @@
+// Draft / sequence controller for the Tax-Included Converter.
+// No DOM access: the app wires this to the form (the onChange callback
+// is the view adapter), and computation runs in a Worker built through
+// the injected createWorker factory. Tests drive it with a fake worker
+// whose completion is controllable. No storage adapter is used by the
+// page: the SPEC pins the draft to the current page (switching language
+// or leaving discards it), so the app creates the controller without
+// storage; the optional storage argument exists only for tests that
+// seed a draft.
+//
+// States (SPEC userFlow): empty, dirty, busy, success, error,
+// cancelled.
+// - The sequence starts at 1 when the controller is created. Every
+//   edit, reset, load-example and cancel increments it, and so does
+//   every run that passes local validation and submits to the Worker.
+//   A run that fails local validation never posts, so it leaves the
+//   sequence unchanged.
+// - run() validates the draft locally first (the pure core). A local
+//   failure goes straight to `error` with the core's error and no
+//   worker is created. A valid draft is posted to a fresh worker.
+// - A Worker reply is accepted only when its `sequence` equals the
+//   current sequence, its echoed draft deep-equals the current draft,
+//   and the controller is still `busy`; late replies are dropped,
+//   never resurrected.
+// - cancel() while `busy` terminates the worker and goes `cancelled`,
+//   keeping the draft; a late reply afterwards is dropped. cancel()
+//   in any other state is a no-op.
+// - edit() during `busy` terminates the worker and goes `dirty`;
+//   after a result, error or cancelled state it clears the outcome
+//   and goes `dirty`; from `empty` it stays `empty`.
+// - A second run press while `busy` is ignored.
+// - Worker construction, script loading or messaging failure goes to
+//   `error` with WORKER_ERROR (never a fabricated result); local
+//   validation still runs and can produce the pinned error state.
+// - reset() is synchronous and restores the pinned default draft,
+//   returning to `empty`.
+
+import {
+  DEFAULTS,
+  EXAMPLE,
+  FIELDS,
+  STATUS_TEXT,
+  STORAGE_KEY,
+  isDraftShapeValid,
+  run as coreRun,
+} from "./core/tax-included.mjs";
+
+export const WORKER_ERROR = { code: "WORKER_ERROR", field: null, row: null };
+
+function linesEqual(a, b) {
+  if (a === null || b === null) return a === b;
+  if (a.length !== b.length) return false;
+  return a.every((line, index) => line.amount === b[index].amount);
+}
+
+function draftEquals(a, b) {
+  if (a === null || b === null || typeof a !== "object" || typeof b !== "object") return false;
+  return FIELDS.every((field) => {
+    if (field === "lines") return linesEqual(a.lines, b.lines);
+    return a[field] === b[field];
+  });
+}
+
+function cloneDraft(draft) {
+  return {
+    ...draft,
+    lines: draft.lines === null ? null : draft.lines.map((line) => ({ ...line })),
+  };
+}
+
+export function createController({ createWorker, storage = null, onChange = () => {} }) {
+  let sequence = 1;
+  let state = "empty";
+  let draft = cloneDraft(DEFAULTS);
+  let isExample = false;
+  let result = null;
+  let error = null;
+  let worker = null;
+  let statusOverride = null;
+
+  // Restore a stored draft. A stored value that fails the schema gate
+  // is discarded and the default draft is used; loading never throws.
+  if (storage !== null && storage !== undefined) {
+    try {
+      const raw = storage.getItem(STORAGE_KEY);
+      if (typeof raw === "string" && raw !== "") {
+        const parsed = JSON.parse(raw);
+        if (isDraftShapeValid(parsed)) draft = cloneDraft(parsed);
+      }
+    } catch {
+      // A corrupt stored draft is not an error state for the UI.
+    }
+  }
+
+  function emit() {
+    onChange(getPublicState());
+  }
+
+  function persist() {
+    if (storage === null || storage === undefined) return;
+    try {
+      storage.setItem(STORAGE_KEY, JSON.stringify(draft));
+    } catch {
+      // Persistence is best-effort; a full or blocked store must not
+      // break calculation.
+    }
+  }
+
+  function terminateWorker() {
+    if (worker !== null) {
+      try {
+        worker.terminate();
+      } catch {
+        // Terminating a dead worker is not an error state for the UI.
+      }
+      worker = null;
+    }
+  }
+
+  function getPublicState() {
+    return {
+      state,
+      sequence,
+      draft: cloneDraft(draft),
+      isExample,
+      result,
+      error,
+      reportAvailable: state === "success" && result !== null,
+      status: statusOverride === null ? { ...STATUS_TEXT[state] } : { ...statusOverride },
+    };
+  }
+
+  function run() {
+    if (state === "busy") return getPublicState();
+    statusOverride = null;
+    const outcome = coreRun(draft);
+    if (!outcome.ok) {
+      result = null;
+      error = outcome.error;
+      state = "error";
+      emit();
+      return getPublicState();
+    }
+    terminateWorker();
+    sequence += 1;
+    result = null;
+    error = null;
+    state = "busy";
+    const postedSequence = sequence;
+    const snapshot = cloneDraft(draft);
+    let nextWorker;
+    try {
+      nextWorker = createWorker();
+    } catch {
+      result = null;
+      error = { ...WORKER_ERROR };
+      state = "error";
+      emit();
+      return getPublicState();
+    }
+    worker = nextWorker;
+    worker.onmessage = (event) => {
+      const data = event === null || event === undefined ? null : event.data;
+      if (data === null || typeof data !== "object") return;
+      if (data.sequence !== sequence || state !== "busy") return;
+      if (!draftEquals(data.draft, draft)) return;
+      terminateWorker();
+      const reply = data.outcome;
+      if (reply !== null && typeof reply === "object" && reply.ok === true) {
+        result = reply.result;
+        error = null;
+        state = "success";
+      } else if (reply !== null && typeof reply === "object" && reply.ok === false) {
+        result = null;
+        error = reply.error ?? { ...WORKER_ERROR };
+        state = "error";
+      } else {
+        result = null;
+        error = { ...WORKER_ERROR };
+        state = "error";
+      }
+      emit();
+    };
+    worker.onerror = () => {
+      if (postedSequence !== sequence || state !== "busy") return;
+      terminateWorker();
+      result = null;
+      error = { ...WORKER_ERROR };
+      state = "error";
+      emit();
+    };
+    try {
+      worker.postMessage({ sequence: postedSequence, draft: snapshot });
+    } catch {
+      terminateWorker();
+      result = null;
+      error = { ...WORKER_ERROR };
+      state = "error";
+    }
+    emit();
+    return getPublicState();
+  }
+
+  function cancel() {
+    if (state !== "busy") return getPublicState();
+    terminateWorker();
+    sequence += 1;
+    result = null;
+    error = null;
+    state = "cancelled";
+    statusOverride = null;
+    emit();
+    return getPublicState();
+  }
+
+  function edit(patch) {
+    const nextDraft = cloneDraft({ ...draft, ...patch });
+    const changed = !draftEquals(nextDraft, draft);
+    draft = nextDraft;
+    isExample = false;
+    statusOverride = null;
+    sequence += 1;
+    if (changed) {
+      if (state === "busy") {
+        terminateWorker();
+        result = null;
+        error = null;
+        state = "dirty";
+      } else if (state === "success" || state === "error" || state === "cancelled") {
+        result = null;
+        error = null;
+        state = "dirty";
+      }
+    }
+    persist();
+    emit();
+    return getPublicState();
+  }
+
+  function loadExample() {
+    const wasBusy = state === "busy";
+    draft = cloneDraft(EXAMPLE);
+    isExample = true;
+    statusOverride = { ...STATUS_TEXT.example };
+    sequence += 1;
+    if (wasBusy) {
+      terminateWorker();
+      result = null;
+      error = null;
+      state = "dirty";
+    } else if (state === "success" || state === "error" || state === "cancelled") {
+      result = null;
+      error = null;
+      state = "dirty";
+    }
+    persist();
+    emit();
+    return getPublicState();
+  }
+
+  function reset() {
+    terminateWorker();
+    sequence += 1;
+    draft = cloneDraft(DEFAULTS);
+    isExample = false;
+    result = null;
+    error = null;
+    state = "empty";
+    statusOverride = { ...STATUS_TEXT.reset };
+    persist();
+    emit();
+    return getPublicState();
+  }
+
+  function destroy() {
+    terminateWorker();
+    sequence += 1;
+  }
+
+  return { getState: getPublicState, run, cancel, edit, loadExample, reset, destroy };
+}
