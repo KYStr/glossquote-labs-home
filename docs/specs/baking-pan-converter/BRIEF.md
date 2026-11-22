@@ -1,0 +1,15 @@
+# 烤盤尺寸換算 / Baking Pan Converter — BRIEF
+
+**文件草案，產品檢查 NOT_RUN** · `spec-baking-pan-converter-20261109`
+
+食譜指定 8 吋圓模，手邊只有 9 吋方模或一只 Bundt 模——麵糊要增減多少才不會太厚或太薄？本工具以烤盤容量（體積）為準：11 種常見烤盤的容量表，每個體積都由釘版標稱尺寸以幾何公式推得（Bundt／中空模這種非規則形狀改用標準換算表的標稱容量並明示），任選來源盤與目標盤即得換算倍率（目標容量 ÷ 來源容量，以倍率與百分比顯示，正小量保留額外精度），再把單一麵糊份量（公克或毫升）按未捨入倍率放大／縮小一次。另比較兩盤的盤壁高度。直壁盤的麵糊厚度取決於底面積與實際份量。
+
+MVP 範圍。表格選盤（11 列）或自訂尺寸（圓形：直徑＋深度；方形／長方形：長×寬×深度，輸入一律公分）兩種來源；倍率、百分比、單一麵糊份量換算、深度關係（較淺／較深／相同／未知）與固定報告下載。非目標為食材重量配比（那是 bakers-percentage-calculator 的烘焙百分比，本工具不做任何食材配比數學）、多種食材逐項換算、烘烤時間／溫度調整建議（只給釘版提醒文字，不計算）、杯量及公升輸入（盤容量以 ml 表示，麵糊份量可輸入 g 或 ml）、量測自家烤盤水量。
+
+以直壁長方盤為例，從 20×20×8 cm 換到 10×10×4 cm，底面積由 400 cm² 減為 100 cm²。同樣倒入 300 ml，麵糊厚度由 0.75 cm 增至 3.00 cm，佔目標盤高度的 75%。依容量比換算為 37.5 ml 時，目標盤內的厚度為 0.375 cm。
+
+For straight-sided rectangular pans, switching from 20×20×8 cm to 10×10×4 cm reduces the base area from 400 cm² to 100 cm². With 300 ml in either pan, batter depth increases from 0.75 cm to 3.00 cm, filling 75% of the target pan's height. Scaling by capacity gives 37.5 ml, which sits 0.375 cm deep in the target pan.
+
+首個可觀察案例。8 吋圓模換 9 吋圓模、500 g 麵糊（`table-upscale-round`）。字面資料與預期見 [fixtures.json](fixtures.json)，契約以 [SPEC.md](SPEC.md) 為準。
+
+先完成核心／狀態測試，再交雙語靜態頁、匯出、build/check、同一候選的九面向證據。目標 `tools/baking-pan-converter/`，固定分支與 PR 交驗。

@@ -1,0 +1,1987 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000
+        }
+      },
+      "id": "net-basic",
+      "input": {
+        "amount": "100000",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "未稅基本換算，稅額整除"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000,
+          "forwardGross": 105000,
+          "forwardDifference": 0
+        }
+      },
+      "id": "gross-basic",
+      "input": {
+        "amount": "105000",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "含稅基本回推，恰好整除"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 12962,
+          "mode": "single",
+          "net": 12345,
+          "ratePercent": "5",
+          "tax": 617
+        }
+      },
+      "id": "net-round-down",
+      "input": {
+        "amount": "12345",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "未稅換算，稅額尾數 0.25 捨去"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 11,
+          "mode": "single",
+          "net": 10,
+          "ratePercent": "5",
+          "tax": 1
+        }
+      },
+      "id": "net-half-tie-up",
+      "input": {
+        "amount": "10",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "稅額恰為 0.5 元，四捨五入進位"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 9999,
+          "mode": "single",
+          "net": 9523,
+          "ratePercent": "5",
+          "tax": 476,
+          "forwardGross": 9999,
+          "forwardDifference": 0
+        }
+      },
+      "id": "gross-round-up",
+      "input": {
+        "amount": "9999",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "含稅回推未稅四捨五入，稅額以減法吸收尾數"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 1,
+          "mode": "single",
+          "net": 1,
+          "ratePercent": "5",
+          "tax": 0,
+          "forwardGross": 1,
+          "forwardDifference": 0
+        }
+      },
+      "id": "gross-one-dollar",
+      "input": {
+        "amount": "1",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "含稅 1 元回推，未稅進位為 1、稅額 0"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 0,
+          "mode": "single",
+          "net": 0,
+          "ratePercent": "5",
+          "tax": 0
+        }
+      },
+      "id": "zero-amount",
+      "input": {
+        "amount": "0",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "金額零，三元組全為零"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 1100,
+          "mode": "single",
+          "net": 1000,
+          "ratePercent": "10",
+          "tax": 100
+        }
+      },
+      "id": "rate-ten",
+      "input": {
+        "amount": "1000",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "10"
+      },
+      "kind": "core",
+      "purpose": "自訂稅率 10%"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "gross",
+          "gross": 1000,
+          "mode": "single",
+          "net": 924,
+          "ratePercent": "8.25",
+          "tax": 76,
+          "forwardGross": 1000,
+          "forwardDifference": 0
+        }
+      },
+      "id": "rate-decimal-gross",
+      "input": {
+        "amount": "1000",
+        "basis": "gross",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "8.25"
+      },
+      "kind": "core",
+      "purpose": "小數稅率 8.25% 含稅回推"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 100,
+          "mode": "single",
+          "net": 100,
+          "ratePercent": "0.01",
+          "tax": 0
+        }
+      },
+      "id": "rate-tiny",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "0.01"
+      },
+      "kind": "core",
+      "purpose": "極小稅率 0.01%，稅額捨為 0"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "basis": "net",
+          "gross": 211,
+          "mode": "single",
+          "net": 200,
+          "ratePercent": "5.5",
+          "tax": 11
+        }
+      },
+      "id": "rate-canonical",
+      "input": {
+        "amount": "200",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5.50"
+      },
+      "kind": "core",
+      "purpose": "稅率輸入 5.50 正規化為 5.5"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 32,
+          "lines": [
+            {
+              "net": 10,
+              "row": 1
+            },
+            {
+              "net": 10,
+              "row": 2
+            },
+            {
+              "net": 10,
+              "row": 3
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 3,
+          "ratePercent": "5",
+          "roundingDifference": -1,
+          "subtotalNet": 30,
+          "tax": 2
+        }
+      },
+      "id": "lines-difference",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "10"
+          },
+          {
+            "amount": "10"
+          },
+          {
+            "amount": "10"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "三列各 10 元：按總額計稅 2 元、逐項合計 3 元，差額 −1"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 117962,
+          "lines": [
+            {
+              "net": 100000,
+              "row": 1
+            },
+            {
+              "net": 12345,
+              "row": 2
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 5617,
+          "ratePercent": "5",
+          "roundingDifference": 0,
+          "subtotalNet": 112345,
+          "tax": 5617
+        }
+      },
+      "id": "lines-agree",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "100000"
+          },
+          {
+            "amount": "12345"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "兩列金額，按總額與逐項計稅相同，差額 0"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "gross": 11025,
+          "lines": [
+            {
+              "net": 10500,
+              "row": 1
+            }
+          ],
+          "mode": "lines",
+          "perLineTaxSum": 525,
+          "ratePercent": "5",
+          "roundingDifference": 0,
+          "subtotalNet": 10500,
+          "tax": 525
+        }
+      },
+      "id": "lines-single-row",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "10500"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "明細模式單列"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-rate-zero",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "0"
+      },
+      "kind": "core",
+      "purpose": "稅率 0 不接受"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-rate-format",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5.555"
+      },
+      "kind": "core",
+      "purpose": "稅率三位小數不合文法"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-amount-format",
+      "input": {
+        "amount": "100.5",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "金額帶小數不合整數文法"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "amount",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-amount-empty",
+      "input": {
+        "amount": "",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "金額空白"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-schema-extra",
+      "input": {
+        "amount": "100",
+        "basis": "net",
+        "lines": null,
+        "mode": "single",
+        "note": "x",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "多出未知鍵為 SCHEMA"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-lines-empty",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "明細零列"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "error-lines-limit",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "明細 21 列超過上限"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 2
+        },
+        "ok": false
+      },
+      "id": "error-line-format",
+      "input": {
+        "amount": null,
+        "basis": null,
+        "lines": [
+          {
+            "amount": "100"
+          },
+          {
+            "amount": "1,000"
+          }
+        ],
+        "mode": "lines",
+        "ratePercent": "5"
+      },
+      "kind": "core",
+      "purpose": "第二列金額含千分位逗號，錯誤帶列號"
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "INTEGER_FORMAT",
+            "field": "amount",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "amount": "9522.5",
+          "basis": "gross",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "initial": {
+          "amount": "9999",
+          "basis": "gross",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "amount": "12345",
+            "basis": "net",
+            "lines": null,
+            "mode": "single",
+            "ratePercent": "5"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "amount": "10000",
+            "basis": "net",
+            "lines": null,
+            "mode": "single",
+            "ratePercent": "5"
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "amount": "12345",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "lateResult": {
+          "basis": "net",
+          "gross": 12962,
+          "mode": "single",
+          "net": 12345,
+          "ratePercent": "5",
+          "tax": 617
+        }
+      },
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "RANGE",
+            "field": "ratePercent",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "amount": "100000",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "0"
+        },
+        "olderDraft": {
+          "amount": "100000",
+          "basis": "net",
+          "lines": null,
+          "mode": "single",
+          "ratePercent": "5"
+        },
+        "olderLateResult": {
+          "basis": "net",
+          "gross": 105000,
+          "mode": "single",
+          "net": 100000,
+          "ratePercent": "5",
+          "tax": 5000
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    },
+    {
+      "id": "gross-10-no-forward-preimage",
+      "kind": "core",
+      "purpose": "未稅 200/21 → 10；10 元正算含稅 11，差 +1 元。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "gross",
+        "amount": "10",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 0,
+          "gross": 10,
+          "forwardGross": 11,
+          "forwardDifference": 1
+        }
+      }
+    },
+    {
+      "id": "gross-13-half-tie",
+      "kind": "core",
+      "purpose": "未稅 12.5 元先捨得 13；先捨稅額會得 12/1/13。正算含稅 14，差 +1 元。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "4",
+        "basis": "gross",
+        "amount": "13",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "4",
+          "net": 13,
+          "tax": 0,
+          "gross": 13,
+          "forwardGross": 14,
+          "forwardDifference": 1
+        }
+      }
+    },
+    {
+      "id": "gross-99-forward-lower",
+      "kind": "core",
+      "purpose": "未稅 990000/10051 → 98；98 × 0.51% 捨至 0，正算差 −1 元。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0.51",
+        "basis": "gross",
+        "amount": "99",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "0.51",
+          "net": 98,
+          "tax": 1,
+          "gross": 99,
+          "forwardGross": 98,
+          "forwardDifference": -1
+        }
+      }
+    },
+    {
+      "id": "net-max-rate-max-amount",
+      "kind": "core",
+      "purpose": "100% 稅額等於最大可輸入的未稅金額。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "100.00",
+        "basis": "net",
+        "amount": "999999999999",
+        "lines": null
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "single",
+          "basis": "net",
+          "ratePercent": "100",
+          "net": 999999999999,
+          "tax": 999999999999,
+          "gross": 1999999999998
+        }
+      }
+    },
+    {
+      "id": "lines-20-valid",
+      "kind": "core",
+      "purpose": "20 列各 1 元，總額稅 1 元，逐項捨入均為 0。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 1
+            },
+            {
+              "row": 2,
+              "net": 1
+            },
+            {
+              "row": 3,
+              "net": 1
+            },
+            {
+              "row": 4,
+              "net": 1
+            },
+            {
+              "row": 5,
+              "net": 1
+            },
+            {
+              "row": 6,
+              "net": 1
+            },
+            {
+              "row": 7,
+              "net": 1
+            },
+            {
+              "row": 8,
+              "net": 1
+            },
+            {
+              "row": 9,
+              "net": 1
+            },
+            {
+              "row": 10,
+              "net": 1
+            },
+            {
+              "row": 11,
+              "net": 1
+            },
+            {
+              "row": 12,
+              "net": 1
+            },
+            {
+              "row": 13,
+              "net": 1
+            },
+            {
+              "row": 14,
+              "net": 1
+            },
+            {
+              "row": 15,
+              "net": 1
+            },
+            {
+              "row": 16,
+              "net": 1
+            },
+            {
+              "row": 17,
+              "net": 1
+            },
+            {
+              "row": 18,
+              "net": 1
+            },
+            {
+              "row": 19,
+              "net": 1
+            },
+            {
+              "row": 20,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 20,
+          "tax": 1,
+          "gross": 21,
+          "perLineTaxSum": 0,
+          "roundingDifference": 1
+        }
+      }
+    },
+    {
+      "id": "lines-total-at-limit",
+      "kind": "core",
+      "purpose": "總淨額等於上限。5% 稅 49999999999.95 四捨五入為 50000000000 元。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999998"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 999999999998
+            },
+            {
+              "row": 2,
+              "net": 1
+            }
+          ],
+          "subtotalNet": 999999999999,
+          "tax": 50000000000,
+          "gross": 1049999999999,
+          "perLineTaxSum": 50000000000,
+          "roundingDifference": 0
+        }
+      }
+    },
+    {
+      "id": "shape-precedes-mode",
+      "kind": "core",
+      "purpose": "不合 shape 的明細列優先於無效 mode。",
+      "input": {
+        "mode": "unknown",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "1",
+            "extra": 0
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "SCHEMA",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "mode-precedes-rate",
+      "kind": "core",
+      "purpose": "mode 無效優先於錯誤的稅率及金額。",
+      "input": {
+        "mode": "unknown",
+        "ratePercent": "0",
+        "basis": "net",
+        "amount": "bad",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ENUM",
+          "field": "mode",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "mode-limit-precedes-unicode",
+      "kind": "core",
+      "purpose": "超長欄位優先於同欄未配對 surrogate。",
+      "input": {
+        "mode": "xxxxxxxxxxxxxxxx\ud800",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "mode",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-unpaired-surrogate",
+      "kind": "core",
+      "purpose": "長度合格的未配對 surrogate 優先於稅率格式。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5\ud800",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNICODE",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-empty",
+      "kind": "core",
+      "purpose": "空稅率優先於格式與基準檢查。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "",
+        "basis": null,
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-over-limit",
+      "kind": "core",
+      "purpose": "100.01% 格式合法，數值超過上限。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "100.01",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-trailing-line-feed",
+      "kind": "core",
+      "purpose": "整個稅率字串必須匹配 ASCII 文法，尾 LF 不接受。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5\n",
+        "basis": "net",
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "rate-precedes-basis",
+      "kind": "core",
+      "purpose": "先檢查稅率內容，再檢查空基準。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "0",
+        "basis": null,
+        "amount": "100",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "ratePercent",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "basis-precedes-inactive-lines",
+      "kind": "core",
+      "purpose": "空基準優先於單筆模式夾帶明細。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": "100",
+        "lines": [
+          {
+            "amount": "3"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "basis",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "single-inactive-lines",
+      "kind": "core",
+      "purpose": "單筆不接受明細欄；先於金額錯。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "bad",
+        "lines": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "lines",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "single-amount-over-limit",
+      "kind": "core",
+      "purpose": "數值超過上限一元，回 RANGE。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "1000000000000",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "line-inactive-order",
+      "kind": "core",
+      "purpose": "明細同時夾帶單筆基準及金額時，先報 basis。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "10",
+        "lines": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "basis",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "line-inactive-amount",
+      "kind": "core",
+      "purpose": "未使用的 amount 欄必須為 null。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": "1",
+        "lines": [
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INACTIVE_FIELD",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "lines-null",
+      "kind": "core",
+      "purpose": "明細缺陣列等於沒有列。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "EMPTY",
+          "field": "lines",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "lines-oversize-with-bad-row",
+      "kind": "core",
+      "purpose": "20 列以上停止掃描元素，依容量回 ROW_LIMIT。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          null,
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "lines",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "lines-total-over-limit",
+      "kind": "core",
+      "purpose": "兩列各自合法，明細總和超過一元。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999999"
+          },
+          {
+            "amount": "1"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "TOTAL_RANGE",
+          "field": "lines",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "line-error-before-total",
+      "kind": "core",
+      "purpose": "前兩列已超出總額，第三列錯仍優先於總額。",
+      "input": {
+        "mode": "lines",
+        "ratePercent": "5",
+        "basis": null,
+        "amount": null,
+        "lines": [
+          {
+            "amount": "999999999999"
+          },
+          {
+            "amount": "1"
+          },
+          {
+            "amount": "oops"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "amount-fullwidth",
+      "kind": "core",
+      "purpose": "全形數字不接受，草稿原字串保留。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "１２",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "amount-leading-zero",
+      "kind": "core",
+      "purpose": "禁止多位整元金額前置零。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "01",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "amount-raw-limit",
+      "kind": "core",
+      "purpose": "先檢查 32 UTF-16 單元容量，再嘗試解析或數值範圍。",
+      "input": {
+        "mode": "single",
+        "ratePercent": "5",
+        "basis": "net",
+        "amount": "999999999999999999999999999999999",
+        "lines": null
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "amount",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "state-reset-discards-late",
+      "kind": "controller",
+      "purpose": "重設清除當代與草稿，晚到成功無法恢復舊結果。",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "before",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "reset"
+          },
+          {
+            "op": "resolve",
+            "token": "before",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-new-success-wins",
+      "kind": "controller",
+      "purpose": "新結果成功後收到舊成功，新結果仍可下載。",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "older",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "convert",
+            "token": "newer",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "4",
+              "basis": "gross",
+              "amount": "13",
+              "lines": null
+            }
+          },
+          {
+            "op": "resolve",
+            "token": "newer",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "4",
+                "net": 13,
+                "tax": 0,
+                "gross": 13,
+                "forwardGross": 14,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "resolve",
+            "token": "older",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "4",
+            "net": 13,
+            "tax": 0,
+            "gross": 13,
+            "forwardGross": 14,
+            "forwardDifference": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-timeout-late-retry",
+      "kind": "controller",
+      "purpose": "逾時保留草稿，舊成功無效；重試同一草稿成功。",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "old",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "5",
+              "basis": "gross",
+              "amount": "10",
+              "lines": null
+            }
+          },
+          {
+            "op": "timeout",
+            "token": "old"
+          },
+          {
+            "op": "resolve",
+            "token": "old",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "convert",
+            "token": "retry"
+          },
+          {
+            "op": "resolve",
+            "token": "retry",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "5",
+                "net": 10,
+                "tax": 0,
+                "gross": 10,
+                "forwardGross": 11,
+                "forwardDifference": 1
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "WORKER_ERROR",
+            "field": null,
+            "row": null
+          }
+        },
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "success",
+          "reportAvailable": true,
+          "result": {
+            "mode": "single",
+            "basis": "gross",
+            "ratePercent": "5",
+            "net": 10,
+            "tax": 0,
+            "gross": 10,
+            "forwardGross": 11,
+            "forwardDifference": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-pagehide-clears",
+      "kind": "controller",
+      "purpose": "離頁清除工作，bfcache 返回只見初載草稿。",
+      "input": {
+        "events": [
+          {
+            "op": "convert",
+            "token": "before",
+            "draft": {
+              "mode": "single",
+              "ratePercent": "4",
+              "basis": "gross",
+              "amount": "13",
+              "lines": null
+            }
+          },
+          {
+            "op": "pagehide"
+          },
+          {
+            "op": "resolve",
+            "token": "before",
+            "outcome": {
+              "ok": true,
+              "result": {
+                "mode": "single",
+                "basis": "gross",
+                "ratePercent": "4",
+                "net": 13,
+                "tax": 0,
+                "gross": 13,
+                "forwardGross": 14,
+                "forwardDifference": 1
+              }
+            }
+          },
+          {
+            "op": "pageshow"
+          }
+        ]
+      },
+      "expected": [
+        {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false
+        },
+        {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "single",
+            "ratePercent": "5",
+            "basis": "net",
+            "amount": "10000",
+            "lines": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "export-gross-10",
+      "kind": "export",
+      "purpose": "以固定 UTF-8 bytes 比對；兩語產物相同。",
+      "input": {
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "5",
+          "net": 10,
+          "tax": 0,
+          "gross": 10,
+          "forwardGross": 11,
+          "forwardDifference": 1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"5\",\n    \"net\": 10,\n    \"tax\": 0,\n    \"gross\": 10,\n    \"forwardGross\": 11,\n    \"forwardDifference\": 1\n  }\n}\n"
+      }
+    },
+    {
+      "id": "export-gross-13",
+      "kind": "export",
+      "purpose": "以固定 UTF-8 bytes 比對；兩語產物相同。",
+      "input": {
+        "result": {
+          "mode": "single",
+          "basis": "gross",
+          "ratePercent": "4",
+          "net": 13,
+          "tax": 0,
+          "gross": 13,
+          "forwardGross": 14,
+          "forwardDifference": 1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"single\",\n    \"basis\": \"gross\",\n    \"ratePercent\": \"4\",\n    \"net\": 13,\n    \"tax\": 0,\n    \"gross\": 13,\n    \"forwardGross\": 14,\n    \"forwardDifference\": 1\n  }\n}\n"
+      }
+    },
+    {
+      "id": "export-lines-difference",
+      "kind": "export",
+      "purpose": "以固定 UTF-8 bytes 比對；兩語產物相同。",
+      "input": {
+        "result": {
+          "mode": "lines",
+          "ratePercent": "5",
+          "lines": [
+            {
+              "row": 1,
+              "net": 10
+            },
+            {
+              "row": 2,
+              "net": 10
+            },
+            {
+              "row": 3,
+              "net": 10
+            }
+          ],
+          "subtotalNet": 30,
+          "tax": 2,
+          "gross": 32,
+          "perLineTaxSum": 3,
+          "roundingDifference": -1
+        }
+      },
+      "expected": {
+        "filename": "tax-included-estimate.json",
+        "mime": "application/json;charset=utf-8",
+        "utf8": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"tax-included-converter\",\n  \"currency\": \"TWD\",\n  \"purpose\": \"estimate\",\n  \"result\": {\n    \"mode\": \"lines\",\n    \"ratePercent\": \"5\",\n    \"lines\": [\n      {\n        \"row\": 1,\n        \"net\": 10\n      },\n      {\n        \"row\": 2,\n        \"net\": 10\n      },\n      {\n        \"row\": 3,\n        \"net\": 10\n      }\n    ],\n    \"subtotalNet\": 30,\n    \"tax\": 2,\n    \"gross\": 32,\n    \"perLineTaxSum\": 3,\n    \"roundingDifference\": -1\n  }\n}\n"
+      }
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 1,
+  "slug": "tax-included-converter",
+  "specId": "spec-tax-included-converter-20261109"
+}
