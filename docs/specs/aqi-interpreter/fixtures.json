@@ -1,0 +1,837 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-aqi-interpreter-20261121",
+  "slug": "aqi-interpreter",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "aqi-direct-good",
+      "kind": "core",
+      "purpose": "直接 AQI 35（台灣制）→ 良好／綠",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "35",
+        "rows": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 35,
+          "level": "good",
+          "levelZh": "良好",
+          "levelEn": "Good",
+          "color": "green",
+          "colorZh": "綠",
+          "hex": "#00E400",
+          "healthImpact": "空氣品質為良好，污染程度低或無污染。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "正常戶外活動。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "aqi-boundary-50",
+      "kind": "core",
+      "purpose": "AQI 50 仍為良好（區間上緣含在內）",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "50",
+        "rows": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 50,
+          "level": "good",
+          "levelZh": "良好",
+          "levelEn": "Good",
+          "color": "green",
+          "colorZh": "綠",
+          "hex": "#00E400",
+          "healthImpact": "空氣品質為良好，污染程度低或無污染。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "正常戶外活動。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "aqi-boundary-51",
+      "kind": "core",
+      "purpose": "AQI 51 進入普通（區間下緣）",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "51",
+        "rows": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 51,
+          "level": "moderate",
+          "levelZh": "普通",
+          "levelEn": "Moderate",
+          "color": "yellow",
+          "colorZh": "黃",
+          "hex": "#FFFF00",
+          "healthImpact": "空氣品質普通；但對非常少數之極敏感族群產生輕微影響。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "極特殊敏感族群建議注意可能產生的咳嗽或呼吸急促症狀，但仍可正常戶外活動。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "aqi-direct-sensitive",
+      "kind": "core",
+      "purpose": "AQI 120 → 對敏感族群不健康／橘",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "120",
+        "rows": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 120,
+          "level": "usg",
+          "levelZh": "對敏感族群不健康",
+          "levelEn": "Unhealthy for Sensitive Groups",
+          "color": "orange",
+          "colorZh": "橘",
+          "hex": "#FF7E00",
+          "healthImpact": "空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。",
+          "adviceGeneral": "1.一般民眾如果有不適，如眼痛，咳嗽或喉嚨痛等，應該考慮減少戶外活動。2.學生仍可進行戶外活動，但建議減少長時間劇烈運動。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人，建議減少體力消耗活動及戶外活動，必要外出應配戴口罩。2.具有氣喘的人可能需增加使用吸入劑的頻率。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "aqi-boundary-500",
+      "kind": "core",
+      "purpose": "AQI 500 → 危害／褐紅",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "500",
+        "rows": []
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 500,
+          "level": "hazardous",
+          "levelZh": "危害",
+          "levelEn": "Hazardous",
+          "color": "maroon",
+          "colorZh": "褐紅",
+          "hex": "#7E0023",
+          "healthImpact": "健康威脅達到緊急，所有人都可能受到影響。",
+          "adviceGeneral": "1.一般民眾應避免戶外活動，室內應緊閉門窗，必要外出應配戴口罩等防護用具。2.學生應立即停止戶外活動，並將課程調整於室內進行。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人應留在室內並避免體力消耗活動，必要外出應配戴口罩。2.具有氣喘的人應增加使用吸入劑的頻率。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "pm25-tw-20",
+      "kind": "core",
+      "purpose": "PM2.5 20.0 台灣制插值 → 72",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "20.0"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 72,
+          "level": "moderate",
+          "levelZh": "普通",
+          "levelEn": "Moderate",
+          "color": "yellow",
+          "colorZh": "黃",
+          "hex": "#FFFF00",
+          "healthImpact": "空氣品質普通；但對非常少數之極敏感族群產生輕微影響。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "極特殊敏感族群建議注意可能產生的咳嗽或呼吸急促症狀，但仍可正常戶外活動。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 20.0,
+              "subIndex": 72,
+              "level": "moderate"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "pm25-us-20",
+      "kind": "core",
+      "purpose": "同一濃度美國制插值 → 71（兩制差異對照）",
+      "input": {
+        "mode": "concentration",
+        "system": "US",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "20.0"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "US",
+          "mode": "concentration",
+          "aqi": 71,
+          "level": "moderate",
+          "levelZh": "普通",
+          "levelEn": "Moderate",
+          "color": "yellow",
+          "colorZh": "黃",
+          "hex": "#FFFF00",
+          "healthImpact": "空氣品質普通；但對非常少數之極敏感族群產生輕微影響。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "極特殊敏感族群建議注意可能產生的咳嗽或呼吸急促症狀，但仍可正常戶外活動。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 20.0,
+              "subIndex": 71,
+              "level": "moderate"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "pm25-tw-edge-12-4",
+      "kind": "core",
+      "purpose": "PM2.5 12.4 恰為斷點 → 50",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "12.4"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 50,
+          "level": "good",
+          "levelZh": "良好",
+          "levelEn": "Good",
+          "color": "green",
+          "colorZh": "綠",
+          "hex": "#00E400",
+          "healthImpact": "空氣品質為良好，污染程度低或無污染。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "正常戶外活動。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 12.4,
+              "subIndex": 50,
+              "level": "good"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "pm10-tw-100",
+      "kind": "core",
+      "purpose": "PM10 100 台灣制插值 → 111",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM10",
+            "value": "100"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 111,
+          "level": "usg",
+          "levelZh": "對敏感族群不健康",
+          "levelEn": "Unhealthy for Sensitive Groups",
+          "color": "orange",
+          "colorZh": "橘",
+          "hex": "#FF7E00",
+          "healthImpact": "空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。",
+          "adviceGeneral": "1.一般民眾如果有不適，如眼痛，咳嗽或喉嚨痛等，應該考慮減少戶外活動。2.學生仍可進行戶外活動，但建議減少長時間劇烈運動。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人，建議減少體力消耗活動及戶外活動，必要外出應配戴口罩。2.具有氣喘的人可能需增加使用吸入劑的頻率。",
+          "dominantPollutant": "PM10",
+          "subIndices": [
+            {
+              "pollutant": "PM10",
+              "concentration": 100,
+              "subIndex": 111,
+              "level": "usg"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "o3-8h-0-078",
+      "kind": "core",
+      "purpose": "O3 8h 0.078 插值 → 126（125.5 半數進位）",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "O3-8h",
+            "value": "0.078"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 126,
+          "level": "usg",
+          "levelZh": "對敏感族群不健康",
+          "levelEn": "Unhealthy for Sensitive Groups",
+          "color": "orange",
+          "colorZh": "橘",
+          "hex": "#FF7E00",
+          "healthImpact": "空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。",
+          "adviceGeneral": "1.一般民眾如果有不適，如眼痛，咳嗽或喉嚨痛等，應該考慮減少戶外活動。2.學生仍可進行戶外活動，但建議減少長時間劇烈運動。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人，建議減少體力消耗活動及戶外活動，必要外出應配戴口罩。2.具有氣喘的人可能需增加使用吸入劑的頻率。",
+          "dominantPollutant": "O3-8h",
+          "subIndices": [
+            {
+              "pollutant": "O3-8h",
+              "concentration": 0.078,
+              "subIndex": 126,
+              "level": "usg"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "multi-max",
+      "kind": "core",
+      "purpose": "兩種污染物取最大副指標，指標污染物為 PM10",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "20.0"
+          },
+          {
+            "pollutant": "PM10",
+            "value": "100"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 111,
+          "level": "usg",
+          "levelZh": "對敏感族群不健康",
+          "levelEn": "Unhealthy for Sensitive Groups",
+          "color": "orange",
+          "colorZh": "橘",
+          "hex": "#FF7E00",
+          "healthImpact": "空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。",
+          "adviceGeneral": "1.一般民眾如果有不適，如眼痛，咳嗽或喉嚨痛等，應該考慮減少戶外活動。2.學生仍可進行戶外活動，但建議減少長時間劇烈運動。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人，建議減少體力消耗活動及戶外活動，必要外出應配戴口罩。2.具有氣喘的人可能需增加使用吸入劑的頻率。",
+          "dominantPollutant": "PM10",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 20.0,
+              "subIndex": 72,
+              "level": "moderate"
+            },
+            {
+              "pollutant": "PM10",
+              "concentration": 100,
+              "subIndex": 111,
+              "level": "usg"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "multi-tie-break",
+      "kind": "core",
+      "purpose": "兩副指標同分時按固定污染物順序取 PM2.5",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM10",
+            "value": "50"
+          },
+          {
+            "pollutant": "PM2.5",
+            "value": "20.0"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 72,
+          "level": "moderate",
+          "levelZh": "普通",
+          "levelEn": "Moderate",
+          "color": "yellow",
+          "colorZh": "黃",
+          "hex": "#FFFF00",
+          "healthImpact": "空氣品質普通；但對非常少數之極敏感族群產生輕微影響。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "極特殊敏感族群建議注意可能產生的咳嗽或呼吸急促症狀，但仍可正常戶外活動。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM10",
+              "concentration": 50,
+              "subIndex": 72,
+              "level": "moderate"
+            },
+            {
+              "pollutant": "PM2.5",
+              "concentration": 20.0,
+              "subIndex": 72,
+              "level": "moderate"
+            }
+          ],
+          "notices": []
+        }
+      }
+    },
+    {
+      "id": "pm25-above-top",
+      "kind": "core",
+      "purpose": "PM2.5 超過表頂 → 500 並記 ABOVE_TABLE_TOP",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "600"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 500,
+          "level": "hazardous",
+          "levelZh": "危害",
+          "levelEn": "Hazardous",
+          "color": "maroon",
+          "colorZh": "褐紅",
+          "hex": "#7E0023",
+          "healthImpact": "健康威脅達到緊急，所有人都可能受到影響。",
+          "adviceGeneral": "1.一般民眾應避免戶外活動，室內應緊閉門窗，必要外出應配戴口罩等防護用具。2.學生應立即停止戶外活動，並將課程調整於室內進行。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人應留在室內並避免體力消耗活動，必要外出應配戴口罩。2.具有氣喘的人應增加使用吸入劑的頻率。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 600,
+              "subIndex": 500,
+              "level": "hazardous"
+            }
+          ],
+          "notices": [
+            {
+              "code": "ABOVE_TABLE_TOP",
+              "pollutant": "PM2.5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "o3-8h-undefined",
+      "kind": "core",
+      "purpose": "O3 8h 超過 0.200 無定義 → UNDEFINED_BAND",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "O3-8h",
+            "value": "0.250"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNDEFINED_BAND",
+          "field": "rows",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "o3-1h-below-band",
+      "kind": "core",
+      "purpose": "O3 1h 低於最低有定義區間 → UNDEFINED_BAND",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "O3-1h",
+            "value": "0.050"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "UNDEFINED_BAND",
+          "field": "rows",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "aqi-out-of-range-501",
+      "kind": "core",
+      "purpose": "AQI 501 → RANGE",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "501",
+        "rows": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "aqi",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "aqi-decimal",
+      "kind": "core",
+      "purpose": "AQI 小數 → INTEGER_FORMAT",
+      "input": {
+        "mode": "aqi",
+        "system": "TW",
+        "aqi": "42.5",
+        "rows": []
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "aqi",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "pm25-negative",
+      "kind": "core",
+      "purpose": "濃度負號 → DECIMAL_FORMAT",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "-5"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DECIMAL_FORMAT",
+          "field": "rows",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "pm25-over-cap",
+      "kind": "core",
+      "purpose": "PM2.5 超過絕對範圍 → RANGE",
+      "input": {
+        "mode": "concentration",
+        "system": "TW",
+        "aqi": "",
+        "rows": [
+          {
+            "pollutant": "PM2.5",
+            "value": "1500"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "RANGE",
+          "field": "rows",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "mode": "aqi",
+          "system": "TW",
+          "aqi": "120",
+          "rows": []
+        },
+        "edit": {
+          "mode": "aqi",
+          "system": "TW",
+          "aqi": "501",
+          "rows": []
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "aqi",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "mode": "concentration",
+          "system": "TW",
+          "aqi": "",
+          "rows": [
+            {
+              "pollutant": "PM2.5",
+              "value": "20.0"
+            }
+          ]
+        },
+        "lateResult": {
+          "system": "TW",
+          "mode": "concentration",
+          "aqi": 72,
+          "level": "moderate",
+          "levelZh": "普通",
+          "levelEn": "Moderate",
+          "color": "yellow",
+          "colorZh": "黃",
+          "hex": "#FFFF00",
+          "healthImpact": "空氣品質普通；但對非常少數之極敏感族群產生輕微影響。",
+          "adviceGeneral": "正常戶外活動。",
+          "adviceSensitive": "極特殊敏感族群建議注意可能產生的咳嗽或呼吸急促症狀，但仍可正常戶外活動。",
+          "dominantPollutant": "PM2.5",
+          "subIndices": [
+            {
+              "pollutant": "PM2.5",
+              "concentration": 20.0,
+              "subIndex": 72,
+              "level": "moderate"
+            }
+          ],
+          "notices": []
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "concentration",
+            "system": "TW",
+            "aqi": "",
+            "rows": [
+              {
+                "pollutant": "PM2.5",
+                "value": "20.0"
+              }
+            ]
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "mode": "aqi",
+            "system": "TW",
+            "aqi": "",
+            "rows": []
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "mode": "aqi",
+          "system": "TW",
+          "aqi": "120",
+          "rows": []
+        },
+        "newerDraft": {
+          "mode": "aqi",
+          "system": "TW",
+          "aqi": "501",
+          "rows": []
+        },
+        "olderLateResult": {
+          "system": "TW",
+          "mode": "aqi",
+          "aqi": 120,
+          "level": "usg",
+          "levelZh": "對敏感族群不健康",
+          "levelEn": "Unhealthy for Sensitive Groups",
+          "color": "orange",
+          "colorZh": "橘",
+          "hex": "#FF7E00",
+          "healthImpact": "空氣污染物可能會對敏感族群的健康造成影響，但是對一般大眾的影響不明顯。",
+          "adviceGeneral": "1.一般民眾如果有不適，如眼痛，咳嗽或喉嚨痛等，應該考慮減少戶外活動。2.學生仍可進行戶外活動，但建議減少長時間劇烈運動。",
+          "adviceSensitive": "1.有心臟、呼吸道及心血管疾病患者、孩童及老年人，建議減少體力消耗活動及戶外活動，必要外出應配戴口罩。2.具有氣喘的人可能需增加使用吸入劑的頻率。",
+          "dominantPollutant": null,
+          "subIndices": [],
+          "notices": []
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "aqi",
+            "row": null
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "RANGE",
+            "field": "aqi",
+            "row": null
+          }
+        }
+      }
+    }
+  ]
+}
