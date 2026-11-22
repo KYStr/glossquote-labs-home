@@ -1,0 +1,408 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 30,
+          "maxLength": 50,
+          "slug": "hello-world-a-beginner-s-guide",
+          "truncated": false
+        }
+      },
+      "id": "basic-title",
+      "input": {
+        "maxLength": "",
+        "title": "Hello World: A Beginner's Guide!"
+      },
+      "kind": "core",
+      "purpose": "基本標題轉 slug（大小寫、標點、所有格）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 25,
+          "maxLength": 50,
+          "slug": "cafe-au-lait-creme-brulee",
+          "truncated": false
+        }
+      },
+      "id": "accent-fold",
+      "input": {
+        "maxLength": "",
+        "title": "Café au lait & crème brûlée"
+      },
+      "kind": "core",
+      "purpose": "去重音：NFKD 拆解加結合符號移除"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 27,
+          "maxLength": 50,
+          "slug": "aesop-s-oeuvre-strasse-lodz",
+          "truncated": false
+        }
+      },
+      "id": "special-latin-map",
+      "input": {
+        "maxLength": "",
+        "title": "Æsop's Œuvre — Straße & Łódź"
+      },
+      "kind": "core",
+      "purpose": "封閉特殊字母表（æ、œ、ß、ł 等）"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 11,
+          "maxLength": 50,
+          "slug": "2026-taipei",
+          "truncated": false
+        }
+      },
+      "id": "chinese-dropped",
+      "input": {
+        "maxLength": "",
+        "title": "2026 台北 Taipei 旅行指南"
+      },
+      "kind": "core",
+      "purpose": "中文捨棄，混合標題保留拉丁與數字部分"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY_SLUG",
+          "field": "title",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "chinese-only-empty",
+      "input": {
+        "maxLength": "",
+        "title": "你好世界"
+      },
+      "kind": "core",
+      "purpose": "純中文標題 → EMPTY_SLUG"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 16,
+          "maxLength": 50,
+          "slug": "hello-world-2026",
+          "truncated": false
+        }
+      },
+      "id": "hyphen-collapse-trim",
+      "input": {
+        "maxLength": "",
+        "title": "---Hello---World___2026---"
+      },
+      "kind": "core",
+      "purpose": "連續分隔字元合併、前後連字號去除、底線視為分隔"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 19,
+          "maxLength": 20,
+          "slug": "the-quick-brown-fox",
+          "truncated": true
+        }
+      },
+      "id": "truncate-clean",
+      "input": {
+        "maxLength": "20",
+        "title": "The Quick Brown Fox Jumps Over The Lazy Dog Near The River Bank"
+      },
+      "kind": "core",
+      "purpose": "截斷後去除尾端連字號"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 11,
+          "maxLength": 11,
+          "slug": "hello-world",
+          "truncated": false
+        }
+      },
+      "id": "truncate-exact",
+      "input": {
+        "maxLength": "11",
+        "title": "Hello World"
+      },
+      "kind": "core",
+      "purpose": "長度恰等於上限不截斷"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 1,
+          "maxLength": 1,
+          "slug": "h",
+          "truncated": true
+        }
+      },
+      "id": "truncate-tiny",
+      "input": {
+        "maxLength": "1",
+        "title": "Hello World"
+      },
+      "kind": "core",
+      "purpose": "上限 1 的邊界"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 20,
+          "maxLength": 50,
+          "slug": "top-10-tips-for-2026",
+          "truncated": false
+        }
+      },
+      "id": "numbers-kept",
+      "input": {
+        "maxLength": "",
+        "title": "Top 10 Tips for 2026!"
+      },
+      "kind": "core",
+      "purpose": "數字保留"
+    },
+    {
+      "expected": {
+        "ok": true,
+        "result": {
+          "length": 21,
+          "maxLength": 50,
+          "slug": "hello-world-file-2026",
+          "truncated": false
+        }
+      },
+      "id": "fullwidth-and-ligature",
+      "input": {
+        "maxLength": "",
+        "title": "Ｈｅｌｌｏ Ｗｏｒｌｄ：ﬁle 2026"
+      },
+      "kind": "core",
+      "purpose": "全形折疊與連字展開（NFKD）"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY",
+          "field": "title",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "empty-title",
+      "input": {
+        "maxLength": "",
+        "title": ""
+      },
+      "kind": "core",
+      "purpose": "空標題 → EMPTY"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "RANGE",
+          "field": "maxLength",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "maxlength-zero-range",
+      "input": {
+        "maxLength": "0",
+        "title": "Hello World"
+      },
+      "kind": "core",
+      "purpose": "上限 0 → RANGE"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INTEGER_FORMAT",
+          "field": "maxLength",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "maxlength-noninteger",
+      "input": {
+        "maxLength": "12.5",
+        "title": "Hello World"
+      },
+      "kind": "core",
+      "purpose": "小數上限 → INTEGER_FORMAT"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "INPUT_LIMIT",
+          "field": "title",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "title-too-long",
+      "input": {
+        "maxLength": "",
+        "title": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "kind": "core",
+      "purpose": "標題 1001 單元 → INPUT_LIMIT"
+    },
+    {
+      "expected": {
+        "error": {
+          "code": "EMPTY_SLUG",
+          "field": "title",
+          "row": null
+        },
+        "ok": false
+      },
+      "id": "whitespace-only-slug",
+      "input": {
+        "maxLength": "",
+        "title": "   "
+      },
+      "kind": "core",
+      "purpose": "只有空白的標題 → EMPTY_SLUG"
+    },
+    {
+      "expected": {
+        "afterEdit": {
+          "reportAvailable": false,
+          "state": "dirty"
+        },
+        "afterRerun": {
+          "error": {
+            "code": "EMPTY",
+            "field": "title",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterRun": {
+          "reportAvailable": true,
+          "state": "success"
+        }
+      },
+      "id": "state-dirty-error",
+      "input": {
+        "edit": {
+          "maxLength": "",
+          "title": ""
+        },
+        "initial": {
+          "maxLength": "",
+          "title": "Hello World: A Beginner's Guide!"
+        }
+      },
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。"
+    },
+    {
+      "expected": {
+        "afterCancel": {
+          "draft": {
+            "maxLength": "",
+            "title": "Hello World: A Beginner's Guide!"
+          },
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterLateResult": {
+          "reportAvailable": false,
+          "state": "cancelled"
+        },
+        "afterReset": {
+          "draft": {
+            "maxLength": "50",
+            "title": ""
+          },
+          "reportAvailable": false,
+          "state": "empty"
+        },
+        "whilePending": {
+          "reportAvailable": false,
+          "state": "busy"
+        }
+      },
+      "id": "state-cancel-late",
+      "input": {
+        "draft": {
+          "maxLength": "",
+          "title": "Hello World: A Beginner's Guide!"
+        },
+        "lateResult": {
+          "length": 30,
+          "maxLength": 50,
+          "slug": "hello-world-a-beginner-s-guide",
+          "truncated": false
+        }
+      },
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。"
+    },
+    {
+      "expected": {
+        "afterNewerResult": {
+          "error": {
+            "code": "EMPTY",
+            "field": "title",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        },
+        "afterOlderLateResult": {
+          "error": {
+            "code": "EMPTY",
+            "field": "title",
+            "row": null
+          },
+          "reportAvailable": false,
+          "state": "error"
+        }
+      },
+      "id": "state-replace-late",
+      "input": {
+        "newerDraft": {
+          "maxLength": "",
+          "title": ""
+        },
+        "olderDraft": {
+          "maxLength": "",
+          "title": "Hello World: A Beginner's Guide!"
+        },
+        "olderLateResult": {
+          "length": 30,
+          "maxLength": 50,
+          "slug": "hello-world-a-beginner-s-guide",
+          "truncated": false
+        }
+      },
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。"
+    }
+  ],
+  "productChecks": "NOT_RUN",
+  "schemaVersion": 1,
+  "slug": "url-slug-generator",
+  "specId": "spec-url-slug-generator-20261121"
+}
