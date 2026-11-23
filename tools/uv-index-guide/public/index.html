@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>紫外線指數指南｜Gloss Tools</title>
+<meta name="description" content="輸入紫外線指數與膚質，對照 WHO／中央氣象署分級，取得等級、顏色與防曬建議。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>紫外線指數指南</h1>
+    <p class="lede">輸入紫外線指數與膚質，對照 WHO／中央氣象署分級，取得等級、顏色與防曬建議。曬紅時間是未防護下出現紅斑的估計值，不是安全曝曬時間。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-uv" id="label-uv">紫外線指數</label>
+          <input id="input-uv" name="uvIndex" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="5">
+          <p class="field-hint">0 至 20，最多 1 位小數，例如 8.5。</p>
+          <p class="field-error" id="error-uv" hidden></p>
+        </div>
+        <div class="field">
+          <label for="select-skin" id="label-skin">膚質（Fitzpatrick I–VI）</label>
+          <select id="select-skin" name="skinType">
+            <option value="I">I — 總是曬傷、從不曬黑</option>
+            <option value="II">II — 容易曬傷、很少曬黑</option>
+            <option value="III" selected>III — 有時曬傷、逐漸曬黑</option>
+            <option value="IV">IV — 很少曬傷、容易曬黑</option>
+            <option value="V">V — 極少曬傷、很容易曬黑</option>
+            <option value="VI">VI — 幾乎不曬傷</option>
+          </select>
+          <p class="field-error" id="error-skin" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">查詢防曬建議</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入紫外線指數與膚質，或載入範例。</p>
+
+    <p class="disclaimer">本工具僅供一般參考，不構成醫療建議。曬紅時間為估計值，個人差異很大；防曬請以官方建議為準。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">查詢結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>等級</dt>
+          <dd><span class="swatch swatch-green" id="result-swatch">綠色</span> <span id="result-category"></span></dd>
+        </div>
+        <div>
+          <dt>防曬係數與補擦</dt>
+          <dd id="result-spf"></dd>
+        </div>
+        <div>
+          <dt>曬紅時間估計</dt>
+          <dd id="result-burn"></dd>
+        </div>
+        <div>
+          <dt>氣象署曬傷參考</dt>
+          <dd id="result-cwa"></dd>
+        </div>
+        <div>
+          <dt>防曬建議</dt>
+          <dd class="prose" id="result-advice"></dd>
+        </div>
+        <div>
+          <dt>膚質說明</dt>
+          <dd class="prose" id="result-skin"></dd>
+        </div>
+      </dl>
+      <p class="disclaimer" id="result-disclaimer"></p>
+    </section>
+
+    <details class="rules">
+      <summary>分級表與計算規則</summary>
+      <ul>
+        <li>分級依 WHO《Global Solar UV Index: A Practical Guide》門檻與顏色，中文級名取中央氣象署：0–2 低量級（綠，PMS 375）、3–5 中量級（黃，PMS 102）、6–7 高量級（橘，PMS 151）、8–10 過量級（紅，PMS 032）、11+ 危險級（紫，PMS 265）。分級用紫外線指數四捨五入到整數後判定（0.5 進位）。</li>
+        <li>紫外線指數 0 至 20，最多 1 位小數，不接受前導零、指數、符號或空白；每欄最多 8 個字元。</li>
+        <li>防曬係數下限只依等級決定：低量級 SPF 15、中量級與高量級 SPF 30、過量級與危險級 SPF 50；中量級以上每 2 小時補擦一次。8 以上中午避免待在戶外。</li>
+        <li>曬紅時間以未防護、未四捨五入的指數原值計算：分鐘 ＝ MED ÷（1.5 × 紫外線指數），四捨五入到整數分鐘；指數為 0 時無估計值；超過 180 分鐘顯示為「180 分鐘以上」。MED 為概略典型值：I 200、II 250、III 300、IV 450、V 600、VI 1000 J/m²。</li>
+        <li>氣象署曬傷參考為分級表所列「N 分鐘內可能曬傷」：高量級 30 分鐘、過量級 20 分鐘、危險級 15 分鐘；低量級與中量級無此欄。該值是一般人未防護下的參考值，不是安全時間。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>指數 3 以上就要防曬嗎？</h3>
+    <p>是，WHO 簡明建議 UVI 3 以上開始防護。</p>
+    <h3>曬紅時間是安全時間嗎？</h3>
+    <p>不是，是未防護下出現紅斑的估計值，個人差異很大，不可當作可以曬多久的保證。</p>
+    <h3>為什麼 WHO 不建議報告曬傷時間？</h3>
+    <p>WHO 指南原文指出不建議報告曬傷時間（REPORTING BURN TIMES IS NOT RECOMMENDED），因為個人差異太大，容易被誤解為安全曝曬時間。本工具因此只輸出估計值並附免責聲明。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 紫外線指數指南在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
