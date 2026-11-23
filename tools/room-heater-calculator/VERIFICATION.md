@@ -1,10 +1,11 @@
 # Room Heater Calculator （暖氣功率試算）— VERIFICATION
 
 - Candidate: branch `muse/room-heater-calculator-production-20261121`,
-  draft PR TBD (to be recorded after creation; PR head SHA is read
-  back with `gh pr view` after the final push and recorded in the
-  parent report; this file's commit is part of that head),
+  draft PR #419 (https://github.com/KYStr/glossquote-labs-home/pull/419),
   base `codex/initial-publication` (base head `8c265267` at clone time).
+  PR head SHA `c4321539e86a23e78d2e0526900d2ad60250f64e` was read back
+  with `gh pr view` after the first push; this file's follow-up
+  commit is part of the final head (see below).
 - Spec: `spec-room-heater-calculator-20261121`, spec PR #380, head
   `d1aa3f2a79444eac5104b66dba2b7ceec2c592df`.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
