@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>登山時間預估｜Gloss Tools</title>
+<meta name="description" content="輸入距離與爬升，用 Naismith's rule 估算登山移動時間，含下降調整、平均配速與等效平路距離。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="./en/index.html">English</a>
+    <a href="../../">回到工具首頁</a>
+  </span>
+</div>
+<p class="draft-note">切換語言或離開頁面會失去目前草稿。</p>
+
+<header class="page-head">
+  <h1>登山時間預估</h1>
+  <p class="lede">輸入距離與爬升，用 Naismith's rule 估算登山移動時間，含下降調整、平均配速與等效平路距離。</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">距離、爬升與下降</h2>
+      <form id="hiking-form" novalidate>
+        <div class="field">
+          <label for="field-distanceKm">距離（公里）</label>
+          <p class="help" id="help-distanceKm">數字，最多 2 位小數；範圍 0.1 至 200 公里。</p>
+          <input type="text" id="field-distanceKm" aria-describedby="help-distanceKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-distanceKm" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-ascentM">爬升（公尺）</label>
+          <p class="help" id="help-ascentM">整數；範圍 0 至 10000 公尺。</p>
+          <input type="text" id="field-ascentM" aria-describedby="help-ascentM" autocomplete="off" spellcheck="false" inputmode="numeric">
+          <p class="field-error" id="error-ascentM" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-descentM">下降（公尺）</label>
+          <p class="help" id="help-descentM">選填，空白視為 0；整數；範圍 0 至 10000 公尺。</p>
+          <input type="text" id="field-descentM" aria-describedby="help-descentM" autocomplete="off" spellcheck="false" inputmode="numeric">
+          <p class="field-error" id="error-descentM" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-descentType">下降類型</label>
+          <p class="help" id="help-descentType">坡度小於 5° 不調整；緩降每下降 300 公尺減 10 分鐘，陡降每下降 300 公尺加 10 分鐘。</p>
+          <select id="field-descentType" aria-describedby="help-descentType">
+            <option value="none">不調整（經典 Naismith）</option>
+            <option value="gentle">緩降（坡度 5°–12°）</option>
+            <option value="steep">陡降（坡度 >12°）</option>
+          </select>
+          <p class="field-error" id="error-descentType" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">移動時間估算，不含休息；Naismith's rule 假設體能良好、路況正常。</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">計算登山時間</button>
+          <button type="button" class="button-secondary" id="example-btn">載入範例</button>
+          <button type="button" class="button-secondary" id="reset-btn">重設</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">預估移動時間與分段耗時</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>分段耗時與配速</h3>
+      <ul class="readings-list" id="details-list"></ul>
+      <p class="disclaimer">移動時間估算，不含休息；Naismith's rule 假設體能良好、路況正常。</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>下載報告（JSON）</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>計算方法與規則</summary>
+    <p>Naismith's rule：平路以每小時 5 公里計，每公里 12 分鐘；爬升每 600 公尺加 1 小時，每 100 公尺 10 分鐘。下降依 Langmuir 修正：緩降（坡度 5°–12°）每下降 300 公尺減 10 分鐘，陡降（坡度 &gt;12°）每下降 300 公尺加 10 分鐘；不調整則不計下降。緩降減項不會使總時間變成負數，最少為 0。</p>
+    <p>總時間以精確值四捨五入至整數分鐘顯示；平路、爬升、下降調整三個分段值各自四捨五入至 1 位小數，三者相加未必等於整數分鐘的總時間，以總時間為準。平均配速是取下限後的總時間除以距離；等效平路距離是距離加上 7.92 × 爬升 ÷ 1000 公里，下降不計入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <h3>預估含休息嗎？</h3>
+    <p>不含，這是移動時間；請自行另加休息。</p>
+    <h3>為什麼陡降反而更久？</h3>
+    <p>陡降按 Langmuir 修正每 300 m 加 10 分鐘；緩降才減時間。</p>
+  </section>
+
+  <p class="privacy-note">所有計算都在你的瀏覽器中完成，不送出任何資料。</p>
+</main>
+</body>
+</html>

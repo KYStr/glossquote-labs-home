@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hiking Time Estimator | Gloss Tools</title>
+<meta name="description" content="Estimate hiking moving time from distance and ascent with Naismith's rule, including descent adjustment, average pace and equivalent flat distance.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="../index.html">繁體中文</a>
+    <a href="../../en/">Back to the tools home</a>
+  </span>
+</div>
+<p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+
+<header class="page-head">
+  <h1>Hiking Time Estimator</h1>
+  <p class="lede">Estimate hiking moving time from distance and ascent with Naismith's rule, including descent adjustment, average pace and equivalent flat distance.</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Distance, ascent and descent</h2>
+      <form id="hiking-form" novalidate>
+        <div class="field">
+          <label for="field-distanceKm">Distance (km)</label>
+          <p class="help" id="help-distanceKm">A number with at most 2 decimal places; range 0.1 to 200 km.</p>
+          <input type="text" id="field-distanceKm" aria-describedby="help-distanceKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-distanceKm" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-ascentM">Ascent (m)</label>
+          <p class="help" id="help-ascentM">A whole number; range 0 to 10000 m.</p>
+          <input type="text" id="field-ascentM" aria-describedby="help-ascentM" autocomplete="off" spellcheck="false" inputmode="numeric">
+          <p class="field-error" id="error-ascentM" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-descentM">Descent (m)</label>
+          <p class="help" id="help-descentM">Optional; blank counts as 0. A whole number; range 0 to 10000 m.</p>
+          <input type="text" id="field-descentM" aria-describedby="help-descentM" autocomplete="off" spellcheck="false" inputmode="numeric">
+          <p class="field-error" id="error-descentM" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-descentType">Descent type</label>
+          <p class="help" id="help-descentType">Slopes under 5° are not adjusted; a gentle descent saves 10 minutes per 300 m descended, a steep descent adds 10 minutes per 300 m.</p>
+          <select id="field-descentType" aria-describedby="help-descentType">
+            <option value="none">No adjustment (classic Naismith)</option>
+            <option value="gentle">Gentle (slope 5°–12°)</option>
+            <option value="steep">Steep (slope >12°)</option>
+          </select>
+          <p class="field-error" id="error-descentType" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">Moving-time estimate only, excluding breaks; Naismith's rule assumes reasonable fitness and normal conditions.</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">Calculate hiking time</button>
+          <button type="button" class="button-secondary" id="example-btn">Load example</button>
+          <button type="button" class="button-secondary" id="reset-btn">Reset</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimated moving time and segment times</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>Segment times and pace</h3>
+      <ul class="readings-list" id="details-list"></ul>
+      <p class="disclaimer">Moving-time estimate only, excluding breaks; Naismith's rule assumes reasonable fitness and normal conditions.</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>Download report (JSON)</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>Method and rules</summary>
+    <p>Naismith's rule: flat ground at 5 km/h, 12 minutes per kilometre; ascent adds 1 hour per 600 m, 10 minutes per 100 m. Descent follows the Langmuir correction: a gentle descent (slope 5°–12°) saves 10 minutes per 300 m descended, a steep descent (slope over 12°) adds 10 minutes per 300 m; no adjustment ignores descent. The gentle-descent subtraction never makes the total negative; the floor is 0.</p>
+    <p>The total is the exact value rounded half-up to whole minutes; the flat, ascent and descent-adjustment segments are each rounded half-up to 1 decimal place, so the three segments do not necessarily add up to the whole-minute total — the total governs. Average pace is the floored total divided by the distance; equivalent flat distance is the distance plus 7.92 × ascent ÷ 1000 km, with descent excluded.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <h3>Does the estimate include breaks?</h3>
+    <p>No, this is moving time only; add breaks separately.</p>
+    <h3>Why does a steep descent take longer?</h3>
+    <p>The Langmuir correction adds 10 minutes per 300 m on steep descents; only gentle descents save time.</p>
+  </section>
+
+  <p class="privacy-note">All computation happens in your browser; no data is sent anywhere.</p>
+</main>
+</body>
+</html>
