@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Unix Timestamp Converter | Gloss Tools</title>
+<meta name="description" content="Convert a Unix timestamp to a human-readable date-time, or a date-time back to a timestamp; shown in UTC and Taipei time, with seconds/milliseconds and several output formats.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Unix Timestamp Converter</h1>
+  <p class="lede">Paste a Unix timestamp (seconds or milliseconds) and immediately see it in UTC and Taipei time; or enter a date-time and convert it back to a timestamp. All computation happens locally on this page — nothing is uploaded, stored, or logged.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Convert</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>Direction</legend>
+          <div class="radio-row">
+            <label><input type="radio" id="field-direction-timestamp" name="direction" value="timestamp-to-datetime" checked> Timestamp → Date-time</label>
+          </div>
+          <div class="radio-row">
+            <label><input type="radio" id="field-direction-datetime" name="direction" value="datetime-to-timestamp"> Date-time → Timestamp</label>
+          </div>
+          <p class="field-error" id="error-direction" role="alert"></p>
+        </fieldset>
+
+        <div id="group-timestamp">
+          <div class="field">
+            <label for="field-timestamp">Timestamp</label>
+            <p class="help" id="help-timestamp">A decimal number, optionally negative with 1–3 decimal digits, e.g. 1700000000 or 1700000000000.</p>
+            <input id="field-timestamp" name="timestamp" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1700000000" value="" aria-describedby="help-timestamp">
+            <p class="field-error" id="error-timestamp" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-unit">Unit</label>
+            <p class="help" id="help-unit">Auto detection: an absolute integer part ≥ 10¹² is milliseconds, &lt; 10¹¹ is seconds; in between, choose explicitly.</p>
+            <select id="field-unit" name="unit" aria-describedby="help-unit">
+              <option value="auto" selected>Auto detect</option>
+              <option value="seconds">Seconds</option>
+              <option value="milliseconds">Milliseconds</option>
+            </select>
+            <p class="field-error" id="error-unit" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="group-datetime" hidden>
+          <div class="field">
+            <label for="field-date">Date</label>
+            <p class="help" id="help-date">Strict YYYY-MM-DD, e.g. 2026-11-21.</p>
+            <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 2026-11-21" value="" aria-describedby="help-date">
+            <p class="field-error" id="error-date" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-time">Time</label>
+            <p class="help" id="help-time">Strict HH:MM:SS, 00:00:00 to 23:59:59; 23:59:60 is not accepted.</p>
+            <input id="field-time" name="time" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 00:00:00" value="" aria-describedby="help-time">
+            <p class="field-error" id="error-time" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-milliseconds">Milliseconds</label>
+            <p class="help" id="help-milliseconds">1–3 digits, 0–999; “5” means 5 ms, not 500 ms.</p>
+            <input id="field-milliseconds" name="milliseconds" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 000" value="000" aria-describedby="help-milliseconds">
+            <p class="field-error" id="error-milliseconds" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-timezone">Time zone</label>
+          <p class="help" id="help-timezone">The time zone of the date-time input, and also the third display group. UTC and Taipei time are always shown as well.</p>
+          <select id="field-timezone" name="timezone" aria-describedby="help-timezone">
+            <option value="UTC">UTC</option>
+            <option value="Asia/Taipei" selected>Asia/Taipei (Taipei)</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (Tokyo)</option>
+            <option value="Asia/Shanghai">Asia/Shanghai (Shanghai)</option>
+            <option value="Europe/London">Europe/London (London)</option>
+            <option value="Europe/Paris">Europe/Paris (Paris)</option>
+            <option value="America/New_York">America/New_York (New York)</option>
+            <option value="America/Los_Angeles">America/Los_Angeles (Los Angeles)</option>
+            <option value="Australia/Sydney">Australia/Sydney (Sydney)</option>
+          </select>
+          <p class="field-error" id="error-timezone" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-format">Output format</label>
+          <p class="help" id="help-format">Every display group always lists ISO 8601 and RFC 2822; choosing Custom adds the custom-format result.</p>
+          <select id="field-format" name="format" aria-describedby="help-format">
+            <option value="iso8601" selected>ISO 8601</option>
+            <option value="rfc2822">RFC 2822</option>
+            <option value="custom">Custom</option>
+          </select>
+          <p class="field-error" id="error-format" role="alert"></p>
+        </div>
+        <div class="field" id="field-custom-pattern-wrap" hidden>
+          <label for="field-custom-pattern">Custom format</label>
+          <p class="help" id="help-custom-pattern">Available tokens: YYYY, MM, DD, HH, mm, ss, SSS; all other characters are printed literally. At most 64 characters.</p>
+          <input id="field-custom-pattern" name="customPattern" type="text" autocomplete="off" placeholder="e.g. YYYY-MM-DD HH:mm:ss" value="YYYY-MM-DD HH:mm:ss" aria-describedby="help-custom-pattern">
+          <p class="field-error" id="error-custom-pattern" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing converted yet. Enter a timestamp or a date-time, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <p class="example-note" id="now-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="now-btn" class="button-secondary">Now</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p class="ambiguous-note" id="ambiguous-note" hidden></p>
+      <div id="displays-rows"></div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="privacy-note">All computation happens locally on this page — nothing is uploaded, stored, or logged.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Fixed rules</summary>
+    <p>Unit auto-detection looks at the absolute integer part: ≥ 10¹² is milliseconds, &lt; 10¹¹ is seconds, and values in between need an explicit unit. Seconds accept 1–3 decimal digits (0.5 s = 500 ms); milliseconds accept integers only. Negative timestamps are before 1970; the convertible range is 0001-01-01 to 9999-12-31. Leap seconds are not counted in Unix time, so 23:59:60 has no timestamp. Around daylight-saving changes, a local time that does not exist is an error; a local time that occurs twice uses the earlier occurrence and is flagged. Time-zone offsets come from the device's built-in IANA time-zone database and do not follow the device's host time zone.</p>
+    <p>Results always show UTC and Asia/Taipei, plus one selected time zone; the selected zone is not repeated when it matches one of the first two. The downloaded report is the result as JSON, always named unix-timestamp-report.json.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How are milliseconds and seconds told apart?</dt>
+      <dd>13-digit values are usually milliseconds and 10-digit values seconds; values in between need an explicit unit choice.</dd>
+      <dt>How are leap seconds handled?</dt>
+      <dd>Unix time does not count leap seconds, so 23:59:60 has no timestamp of its own.</dd>
+      <dt>Can I convert dates before 1970?</dt>
+      <dd>Yes, negative timestamps are before the epoch.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally on this page — nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
