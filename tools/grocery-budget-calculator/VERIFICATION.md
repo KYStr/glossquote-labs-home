@@ -6,8 +6,8 @@
 - 工作分支：`muse/grocery-budget-calculator-production-20261121`
 - 基底：`codex/initial-publication`（clone 時 head `8c265267`）
 - 環境：Node v24.22.1（`node --version`）
-- PR：待填（見下）
-- PR head SHA：待填（以 `gh pr view` 讀回後填入）
+- PR：#421（DRAFT，OPEN）— https://github.com/KYStr/glossquote-labs-home/pull/421
+- PR head SHA：`ca718a13989cc271c7aa773a0eb1d00ea2930f66`（以 `gh pr view` 讀回；VERIFICATION 檔內記錄 PR 號的補登 commit 另見下行）
 
 ## 命令與結果
 
