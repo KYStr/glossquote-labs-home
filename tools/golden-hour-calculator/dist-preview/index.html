@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>黃金時刻計算｜Gloss Tools</title>
+<meta name="description" content="輸入日期與地點的緯度、經度、UTC 偏移，以 NOAA 近似公式計算日出、日落與黃金時刻、藍調時刻，標示正午仰角與各時段長度。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="./en/index.html">English</a>
+    <a href="../../">回到工具首頁</a>
+  </span>
+</div>
+<p class="draft-note">切換語言或離開頁面會失去目前草稿。</p>
+
+<header class="page-head">
+  <h1>黃金時刻計算</h1>
+  <p class="lede">輸入日期與地點的緯度、經度、UTC 偏移，以 NOAA 近似公式計算日出、日落與黃金時刻、藍調時刻，標示正午仰角與各時段長度。</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">日期與地點</h2>
+      <form id="golden-form" novalidate>
+        <div class="field">
+          <label for="field-date">日期</label>
+          <p class="help" id="help-date">格式 YYYY-MM-DD，例如 2026-06-21；範圍 1900-01-01 至 2100-12-31。</p>
+          <input type="text" id="field-date" aria-describedby="help-date" autocomplete="off" spellcheck="false" inputmode="numeric" placeholder="2026-06-21">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-preset">城市預設</label>
+          <p class="help" id="help-preset">選取城市會填入該市緯度、經度與 UTC 偏移；三欄可再手動改，改後顯示為自訂。</p>
+          <select id="field-preset" aria-describedby="help-preset">
+            <option value="custom">自訂</option>
+            <option value="taipei">台北</option>
+            <option value="taichung">台中</option>
+            <option value="kaohsiung">高雄</option>
+            <option value="tokyo">東京</option>
+            <option value="sydney">雪梨</option>
+            <option value="london">倫敦</option>
+            <option value="new-york">紐約</option>
+            <option value="reykjavik">雷克雅維克</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="field-latitude">緯度（度，北緯為正）</label>
+          <p class="help" id="help-latitude">數字，最多 4 位小數；範圍 −89.9 至 89.9。</p>
+          <input type="text" id="field-latitude" aria-describedby="help-latitude" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-latitude" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-longitude">經度（度，東經為正）</label>
+          <p class="help" id="help-longitude">數字，最多 4 位小數；範圍 −180 至 180。</p>
+          <input type="text" id="field-longitude" aria-describedby="help-longitude" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-longitude" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-utcOffset">UTC 偏移</label>
+          <p class="help" id="help-utcOffset">格式 ±HH:MM，分鐘只接受 00、15、30、45；範圍 −12:00 至 +14:00。夏令時間請自行改偏移。</p>
+          <input type="text" id="field-utcOffset" aria-describedby="help-utcOffset" autocomplete="off" spellcheck="false" inputmode="text">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">本工具採 NOAA 近似公式，結果可能與實際觀測或官方曆象相差數分鐘。無時區資料庫、不處理日光節約時間；偏移請依當地當日實際時制自行確認。黃金／藍調時刻以太陽幾何仰角定義（黃金 −4° 至 +6°、藍調 −6° 至 −4°），不另作大氣折射修正。</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">計算黃金時刻</button>
+          <button type="button" class="button-secondary" id="example-btn">載入範例</button>
+          <button type="button" class="button-secondary" id="reset-btn">重設</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">日出、太陽正午、日落、日長與四個攝影時段</h2>
+      <p id="polar-note" class="polar-note" hidden></p>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>黃金時刻與藍調時刻</h3>
+      <ul class="readings-list" id="windows-list"></ul>
+      <p class="disclaimer">本工具採 NOAA 近似公式，結果可能與實際觀測或官方曆象相差數分鐘。無時區資料庫、不處理日光節約時間；偏移請依當地當日實際時制自行確認。黃金／藍調時刻以太陽幾何仰角定義（黃金 −4° 至 +6°、藍調 −6° 至 −4°），不另作大氣折射修正。</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>下載報告（JSON）</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>計算方法與規則</summary>
+    <p>採 NOAA 公布的 fractional-year 近似公式：γ 以當地正午取值（分母恆為 365，閏年亦然），均時差與赤緯由此推導；日出日落以天頂角 90.833° 求時角。黃金時刻是太陽幾何仰角 −4° 至 +6° 的一段，藍調時刻是 −6° 至 −4° 的一段，各分上午與傍晚兩窗。時刻以 floor(x + 0.5) 捨入至整數分鐘，落在輸入日期前一日或次一日時標示「（前一日）」或「（次一日）」；日長由未捨入值相減後捨入；正午仰角為 90 − |緯度 − 赤緯|，取 1 位小數。極晝時太陽整日不落下、極夜時整日不升起，時刻皆不顯示，正午仰角仍照算照回。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <h3>為什麼和氣象局公布的時間差一兩分鐘？</h3>
+    <p>本工具是 NOAA 近似公式，γ 只以當地正午取值，且只用固定偏移，不含當地時區規則與更精確的曆算，差數分鐘屬預期。</p>
+    <h3>為什麼不用「日出後一小時」當黃金時刻？</h3>
+    <p>黃金時刻是太陽仰角 −4° 至 +6° 的一段，太陽升落的速度隨緯度與季節而變：赤道約 40 分鐘，倫敦夏至約 83 分鐘，固定一小時在兩地都會錯。</p>
+    <h3>為什麼沒有日光節約時間選項？</h3>
+    <p>偏移是固定輸入；夏令時間請自行把偏移加一小時，例如倫敦夏季改填 +01:00、雪梨夏季改填 +11:00。</p>
+    <h3>什麼是太陽正午？</h3>
+    <p>太陽通過當地子午線的時刻，在固定偏移下通常不是 12:00。</p>
+    <h3>為什麼高緯度夏天沒有黃金時刻？</h3>
+    <p>太陽整夜不曾降到 −4° 以下（例如雷克雅維克夏至最低約 −2.4°），仰角窗口不存在，不是計算錯誤；反之冬至正午仰角不到 +6° 時也沒有黃金時刻，但仍可能有藍調時刻。</p>
+  </section>
+
+  <p class="privacy-note">所有計算都在你的瀏覽器中完成，不送出任何資料。</p>
+</main>
+</body>
+</html>
