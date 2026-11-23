@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>購屋能力試算｜Gloss Tools</title>
+<meta name="description" content="輸入年收入、頭期款、房貸利率、年期與其他債務，依 28/36 負擔比率算出最高房價與最高月付。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>購屋能力試算</h1>
+  <p class="lede">輸入年收入、頭期款、房貸利率、年期與每月其他債務，依 28/36 負擔比率算出最高月付、最高貸款與最高房價，再決定要看哪個價位的房子。月付只計房貸本金加利息，不含稅金、保險、管理費。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">年收入、頭期款</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-annualIncome">年收入（元／年）</label>
+          <p class="help" id="help-annualIncome">整數，範圍 1 至 1,000,000,000 元。</p>
+          <input id="field-annualIncome" name="annualIncome" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1200000" value="1200000" aria-describedby="help-annualIncome">
+          <p class="field-error" id="error-annualIncome" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-downPayment">頭期款（元）</label>
+          <p class="help" id="help-downPayment">整數，範圍 0 至 1,000,000,000 元。</p>
+          <input id="field-downPayment" name="downPayment" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2000000" value="2000000" aria-describedby="help-downPayment">
+          <p class="field-error" id="error-downPayment" role="alert"></p>
+        </div>
+        <h2 id="form-heading-rate">房貸年利率、年期、每月其他債務</h2>
+        <div class="field">
+          <label for="field-mortgageRate">房貸年利率（%）</label>
+          <p class="help" id="help-mortgageRate">0 至 30%，小數至多 4 位。</p>
+          <input id="field-mortgageRate" name="mortgageRate" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2" value="2" aria-describedby="help-mortgageRate">
+          <p class="field-error" id="error-mortgageRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-years">年期（年）</label>
+          <p class="help" id="help-years">整數，範圍 1 至 40 年。</p>
+          <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 30" value="30" aria-describedby="help-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-otherDebts">每月其他債務（元／月）</label>
+          <p class="help" id="help-otherDebts">整數，範圍 0 至 1,000,000 元。</p>
+          <input id="field-otherDebts" name="otherDebts" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 0" value="0" aria-describedby="help-otherDebts">
+          <p class="field-error" id="error-otherDebts" role="alert"></p>
+        </div>
+        <h2 id="form-heading-caps">前端上限、後端上限</h2>
+        <div class="field">
+          <label for="field-frontEndCapPct">前端上限（%）</label>
+          <p class="help" id="help-frontEndCapPct">10 至 50%，小數至多 2 位。</p>
+          <input id="field-frontEndCapPct" name="frontEndCapPct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 28" value="28" aria-describedby="help-frontEndCapPct">
+          <p class="field-error" id="error-frontEndCapPct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-backEndCapPct">後端上限（%）</label>
+          <p class="help" id="help-backEndCapPct">20 至 60%，小數至多 2 位，且不可低於前端上限。</p>
+          <input id="field-backEndCapPct" name="backEndCapPct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 36" value="36" aria-describedby="help-backEndCapPct">
+          <p class="field-error" id="error-backEndCapPct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入年收入、頭期款、房貸利率、年期與其他債務，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算購屋能力</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="results-column">
+      <p class="disclaimer">本工具僅依你輸入的假設與 28/36 負擔比率試算；月付只計房貸本金加利息，不含稅金、保險、管理費與房貸成數限制，不是財務建議、銀行報價或核貸保證。</p>
+      <p class="disclaimer">This tool estimates only from the assumptions you enter and the 28/36 debt-to-income guideline. The monthly payment counts mortgage principal and interest only, excluding taxes, insurance, management fees and loan-to-value limits, and is not financial advice, a bank quotation or a loan approval guarantee.</p>
+      <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading">最高月付、最高貸款與最高房價</h2>
+        <dl class="summary-list" id="summary-rows"></dl>
+        <p class="crisis-note" id="no-room-note" hidden></p>
+        <div class="actions">
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="details">
+    <summary>負擔比率與固定規則</summary>
+    <p>前端上限金額為年收入乘以前端比率除以 12（精確有理數一次取整）；後端上限金額為年收入乘以後端比率除以 12 取整後再扣每月其他債務；取較小者為最高月付。再以年金公式反推最高貸款（向下取整，保守），加頭期款得最高房價。28/36 是傳統經驗法則，不是法定上限；美國消費者金融保護局（CFPB）指出不同貸款產品與銀行的 DTI 上限各不相同，舊的 43% 合格房貸上限已由 2020 年 12 月的 General QM Final Rule 改為價格制。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對這一次試算，不做長期追蹤。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>28/36 是銀行的硬性上限嗎？</dt>
+      <dd>不是。28/36 是傳統經驗法則：住房支出不超過稅前月收入 28%，全部債務不超過 36%。美國 CFPB 說不同貸款產品與銀行的 DTI 上限各不相同；舊的 43% 合格房貸上限已改為價格制。本工具以 28/36 為預設，你可以在範圍內調整。</dd>
+      <dt>為什麼最高房價只算本金加利息？</dt>
+      <dd>因為稅金、保險、管理費因地而異、無法由收入反推；本工具的月付只計房貸本金加利息，試算聲明已明載，實際每月支出會更高。</dd>
+      <dt>其他債務太多、算出來沒有貸款額度，代表什麼？</dt>
+      <dd>代表在你設定的後端上限下，其他債務已經吃掉全部額度；最高房價等於頭期款，只能全現金購屋，或先降低其他債務、再調高上限假設重算。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
