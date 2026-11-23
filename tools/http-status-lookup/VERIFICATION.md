@@ -42,8 +42,11 @@
   style-src 'self'; worker-src blob:; ...`, `/nope.html` 404,
   `/../../etc/passwd` 404, `/js/worker-source.js` 200, served root
   page contains 64 `data-code=` rows. Server stopped afterwards.
-- Draft PR: (filled in after push — see below).
-- PR head SHA (read back with `gh pr view`): (filled in after push).
+- Draft PR: [#440](https://github.com/KYStr/glossquote-labs-home/pull/440)
+  ("Production: HTTP Status Lookup （HTTP 狀態碼查詢）", base
+  `codex/initial-publication`, draft, OPEN).
+- PR head SHA (read back with `gh pr view`):
+  `992c44ffadfd9e5f8f47815f7401d078277ef309`.
 
 ## Environment
 
