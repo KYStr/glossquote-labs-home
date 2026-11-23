@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>退休提領試算｜Gloss Tools</title>
+<meta name="description" content="輸入投資組合價值與每年提領額，算出這筆錢能撐幾年；再用 4% 法則看離目標組合還差多少。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>退休提領試算</h1>
+    <p class="lede">輸入投資組合價值與每年提領額，算出這筆錢能撐幾年；再用 4% 法則看離目標組合還差多少。全部以精確十進位運算，只在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <fieldset class="mode-group">
+        <legend>計算模式</legend>
+        <div class="segmented" role="radiogroup" aria-label="計算模式">
+          <label class="segment">
+            <input type="radio" name="mode" value="depletion" checked>
+            <span>耗盡試算</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="four-percent">
+            <span>4% 法則</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-mode" hidden></p>
+      </fieldset>
+
+      <fieldset class="mode-group">
+        <legend>幣別</legend>
+        <div class="segmented" role="radiogroup" aria-label="幣別">
+          <label class="segment">
+            <input type="radio" name="currency" value="NT$" checked>
+            <span>NT$</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="currency" value="$">
+            <span>$</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="currency" value="¥">
+            <span>¥</span>
+          </label>
+        </div>
+        <p class="field-help">幣別只改變顯示，不換算、不影響計算。</p>
+      </fieldset>
+
+      <div class="fields" id="group-depletion">
+        <div class="field">
+          <label for="input-portfolio">投資組合價值</label>
+          <input id="input-portfolio" name="portfolioValue" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-portfolio" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-withdrawal">每年提領額（第 1 年）</label>
+          <input id="input-withdrawal" name="annualWithdrawal" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-withdrawal" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-return">年報酬率 %</label>
+          <input id="input-return" name="returnRatePct" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="5">
+          <p class="field-error" id="error-return" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-inflation">年通膨率 %</label>
+          <input id="input-inflation" name="inflationRatePct" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2">
+          <p class="field-error" id="error-inflation" hidden></p>
+        </div>
+      </div>
+
+      <div class="fields" id="group-four-percent" hidden>
+        <div class="field">
+          <label for="input-spending">每年支出</label>
+          <input id="input-spending" name="annualSpending" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-spending" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-current">現有組合價值（選填）</label>
+          <input id="input-current" name="currentPortfolio" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-current" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算提領年限</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入數字，或載入範例。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">計算結果</h2>
+      <p class="disclaimer" id="disclaimer">本工具僅為固定假設下的試算，不構成投資或退休建議。實際報酬與通膨每年變動，結果僅供參考。</p>
+      <p class="result-sentence" id="result-summary"></p>
+      <dl class="result-facts">
+        <div id="row-years">
+          <dt>資金耗盡年數</dt>
+          <dd id="result-years"></dd>
+        </div>
+        <div id="row-status">
+          <dt>狀態</dt>
+          <dd id="result-status"></dd>
+        </div>
+        <div id="row-full-years">
+          <dt>完整年數</dt>
+          <dd id="result-full-years"></dd>
+        </div>
+        <div id="row-partial">
+          <dt>部分年比例</dt>
+          <dd id="result-partial"></dd>
+        </div>
+        <div id="row-final-partial">
+          <dt>最後部分年提領</dt>
+          <dd id="result-final-partial"></dd>
+        </div>
+        <div id="row-target">
+          <dt>目標組合</dt>
+          <dd id="result-target"></dd>
+        </div>
+        <div id="row-implied">
+          <dt>隱含提領率</dt>
+          <dd id="result-implied"></dd>
+        </div>
+        <div id="row-shortfall">
+          <dt>短少額</dt>
+          <dd id="result-shortfall"></dd>
+        </div>
+        <div id="row-meets">
+          <dt>是否符合 4% 法則</dt>
+          <dd id="result-meets"></dd>
+        </div>
+      </dl>
+      <div class="table-wrap" id="table-wrap" hidden>
+        <div class="table-scroll" aria-label="年度提領表">
+          <table class="yearly-table" id="yearly-table">
+            <thead>
+              <tr>
+                <th scope="col">年</th>
+                <th scope="col">期初餘額</th>
+                <th scope="col">提領</th>
+                <th scope="col">報酬</th>
+                <th scope="col">期末餘額</th>
+                <th scope="col">部分年</th>
+              </tr>
+            </thead>
+            <tbody id="yearly-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button type="button" id="btn-page-prev">上一頁</button>
+          <span id="page-info" role="status" aria-live="polite"></span>
+          <button type="button" id="btn-page-next">下一頁</button>
+        </div>
+      </div>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>每年提領在年初，剩餘金額再計當年報酬；提領額自第 2 年起隨通膨成長。</li>
+        <li>金額以整數分精確運算，每年四捨五入到分；模擬上限 100 年。</li>
+        <li>4% 法則模式：目標組合 = 每年支出 × 25；不跑逐年表、不吃報酬率與通膨率假設。</li>
+        <li>金額欄：十進位數字，小數點後最多 2 位，每欄最多 16 個字元；不接受空白、千分位逗號、貨幣符號、指數或算式。</li>
+        <li>年報酬率介於 -50 至 100 之間，年通膨率介於 0 至 100 之間；不接受通縮假設。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>提領是在年初還是年底拿？</h3>
+    <p>每年提領在年初、餘額再計當年報酬；最後不足一年的部分年只領剩餘金額、不計報酬。</p>
+    <h3>4% 法則保證錢不會花完嗎？</h3>
+    <p>不保證。它是 Bengen 1994 與 Trinity study 1998 從美國 30 年歷史資料得出的經驗法則，未來市場、稅費與個人壽命都可能不同。</p>
+    <h3>為什麼最多只算 100 年？</h3>
+    <p>100 年是模擬上限，避免無限表；提領遠低於報酬時，100 年後仍有餘額即標示為 100 年內未耗盡。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 退休提領試算在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

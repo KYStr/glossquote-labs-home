@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retirement Withdrawal Calculator | Gloss Tools</title>
+<meta name="description" content="See how many years a retirement portfolio lasts at a given annual withdrawal, return and inflation — and check the 4% rule target.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Retirement Withdrawal Calculator</h1>
+    <p class="lede">See how many years a retirement portfolio lasts at a given annual withdrawal, return and inflation — and check the 4% rule target. Everything is computed exactly, on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <fieldset class="mode-group">
+        <legend>Calculation mode</legend>
+        <div class="segmented" role="radiogroup" aria-label="Calculation mode">
+          <label class="segment">
+            <input type="radio" name="mode" value="depletion" checked>
+            <span>Depletion</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="mode" value="four-percent">
+            <span>4% rule</span>
+          </label>
+        </div>
+        <p class="field-error" id="error-mode" hidden></p>
+      </fieldset>
+
+      <fieldset class="mode-group">
+        <legend>Currency</legend>
+        <div class="segmented" role="radiogroup" aria-label="Currency">
+          <label class="segment">
+            <input type="radio" name="currency" value="NT$" checked>
+            <span>NT$</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="currency" value="$">
+            <span>$</span>
+          </label>
+          <label class="segment">
+            <input type="radio" name="currency" value="¥">
+            <span>¥</span>
+          </label>
+        </div>
+        <p class="field-help">Currency only changes the display; it does not convert or affect the calculation.</p>
+      </fieldset>
+
+      <div class="fields" id="group-depletion">
+        <div class="field">
+          <label for="input-portfolio">Portfolio value</label>
+          <input id="input-portfolio" name="portfolioValue" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-portfolio" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-withdrawal">Annual withdrawal (year 1)</label>
+          <input id="input-withdrawal" name="annualWithdrawal" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-withdrawal" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-return">Annual return %</label>
+          <input id="input-return" name="returnRatePct" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="5">
+          <p class="field-error" id="error-return" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-inflation">Annual inflation %</label>
+          <input id="input-inflation" name="inflationRatePct" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2">
+          <p class="field-error" id="error-inflation" hidden></p>
+        </div>
+      </div>
+
+      <div class="fields" id="group-four-percent" hidden>
+        <div class="field">
+          <label for="input-spending">Annual spending</label>
+          <input id="input-spending" name="annualSpending" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-spending" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-current">Current portfolio (optional)</label>
+          <input id="input-current" name="currentPortfolio" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-current" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate withdrawal years</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter values, or load the example.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="disclaimer" id="disclaimer">This tool is an estimate under fixed assumptions, not investment or retirement advice. Actual returns and inflation vary year to year; use the result for reference only.</p>
+      <p class="result-sentence" id="result-summary"></p>
+      <dl class="result-facts">
+        <div id="row-years">
+          <dt>Years until depletion</dt>
+          <dd id="result-years"></dd>
+        </div>
+        <div id="row-status">
+          <dt>Status</dt>
+          <dd id="result-status"></dd>
+        </div>
+        <div id="row-full-years">
+          <dt>Full years</dt>
+          <dd id="result-full-years"></dd>
+        </div>
+        <div id="row-partial">
+          <dt>Partial-year fraction</dt>
+          <dd id="result-partial"></dd>
+        </div>
+        <div id="row-final-partial">
+          <dt>Final partial withdrawal</dt>
+          <dd id="result-final-partial"></dd>
+        </div>
+        <div id="row-target">
+          <dt>Target portfolio</dt>
+          <dd id="result-target"></dd>
+        </div>
+        <div id="row-implied">
+          <dt>Implied withdrawal rate</dt>
+          <dd id="result-implied"></dd>
+        </div>
+        <div id="row-shortfall">
+          <dt>Shortfall</dt>
+          <dd id="result-shortfall"></dd>
+        </div>
+        <div id="row-meets">
+          <dt>Meets the 4% rule</dt>
+          <dd id="result-meets"></dd>
+        </div>
+      </dl>
+      <div class="table-wrap" id="table-wrap" hidden>
+        <div class="table-scroll" aria-label="Yearly withdrawal table">
+          <table class="yearly-table" id="yearly-table">
+            <thead>
+              <tr>
+                <th scope="col">Year</th>
+                <th scope="col">Start balance</th>
+                <th scope="col">Withdrawal</th>
+                <th scope="col">Return</th>
+                <th scope="col">End balance</th>
+                <th scope="col">Partial year</th>
+              </tr>
+            </thead>
+            <tbody id="yearly-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button type="button" id="btn-page-prev">Previous page</button>
+          <span id="page-info" role="status" aria-live="polite"></span>
+          <button type="button" id="btn-page-next">Next page</button>
+        </div>
+      </div>
+    </section>
+
+    <details class="rules">
+      <summary>Calculation rules and limits</summary>
+      <ul>
+        <li>Each year's withdrawal is taken at the start of the year; the remaining balance then earns that year's return. Withdrawals grow with inflation from year 2.</li>
+        <li>Amounts are computed in exact integer cents, rounded to cents each year; the simulation caps at 100 years.</li>
+        <li>4% rule mode: target portfolio = annual spending × 25. It runs no yearly table and takes no return or inflation assumption.</li>
+        <li>Money fields: decimal numbers with at most 2 decimal places and at most 16 characters each; no spaces, thousands commas, currency symbols, exponents or expressions.</li>
+        <li>Annual return is between -50 and 100; annual inflation is between 0 and 100. Deflation is not accepted.</li>
+        <li>Data stays only in the current page draft; leaving the page or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Is the withdrawal taken at the start or the end of the year?</h3>
+    <p>Each year's withdrawal is taken at the start of the year and the remaining balance then earns that year's return; a final partial year withdraws only the remaining balance, with no return.</p>
+    <h3>Does the 4% rule guarantee the money lasts?</h3>
+    <p>No. It is a rule of thumb from 30 years of US historical data in Bengen (1994) and the Trinity study (1998); future markets, taxes and lifespans can differ.</p>
+    <h3>Why stop at 100 years?</h3>
+    <p>100 years is the simulation cap to avoid an endless table; if a balance remains after 100 fully funded years it is reported as not depleted within the horizon.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The Retirement Withdrawal Calculator computes offline on your device, with no account, and never sends your numbers anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
