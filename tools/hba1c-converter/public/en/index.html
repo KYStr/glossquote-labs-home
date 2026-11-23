@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="description" content="Enter one HbA1c or average glucose value and see it in %, mmol/mol, mg/dL and mmol/L with the ADA category.">
+<title>HbA1c Converter | Gloss Tools</title>
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <nav>
+    <a href="../../en/">Home</a>
+    <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+  </nav>
+  <p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+</header>
+<main>
+  <h1>HbA1c Converter</h1>
+  <p class="lede">Enter one HbA1c or average glucose value and see it in %, mmol/mol, mg/dL and mmol/L with the ADA category.</p>
+
+  <div class="layout">
+    <form class="panel" id="converter-form" novalidate>
+      <div class="field">
+        <label for="value-input">Value</label>
+        <input type="text" id="value-input" value="7" inputmode="decimal" autocomplete="off" aria-describedby="value-help">
+        <p class="help" id="value-help">HbA1c percentage, 3.0–20.0%, up to two decimal places.</p>
+      </div>
+      <div class="field">
+        <label for="unit-select">Input unit</label>
+        <select id="unit-select">
+          <option value="a1c-percent" selected>HbA1c %</option>
+          <option value="ifcc">HbA1c mmol/mol (IFCC)</option>
+          <option value="eag-mgdl">eAG mg/dL</option>
+          <option value="eag-mmoll">eAG mmol/L</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">Convert</button>
+        <button type="button" id="example-button">Load example</button>
+        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="cancel-button" hidden>Cancel</button>
+        <button type="button" id="download-button" hidden>Download report</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <span id="status-text">Enter a value, choose its unit, then choose Convert.</span>
+      </div>
+      <div class="error-box" id="error-box" role="alert" hidden>
+        <span id="error-text"></span>
+      </div>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <div>
+      <section class="panel" id="result-section" hidden>
+        <h2>Conversion result</h2>
+        <p class="result-summary" id="result-summary"></p>
+        <dl class="result-list">
+          <dt>HbA1c</dt><dd id="res-a1c"></dd>
+          <dt>HbA1c (IFCC)</dt><dd id="res-ifcc"></dd>
+          <dt>eAG</dt><dd id="res-eag-mgdl"></dd>
+          <dt>eAG</dt><dd id="res-eag-mmoll"></dd>
+          <dt>Category</dt><dd id="res-category"></dd>
+        </dl>
+        <p class="disclaimer" id="disclaimer">本工具僅提供估算與單位換算，不構成醫療建議或診斷。請與醫師討論你的檢查結果。 / This tool provides estimates and unit conversions only. It is not medical advice or a diagnosis. Discuss your results with your clinician.</p>
+      </section>
+
+      <section class="panel">
+        <h2>ADA categories</h2>
+        <table class="chart" id="category-table">
+          <thead>
+            <tr><th scope="col">HbA1c</th><th scope="col">Category</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 5.7%</td><td>Normal</td></tr>
+            <tr><td>5.7–6.4%</td><td>Prediabetes</td></tr>
+            <tr><td>≥ 6.5%</td><td>Diabetes range</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Category labels are for reference only, not a diagnosis.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Frequently asked questions</h2>
+        <details>
+          <summary>Is eAG a measured average glucose?</summary>
+          <p>No. eAG is estimated from A1c by regression over roughly the past 2–3 months; it is not a measured value.</p>
+        </details>
+        <details>
+          <summary>Why does mmol/L sometimes differ from the ADA table by 0.1?</summary>
+          <p>This tool uses the ADAG paper's mmol/L regression (1.5944 × A1c − 2.594). The ADA table's rows at A1c 8.0% and 8.5% cannot be reproduced to 1 decimal by any published formula (this tool gives 10.2 / 11.0; the table gives 10.1 / 10.9); the other 7 rows agree.</p>
+        </details>
+        <details>
+          <summary>What A1c should I aim for?</summary>
+          <p>ADA suggests &lt;7.0% as a general goal for most nonpregnant adults; set your personal goal with your clinician.</p>
+        </details>
+        <details>
+          <summary>Can this diagnose diabetes?</summary>
+          <p>No. Diagnosis requires laboratory testing and confirmation by a clinician.</p>
+        </details>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>
+  <p>Conversion happens on this device; nothing is sent or stored. Formulas: eAG (mg/dL) = 28.7 × A1c − 46.7 (ADAG / Nathan 2008); eAG (mmol/L) = 1.5944 × A1c − 2.594; IFCC (mmol/mol) = (A1c% − 2.15) × 10.929. Category cut points follow the ADA diagnostic criteria.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
