@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>密碼強度檢查｜Gloss Tools</title>
+<meta name="description" content="輸入密碼，立即看到熵、強度等級、預估破解時間與改進建議；密碼絕不離開本頁、不儲存。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>密碼強度檢查</h1>
+  <p class="lede">輸入密碼，立即看到熵、強度等級、兩種攻擊情境的預估破解時間、逐項扣分與改進建議。全部計算都在這個頁面本機進行，密碼絕不離開本頁、不儲存。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">密碼</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-password">密碼</label>
+          <p class="help" id="help-password">0 至 128 個字元，任何字元皆可評估（含空白與非 ASCII 字元）。</p>
+          <input id="field-password" name="password" type="password" autocomplete="off" spellcheck="false" placeholder="輸入要檢查的密碼" value="" aria-describedby="help-password">
+          <p class="field-error" id="error-password" role="alert"></p>
+          <button type="button" id="show-btn" class="button-secondary" aria-pressed="false">顯示密碼</button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未評估。輸入密碼，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">評估強度</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">強度結果</h2>
+      <div class="band-bar" aria-hidden="true"><span id="band-fill" class="band-fill"></span></div>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>扣分明細</h3>
+      <dl class="summary-list" id="penalty-rows"></dl>
+      <h3>改進建議</h3>
+      <dl class="summary-list" id="suggestion-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">強度數字是模型估算，不是保證；再強的密碼也可能因外洩、釣魚或重複使用而失效。密碼絕不離開本頁、不儲存。</p>
+      <p class="disclaimer">Strength figures are model estimates, not a guarantee — even a strong password can fail through leaks, phishing, or reuse. Your password never leaves this page and is never stored.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>評分方式與固定規則</summary>
+    <p>基礎熵為密碼長度（Unicode code points）乘以 log2（字元集大小），半進位至 1 位小數。字元集依出現的類別加總：小寫字母 26、大寫字母 26、數字 10、符號 32、其他字元（含空白與非 ASCII）32。再扣模式分：常見密碼 −30、字典單字每個 −12（最多 2 個）、重複連續字元 −8、連續序列 −8、鍵盤橫列 −8、年份 −6、重複片段 −10、長度不到 8 個字元 −10、單一字元類別 −8；扣分總和上限 40 bits。最終熵為基礎熵減扣分（不低於 0）。等級門檻：低於 28 非常弱、28–35.9 弱、36–59.9 普通、60–79.9 強、80 以上非常強。</p>
+    <p>破解時間以猜測次數 2 的最終熵次方除以攻擊速率：線上未限流每秒 10 次、離線快雜湊每秒 10¹⁰ 次（沿用 zxcvbn 公開的兩種攻擊速率假設；本工具沒有實作 zxcvbn）。本工具不做 leet 還原、不產生密碼、不查詢任何外部資料庫。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的密碼。結果區與報告絕不引述密碼本身或其任何子字串。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>這個等級是保證嗎？</dt>
+      <dd>不是保證，是依本文公開模型的估算。</dd>
+      <dt>我的密碼會被傳送或儲存嗎？</dt>
+      <dd>不會。全部計算都在你的瀏覽器本機完成，不傳送、不儲存、不寫入網址或紀錄。</dd>
+      <dt>為什麼 `P@ssw0rd!` 只有「普通」？</dt>
+      <dd>本工具不做 leet 還原（`@` 不視為 `a`），該密碼 9 碼、四類字元，基礎熵 59.0 bits，落在 36–59.9 的「普通」區間。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的密碼。</p>
+</main>
+</body>
+</html>

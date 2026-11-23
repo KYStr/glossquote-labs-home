@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Password Strength Checker | Gloss Tools</title>
+<meta name="description" content="Check a password's entropy, strength band, estimated crack time, and concrete improvements — computed locally, never sent or stored.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Password Strength Checker</h1>
+  <p class="lede">Enter a password to see its entropy, strength band, estimated crack time under two attack scenarios, a penalty breakdown, and concrete improvements. All computation runs locally on this page; your password never leaves it and is never stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Password</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-password">Password</label>
+          <p class="help" id="help-password">0 to 128 characters; any character can be checked (including spaces and non-ASCII characters).</p>
+          <input id="field-password" name="password" type="password" autocomplete="off" spellcheck="false" placeholder="Enter a password to check" value="" aria-describedby="help-password">
+          <p class="field-error" id="error-password" role="alert"></p>
+          <button type="button" id="show-btn" class="button-secondary" aria-pressed="false">Show password</button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing checked yet. Enter a password, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Check strength</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Strength result</h2>
+      <div class="band-bar" aria-hidden="true"><span id="band-fill" class="band-fill"></span></div>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3>Penalty breakdown</h3>
+      <dl class="summary-list" id="penalty-rows"></dl>
+      <h3>Improvements</h3>
+      <dl class="summary-list" id="suggestion-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">強度數字是模型估算，不是保證；再強的密碼也可能因外洩、釣魚或重複使用而失效。密碼絕不離開本頁、不儲存。</p>
+      <p class="disclaimer">Strength figures are model estimates, not a guarantee — even a strong password can fail through leaks, phishing, or reuse. Your password never leaves this page and is never stored.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How strength is scored</summary>
+    <p>Base entropy is the password length (in Unicode code points) times log2 of the character-set size, rounded half away from zero to 1 decimal place. The set size sums the pools of the classes present: lowercase 26, uppercase 26, digits 10, symbols 32, other characters (including spaces and non-ASCII) 32. Pattern penalties are then subtracted: common password −30, dictionary word −12 each (at most 2), repeated run −8, sequence −8, keyboard row −8, year −6, repeated segment −10, shorter than 8 characters −10, single character class −8; the penalty total is capped at 40 bits. Final entropy is base entropy minus penalties (never below 0). Bands: below 28 very weak, 28–35.9 weak, 36–59.9 fair, 60–79.9 strong, 80 and above very strong.</p>
+    <p>Crack time is 2 to the power of final entropy guesses divided by the attack rate: online unthrottled 10 guesses per second, offline fast hash 10¹⁰ guesses per second (the two public attack rates from zxcvbn; this tool does not implement zxcvbn). This tool does no leet decoding, generates no passwords, and queries no external database.</p>
+    <p>All computation runs locally on this page. Nothing is uploaded, stored, or logged. The results area and the report never quote your password or any substring of it.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is this band a guarantee?</dt>
+      <dd>No — it is an estimate under this page's published model.</dd>
+      <dt>Is my password sent or stored?</dt>
+      <dd>No. All computation runs locally in your browser; nothing is sent, stored, or written to the URL or logs.</dd>
+      <dt>Why is `P@ssw0rd!` only “fair”?</dt>
+      <dd>This tool does no leet substitution (`@` is not read as `a`); at 9 characters across four classes its base entropy is 59.0 bits, inside the 36–59.9 “fair” band.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation runs locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
