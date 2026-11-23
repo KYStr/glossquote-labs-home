@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Life Insurance Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate the life insurance coverage your family needs with the needs approach: add income replacement, mortgage, debts, final expenses and education costs, then subtract existing coverage and assets, with a 10× income benchmark for comparison. Educational estimate only, not insurance advice.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Life Insurance Calculator</h1>
+  <p class="lede">Estimate the life insurance coverage your family needs with the needs approach: add income replacement, mortgage, debts, final expenses and education costs, then subtract existing coverage and assets, with a 10× income benchmark for comparison. Educational estimate only, not insurance advice.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Estimate inputs</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field-group">
+          <legend>Annual income, support years and dependents</legend>
+          <div class="field">
+            <label for="field-annualIncome">Annual income (NT$/year)</label>
+            <p class="help" id="help-annualIncome">Whole number, from 0 to 99,999,999 NT$.</p>
+            <input id="field-annualIncome" name="annualIncome" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 1200000" value="1200000" aria-describedby="help-annualIncome">
+            <p class="field-error" id="error-annualIncome" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-supportYears">Support years (years)</label>
+            <p class="help" id="help-supportYears">Whole number, from 0 to 40 years.</p>
+            <input id="field-supportYears" name="supportYears" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 10" value="10" aria-describedby="help-supportYears">
+            <p class="field-error" id="error-supportYears" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-dependents">Dependents (people)</label>
+            <p class="help" id="help-dependents">Whole number, from 0 to 10 people.</p>
+            <input id="field-dependents" name="dependents" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 2" value="2" aria-describedby="help-dependents">
+            <p class="field-error" id="error-dependents" role="alert"></p>
+          </div>
+        </fieldset>
+        <fieldset class="field-group">
+          <legend>Mortgage balance, other debts and final expenses</legend>
+          <div class="field">
+            <label for="field-mortgageBalance">Mortgage balance (NT$)</label>
+            <p class="help" id="help-mortgageBalance">Whole number, from 0 to 99,999,999 NT$.</p>
+            <input id="field-mortgageBalance" name="mortgageBalance" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 3000000" value="3000000" aria-describedby="help-mortgageBalance">
+            <p class="field-error" id="error-mortgageBalance" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-otherDebts">Other debts (NT$)</label>
+            <p class="help" id="help-otherDebts">Whole number, from 0 to 99,999,999 NT$; debts other than the mortgage.</p>
+            <input id="field-otherDebts" name="otherDebts" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 200000" value="200000" aria-describedby="help-otherDebts">
+            <p class="field-error" id="error-otherDebts" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-finalExpenses">Final expenses (NT$)</label>
+            <p class="help" id="help-finalExpenses">Whole number, from 0 to 9,999,999 NT$; the default of 350,000 NT$ is the average funeral cost of about NT$350,000 from the Ministry of the Interior survey of funeral spending in Taiwan and Fujian.</p>
+            <input id="field-finalExpenses" name="finalExpenses" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 350000" value="350000" aria-describedby="help-finalExpenses">
+            <p class="field-error" id="error-finalExpenses" role="alert"></p>
+          </div>
+        </fieldset>
+        <fieldset class="field-group">
+          <legend>Education cost per dependent, existing coverage and liquid assets</legend>
+          <div class="field">
+            <label for="field-educationPerChild">Education cost per dependent (NT$)</label>
+            <p class="help" id="help-educationPerChild">Whole number, from 0 to 9,999,999 NT$; the total education cost per dependent, not a yearly cost.</p>
+            <input id="field-educationPerChild" name="educationPerChild" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 500000" value="500000" aria-describedby="help-educationPerChild">
+            <p class="field-error" id="error-educationPerChild" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-existingCoverage">Existing coverage (NT$)</label>
+            <p class="help" id="help-existingCoverage">Whole number, from 0 to 99,999,999 NT$.</p>
+            <input id="field-existingCoverage" name="existingCoverage" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 1000000" value="1000000" aria-describedby="help-existingCoverage">
+            <p class="field-error" id="error-existingCoverage" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-liquidAssets">Liquid assets (NT$)</label>
+            <p class="help" id="help-liquidAssets">Whole number, from 0 to 99,999,999 NT$.</p>
+            <input id="field-liquidAssets" name="liquidAssets" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 500000" value="500000" aria-describedby="help-liquidAssets">
+            <p class="field-error" id="error-liquidAssets" role="alert"></p>
+          </div>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing estimated yet. Enter annual income, support years and the other figures, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate recommended coverage</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="results-column">
+      <p class="disclaimer">本工具僅供教育試算參考，不構成保險建議、招攬或商品推薦。實際保額請諮詢合格保險業務員或理財顧問，並以保單條款為準。</p>
+      <p class="disclaimer">This tool is an educational estimate only. It is not insurance advice, a solicitation, or a product recommendation. Consult a licensed insurance professional for advice on your own situation.</p>
+
+      <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading">Recommended coverage and needs breakdown</h2>
+        <dl class="summary-list" id="summary-rows"></dl>
+        <dl class="summary-list" id="breakdown-rows"></dl>
+        <div class="actions">
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+        <p class="disclaimer">本工具僅供教育試算參考，不構成保險建議、招攬或商品推薦。實際保額請諮詢合格保險業務員或理財顧問，並以保單條款為準。</p>
+        <p class="disclaimer">This tool is an educational estimate only. It is not insurance advice, a solicitation, or a product recommendation. Consult a licensed insurance professional for advice on your own situation.</p>
+      </section>
+    </div>
+  </div>
+
+  <details class="details">
+    <summary>Needs approach and fixed rules</summary>
+    <p>The needs approach: recommended coverage = annual income × support years + mortgage balance + other debts + final expenses + education cost per dependent × dependents, minus existing coverage and liquid assets; if the offsets exceed the need, the recommended coverage is 0. All amounts are exact whole New Taiwan dollars, with no rounding and no inflation or discounting.</p>
+    <p>The 10× annual income rule (annual income × 10) is shown only as a benchmark and never feeds the recommended coverage. The final-expenses default of NT$350,000 follows the Ministry of the Interior survey of funeral spending in Taiwan and Fujian, which found an average funeral cost of about NT$350,000; it is an editable default, not a statutory amount.</p>
+    <p>All calculation happens locally in this page. Nothing is uploaded, stored, or recorded. The result is an educational estimate only, not insurance advice, a solicitation, or a product recommendation.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How do the 10× income rule and the needs approach differ?</dt>
+      <dd>The 10× rule multiplies annual income by 10 as a quick benchmark; the needs approach adds up your debts, mortgage, education and final expenses, then subtracts existing coverage and assets. The recommended coverage follows the needs approach.</dd>
+      <dt>Why can the recommended coverage be zero?</dt>
+      <dd>When existing coverage plus liquid assets already meet or exceed the total need, there is no shortfall and the status shows covered.</dd>
+      <dt>How do I choose the support years?</dt>
+      <dd>Usually the number of years the income would need replacing, for example until the youngest dependent reaches adulthood or finishes education; 10 years is a common reference and this tool allows 0–40 years.</dd>
+      <dt>Does the estimate account for inflation or investment returns?</dt>
+      <dd>No. Items are added at face value with no discounting or compounding, as a deliberate simplification; consult a professional for actual planning.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, stored, or recorded.</p>
+</main>
+</body>
+</html>
