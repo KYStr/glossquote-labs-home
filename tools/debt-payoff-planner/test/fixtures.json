@@ -1,0 +1,1974 @@
+{
+  "schemaVersion": 1,
+  "specId": "spec-debt-payoff-planner-20261121",
+  "slug": "debt-payoff-planner",
+  "productChecks": "NOT_RUN",
+  "cases": [
+    {
+      "id": "snowball-vs-avalanche",
+      "kind": "core",
+      "purpose": "雪球法與雪崩法排序不同、利息不同（展示案例）",
+      "input": {
+        "debts": [
+          {
+            "apr": "24.00",
+            "balance": "600.00",
+            "minimum": "50.00",
+            "name": "Store Card"
+          },
+          {
+            "apr": "6.00",
+            "balance": "1200.00",
+            "minimum": "100.00",
+            "name": "Personal Loan"
+          },
+          {
+            "apr": "18.00",
+            "balance": "300.00",
+            "minimum": "25.00",
+            "name": "Credit Card"
+          }
+        ],
+        "extraMonthly": "100.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 210000,
+          "extraMonthlyCents": 10000,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8960,
+              "totalPaidCents": 218960,
+              "payoffMonth": {
+                "Credit Card": 3,
+                "Store Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1946,
+                  "remainingCents": 159196
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1638,
+                  "remainingCents": 133334
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1292,
+                  "remainingCents": 107126
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 911,
+                  "remainingCents": 80537
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 523,
+                  "remainingCents": 53560
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 268,
+                  "remainingCents": 26328
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26460,
+                  "interestCents": 132,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8520,
+              "totalPaidCents": 218520,
+              "payoffMonth": {
+                "Store Card": 5,
+                "Credit Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1896,
+                  "remainingCents": 159146
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1536,
+                  "remainingCents": 133182
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1169,
+                  "remainingCents": 106851
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 797,
+                  "remainingCents": 80148
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 477,
+                  "remainingCents": 53125
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 266,
+                  "remainingCents": 25891
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26020,
+                  "interestCents": 129,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "avalanche",
+            "interestDifferenceCents": 440,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "single-debt-zero-apr",
+      "kind": "core",
+      "purpose": "單筆債務、零利率，兩種策略結果相同",
+      "input": {
+        "debts": [
+          {
+            "apr": "0.00",
+            "balance": "1000.00",
+            "minimum": "100.00",
+            "name": "Loan"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 100000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Loan"
+              ],
+              "payoffOrder": [
+                "Loan"
+              ],
+              "monthsToDebtFree": 10,
+              "monthsSimulated": 10,
+              "totalInterestCents": 0,
+              "totalPaidCents": 100000,
+              "payoffMonth": {
+                "Loan": 10
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 90000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 80000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 70000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 60000
+                },
+                {
+                  "month": 5,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 50000
+                },
+                {
+                  "month": 6,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 40000
+                },
+                {
+                  "month": 7,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 30000
+                },
+                {
+                  "month": 8,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 20000
+                },
+                {
+                  "month": 9,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 10000
+                },
+                {
+                  "month": 10,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Loan"
+              ],
+              "payoffOrder": [
+                "Loan"
+              ],
+              "monthsToDebtFree": 10,
+              "monthsSimulated": 10,
+              "totalInterestCents": 0,
+              "totalPaidCents": 100000,
+              "payoffMonth": {
+                "Loan": 10
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 90000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 80000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 70000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 60000
+                },
+                {
+                  "month": 5,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 50000
+                },
+                {
+                  "month": 6,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 40000
+                },
+                {
+                  "month": 7,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 30000
+                },
+                {
+                  "month": 8,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 20000
+                },
+                {
+                  "month": 9,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 10000
+                },
+                {
+                  "month": 10,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "zero-apr-all",
+      "kind": "core",
+      "purpose": "全部零利率：利息為零、兩種策略月數相同",
+      "input": {
+        "debts": [
+          {
+            "apr": "0.00",
+            "balance": "600.00",
+            "minimum": "100.00",
+            "name": "A"
+          },
+          {
+            "apr": "0.00",
+            "balance": "400.00",
+            "minimum": "50.00",
+            "name": "B"
+          },
+          {
+            "apr": "0.00",
+            "balance": "200.00",
+            "minimum": "50.00",
+            "name": "C"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 120000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "C",
+                "B",
+                "A"
+              ],
+              "payoffOrder": [
+                "C",
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 6,
+              "monthsSimulated": 6,
+              "totalInterestCents": 0,
+              "totalPaidCents": 120000,
+              "payoffMonth": {
+                "C": 4,
+                "A": 6,
+                "B": 6
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 100000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 80000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 60000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 40000
+                },
+                {
+                  "month": 5,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 20000
+                },
+                {
+                  "month": 6,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "C",
+                "B",
+                "A"
+              ],
+              "payoffOrder": [
+                "C",
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 6,
+              "monthsSimulated": 6,
+              "totalInterestCents": 0,
+              "totalPaidCents": 120000,
+              "payoffMonth": {
+                "C": 4,
+                "A": 6,
+                "B": 6
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 100000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 80000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 60000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 40000
+                },
+                {
+                  "month": 5,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 20000
+                },
+                {
+                  "month": 6,
+                  "paidCents": 20000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "extra-rolls-after-payoff",
+      "kind": "core",
+      "purpose": "還清後釋出的最低還款滾入額外還款池",
+      "input": {
+        "debts": [
+          {
+            "apr": "0.00",
+            "balance": "200.00",
+            "minimum": "100.00",
+            "name": "A"
+          },
+          {
+            "apr": "0.00",
+            "balance": "400.00",
+            "minimum": "50.00",
+            "name": "B"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 60000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "A",
+                "B"
+              ],
+              "payoffOrder": [
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 4,
+              "monthsSimulated": 4,
+              "totalInterestCents": 0,
+              "totalPaidCents": 60000,
+              "payoffMonth": {
+                "A": 2,
+                "B": 4
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 45000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 30000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 15000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "A",
+                "B"
+              ],
+              "payoffOrder": [
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 4,
+              "monthsSimulated": 4,
+              "totalInterestCents": 0,
+              "totalPaidCents": 60000,
+              "payoffMonth": {
+                "A": 2,
+                "B": 4
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 45000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 30000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 15000
+                },
+                {
+                  "month": 4,
+                  "paidCents": 15000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "minimum-exceeds-balance",
+      "kind": "core",
+      "purpose": "最低還款超過餘額，剩餘部分同月滾向下一筆",
+      "input": {
+        "debts": [
+          {
+            "apr": "0.00",
+            "balance": "80.00",
+            "minimum": "100.00",
+            "name": "A"
+          },
+          {
+            "apr": "0.00",
+            "balance": "200.00",
+            "minimum": "0.00",
+            "name": "B"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 28000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "A",
+                "B"
+              ],
+              "payoffOrder": [
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 3,
+              "monthsSimulated": 3,
+              "totalInterestCents": 0,
+              "totalPaidCents": 28000,
+              "payoffMonth": {
+                "A": 1,
+                "B": 3
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 18000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 8000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 8000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "A",
+                "B"
+              ],
+              "payoffOrder": [
+                "A",
+                "B"
+              ],
+              "monthsToDebtFree": 3,
+              "monthsSimulated": 3,
+              "totalInterestCents": 0,
+              "totalPaidCents": 28000,
+              "payoffMonth": {
+                "A": 1,
+                "B": 3
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 18000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 0,
+                  "remainingCents": 8000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 8000,
+                  "interestCents": 0,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "interest-rounding-half-cent",
+      "kind": "core",
+      "purpose": "月利息恰為 4.5 分，half-up 進為 5 分",
+      "input": {
+        "debts": [
+          {
+            "apr": "6.00",
+            "balance": "9.00",
+            "minimum": "5.00",
+            "name": "Card"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 900,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Card"
+              ],
+              "payoffOrder": [
+                "Card"
+              ],
+              "monthsToDebtFree": 2,
+              "monthsSimulated": 2,
+              "totalInterestCents": 7,
+              "totalPaidCents": 907,
+              "payoffMonth": {
+                "Card": 2
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 500,
+                  "interestCents": 5,
+                  "remainingCents": 405
+                },
+                {
+                  "month": 2,
+                  "paidCents": 407,
+                  "interestCents": 2,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Card"
+              ],
+              "payoffOrder": [
+                "Card"
+              ],
+              "monthsToDebtFree": 2,
+              "monthsSimulated": 2,
+              "totalInterestCents": 7,
+              "totalPaidCents": 907,
+              "payoffMonth": {
+                "Card": 2
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 500,
+                  "interestCents": 5,
+                  "remainingCents": 405
+                },
+                {
+                  "month": 2,
+                  "paidCents": 407,
+                  "interestCents": 2,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "treads-water",
+      "kind": "core",
+      "purpose": "最低還款恰等於月利息，餘額永遠不動、600 個月仍未還清",
+      "input": {
+        "debts": [
+          {
+            "apr": "12.00",
+            "balance": "5000.00",
+            "minimum": "50.00",
+            "name": "Card"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 500000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "not-debt-free",
+              "order": [
+                "Card"
+              ],
+              "payoffOrder": [],
+              "monthsToDebtFree": null,
+              "monthsSimulated": 600,
+              "totalInterestCents": 3000000,
+              "totalPaidCents": 3000000,
+              "payoffMonth": {},
+              "monthlyHead": [
+                {
+                  "month": 1,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                }
+              ],
+              "monthlyTail": [
+                {
+                  "month": 600,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "not-debt-free",
+              "order": [
+                "Card"
+              ],
+              "payoffOrder": [],
+              "monthsToDebtFree": null,
+              "monthsSimulated": 600,
+              "totalInterestCents": 3000000,
+              "totalPaidCents": 3000000,
+              "payoffMonth": {},
+              "monthlyHead": [
+                {
+                  "month": 1,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                },
+                {
+                  "month": 2,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                },
+                {
+                  "month": 3,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                }
+              ],
+              "monthlyTail": [
+                {
+                  "month": 600,
+                  "paidCents": 5000,
+                  "interestCents": 5000,
+                  "remainingCents": 500000
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": null,
+            "interestDifferenceCents": null,
+            "fewerMonthsStrategy": null,
+            "monthsDifference": null
+          }
+        }
+      }
+    },
+    {
+      "id": "tie-break-orders",
+      "kind": "core",
+      "purpose": "同餘額以高利率先、同利率以小餘額先的排序決勝規則",
+      "input": {
+        "debts": [
+          {
+            "apr": "12.00",
+            "balance": "100.00",
+            "minimum": "20.00",
+            "name": "A"
+          },
+          {
+            "apr": "24.00",
+            "balance": "100.00",
+            "minimum": "20.00",
+            "name": "B"
+          },
+          {
+            "apr": "24.00",
+            "balance": "200.00",
+            "minimum": "20.00",
+            "name": "C"
+          }
+        ],
+        "extraMonthly": "50.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 40000,
+          "extraMonthlyCents": 5000,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "B",
+                "A",
+                "C"
+              ],
+              "payoffOrder": [
+                "B",
+                "A",
+                "C"
+              ],
+              "monthsToDebtFree": 4,
+              "monthsSimulated": 4,
+              "totalInterestCents": 1743,
+              "totalPaidCents": 41743,
+              "payoffMonth": {
+                "B": 2,
+                "A": 3,
+                "C": 4
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 11000,
+                  "interestCents": 700,
+                  "remainingCents": 29700
+                },
+                {
+                  "month": 2,
+                  "paidCents": 11000,
+                  "interestCents": 513,
+                  "remainingCents": 19213
+                },
+                {
+                  "month": 3,
+                  "paidCents": 11000,
+                  "interestCents": 359,
+                  "remainingCents": 8572
+                },
+                {
+                  "month": 4,
+                  "paidCents": 8743,
+                  "interestCents": 171,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "B",
+                "C",
+                "A"
+              ],
+              "payoffOrder": [
+                "B",
+                "C",
+                "A"
+              ],
+              "monthsToDebtFree": 4,
+              "monthsSimulated": 4,
+              "totalInterestCents": 1664,
+              "totalPaidCents": 41664,
+              "payoffMonth": {
+                "B": 2,
+                "C": 4,
+                "A": 4
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 11000,
+                  "interestCents": 700,
+                  "remainingCents": 29700
+                },
+                {
+                  "month": 2,
+                  "paidCents": 11000,
+                  "interestCents": 513,
+                  "remainingCents": 19213
+                },
+                {
+                  "month": 3,
+                  "paidCents": 11000,
+                  "interestCents": 323,
+                  "remainingCents": 8536
+                },
+                {
+                  "month": 4,
+                  "paidCents": 8664,
+                  "interestCents": 128,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "avalanche",
+            "interestDifferenceCents": 79,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "minimum-only-with-interest",
+      "kind": "core",
+      "purpose": "只繳最低還款且有利息，含 152.5 分 half-up",
+      "input": {
+        "debts": [
+          {
+            "apr": "12.00",
+            "balance": "250.00",
+            "minimum": "100.00",
+            "name": "Loan"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": true,
+        "result": {
+          "totalInitialCents": 25000,
+          "extraMonthlyCents": 0,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Loan"
+              ],
+              "payoffOrder": [
+                "Loan"
+              ],
+              "monthsToDebtFree": 3,
+              "monthsSimulated": 3,
+              "totalInterestCents": 457,
+              "totalPaidCents": 25457,
+              "payoffMonth": {
+                "Loan": 3
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 250,
+                  "remainingCents": 15250
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 153,
+                  "remainingCents": 5403
+                },
+                {
+                  "month": 3,
+                  "paidCents": 5457,
+                  "interestCents": 54,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Loan"
+              ],
+              "payoffOrder": [
+                "Loan"
+              ],
+              "monthsToDebtFree": 3,
+              "monthsSimulated": 3,
+              "totalInterestCents": 457,
+              "totalPaidCents": 25457,
+              "payoffMonth": {
+                "Loan": 3
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 10000,
+                  "interestCents": 250,
+                  "remainingCents": 15250
+                },
+                {
+                  "month": 2,
+                  "paidCents": 10000,
+                  "interestCents": 153,
+                  "remainingCents": 5403
+                },
+                {
+                  "month": 3,
+                  "paidCents": 5457,
+                  "interestCents": 54,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "tie",
+            "interestDifferenceCents": 0,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "duplicate-name",
+      "kind": "core",
+      "purpose": "兩筆債務同名",
+      "input": {
+        "debts": [
+          {
+            "name": "Card",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "Card",
+            "balance": "200.00",
+            "apr": "6.00",
+            "minimum": "20.00"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "DUPLICATE_NAME",
+          "field": "name",
+          "row": 2
+        }
+      }
+    },
+    {
+      "id": "bad-money-format",
+      "kind": "core",
+      "purpose": "餘額含三位小數",
+      "input": {
+        "debts": [
+          {
+            "name": "Card",
+            "balance": "100.005",
+            "apr": "12.00",
+            "minimum": "10.00"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "MONEY_FORMAT",
+          "field": "balance",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "too-many-debts",
+      "kind": "core",
+      "purpose": "13 筆債務超過上限 12 筆",
+      "input": {
+        "debts": [
+          {
+            "name": "D1",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D2",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D3",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D4",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D5",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D6",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D7",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D8",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D9",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D10",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D11",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D12",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          },
+          {
+            "name": "D13",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "10.00"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "ROW_LIMIT",
+          "field": "debts",
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "zero-total-payment",
+      "kind": "core",
+      "purpose": "全部最低還款與額外還款皆為零",
+      "input": {
+        "debts": [
+          {
+            "name": "A",
+            "balance": "100.00",
+            "apr": "12.00",
+            "minimum": "0.00"
+          },
+          {
+            "name": "B",
+            "balance": "200.00",
+            "apr": "6.00",
+            "minimum": "0.00"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "INSUFFICIENT_PAYMENT",
+          "field": null,
+          "row": null
+        }
+      }
+    },
+    {
+      "id": "bad-apr-format",
+      "kind": "core",
+      "purpose": "年利率含三位小數",
+      "input": {
+        "debts": [
+          {
+            "name": "Card",
+            "balance": "100.00",
+            "apr": "12.345",
+            "minimum": "10.00"
+          }
+        ],
+        "extraMonthly": "0.00"
+      },
+      "expected": {
+        "ok": false,
+        "error": {
+          "code": "APR_FORMAT",
+          "field": "apr",
+          "row": 1
+        }
+      }
+    },
+    {
+      "id": "state-dirty-error",
+      "kind": "controller",
+      "purpose": "先產出真結果，再改為無效輸入，舊結果及所有下載立即失效。",
+      "input": {
+        "initial": {
+          "debts": [
+            {
+              "apr": "24.00",
+              "balance": "600.00",
+              "minimum": "50.00",
+              "name": "Store Card"
+            },
+            {
+              "apr": "6.00",
+              "balance": "1200.00",
+              "minimum": "100.00",
+              "name": "Personal Loan"
+            },
+            {
+              "apr": "18.00",
+              "balance": "300.00",
+              "minimum": "25.00",
+              "name": "Credit Card"
+            }
+          ],
+          "extraMonthly": "100.00"
+        },
+        "edit": {
+          "debts": [
+            {
+              "apr": "24.00",
+              "balance": "600.00",
+              "minimum": "50.00",
+              "name": "Store Card"
+            },
+            {
+              "apr": "6.00",
+              "balance": "1200.00",
+              "minimum": "100.00",
+              "name": "Personal Loan"
+            },
+            {
+              "apr": "18.00",
+              "balance": "300.00",
+              "minimum": "25.00",
+              "name": "Credit Card"
+            }
+          ],
+          "extraMonthly": "abc"
+        }
+      },
+      "expected": {
+        "afterRun": {
+          "state": "success",
+          "reportAvailable": true
+        },
+        "afterEdit": {
+          "state": "dirty",
+          "reportAvailable": false
+        },
+        "afterRerun": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "MONEY_FORMAT",
+            "field": "extraMonthly",
+            "row": null
+          }
+        }
+      }
+    },
+    {
+      "id": "state-cancel-late",
+      "kind": "controller",
+      "purpose": "延遲成功後取消，舊回傳不能復活，重設回預設值。",
+      "input": {
+        "draft": {
+          "debts": [
+            {
+              "apr": "24.00",
+              "balance": "600.00",
+              "minimum": "50.00",
+              "name": "Store Card"
+            },
+            {
+              "apr": "6.00",
+              "balance": "1200.00",
+              "minimum": "100.00",
+              "name": "Personal Loan"
+            },
+            {
+              "apr": "18.00",
+              "balance": "300.00",
+              "minimum": "25.00",
+              "name": "Credit Card"
+            }
+          ],
+          "extraMonthly": "100.00"
+        },
+        "lateResult": {
+          "totalInitialCents": 210000,
+          "extraMonthlyCents": 10000,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8960,
+              "totalPaidCents": 218960,
+              "payoffMonth": {
+                "Credit Card": 3,
+                "Store Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1946,
+                  "remainingCents": 159196
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1638,
+                  "remainingCents": 133334
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1292,
+                  "remainingCents": 107126
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 911,
+                  "remainingCents": 80537
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 523,
+                  "remainingCents": 53560
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 268,
+                  "remainingCents": 26328
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26460,
+                  "interestCents": 132,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8520,
+              "totalPaidCents": 218520,
+              "payoffMonth": {
+                "Store Card": 5,
+                "Credit Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1896,
+                  "remainingCents": 159146
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1536,
+                  "remainingCents": 133182
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1169,
+                  "remainingCents": 106851
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 797,
+                  "remainingCents": 80148
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 477,
+                  "remainingCents": 53125
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 266,
+                  "remainingCents": 25891
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26020,
+                  "interestCents": 129,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "avalanche",
+            "interestDifferenceCents": 440,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      },
+      "expected": {
+        "whilePending": {
+          "state": "busy",
+          "reportAvailable": false
+        },
+        "afterCancel": {
+          "state": "cancelled",
+          "reportAvailable": false,
+          "draft": {
+            "debts": [
+              {
+                "apr": "24.00",
+                "balance": "600.00",
+                "minimum": "50.00",
+                "name": "Store Card"
+              },
+              {
+                "apr": "6.00",
+                "balance": "1200.00",
+                "minimum": "100.00",
+                "name": "Personal Loan"
+              },
+              {
+                "apr": "18.00",
+                "balance": "300.00",
+                "minimum": "25.00",
+                "name": "Credit Card"
+              }
+            ],
+            "extraMonthly": "100.00"
+          }
+        },
+        "afterLateResult": {
+          "state": "cancelled",
+          "reportAvailable": false
+        },
+        "afterReset": {
+          "state": "empty",
+          "reportAvailable": false,
+          "draft": {
+            "debts": [
+              {
+                "name": "Credit Card",
+                "balance": "5000.00",
+                "apr": "19.99",
+                "minimum": "150.00"
+              },
+              {
+                "name": "Personal Loan",
+                "balance": "8000.00",
+                "apr": "9.50",
+                "minimum": "200.00"
+              },
+              {
+                "name": "Store Card",
+                "balance": "1200.00",
+                "apr": "24.99",
+                "minimum": "50.00"
+              }
+            ],
+            "extraMonthly": "200.00"
+          }
+        }
+      }
+    },
+    {
+      "id": "state-replace-late",
+      "kind": "controller",
+      "purpose": "新工作失敗後收到上一份工作的成功，保留目前錯誤。",
+      "input": {
+        "olderDraft": {
+          "debts": [
+            {
+              "apr": "24.00",
+              "balance": "600.00",
+              "minimum": "50.00",
+              "name": "Store Card"
+            },
+            {
+              "apr": "6.00",
+              "balance": "1200.00",
+              "minimum": "100.00",
+              "name": "Personal Loan"
+            },
+            {
+              "apr": "18.00",
+              "balance": "300.00",
+              "minimum": "25.00",
+              "name": "Credit Card"
+            }
+          ],
+          "extraMonthly": "100.00"
+        },
+        "newerDraft": {
+          "debts": [
+            {
+              "name": "Card",
+              "balance": "100.005",
+              "apr": "12.00",
+              "minimum": "10.00"
+            }
+          ],
+          "extraMonthly": "0.00"
+        },
+        "olderLateResult": {
+          "totalInitialCents": 210000,
+          "extraMonthlyCents": 10000,
+          "strategies": {
+            "snowball": {
+              "status": "debt-free",
+              "order": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Credit Card",
+                "Store Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8960,
+              "totalPaidCents": 218960,
+              "payoffMonth": {
+                "Credit Card": 3,
+                "Store Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1946,
+                  "remainingCents": 159196
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1638,
+                  "remainingCents": 133334
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1292,
+                  "remainingCents": 107126
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 911,
+                  "remainingCents": 80537
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 523,
+                  "remainingCents": 53560
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 268,
+                  "remainingCents": 26328
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26460,
+                  "interestCents": 132,
+                  "remainingCents": 0
+                }
+              ]
+            },
+            "avalanche": {
+              "status": "debt-free",
+              "order": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "payoffOrder": [
+                "Store Card",
+                "Credit Card",
+                "Personal Loan"
+              ],
+              "monthsToDebtFree": 8,
+              "monthsSimulated": 8,
+              "totalInterestCents": 8520,
+              "totalPaidCents": 218520,
+              "payoffMonth": {
+                "Store Card": 5,
+                "Credit Card": 6,
+                "Personal Loan": 8
+              },
+              "monthly": [
+                {
+                  "month": 1,
+                  "paidCents": 27500,
+                  "interestCents": 2250,
+                  "remainingCents": 184750
+                },
+                {
+                  "month": 2,
+                  "paidCents": 27500,
+                  "interestCents": 1896,
+                  "remainingCents": 159146
+                },
+                {
+                  "month": 3,
+                  "paidCents": 27500,
+                  "interestCents": 1536,
+                  "remainingCents": 133182
+                },
+                {
+                  "month": 4,
+                  "paidCents": 27500,
+                  "interestCents": 1169,
+                  "remainingCents": 106851
+                },
+                {
+                  "month": 5,
+                  "paidCents": 27500,
+                  "interestCents": 797,
+                  "remainingCents": 80148
+                },
+                {
+                  "month": 6,
+                  "paidCents": 27500,
+                  "interestCents": 477,
+                  "remainingCents": 53125
+                },
+                {
+                  "month": 7,
+                  "paidCents": 27500,
+                  "interestCents": 266,
+                  "remainingCents": 25891
+                },
+                {
+                  "month": 8,
+                  "paidCents": 26020,
+                  "interestCents": 129,
+                  "remainingCents": 0
+                }
+              ]
+            }
+          },
+          "comparison": {
+            "lowerInterestStrategy": "avalanche",
+            "interestDifferenceCents": 440,
+            "fewerMonthsStrategy": "tie",
+            "monthsDifference": 0
+          }
+        }
+      },
+      "expected": {
+        "afterNewerResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "MONEY_FORMAT",
+            "field": "balance",
+            "row": 1
+          }
+        },
+        "afterOlderLateResult": {
+          "state": "error",
+          "reportAvailable": false,
+          "error": {
+            "code": "MONEY_FORMAT",
+            "field": "balance",
+            "row": 1
+          }
+        }
+      }
+    }
+  ]
+}
