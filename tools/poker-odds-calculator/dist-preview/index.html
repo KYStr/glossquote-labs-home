@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>德州撲克勝率｜Gloss Tools</title>
+<meta name="description" content="輸入手牌與公共牌，算出 outs、命中率、對戰勝率與底池賠率提示。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>德州撲克勝率</h1>
+  <p class="lede">輸入手牌與公共牌，算出目前成牌、outs、下一張與兩張命中率、對上多位對手的勝率與權益，再對照底池賠率看跟注或棄牌提示。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">手牌、公共牌與對手</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-hole-cards">手牌（2 張）</label>
+          <p class="help" id="help-hole-cards">牌碼以空白或逗號分隔，例如 As Ks。點數 2–9、T、J、Q、K、A，花色 s、h、d、c。</p>
+          <input id="field-hole-cards" name="holeCards" type="text" autocomplete="off" placeholder="例如 As Ks" value="As Ks" aria-describedby="help-hole-cards">
+          <p class="field-error" id="error-hole-cards" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-board-cards">公共牌（0／3／4／5 張）</label>
+          <p class="help" id="help-board-cards">牌碼以空白或逗號分隔，例如 Qs 7s 2c。翻牌前留空。</p>
+          <input id="field-board-cards" name="boardCards" type="text" autocomplete="off" placeholder="例如 Qs 7s 2c" value="Qs 7s 2c" aria-describedby="help-board-cards">
+          <p class="field-error" id="error-board-cards" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-opponents">對手人數</label>
+          <p class="help" id="help-opponents">整數，範圍 1 至 9 人。</p>
+          <input id="field-opponents" name="opponents" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1" value="1" aria-describedby="help-opponents">
+          <p class="field-error" id="error-opponents" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-pot">底池（選填）</label>
+          <p class="help" id="help-pot">整數，範圍 0 至 1,000,000,000（籌碼單位）。留空即不計算底池賠率。</p>
+          <input id="field-pot" name="pot" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 300" value="" aria-describedby="help-pot">
+          <p class="field-error" id="error-pot" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-to-call">跟注額（選填）</label>
+          <p class="help" id="help-to-call">整數，範圍 0 至 1,000,000,000（籌碼單位）。留空即不計算底池賠率。</p>
+          <input id="field-to-call" name="toCall" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 100" value="" aria-describedby="help-to-call">
+          <p class="field-error" id="error-to-call" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入手牌與公共牌，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算勝率</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">計算結果</h2>
+      <h3 id="summary-heading">目前成牌、outs 與命中率</h3>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="equity-heading">勝率與權益</h3>
+      <dl class="summary-list" id="equity-rows"></dl>
+      <p class="monte-carlo-note" id="monte-carlo-note" hidden></p>
+      <h3 id="distribution-heading">最終成牌分布</h3>
+      <dl class="summary-list" id="distribution-rows"></dl>
+      <h3 id="pot-heading">底池賠率與提示</h3>
+      <dl class="summary-list" id="pot-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具僅供娛樂與機率教學參考，不構成任何投注建議。所有機率皆假設一副公平洗勻的 52 張牌，且對手手牌未知、均勻隨機；實際結果無法保證。</p>
+      <p class="disclaimer">This tool is for entertainment and probability education only, not betting advice. All probabilities assume a fair, randomly shuffled 52-card deck and that opponents' hole cards are unknown and uniformly random; actual outcomes are not guaranteed.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>outs 由牌面按成牌轉換規則算出，不由使用者自填：只配成一對的超牌、只使兩對變三對的公共牌配對都不計入。命中率用精確超幾何公式計算；2/4 法則只是近似值，僅供參考，絕不用於權益或提示。情境數不超過 2,000,000 時用精確枚舉，否則用 100,000 次蒙地卡羅（固定種子），95% 信賴區間半寬至多 ±0.31 個百分點。對手手牌一律假設為未見牌中的均勻隨機組合，不依對手行動推斷範圍。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對這一手牌，不做長期追蹤。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>2/4 法則準嗎？</dt>
+      <dd>只是近似值，outs 越大誤差越大，精確命中率請看超幾何公式的數字。</dd>
+      <dt>為什麼勝率假設對手是隨機手牌？</dt>
+      <dd>因為對手的手牌未知，本工具不依行動推斷手牌範圍。</dd>
+      <dt>河牌圈還能算 outs 嗎？</dt>
+      <dd>沒有牌可發了，outs 為 0，勝率只由對手兩張牌的組合決定。</dd>
+      <dt>跟注提示是保證嗎？</dt>
+      <dd>不是。提示只是把權益與底池賠率的損益平衡點比較，屬於期望值參考。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
