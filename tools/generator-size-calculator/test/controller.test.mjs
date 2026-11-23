@@ -1,0 +1,175 @@
+// Controller tests against the three fixed SPEC controller fixtures, using
+// a fake transport whose deliveries the test controls explicitly.
+
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+import { run } from "../public/js/core/core.mjs";
+import { Controller, DEFAULT_DRAFT, EXAMPLE_DRAFT } from "../public/js/core/controller.mjs";
+
+const fixtures = JSON.parse(
+  await readFile(new URL("./fixtures.json", import.meta.url), "utf8")
+);
+const byId = new Map(fixtures.cases.map((c) => [c.id, c]));
+
+function fakeTransport() {
+  return {
+    sent: [],
+    terminated: 0,
+    send(snapshot, generation) {
+      this.sent.push({ snapshot, generation });
+    },
+    terminate() {
+      this.terminated += 1;
+    },
+    // Deliver the core-computed outcome for the most recent send.
+    complete(controller) {
+      const last = this.sent[this.sent.length - 1];
+      controller.deliver(last.generation, run(last.snapshot));
+    },
+  };
+}
+
+test("fixture state-dirty-error", () => {
+  const c = byId.get("state-dirty-error");
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+
+  controller.edit(c.input.initial.appliances);
+  controller.run();
+  transport.complete(controller);
+  let snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterRun.state);
+  assert.equal(snap.reportAvailable, c.expected.afterRun.reportAvailable);
+
+  controller.edit(c.input.edit.appliances);
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterEdit.state);
+  assert.equal(snap.reportAvailable, c.expected.afterEdit.reportAvailable);
+
+  controller.run();
+  transport.complete(controller);
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterRerun.state);
+  assert.equal(snap.reportAvailable, c.expected.afterRerun.reportAvailable);
+  assert.deepEqual(snap.error, c.expected.afterRerun.error);
+});
+
+test("fixture state-cancel-late", () => {
+  const c = byId.get("state-cancel-late");
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+
+  controller.edit(c.input.draft.appliances);
+  controller.run();
+  let snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.whilePending.state);
+  assert.equal(snap.reportAvailable, c.expected.whilePending.reportAvailable);
+  const pendingGeneration = transport.sent[transport.sent.length - 1].generation;
+
+  controller.cancel();
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterCancel.state);
+  assert.equal(snap.reportAvailable, c.expected.afterCancel.reportAvailable);
+  assert.deepEqual(snap.draft, c.expected.afterCancel.draft);
+
+  // The late success from the cancelled generation must not revive.
+  controller.deliver(pendingGeneration, { ok: true, result: c.input.lateResult });
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterLateResult.state);
+  assert.equal(snap.reportAvailable, c.expected.afterLateResult.reportAvailable);
+
+  controller.reset();
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterReset.state);
+  assert.equal(snap.reportAvailable, c.expected.afterReset.reportAvailable);
+  assert.deepEqual(snap.draft, c.expected.afterReset.draft);
+});
+
+test("fixture state-replace-late", () => {
+  const c = byId.get("state-replace-late");
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+
+  controller.edit(c.input.olderDraft.appliances);
+  controller.run();
+  const olderGeneration = transport.sent[transport.sent.length - 1].generation;
+
+  controller.edit(c.input.newerDraft.appliances);
+  controller.run();
+  transport.complete(controller);
+  let snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterNewerResult.state);
+  assert.equal(snap.reportAvailable, c.expected.afterNewerResult.reportAvailable);
+  assert.deepEqual(snap.error, c.expected.afterNewerResult.error);
+
+  // The older generation's late success must not replace the current error.
+  controller.deliver(olderGeneration, { ok: true, result: c.input.olderLateResult });
+  snap = controller.snapshot();
+  assert.equal(snap.state, c.expected.afterOlderLateResult.state);
+  assert.equal(snap.reportAvailable, c.expected.afterOlderLateResult.reportAvailable);
+  assert.deepEqual(snap.error, c.expected.afterOlderLateResult.error);
+});
+
+test("edit during busy terminates work and drops the pending result", () => {
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+  controller.edit(EXAMPLE_DRAFT.appliances);
+  controller.run();
+  const gen = transport.sent[transport.sent.length - 1].generation;
+  controller.edit([
+    { name: "Refrigerator", runningWatts: "192", startingWatts: "1200" },
+    { name: "Lights", runningWatts: "101", startingWatts: "101" },
+    { name: "TV", runningWatts: "190", startingWatts: "190" },
+  ]);
+  assert.equal(controller.state, "dirty");
+  assert.ok(transport.terminated >= 1);
+  controller.deliver(gen, run({ appliances: EXAMPLE_DRAFT.appliances }));
+  assert.equal(controller.state, "dirty");
+  assert.equal(controller.reportAvailable, false);
+});
+
+test("reset restores the SPEC default draft", () => {
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+  controller.edit(EXAMPLE_DRAFT.appliances);
+  controller.run();
+  transport.complete(controller);
+  assert.equal(controller.state, "success");
+  controller.reset();
+  assert.equal(controller.state, "empty");
+  assert.deepEqual(controller.draft, JSON.parse(JSON.stringify(DEFAULT_DRAFT)));
+  assert.equal(controller.reportAvailable, false);
+});
+
+test("addRow appends an empty row up to 12 and removeRow keeps at least one", () => {
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+  controller.reset();
+  for (let i = 0; i < 10; i++) controller.addRow();
+  assert.equal(controller.draft.appliances.length, 12);
+  controller.addRow();
+  assert.equal(controller.draft.appliances.length, 12);
+  assert.deepEqual(controller.draft.appliances[11], { name: "", runningWatts: "", startingWatts: "" });
+  assert.equal(controller.state, "dirty");
+  controller.removeRow(11);
+  assert.equal(controller.draft.appliances.length, 11);
+  while (controller.draft.appliances.length > 1) controller.removeRow(0);
+  assert.equal(controller.draft.appliances.length, 1);
+  controller.removeRow(0);
+  assert.equal(controller.draft.appliances.length, 1);
+});
+
+test("loadExample fills the first fixture and marks the example loaded", () => {
+  const transport = fakeTransport();
+  const controller = new Controller(transport);
+  controller.loadExample();
+  assert.equal(controller.state, "dirty");
+  assert.equal(controller.exampleLoaded, true);
+  assert.deepEqual(controller.draft, JSON.parse(JSON.stringify(EXAMPLE_DRAFT)));
+  controller.run();
+  transport.complete(controller);
+  assert.equal(controller.state, "success");
+  assert.deepEqual(controller.result, byId.get("fridge-lights-tv").expected.result);
+});
