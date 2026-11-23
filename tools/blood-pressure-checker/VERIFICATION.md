@@ -1,7 +1,10 @@
 # Blood Pressure Checker （血壓分級）— VERIFICATION
 
-- Candidate: branch `muse/blood-pressure-checker-production-20261121`
-  (PR number and head SHA filled below after push + `gh pr view` readback).
+- Candidate: branch `muse/blood-pressure-checker-production-20261121`,
+  draft PR #409 (https://github.com/KYStr/glossquote-labs-home/pull/409),
+  base `codex/initial-publication`. PR head SHA is read back with
+  `gh pr view` after the final push and recorded in the parent report;
+  this file's commit is part of that head.
 - Spec: `spec-blood-pressure-checker-20261121`, spec PR #368, head
   `f8a034e4c1bd81c3c21cb7fb221c0bb6fec8f683`.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
