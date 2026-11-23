@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Golden Hour Calculator | Gloss Tools</title>
+<meta name="description" content="Compute sunrise, sunset, golden hour and blue hour for a date, latitude, longitude and UTC offset with the NOAA approximation, including solar noon elevation and window lengths.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="../index.html">繁體中文</a>
+    <a href="../../en/">Back to the tools home</a>
+  </span>
+</div>
+<p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+
+<header class="page-head">
+  <h1>Golden Hour Calculator</h1>
+  <p class="lede">Compute sunrise, sunset, golden hour and blue hour for a date, latitude, longitude and UTC offset with the NOAA approximation, including solar noon elevation and window lengths.</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Date and place</h2>
+      <form id="golden-form" novalidate>
+        <div class="field">
+          <label for="field-date">Date</label>
+          <p class="help" id="help-date">YYYY-MM-DD form, for example 2026-06-21; range 1900-01-01 to 2100-12-31.</p>
+          <input type="text" id="field-date" aria-describedby="help-date" autocomplete="off" spellcheck="false" inputmode="numeric" placeholder="2026-06-21">
+          <p class="field-error" id="error-date" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-preset">City preset</label>
+          <p class="help" id="help-preset">Choosing a city fills in its latitude, longitude and UTC offset; the three fields can still be edited by hand, after which the preset shows as custom.</p>
+          <select id="field-preset" aria-describedby="help-preset">
+            <option value="custom">Custom</option>
+            <option value="taipei">Taipei</option>
+            <option value="taichung">Taichung</option>
+            <option value="kaohsiung">Kaohsiung</option>
+            <option value="tokyo">Tokyo</option>
+            <option value="sydney">Sydney</option>
+            <option value="london">London</option>
+            <option value="new-york">New York</option>
+            <option value="reykjavik">Reykjavík</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="field-latitude">Latitude (degrees, north is positive)</label>
+          <p class="help" id="help-latitude">A number with at most 4 decimal places; range −89.9 to 89.9.</p>
+          <input type="text" id="field-latitude" aria-describedby="help-latitude" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-latitude" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-longitude">Longitude (degrees, east is positive)</label>
+          <p class="help" id="help-longitude">A number with at most 4 decimal places; range −180 to 180.</p>
+          <input type="text" id="field-longitude" aria-describedby="help-longitude" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-longitude" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-utcOffset">UTC offset</label>
+          <p class="help" id="help-utcOffset">±HH:MM form, minutes of 00, 15, 30 or 45 only; range −12:00 to +14:00. Adjust the offset yourself for daylight-saving time.</p>
+          <input type="text" id="field-utcOffset" aria-describedby="help-utcOffset" autocomplete="off" spellcheck="false" inputmode="text">
+          <p class="field-error" id="error-utcOffset" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">This tool uses the NOAA approximation; results may differ from observed or official times by a few minutes. There is no time-zone database and no daylight-saving handling; confirm the offset in force for your place and date. Golden and blue hours are defined by geometric solar elevation (golden −4° to +6°, blue −6° to −4°) with no extra refraction correction.</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">Calculate golden hour</button>
+          <button type="button" class="button-secondary" id="example-btn">Load example</button>
+          <button type="button" class="button-secondary" id="reset-btn">Reset</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Sunrise, solar noon, sunset, day length and the four photography windows</h2>
+      <p id="polar-note" class="polar-note" hidden></p>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>Golden hour and blue hour</h3>
+      <ul class="readings-list" id="windows-list"></ul>
+      <p class="disclaimer">This tool uses the NOAA approximation; results may differ from observed or official times by a few minutes. There is no time-zone database and no daylight-saving handling; confirm the offset in force for your place and date. Golden and blue hours are defined by geometric solar elevation (golden −4° to +6°, blue −6° to −4°) with no extra refraction correction.</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>Download report (JSON)</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>Method and rules</summary>
+    <p>Uses the NOAA fractional-year approximation: γ is evaluated at local noon (the denominator is always 365, leap years included), from which the equation of time and the declination follow; sunrise and sunset come from the hour angle at a zenith of 90.833°. Golden hour is the span while the geometric solar elevation is between −4° and +6°, blue hour between −6° and −4°, each split into a morning and an evening window. Times are rounded to whole minutes with floor(x + 0.5); a time that falls on the previous or next day is marked “(previous day)” or “(next day)”. Day length is rounded after subtracting the unrounded values; solar noon elevation is 90 − |latitude − declination|, to 1 decimal place. On a polar day the sun never sets and on a polar night it never rises, so no times are shown, but the noon elevation is still computed and returned.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <h3>Why is this a minute or two off the official time?</h3>
+    <p>This tool uses the NOAA approximation with γ evaluated at local noon and a single fixed offset; official almanacs use more precise ephemerides and local time-zone rules, so a difference of a few minutes is expected.</p>
+    <h3>Why not define golden hour as one hour after sunrise?</h3>
+    <p>Golden hour is the span while the sun is between −4° and +6° in elevation, and the sun climbs at different rates by latitude and season: about 40 minutes at the equator, about 83 minutes in London at midsummer. A fixed hour would be wrong in both places.</p>
+    <h3>Why is there no daylight-saving option?</h3>
+    <p>The offset is a fixed input; for daylight-saving time add an hour yourself, e.g. use +01:00 for London in summer and +11:00 for Sydney in summer.</p>
+    <h3>What is solar noon?</h3>
+    <p>The moment the sun crosses the local meridian; under a fixed offset it is usually not 12:00.</p>
+    <h3>Why is there no golden hour on a high-latitude summer day?</h3>
+    <p>The sun never drops below −4° overnight (about −2.4° at lowest in Reykjavík at midsummer), so the elevation window does not exist; that is not a calculation error. Likewise, when the noon elevation stays below +6° in winter there is no golden hour, though there may still be a blue hour.</p>
+  </section>
+
+  <p class="privacy-note">All calculation happens in your browser. No data leaves the page.</p>
+</main>
+</body>
+</html>
