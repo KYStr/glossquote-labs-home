@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URL Slug Generator | Gloss Tools</title>
+<meta name="description" content="Turn a title into a lowercase, hyphenated, URL-friendly slug: accent folding, transliteration and the length cap are pinned.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>URL Slug Generator</h1>
+    <p class="lede">Turn a title into a lowercase, hyphenated, URL-friendly slug: accent folding, transliteration and the length cap are pinned. Everything is computed on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-title" id="label-title">Title</label>
+          <textarea id="input-title" name="title" rows="3" autocomplete="off" spellcheck="false"></textarea>
+          <p class="field-error" id="error-title" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-maxlength" id="label-maxlength">Max length (optional, default 50)</label>
+          <input id="input-maxlength" name="maxLength" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="50">
+          <p class="field-error" id="error-maxlength" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Generate slug</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-copy" hidden>Copy slug</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter a title, or load the example.</p>
+
+    <p class="disclaimer">This tool only converts the title you type. It does not check whether the slug is already in use, and it never uploads or stores your title.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <p class="result-slug" id="result-slug"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Slug length</dt>
+          <dd id="result-length"></dd>
+        </div>
+        <div>
+          <dt>Applied max length</dt>
+          <dd id="result-maxlength"></dd>
+        </div>
+        <div>
+          <dt>Truncated</dt>
+          <dd id="result-truncated"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>Conversion rules and limits</summary>
+      <ul>
+        <li>The title is required, at most 1000 characters. Max length is optional, default 50, range 1 to 100; leaving it blank applies the default 50. Max length accepts whole numbers only — no decimals, signs or spaces.</li>
+        <li>Conversion runs in order: NFKD normalization (fullwidth letters and digits fold to ASCII, ligatures expand, accented letters split apart) → combining marks U+0300–U+036F are removed → the closed special-letter table applies (æ→ae, œ→oe, ø→o, đ→d, ð→d, þ→th, ł→l, ß→ss, in both cases) → lowercase → each run of characters outside a–z and 0–9 becomes one hyphen → leading and trailing hyphens are removed.</li>
+        <li>Chinese characters are not converted to pinyin; they are treated as separators and dropped. A title with only Chinese characters produces no slug and returns an error — it is never replaced with “untitled”.</li>
+        <li>Underscores, spaces, punctuation and emoji are all separators and become hyphens; digits are kept. When the slug is longer than the cap it is cut to the first maxLength characters and any trailing hyphen left by the cut is removed; a slug exactly at the cap is not truncated.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Are Chinese titles converted to pinyin?</h3>
+    <p>No, Chinese characters are treated as separators and dropped; a title with only Chinese characters returns an error, so add Latin letters or digits.</p>
+    <h3>Are underscores kept?</h3>
+    <p>No, underscores are separators and become hyphens.</p>
+    <h3>Can the slug exceed the length cap?</h3>
+    <p>No, it is truncated and any trailing hyphen left by truncation is removed.</p>
+    <h3>Does this check whether the slug is already in use?</h3>
+    <p>No, it only converts the text; check duplicates in your own site admin.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The URL Slug Generator runs offline on your device. No account, and your title is never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
