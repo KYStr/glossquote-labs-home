@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Debt Payoff Planner | Gloss Tools</title>
+<meta name="description" content="Compare snowball and avalanche payoff plans for multiple debts: months to debt-free and total interest for each.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Debt Payoff Planner</h1>
+  <p class="lede">Juggling several debts? Enter each balance, APR, and minimum payment, plus how much extra you can pay each month, and compare the snowball and avalanche plans: months to debt-free and total interest for each. All calculations run locally on this page; nothing connects to your bank, uploads, or stores your data.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Debts and monthly payment</h2>
+      <form id="entry-form" novalidate>
+        <table class="debt-table">
+          <caption>Each debt's name, balance, APR, and minimum payment</caption>
+          <thead>
+            <tr>
+              <th scope="col"><label for="field-debt-0-name">Name / 名稱</label></th>
+              <th scope="col"><label for="field-debt-0-balance">Balance / 餘額</label></th>
+              <th scope="col"><label for="field-debt-0-apr">APR / 年利率</label></th>
+              <th scope="col"><label for="field-debt-0-minimum">Minimum payment / 最低還款</label></th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="debt-rows"></tbody>
+        </table>
+        <div id="row-errors" aria-live="polite"></div>
+        <p class="help">Balance greater than 0 and at most 10,000,000.00; APR 0 to 99.99; minimum payment 0 to 1,000,000.00; amounts are whole numbers or up to 2 decimal places. Names must be unique; at most 12 debts, at least 1.</p>
+        <div class="actions">
+          <button type="button" id="add-debt-btn" class="button-secondary">Add a debt</button>
+        </div>
+        <div class="field">
+          <label for="field-extra">Extra monthly payment / 每月額外還款</label>
+          <p class="help" id="help-extra">0 to 1,000,000.00. Once a debt is paid off, its minimum payment joins this extra payment from the next month.</p>
+          <input id="field-extra" name="extraMonthly" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 200.00" value="" aria-describedby="help-extra">
+          <p class="field-error" id="error-extra" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing compared yet. Enter each debt's balance, APR, and minimum payment, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Compare both strategies</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Comparison results</h2>
+      <h3 id="comparison-heading">Comparison</h3>
+      <dl class="summary-list" id="comparison-rows" aria-labelledby="comparison-heading"></dl>
+
+      <section aria-labelledby="snowball-heading" id="snowball-section">
+        <h3 id="snowball-heading">Snowball</h3>
+        <dl class="summary-list">
+          <div class="summary-row"><dt>Months to debt-free</dt><dd id="snowball-months"></dd></div>
+          <div class="summary-row"><dt>Total interest</dt><dd id="snowball-interest"></dd></div>
+          <div class="summary-row"><dt>Total paid</dt><dd id="snowball-paid"></dd></div>
+        </dl>
+        <h4>Payoff order</h4>
+        <ol id="snowball-order"></ol>
+        <h4>Payoff month per debt</h4>
+        <ul id="snowball-payoff"></ul>
+        <p class="crisis-note" id="snowball-notfree" hidden></p>
+        <h4>Monthly summary</h4>
+        <table class="monthly-table">
+          <thead>
+            <tr><th scope="col">Month</th><th scope="col">Paid this month</th><th scope="col">Interest this month</th><th scope="col">Remaining total</th></tr>
+          </thead>
+          <tbody id="snowball-monthly"></tbody>
+        </table>
+        <div class="actions pagination">
+          <button type="button" id="snowball-prev" class="button-secondary">Previous page</button>
+          <span class="page-label" id="snowball-page" aria-live="polite"></span>
+          <button type="button" id="snowball-next" class="button-secondary">Next page</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="avalanche-heading" id="avalanche-section">
+        <h3 id="avalanche-heading">Avalanche</h3>
+        <dl class="summary-list">
+          <div class="summary-row"><dt>Months to debt-free</dt><dd id="avalanche-months"></dd></div>
+          <div class="summary-row"><dt>Total interest</dt><dd id="avalanche-interest"></dd></div>
+          <div class="summary-row"><dt>Total paid</dt><dd id="avalanche-paid"></dd></div>
+        </dl>
+        <h4>Payoff order</h4>
+        <ol id="avalanche-order"></ol>
+        <h4>Payoff month per debt</h4>
+        <ul id="avalanche-payoff"></ul>
+        <p class="crisis-note" id="avalanche-notfree" hidden></p>
+        <h4>Monthly summary</h4>
+        <table class="monthly-table">
+          <thead>
+            <tr><th scope="col">Month</th><th scope="col">Paid this month</th><th scope="col">Interest this month</th><th scope="col">Remaining total</th></tr>
+          </thead>
+          <tbody id="avalanche-monthly"></tbody>
+        </table>
+        <div class="actions pagination">
+          <button type="button" id="avalanche-prev" class="button-secondary">Previous page</button>
+          <span class="page-label" id="avalanche-page" aria-live="polite"></span>
+          <button type="button" id="avalanche-next" class="button-secondary">Next page</button>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具以你輸入的固定年利率與固定月還款做推算，實際利率、最低還款與費用會隨銀行規定改變，結果僅供規劃參考，不是理財建議。</p>
+      <p class="disclaimer">This tool projects from the fixed APRs and fixed monthly payments you enter. Real rates, minimum payments and fees change with each lender; results are for planning only, not financial advice.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it calculates, and the fixed rules</summary>
+    <p>Each month, interest is charged first on the opening balance (whole cents, half-up), then minimum payments are made in input order, and finally the extra monthly payment, the minimum payments freed by debts paid off from the next month on, and any unused part of this month's minimums are paid in strategy order, one debt at a time. Snowball pays the smallest balance first; avalanche pays the highest APR first; the order is fixed once at the start of the plan and never re-sorted. Total monthly outflow is fixed at all minimum payments plus the extra monthly payment, except for the final month, when the remaining balance is smaller. If a plan cannot clear everything within 600 months, the tool says so honestly and shows the remaining balance instead of inventing a payoff date.</p>
+    <p>All calculations run locally on this page; nothing is uploaded, stored, or recorded.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What is the difference between snowball and avalanche?</dt>
+      <dd>Snowball pays the smallest balance first; avalanche pays the highest APR first. Avalanche usually costs less interest; snowball usually clears one debt sooner.</dd>
+      <dt>What happens to a paid-off debt's minimum payment?</dt>
+      <dd>From the next month it joins the extra-payment pool and rolls to the next debt; the total monthly outflow stays the same.</dd>
+      <dt>What if a minimum payment is less than the interest?</dt>
+      <dd>That balance grows; if it cannot be cleared within 600 months, the tool says so and shows the remaining balance.</dd>
+      <dt>Does it connect to my bank?</dt>
+      <dd>No. All calculations run on this page and nothing is uploaded.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculations run locally on this page; nothing is uploaded, stored, or recorded.</p>
+</main>
+</body>
+</html>

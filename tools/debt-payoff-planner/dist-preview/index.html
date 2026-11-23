@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>債務清償規劃｜Gloss Tools</title>
+<meta name="description" content="同時背著多筆債務時，比較雪球法與雪崩法各自要幾個月還清、總利息差多少。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>債務清償規劃</h1>
+  <p class="lede">同時背著多筆債務時，填上每一筆的餘額、年利率與最低還款，再填每月能多還的金額，比較雪球法與雪崩法各自要幾個月還清、總利息差多少。全部計算都在這個頁面本機進行，不連接銀行、不上傳、不儲存。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">債務與每月還款</h2>
+      <form id="entry-form" novalidate>
+        <table class="debt-table">
+          <caption>每筆債務的名稱、餘額、年利率與最低還款</caption>
+          <thead>
+            <tr>
+              <th scope="col"><label for="field-debt-0-name">名稱 / Name</label></th>
+              <th scope="col"><label for="field-debt-0-balance">餘額 / Balance</label></th>
+              <th scope="col"><label for="field-debt-0-apr">年利率 APR / APR</label></th>
+              <th scope="col"><label for="field-debt-0-minimum">最低還款 / Minimum payment</label></th>
+              <th scope="col"><span class="visually-hidden">操作</span></th>
+            </tr>
+          </thead>
+          <tbody id="debt-rows"></tbody>
+        </table>
+        <div id="row-errors" aria-live="polite"></div>
+        <p class="help">餘額大於 0 且不超過 10,000,000.00；年利率 0 至 99.99；最低還款 0 至 1,000,000.00；金額為整數或小數點後 1–2 位。名稱不可重複，最多 12 筆，至少留 1 筆。</p>
+        <div class="actions">
+          <button type="button" id="add-debt-btn" class="button-secondary">新增一筆債務</button>
+        </div>
+        <div class="field">
+          <label for="field-extra">每月額外還款 / Extra monthly payment</label>
+          <p class="help" id="help-extra">0 至 1,000,000.00。還清一筆後，它的最低還款會從下個月起併入這筆額外還款。</p>
+          <input id="field-extra" name="extraMonthly" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 200.00" value="" aria-describedby="help-extra">
+          <p class="field-error" id="error-extra" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未比較。輸入每筆債務的餘額、年利率與最低還款，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">比較兩種策略</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">比較結果</h2>
+      <h3 id="comparison-heading">比較摘要</h3>
+      <dl class="summary-list" id="comparison-rows" aria-labelledby="comparison-heading"></dl>
+
+      <section aria-labelledby="snowball-heading" id="snowball-section">
+        <h3 id="snowball-heading">雪球法</h3>
+        <dl class="summary-list">
+          <div class="summary-row"><dt>還清月數</dt><dd id="snowball-months"></dd></div>
+          <div class="summary-row"><dt>總利息</dt><dd id="snowball-interest"></dd></div>
+          <div class="summary-row"><dt>總還款</dt><dd id="snowball-paid"></dd></div>
+        </dl>
+        <h4>還款順序</h4>
+        <ol id="snowball-order"></ol>
+        <h4>每筆還清月份</h4>
+        <ul id="snowball-payoff"></ul>
+        <p class="crisis-note" id="snowball-notfree" hidden></p>
+        <h4>逐月彙總</h4>
+        <table class="monthly-table">
+          <thead>
+            <tr><th scope="col">月份</th><th scope="col">當月還款</th><th scope="col">當月利息</th><th scope="col">剩餘總額</th></tr>
+          </thead>
+          <tbody id="snowball-monthly"></tbody>
+        </table>
+        <div class="actions pagination">
+          <button type="button" id="snowball-prev" class="button-secondary">上一頁</button>
+          <span class="page-label" id="snowball-page" aria-live="polite"></span>
+          <button type="button" id="snowball-next" class="button-secondary">下一頁</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="avalanche-heading" id="avalanche-section">
+        <h3 id="avalanche-heading">雪崩法</h3>
+        <dl class="summary-list">
+          <div class="summary-row"><dt>還清月數</dt><dd id="avalanche-months"></dd></div>
+          <div class="summary-row"><dt>總利息</dt><dd id="avalanche-interest"></dd></div>
+          <div class="summary-row"><dt>總還款</dt><dd id="avalanche-paid"></dd></div>
+        </dl>
+        <h4>還款順序</h4>
+        <ol id="avalanche-order"></ol>
+        <h4>每筆還清月份</h4>
+        <ul id="avalanche-payoff"></ul>
+        <p class="crisis-note" id="avalanche-notfree" hidden></p>
+        <h4>逐月彙總</h4>
+        <table class="monthly-table">
+          <thead>
+            <tr><th scope="col">月份</th><th scope="col">當月還款</th><th scope="col">當月利息</th><th scope="col">剩餘總額</th></tr>
+          </thead>
+          <tbody id="avalanche-monthly"></tbody>
+        </table>
+        <div class="actions pagination">
+          <button type="button" id="avalanche-prev" class="button-secondary">上一頁</button>
+          <span class="page-label" id="avalanche-page" aria-live="polite"></span>
+          <button type="button" id="avalanche-next" class="button-secondary">下一頁</button>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具以你輸入的固定年利率與固定月還款做推算，實際利率、最低還款與費用會隨銀行規定改變，結果僅供規劃參考，不是理財建議。</p>
+      <p class="disclaimer">This tool projects from the fixed APRs and fixed monthly payments you enter. Real rates, minimum payments and fees change with each lender; results are for planning only, not financial advice.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>每月先按期初餘額計息（整數分、半進位），再依輸入順序繳最低還款，最後把每月額外還款、已還清債務自次月起釋出的最低還款，以及本月最低還款用不完的剩餘額度，依策略順序逐筆還掉。雪球法先還餘額最小的，雪崩法先還年利率最高的；排序在計畫開始時固定一次，整個計畫不再重排。每月總流出固定為全部最低還款加每月額外還款，只有最後一個月因餘額不足而較少。600 個月內還不清時，工具會如實顯示未還清與剩餘餘額，不虛構還清日。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>雪球法和雪崩法差在哪？</dt>
+      <dd>雪球先還餘額最小的，雪崩先還利率最高的；雪崩通常利息較少，雪球通常先看到一筆還清。</dd>
+      <dt>還清一筆後，它的最低還款會怎樣？</dt>
+      <dd>從下個月起併入額外還款池，繼續滾向下一筆；每月總流出不變。</dd>
+      <dt>最低還款比利息少會怎樣？</dt>
+      <dd>該筆餘額會越滾越大；若 600 個月內還不清，工具會如實顯示未還清與剩餘餘額。</dd>
+      <dt>會連到我的銀行嗎？</dt>
+      <dd>不會。全部計算都在本頁完成，不上傳任何資料。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
