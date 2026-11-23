@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>HSR Fare Calculator | Gloss Tools</title>
+<meta name="description" content="Pick origin and destination stations, cabin and fare type to estimate per-ticket and total Taiwan High Speed Rail fares from the official fare tables.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>HSR Fare Calculator</h1>
+  <p class="lede">Pick origin and destination stations, cabin and fare type to estimate per-ticket and total Taiwan High Speed Rail fares from the official fare tables, with the other cabins' full fares on the same segment for comparison. No booking, no train or seat-availability lookup.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Stations, cabin, and fare type</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-origin">Origin station</label>
+          <p class="help" id="help-origin">Choose one of the 12 stations.</p>
+          <select id="field-origin" name="origin" aria-describedby="help-origin">
+            <option value="NAG">Nangang (NAG)</option>
+            <option value="TPE" selected>Taipei (TPE)</option>
+            <option value="BAQ">Banqiao (BAQ)</option>
+            <option value="TAY">Taoyuan (TAY)</option>
+            <option value="HSC">Hsinchu (HSC)</option>
+            <option value="MIL">Miaoli (MIL)</option>
+            <option value="TAC">Taichung (TAC)</option>
+            <option value="CHH">Changhua (CHH)</option>
+            <option value="YUL">Yunlin (YUL)</option>
+            <option value="CHY">Chiayi (CHY)</option>
+            <option value="TAN">Tainan (TAN)</option>
+            <option value="ZUY">Zuoying (ZUY)</option>
+          </select>
+          <p class="field-error" id="error-origin" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-destination">Destination station</label>
+          <p class="help" id="help-destination">Choose one of the 12 stations; it must differ from the origin.</p>
+          <select id="field-destination" name="destination" aria-describedby="help-destination">
+            <option value="NAG">Nangang (NAG)</option>
+            <option value="TPE">Taipei (TPE)</option>
+            <option value="BAQ">Banqiao (BAQ)</option>
+            <option value="TAY">Taoyuan (TAY)</option>
+            <option value="HSC">Hsinchu (HSC)</option>
+            <option value="MIL">Miaoli (MIL)</option>
+            <option value="TAC" selected>Taichung (TAC)</option>
+            <option value="CHH">Changhua (CHH)</option>
+            <option value="YUL">Yunlin (YUL)</option>
+            <option value="CHY">Chiayi (CHY)</option>
+            <option value="TAN">Tainan (TAN)</option>
+            <option value="ZUY">Zuoying (ZUY)</option>
+          </select>
+          <p class="field-error" id="error-destination" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-cabin">Cabin</label>
+          <p class="help" id="help-cabin">Standard reserved seat, business class, or non-reserved seat. Business class is not sold on the Nangang–Taipei, Nangang–Banqiao, and Taipei–Banqiao short segments.</p>
+          <select id="field-cabin" name="cabin" aria-describedby="help-cabin">
+            <option value="standard" selected>Standard reserved seat</option>
+            <option value="business">Business class</option>
+            <option value="nonreserved">Non-reserved seat</option>
+          </select>
+          <p class="field-error" id="error-cabin" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-fareKind">Fare type</label>
+          <p class="help" id="help-fareKind">Full fare, concession, Early Bird, or student discount. Early Bird and student discounts apply to standard reserved seats only.</p>
+          <select id="field-fareKind" name="fareKind" aria-describedby="help-fareKind">
+            <option value="full" selected>Full fare</option>
+            <option value="concession">Concession (senior / disability / child)</option>
+            <option value="earlyBird65">Early Bird 65% off</option>
+            <option value="earlyBird80">Early Bird 80% off</option>
+            <option value="earlyBird90">Early Bird 90% off</option>
+            <option value="student50">Student 50% off</option>
+            <option value="student75">Student 75% off</option>
+            <option value="student88">Student 88% off</option>
+          </select>
+          <p class="field-error" id="error-fareKind" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-quantity">Quantity</label>
+          <p class="help" id="help-quantity">A whole number, from 1 to 10 tickets.</p>
+          <input id="field-quantity" name="quantity" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 1" value="1" aria-describedby="help-quantity">
+          <p class="field-error" id="error-quantity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Choose origin and destination stations, cabin and fare type, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate fare</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Fare result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="compare-heading">Full fares on the same segment, other cabins</h3>
+      <dl class="summary-list" id="compare-rows" aria-labelledby="compare-heading"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">票價以 2026-11-21 查核的台灣高鐵官方公告為準；官方調價後以新版為準，本工具不自動跟價。早鳥與大學生優惠只限指定車次且限量，買得到該折數時才適用表列價格。</p>
+      <p class="disclaimer">Fares follow the Taiwan High Speed Rail official tables as checked on 2026-11-21; later official fare changes apply instead, and this tool does not track them automatically. Early Bird and student discounts apply only to designated trains with limited quotas; the listed price applies only when that discount is available.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How fares are calculated</summary>
+    <p>HSR fares have no published per-kilometre rate: the 66 station-pair fares for the 12 stations are government-filed fixed prices, so this tool looks them up directly (three full-fare tables: standard reserved, business, and non-reserved). Distance is shown only and never affects the price. Every discount is computed from the full fare: fare per ticket = 5 × floor(full fare × rate ÷ 5), rounded down to the nearest NT$5; for example, a non-reserved full fare of NT$125 gives a concession fare of NT$60, not NT$62.5. Quantity is 1 to 10 tickets; total fare = fare per ticket × quantity.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is this a live fare lookup?</dt>
+      <dd>No. It estimates from the published official fare tables and does not check trains or seat availability.</dd>
+      <dt>Are Early Bird or student discounts always available?</dt>
+      <dd>No. They apply only to designated trains with limited quotas; the listed price applies only when that discount is available.</dd>
+      <dt>Does a child under 115 cm need a ticket?</dt>
+      <dd>No ticket is needed when no seat is used, up to 2 children per full-fare adult; a seat requires a ticket under the rules.</dd>
+      <dt>Why is there no business fare for Nangang–Taipei?</dt>
+      <dd>Business class is not sold on the Nangang–Taipei, Nangang–Banqiao and Taipei–Banqiao short segments.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

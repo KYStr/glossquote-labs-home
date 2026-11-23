@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>高鐵票價試算｜Gloss Tools</title>
+<meta name="description" content="選出發站與到達站、車廂與票種，依台灣高鐵官方公告票價表試算單張與多張總票價。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>高鐵票價試算</h1>
+  <p class="lede">選出發站與到達站、車廂與票種，依台灣高鐵官方公告票價表試算單張與多張總票價，並對照同區間其他車廂的全票。不訂位、不查班次與剩餘座位。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">出發站、到達站與票種</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-origin">出發站</label>
+          <p class="help" id="help-origin">12 個車站擇一。</p>
+          <select id="field-origin" name="origin" aria-describedby="help-origin">
+            <option value="NAG">南港 (NAG)</option>
+            <option value="TPE" selected>台北 (TPE)</option>
+            <option value="BAQ">板橋 (BAQ)</option>
+            <option value="TAY">桃園 (TAY)</option>
+            <option value="HSC">新竹 (HSC)</option>
+            <option value="MIL">苗栗 (MIL)</option>
+            <option value="TAC">台中 (TAC)</option>
+            <option value="CHH">彰化 (CHH)</option>
+            <option value="YUL">雲林 (YUL)</option>
+            <option value="CHY">嘉義 (CHY)</option>
+            <option value="TAN">台南 (TAN)</option>
+            <option value="ZUY">左營 (ZUY)</option>
+          </select>
+          <p class="field-error" id="error-origin" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-destination">到達站</label>
+          <p class="help" id="help-destination">12 個車站擇一，不可與出發站相同。</p>
+          <select id="field-destination" name="destination" aria-describedby="help-destination">
+            <option value="NAG">南港 (NAG)</option>
+            <option value="TPE">台北 (TPE)</option>
+            <option value="BAQ">板橋 (BAQ)</option>
+            <option value="TAY">桃園 (TAY)</option>
+            <option value="HSC">新竹 (HSC)</option>
+            <option value="MIL">苗栗 (MIL)</option>
+            <option value="TAC" selected>台中 (TAC)</option>
+            <option value="CHH">彰化 (CHH)</option>
+            <option value="YUL">雲林 (YUL)</option>
+            <option value="CHY">嘉義 (CHY)</option>
+            <option value="TAN">台南 (TAN)</option>
+            <option value="ZUY">左營 (ZUY)</option>
+          </select>
+          <p class="field-error" id="error-destination" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-cabin">車廂</label>
+          <p class="help" id="help-cabin">標準車廂對號座、商務車廂或自由座。南港─台北、南港─板橋、台北─板橋三組短區間不發售商務車廂車票。</p>
+          <select id="field-cabin" name="cabin" aria-describedby="help-cabin">
+            <option value="standard" selected>標準車廂對號座</option>
+            <option value="business">商務車廂</option>
+            <option value="nonreserved">自由座</option>
+          </select>
+          <p class="field-error" id="error-cabin" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-fareKind">票種</label>
+          <p class="help" id="help-fareKind">全票、優待票、早鳥或大學生優惠。早鳥與大學生優惠僅限標準車廂對號座。</p>
+          <select id="field-fareKind" name="fareKind" aria-describedby="help-fareKind">
+            <option value="full" selected>全票</option>
+            <option value="concession">優待票（敬老／愛心／兒童）</option>
+            <option value="earlyBird65">早鳥 65 折</option>
+            <option value="earlyBird80">早鳥 8 折</option>
+            <option value="earlyBird90">早鳥 9 折</option>
+            <option value="student50">大學生 5 折</option>
+            <option value="student75">大學生 75 折</option>
+            <option value="student88">大學生 88 折</option>
+          </select>
+          <p class="field-error" id="error-fareKind" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-quantity">張數</label>
+          <p class="help" id="help-quantity">整數，1 至 10 張。</p>
+          <input id="field-quantity" name="quantity" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1" value="1" aria-describedby="help-quantity">
+          <p class="field-error" id="error-quantity" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未查詢。選擇出發站與到達站、車廂與票種，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算票價</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">票價結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="compare-heading">同區間其他車廂全票</h3>
+      <dl class="summary-list" id="compare-rows" aria-labelledby="compare-heading"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">票價以 2026-11-21 查核的台灣高鐵官方公告為準；官方調價後以新版為準，本工具不自動跟價。早鳥與大學生優惠只限指定車次且限量，買得到該折數時才適用表列價格。</p>
+      <p class="disclaimer">Fares follow the Taiwan High Speed Rail official tables as checked on 2026-11-21; later official fare changes apply instead, and this tool does not track them automatically. Early Bird and student discounts apply only to designated trains with limited quotas; the listed price applies only when that discount is available.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>票價怎麼算</summary>
+    <p>高鐵票價沒有公開的每公里費率公式：12 個車站兩兩配對的 66 組區間票價是政府備查的定價，本工具直接查表（標準車廂對號座、商務車廂、自由座三張全票表）。里程只作顯示，不參與計價。所有折扣都由全票算出：單張票價 = 5 ×（全票 × 折率 ÷ 5，向下取整），即無條件捨去到 5 元；例如自由座全票 125 元的優待票為 60 元，不是 62.5 元。張數 1 至 10 張，總價 = 單張票價 × 張數。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>票價是即時查詢嗎？</dt>
+      <dd>不是，本工具依官方公告票價表靜態試算，不查班次與剩餘座位。</dd>
+      <dt>早鳥或大學生優惠一定買得到嗎？</dt>
+      <dd>不一定，只限指定車次且限量，買得到該折數時才適用表列價格。</dd>
+      <dt>身高未滿 115 公分的兒童要買票嗎？</dt>
+      <dd>不需佔位時得免票，每位全票或成年旅客最多帶 2 名；需要座位時應依規定購票。</dd>
+      <dt>為什麼南港─台北沒有商務車廂票價？</dt>
+      <dd>南港─台北、南港─板橋、台北─板橋三組短區間不發售商務車廂車票。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
