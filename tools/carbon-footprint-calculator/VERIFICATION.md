@@ -5,6 +5,12 @@
   `codex/initial-publication`). Registry rev 1857 (per parent task).
 - Production branch: `muse/carbon-footprint-calculator-production-20261121`,
   base `codex/initial-publication` commit `8c265267`.
+- Draft production PR: #442
+  (https://github.com/KYStr/glossquote-labs-home/pull/442), head
+  `e9654148ac5b8e0d0371e411e90315548e59dedb` at creation (read back
+  via `gh pr view 442 --json headRefOid`); the follow-up commit below
+  recording the PR number moves the head — see the final head in the
+  handoff report.
 - Environment: Node v24.22.1, `node --test`, no dependencies installed
   (zero runtime dependencies). All commands run in
   `tools/carbon-footprint-calculator/` of the branch checkout, 2026-11-23.
