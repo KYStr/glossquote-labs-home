@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Blood Pressure Checker | Gloss Tools</title>
+<meta name="description" content="Enter systolic and diastolic pressure to see the AHA/ACC 2017 category for a single reading. For reference only, not medical advice.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Blood Pressure Checker</h1>
+  <p class="lede">Enter systolic and diastolic pressure to see the AHA/ACC 2017 category for a single reading, with the matching general reminder. Single-reading classification only — no diagnosis, nothing stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Systolic and diastolic</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-systolic">Systolic (mmHg)</label>
+          <p class="help" id="help-systolic">Whole number, from 40 to 300 mmHg.</p>
+          <input id="field-systolic" name="systolic" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 118" value="" aria-describedby="help-systolic">
+          <p class="field-error" id="error-systolic" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-diastolic">Diastolic (mmHg)</label>
+          <p class="help" id="help-diastolic">Whole number, from 20 to 200 mmHg, and no higher than systolic pressure.</p>
+          <input id="field-diastolic" name="diastolic" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 76" value="" aria-describedby="help-diastolic">
+          <p class="field-error" id="error-diastolic" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing checked yet. Enter systolic and diastolic pressure, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Check category</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Category result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="advice-rows"></dl>
+      <p class="crisis-note" id="crisis-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具僅供參考，不能取代專業醫療建議、診斷或治療。如有疑慮，請諮詢醫師或醫療專業人員。</p>
+      <p class="disclaimer">This tool is for reference only and is not a substitute for professional medical advice, diagnosis, or treatment. If you have concerns, consult a physician or healthcare professional.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How categories are decided</summary>
+    <p>The table follows AHA/ACC 2017: Normal is systolic &lt; 120 and diastolic &lt; 80; Elevated is systolic 120–129 and diastolic &lt; 80; Stage 1 Hypertension is systolic 130–139 or diastolic 80–89; Stage 2 Hypertension is systolic ≥ 140 or diastolic ≥ 90; Hypertensive Crisis is systolic &gt; 180 and/or diastolic &gt; 120 (strictly greater — 180/120 itself is Stage 2). When systolic and diastolic fall in different categories, the higher category applies; the check order (crisis → Stage 2 → Stage 1 → Elevated → Normal, first match wins) implements that rule.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged. The result covers this single reading only; there is no long-term tracking.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Can one reading diagnose hypertension?</dt>
+      <dd>No; this classifies a single reading. Diagnosis needs repeated measurements and a physician's evaluation.</dd>
+      <dt>If systolic and diastolic fall in different categories, which one applies?</dt>
+      <dd>The higher category.</dd>
+      <dt>Is 180/120 a hypertensive crisis?</dt>
+      <dd>No; a crisis is systolic above 180 or diastolic above 120 (strictly greater), so 180/120 itself is Stage 2.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
