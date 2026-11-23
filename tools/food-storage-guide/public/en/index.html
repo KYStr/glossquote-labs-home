@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Storage Guide | Gloss Tools</title>
+<meta name="description" content="Look up how long a food keeps in the pantry, fridge or freezer: USDA FoodKeeper storage times, a safe-until date and days remaining.">
+<!--META-->
+<link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home-link" href="../../en/index.html">Gloss Tools home</a>
+  <span class="lang-switch">
+    <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching languages or leaving the page loses the current draft.</span>
+  </span>
+</header>
+<main class="layout">
+  <h1>Food Storage Guide</h1>
+  <p class="lede">Look up how long a food keeps in the pantry, fridge or freezer. Using USDA FoodKeeper storage times, the start date gives a safe-until date (the conservative lower end), a quality limit, and days remaining. Data stays on this page; nothing is sent or stored.</p>
+
+  <form id="food-form" novalidate>
+    <fieldset>
+      <legend>Food and storage</legend>
+      <div class="field">
+        <label for="item">Food item</label>
+        <select id="item" name="item" aria-describedby="error-item" aria-errormessage="error-item">
+          <optgroup label="Dairy &amp; eggs">
+            <option value="milk">Milk</option>
+            <option value="butter">Butter</option>
+            <option value="hard-cheese">Hard cheese</option>
+            <option value="soft-cheese">Soft cheese</option>
+            <option value="yogurt">Yogurt</option>
+            <option value="eggs-in-shell" selected>Eggs in shell</option>
+            <option value="hard-boiled-eggs">Hard-boiled eggs</option>
+          </optgroup>
+          <optgroup label="Meat &amp; poultry">
+            <option value="beef-steaks">Beef steaks</option>
+            <option value="ground-beef">Ground beef</option>
+            <option value="pork-chops">Pork chops</option>
+            <option value="whole-chicken">Whole chicken</option>
+            <option value="chicken-breast">Chicken breast</option>
+            <option value="bacon">Bacon</option>
+            <option value="hot-dogs">Hot dogs</option>
+            <option value="rotisserie-chicken">Rotisserie chicken</option>
+          </optgroup>
+          <optgroup label="Seafood">
+            <option value="lean-fish">Lean fish</option>
+            <option value="fatty-fish">Fatty fish</option>
+            <option value="shrimp">Shrimp</option>
+          </optgroup>
+          <optgroup label="Fruit">
+            <option value="apples">Apples</option>
+            <option value="bananas">Bananas</option>
+            <option value="blueberries">Blueberries</option>
+          </optgroup>
+          <optgroup label="Vegetables">
+            <option value="broccoli">Broccoli</option>
+            <option value="carrots">Carrots</option>
+            <option value="onions">Onions</option>
+            <option value="potatoes">Potatoes</option>
+          </optgroup>
+          <optgroup label="Bread / pantry / condiments / canned / leftovers">
+            <option value="bread">Bread</option>
+            <option value="white-rice">White rice</option>
+            <option value="canned-soup">Canned soup</option>
+            <option value="leftovers-with-meat">Leftovers with meat</option>
+            <option value="ketchup">Ketchup</option>
+          </optgroup>
+        </select>
+        <p class="field-error" id="error-item" hidden></p>
+      </div>
+      <div class="field">
+        <span class="field-label" id="location-label">Storage location</span>
+        <div class="choice-row" role="radiogroup" aria-labelledby="location-label">
+          <label class="choice"><input type="radio" name="location" id="location-pantry" value="pantry"> Pantry</label>
+          <label class="choice"><input type="radio" name="location" id="location-fridge" value="fridge" checked> Fridge</label>
+          <label class="choice"><input type="radio" name="location" id="location-freezer" value="freezer"> Freezer</label>
+        </div>
+        <p class="field-error" id="error-location" hidden></p>
+      </div>
+      <div class="field">
+        <label class="choice"><input type="checkbox" id="opened"> Opened</label>
+        <p class="field-help">This only changes the result when FoodKeeper has separate opened values for this food and location; otherwise it is ignored.</p>
+        <p class="field-error" id="error-opened" hidden></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Dates</legend>
+      <div class="field">
+        <label for="startDate">Start date</label>
+        <input id="startDate" name="startDate" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-startDate error-startDate" aria-errormessage="error-startDate">
+        <p class="field-help" id="help-startDate">Purchase date (unopened), opening date (opened), or cooking date (cooked food / leftovers). Format YYYY-MM-DD, for example 2026-11-20.</p>
+        <p class="field-error" id="error-startDate" hidden></p>
+      </div>
+      <div class="field">
+        <label for="todayDate">Today</label>
+        <input id="todayDate" name="todayDate" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-todayDate error-todayDate" aria-errormessage="error-todayDate">
+        <p class="field-help" id="help-todayDate">Defaults to the device’s current date; change it if needed. Leave it blank to use the device’s current date. Format YYYY-MM-DD.</p>
+        <p class="field-error" id="error-todayDate" hidden></p>
+      </div>
+      <div class="field" id="package-field" hidden>
+        <label for="packageDate">Package use-by date</label>
+        <input id="packageDate" name="packageDate" type="text" inputmode="numeric" autocomplete="off" aria-describedby="help-packageDate error-packageDate" aria-errormessage="error-packageDate">
+        <p class="field-help" id="help-packageDate">This food in this location follows the use-by date on the package. Enter the date printed on the package. Format YYYY-MM-DD.</p>
+        <p class="field-error" id="error-packageDate" hidden></p>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary">Check storage life</button>
+      <button type="button" id="example-button">Load example</button>
+      <button type="button" id="reset-button">Reset</button>
+      <button type="button" id="cancel-button" hidden>Cancel</button>
+    </div>
+    <p class="example-note" id="example-note" hidden>Example data loaded (ground beef in the fridge, start date 2026-11-20). It has not been run yet.</p>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <section id="result" class="result" hidden aria-labelledby="result-heading">
+    <h2 id="result-heading">Safe-until date and days remaining</h2>
+    <dl class="summary">
+      <div><dt>Status</dt><dd id="sum-status">—</dd></div>
+      <div><dt>Days remaining</dt><dd id="sum-remaining">—</dd></div>
+      <div><dt>Safe until</dt><dd id="sum-safe-until">—</dd></div>
+    </dl>
+    <table class="steps">
+      <caption>Full result</caption>
+      <tbody>
+        <tr><th scope="row">Food item</th><td id="detail-item">—</td></tr>
+        <tr><th scope="row">Storage location</th><td id="detail-location">—</td></tr>
+        <tr><th scope="row">Opened</th><td id="detail-opened">—</td></tr>
+        <tr><th scope="row">Start date</th><td id="detail-start">—</td></tr>
+        <tr><th scope="row">Safe until (conservative lower end)</th><td id="detail-safe">—</td></tr>
+        <tr><th scope="row">Quality limit</th><td id="detail-best">—</td></tr>
+        <tr><th scope="row">Storage range</th><td id="detail-range">—</td></tr>
+        <tr><th scope="row">Note</th><td id="detail-note">—</td></tr>
+      </tbody>
+    </table>
+    <p class="safety-note">Keep the fridge at or below 4°C (40°F) and the freezer at or below −18°C (0°F). Refrigerate cooked and perishable food within 2 hours. When in doubt, throw it out — do not judge by look or smell.</p>
+    <div class="actions" id="download-row" hidden>
+      <button type="button" id="download-button">Download report</button>
+    </div>
+  </section>
+
+  <details class="reference">
+    <summary>Data source, limits and FAQ</summary>
+    <p>Storage times are the literal values of the USDA Food Safety and Inspection Service FoodKeeper, checked item by item against FoodKeeper item numbers for all 30 foods; weeks, months and years convert to 7, 30 and 365 days. Fridge times for meat, eggs and leftovers were cross-checked against the FoodSafety.gov Cold Food Storage Chart. Table checked 2026-11-21. Freezer time is a quality limit: food kept at or below −18°C the whole time stays safe past its freezer time, but flavour and texture decline; past a fridge time, throw it out.</p>
+    <p class="disclaimer">This tool only derives a storage limit from dates. It does not judge whether food is actually spoiled and is not medical or nutrition advice. When in doubt, throw it out — do not judge by look or smell.</p>
+    <h2>FAQ</h2>
+    <h3>How is the safe-until date calculated?</h3>
+    <p>The start date plus the lower end of the storage-time range for that food and location; the upper end is the quality limit.</p>
+    <h3>Is food safe after its freezer time?</h3>
+    <p>If kept at or below −18°C the whole time it stays safe past the freezer time, but quality drops; past a fridge time, throw it out.</p>
+    <h3>Why does milk have no fridge days?</h3>
+    <p>FoodKeeper defers to the use-by date on the package for refrigerated milk; enter that date.</p>
+  </details>
+</main>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
