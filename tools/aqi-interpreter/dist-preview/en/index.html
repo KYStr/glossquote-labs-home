@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AQI Interpreter | Gloss Tools</title>
+<meta name="description" content="Enter an AQI value or pollutant concentrations and read the air-quality level, colour and health activity guidance under the Taiwan or US EPA scales.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>AQI Interpreter</h1>
+  <p class="lede">Enter an AQI value or pollutant concentrations and read the air-quality level, colour and health activity guidance under the Taiwan or US EPA scales. It only interprets the numbers you enter; it does not forecast or fetch live monitoring values, and it keeps no record.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Enter an AQI value or pollutant concentrations</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="radio-group">
+          <legend>Input mode</legend>
+          <label><input type="radio" name="mode" id="mode-aqi" value="aqi" checked> Enter AQI directly</label>
+          <label><input type="radio" name="mode" id="mode-concentration" value="concentration"> Enter pollutant concentrations</label>
+        </fieldset>
+        <fieldset class="radio-group">
+          <legend>Rating system</legend>
+          <label><input type="radio" name="system" id="system-tw" value="TW" checked> Taiwan (MOENV)</label>
+          <label><input type="radio" name="system" id="system-us" value="US"> US EPA</label>
+        </fieldset>
+        <div class="field" id="aqi-field">
+          <label for="field-aqi">AQI value</label>
+          <p class="help" id="help-aqi">Whole number, from 0 to 500.</p>
+          <input id="field-aqi" name="aqi" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 35" value="" aria-describedby="help-aqi">
+          <p class="field-error" id="error-aqi" role="alert"></p>
+        </div>
+        <div class="field" id="rows-field" hidden>
+          <p class="help" id="help-rows">1 to 7 rows, one pollutant per row; the same pollutant cannot be selected twice.</p>
+          <div id="rows-list"></div>
+          <p class="field-error" id="error-rows" role="alert"></p>
+          <div class="actions">
+            <button type="button" id="add-row-btn" class="button-secondary">Add pollutant</button>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing interpreted yet. Enter an AQI value or pollutant concentrations, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Interpret air quality</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Interpretation result</h2>
+      <div class="level-hero">
+        <p class="level-swatch level-good" id="level-swatch"></p>
+        <h3 class="level-name" id="level-name"></h3>
+      </div>
+      <p class="result-aqi" id="result-aqi"></p>
+      <dl class="summary-list">
+        <div class="summary-row"><dt>Health impact</dt><dd id="health-impact"></dd></div>
+        <div class="summary-row"><dt>Advice for the general public</dt><dd id="advice-general"></dd></div>
+        <div class="summary-row"><dt>Advice for sensitive groups</dt><dd id="advice-sensitive"></dd></div>
+        <div class="summary-row"><dt>Dominant pollutant</dt><dd id="dominant-value"></dd></div>
+      </dl>
+      <div id="subindices-wrap" hidden>
+        <h3>Sub-indices by pollutant</h3>
+        <table class="subindices-table">
+          <thead>
+            <tr><th scope="col">Pollutant</th><th scope="col">Concentration</th><th scope="col">Sub-index</th><th scope="col">Level</th></tr>
+          </thead>
+          <tbody id="subindices-body"></tbody>
+        </table>
+      </div>
+      <div id="notices-wrap" hidden>
+        <h3>Notices</h3>
+        <ul class="notices-list" id="notices-list"></ul>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具僅提供空氣品質資訊解讀與一般性活動建議，不構成醫療建議；如有呼吸道或心血管症狀，請諮詢醫師。</p>
+      <p class="disclaimer">This tool provides air-quality information and general activity guidance only. It is not medical advice; consult a physician if you have respiratory or cardiovascular symptoms.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How levels are assigned and the fixed rules</summary>
+    <p>Six levels (shared by both systems): 0–50 Good (green #00E400), 51–100 Moderate (yellow #FFFF00), 101–150 Unhealthy for Sensitive Groups (orange #FF7E00), 151–200 Unhealthy (red #FF0000), 201–300 Very Unhealthy (purple #99004C), 301–500 Hazardous (maroon #7E0023). Concentrations are converted by piecewise linear interpolation, sub-indices are rounded half-up to integers, and the largest sub-index is the AQI; ties are broken by the fixed pollutant order PM2.5, PM10, O3 8-hour, O3 1-hour, CO, SO2, NO2.</p>
+    <p>Taiwan and US EPA share the levels; the concentration breakpoints differ. For example, the Good limit for PM2.5 is 12.4 µg/m³ in Taiwan and 9.0 µg/m³ in the US; for PM10 it is 30 µg/m³ in Taiwan and 54 µg/m³ in the US; the 1-hour O3 sensitive band is 0.101–0.134 ppm in Taiwan and 0.125–0.164 ppm in the US. Rounding also differs: Taiwan rounds half-up, the US truncates.</p>
+    <p>When 8-hour O3 exceeds 0.200 ppm, the official rule computes AQI values above 300 from 1-hour O3 instead, so enter the 1-hour O3 concentration. When 1-hour SO2 exceeds 304 ppb, the official rule uses the 24-hour SO2 value for AQI values above 200; this tool only accepts the 1-hour value, so that row is undefined. Other pollutants above the table top are capped at a sub-index of 500.</p>
+    <p>PM2.5/PM10 breakpoints are defined on 24-hour averages, O3/CO on 8-hour or 1-hour averages, and SO2/NO2 on 1-hour averages; enter concentrations on the stated averaging basis, as this tool does not compute moving averages. All computation happens locally on this page; nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why does the same concentration give a different AQI in Taiwan vs the US?</dt>
+      <dd>Because the breakpoint tables differ (for example, the Good limit for PM2.5 is 12.4 µg/m³ in Taiwan and 9.0 µg/m³ in the US); see the comparison table in SPEC §5.</dd>
+      <dt>Does this tool forecast tomorrow's air quality?</dt>
+      <dd>No. It only interprets the numbers you enter; it does not forecast or fetch live monitoring values.</dd>
+      <dt>Can I enter a real-time reading as a 24-hour average?</dt>
+      <dd>No. PM2.5/PM10 breakpoints are defined on 24-hour averages and O3/CO on 8-hour or 1-hour averages; a real-time reading is indicative only, and this tool does not compute moving averages.</dd>
+      <dt>Why is there no result when 8-hour O3 exceeds 0.200 ppm?</dt>
+      <dd>By the official rule, AQI values above 300 are computed from 1-hour O3; enter the 1-hour O3 concentration instead.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally on this page; nothing is uploaded, stored, or logged. Sensitive groups are people with heart, respiratory or cardiovascular disease, children and older adults; people with asthma should take extra care.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>空氣品質解讀｜Gloss Tools</title>
+<meta name="description" content="輸入 AQI 或污染物濃度，對照台灣與美國 EPA 分級表，解讀空氣品質等級、顏色與健康活動建議。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>空氣品質解讀</h1>
+  <p class="lede">輸入 AQI 或污染物濃度，對照台灣與美國 EPA 分級表，解讀空氣品質等級、顏色與健康活動建議。只解讀你輸入的數字，不做預報、不查即時監測值、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">輸入 AQI 或污染物濃度</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="radio-group">
+          <legend>輸入方式</legend>
+          <label><input type="radio" name="mode" id="mode-aqi" value="aqi" checked> 直接輸入 AQI</label>
+          <label><input type="radio" name="mode" id="mode-concentration" value="concentration"> 輸入污染物濃度</label>
+        </fieldset>
+        <fieldset class="radio-group">
+          <legend>分級制度</legend>
+          <label><input type="radio" name="system" id="system-tw" value="TW" checked> 台灣（環境部）</label>
+          <label><input type="radio" name="system" id="system-us" value="US"> 美國 EPA</label>
+        </fieldset>
+        <div class="field" id="aqi-field">
+          <label for="field-aqi">AQI 數值</label>
+          <p class="help" id="help-aqi">整數，範圍 0 至 500。</p>
+          <input id="field-aqi" name="aqi" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 35" value="" aria-describedby="help-aqi">
+          <p class="field-error" id="error-aqi" role="alert"></p>
+        </div>
+        <div class="field" id="rows-field" hidden>
+          <p class="help" id="help-rows">1 至 7 列，每列一種污染物；同一污染物不可重複選取。</p>
+          <div id="rows-list"></div>
+          <p class="field-error" id="error-rows" role="alert"></p>
+          <div class="actions">
+            <button type="button" id="add-row-btn" class="button-secondary">新增污染物</button>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未解讀。輸入 AQI 或污染物濃度，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">解讀空氣品質</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">解讀結果</h2>
+      <div class="level-hero">
+        <p class="level-swatch level-good" id="level-swatch"></p>
+        <h3 class="level-name" id="level-name"></h3>
+      </div>
+      <p class="result-aqi" id="result-aqi"></p>
+      <dl class="summary-list">
+        <div class="summary-row"><dt>健康影響</dt><dd id="health-impact"></dd></div>
+        <div class="summary-row"><dt>一般民眾活動建議</dt><dd id="advice-general"></dd></div>
+        <div class="summary-row"><dt>敏感族群活動建議</dt><dd id="advice-sensitive"></dd></div>
+        <div class="summary-row"><dt>指標污染物</dt><dd id="dominant-value"></dd></div>
+      </dl>
+      <div id="subindices-wrap" hidden>
+        <h3>各污染物副指標</h3>
+        <table class="subindices-table">
+          <thead>
+            <tr><th scope="col">污染物</th><th scope="col">濃度</th><th scope="col">副指標</th><th scope="col">等級</th></tr>
+          </thead>
+          <tbody id="subindices-body"></tbody>
+        </table>
+      </div>
+      <div id="notices-wrap" hidden>
+        <h3>通知</h3>
+        <ul class="notices-list" id="notices-list"></ul>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具僅提供空氣品質資訊解讀與一般性活動建議，不構成醫療建議；如有呼吸道或心血管症狀，請諮詢醫師。</p>
+      <p class="disclaimer">This tool provides air-quality information and general activity guidance only. It is not medical advice; consult a physician if you have respiratory or cardiovascular symptoms.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>分級方式與固定規則</summary>
+    <p>六個等級（兩制共用）：0–50 良好（綠 #00E400）、51–100 普通（黃 #FFFF00）、101–150 對敏感族群不健康（橘 #FF7E00）、151–200 對所有族群不健康（紅 #FF0000）、201–300 非常不健康（紫 #99004C）、301–500 危害（褐紅 #7E0023）。濃度換算採分段線性插值，副指標四捨五入取整數，取最大副指標為 AQI；同分時按 PM2.5、PM10、O3 8 小時、O3 1 小時、CO、SO2、NO2 的固定順序取先者為指標污染物。</p>
+    <p>台灣與美國 EPA 的等級相同，差異在濃度斷點：例如 PM2.5 良好上限台灣為 12.4 µg/m³、美國為 9.0 µg/m³；PM10 良好上限台灣為 30 µg/m³、美國為 54 µg/m³；O3 1 小時敏感族群帶台灣為 0.101–0.134 ppm、美國為 0.125–0.164 ppm。濃度修約也不同：台灣制四捨五入、美國制截斷。</p>
+    <p>O3 8 小時濃度超過 0.200 ppm 時，依官方規定 AQI 301 以上改以 O3 1 小時值計算，請改輸入 O3 1 小時濃度。SO2 1 小時濃度超過 304 ppb 時，依官方規定 AQI 200 以上改以 SO2 24 小時值計算，本工具只接受 1 小時值，故該列無定義。其他污染物超過對照表上限時，副指標以 500 計。</p>
+    <p>PM2.5／PM10 的斷點以 24 小時平均定義，O3／CO 以 8 小時或 1 小時平均定義，SO2／NO2 以 1 小時平均定義；請輸入表定統計基礎的濃度，本工具不計算移動平均。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>同一個濃度在台灣和美國算出來的 AQI 為什麼不同？</dt>
+      <dd>因為兩制的濃度斷點不同（例如 PM2.5 良好上限台灣為 12.4 µg/m³、美國為 9.0 µg/m³），詳見規格 §5 對照表。</dd>
+      <dt>這個工具會預報明天的空氣嗎？</dt>
+      <dd>不會。它只解讀你輸入的數字，不做預報、不查即時監測值。</dd>
+      <dt>可以直接把即時濃度當成 24 小時平均輸入嗎？</dt>
+      <dd>不行。PM2.5／PM10 的斷點以 24 小時平均定義，O3／CO 以 8 小時或 1 小時平均定義；即時讀數只能作為指示性參考，本工具不計算移動平均。</dd>
+      <dt>為什麼 O3 8 小時濃度超過 0.200 ppm 沒有結果？</dt>
+      <dd>依官方規定，AQI 301 以上改以 O3 1 小時值計算，請改輸入 O3 1 小時濃度。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。敏感族群指有心臟、呼吸道及心血管疾病患者、孩童及老年人；氣喘患者請特別留意。</p>
+</main>
+</body>
+</html>
