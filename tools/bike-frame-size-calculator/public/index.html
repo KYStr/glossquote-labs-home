@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>單車車架尺寸計算｜Gloss Tools</title>
+<meta name="description" content="輸入身高與跨高，算出公路車、登山車、混合車的建議車架尺寸範圍（公分與英吋對照），再對品牌尺寸表與實車試騎確認。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>單車車架尺寸計算</h1>
+    <p class="lede">輸入身高與跨高，選擇車型，算出建議車架尺寸範圍（公分與英吋換算對照）、對應尺碼字母與起始座墊高度，拿去對品牌尺寸表與實車試騎確認。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-height" id="label-height">身高（公分）</label>
+          <input id="input-height" name="heightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="175">
+          <p class="field-error" id="error-height" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-inseam" id="label-inseam">跨高（書本法，公分）</label>
+          <input id="input-inseam" name="inseamCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="80">
+          <p class="field-error" id="error-inseam" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>車型</legend>
+        <div class="segmented">
+          <label class="segment"><input type="radio" id="input-type-road" name="bikeType" value="road" checked> 公路車</label>
+          <label class="segment"><input type="radio" id="input-type-mountain" name="bikeType" value="mountain"> 登山車</label>
+          <label class="segment"><input type="radio" id="input-type-hybrid" name="bikeType" value="hybrid"> 混合車</label>
+        </div>
+        <p class="field-error" id="error-type" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算建議尺寸</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入身高與跨高，選擇車型，或載入範例。</p>
+
+    <p class="disclaimer">這是建議起點；品牌幾何不同，最終以品牌尺寸表與實車試騎為準。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">計算結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>建議車架尺寸（中心值）</dt>
+          <dd id="result-centre"></dd>
+        </div>
+        <div>
+          <dt>建議範圍（公分）</dt>
+          <dd id="result-range-cm"></dd>
+        </div>
+        <div>
+          <dt>建議範圍（英吋）</dt>
+          <dd id="result-range-in"></dd>
+        </div>
+        <div>
+          <dt>尺碼字母</dt>
+          <dd id="result-letter"></dd>
+        </div>
+        <div>
+          <dt>起始座墊高度</dt>
+          <dd id="result-saddle"></dd>
+        </div>
+      </dl>
+      <p class="result-warning" id="result-warning" hidden></p>
+      <p class="disclaimer">這是建議起點；品牌幾何不同，最終以品牌尺寸表與實車試騎為準。</p>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>身高 120 至 220 公分，跨高 50 至 110 公分，跨高不可大於身高；數字格式為十進位小數，最多 1 位小數，不接受千分位逗號、指數、符號或空白；每欄最多 6 個字元。</li>
+        <li>公式：公路車車架＝跨高 × 0.67（Guimard，1980 年代）；混合車＝跨高 × 0.64（城市／旅行幾何）；登山車＝公路車架 − 11 公分；起始座墊高度＝跨高 × 0.883（LeMond 法，由五通中心沿座管量至座墊頂）。1 英吋＝2.54 公分（精確值）。</li>
+        <li>輸出永遠是範圍，不是單一數字：建議範圍為中心值 ±1.0 公分；英吋欄是公分值的算術換算對照，不是店家英吋標示。</li>
+        <li>尺碼字母由身高對照（左閉右開）：未滿 150 公分 XXS、150–160 XS、160–168 S、168–178 M、178–185 L、185–193 XL、193 或以上 XXL。字母是身高的對照，不是車架公分的對照。</li>
+        <li>跨高佔身高比例在 40% 至 50%（含端點）內無提醒；超出僅提醒重新量測，不阻擋結果。數值以半入（0.5 向上）取 1 位小數，比例取 3 位小數，只在輸出時捨入。</li>
+        <li>量測說明（書本法）：赤腳、背貼牆、雙腳相距約 15–20 公分，將硬皮書書脊朝上、用座墊般的力道上推至胯下，量地面至書脊頂的距離，量兩次取平均。褲子內長比騎乘跨高短約 1–2 英吋，不可直接代入。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>這個尺寸可以直接下單嗎？</h3>
+    <p>不行，這是建議起點；品牌幾何不同，最終以品牌尺寸表與實車試騎為準。</p>
+    <h3>英吋欄是店家標示的尺寸嗎？</h3>
+    <p>不是，它是公分中心值的算術換算對照；公路車與混合車在店家本來就不用英吋標示。</p>
+    <h3>褲子內長可以直接填嗎？</h3>
+    <p>不行，褲子內長比騎乘跨高短約 1–2 英吋；請用書本法重新量測。</p>
+    <h3>跨高要怎麼量？</h3>
+    <p>赤腳、背貼牆、雙腳相距約 15–20 公分，將硬皮書書脊朝上、用座墊般的力道上推至胯下，量地面至書脊頂的距離，量兩次取平均。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 單車車架尺寸計算在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
