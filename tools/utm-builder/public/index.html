@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UTM 連結產生器｜Gloss Tools</title>
+<meta name="description" content="輸入目標網址與 UTM 參數，產生可直接貼用的追蹤連結：編碼與既有查詢合併方式皆已釘版。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>UTM 連結產生器</h1>
+    <p class="lede">輸入目標網址與 UTM 參數，產生可直接貼用的追蹤連結：編碼與既有查詢合併方式皆已釘版。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field field-wide">
+          <label for="input-baseurl" id="label-baseurl">目標網址 / Target URL</label>
+          <input id="input-baseurl" name="baseUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://example.com/page">
+          <p class="field-error" id="error-baseurl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-source" id="label-source">來源 utm_source / Source</label>
+          <input id="input-source" name="source" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-source" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-medium" id="label-medium">媒介 utm_medium / Medium</label>
+          <input id="input-medium" name="medium" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-medium" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-campaign" id="label-campaign">活動 utm_campaign / Campaign</label>
+          <input id="input-campaign" name="campaign" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-campaign" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-term" id="label-term">關鍵字 utm_term / Term（選填）</label>
+          <input id="input-term" name="term" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-term" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-content" id="label-content">內容 utm_content / Content（選填）</label>
+          <input id="input-content" name="content" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-content" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="preset-group">
+        <legend>常用範本 / Presets</legend>
+        <div class="actions">
+          <button type="button" id="btn-preset-social">社群 / Social</button>
+          <button type="button" id="btn-preset-newsletter">電子報 / Newsletter</button>
+          <button type="button" id="btn-preset-ads">廣告 / Ads</button>
+        </div>
+        <p class="preset-note">範本只填來源與媒介、清空關鍵字與內容，活動名稱保持原值不動；填入後須手動執行才產生連結。</p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">建立連結</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-copy" hidden>複製連結</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入目標網址與 UTM 參數，或載入範例。</p>
+
+    <p class="disclaimer">本工具只在你的網址後面加上追蹤參數，不檢查目標網址是否存在，也不會上傳或儲存你的網址與參數。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">產生結果</h2>
+      <p class="result-url" id="result-url"></p>
+      <table class="params-table">
+        <caption>參數明細（未編碼的原始值）</caption>
+        <thead>
+          <tr><th scope="col">參數</th><th scope="col">值</th></tr>
+        </thead>
+        <tbody>
+          <tr id="param-row-source"><th scope="row">utm_source</th><td id="param-value-source"></td></tr>
+          <tr id="param-row-medium"><th scope="row">utm_medium</th><td id="param-value-medium"></td></tr>
+          <tr id="param-row-campaign"><th scope="row">utm_campaign</th><td id="param-value-campaign"></td></tr>
+          <tr id="param-row-term"><th scope="row">utm_term</th><td id="param-value-term"></td></tr>
+          <tr id="param-row-content"><th scope="row">utm_content</th><td id="param-value-content"></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>編碼與合併規則、限制</summary>
+      <ul>
+        <li>目標網址必填，最多 2048 個字元；每個 UTM 值最多 200 個字元，去空白後最多 100 個字元。長度一律以 UTF-16 code units 計。</li>
+        <li>來源、媒介、活動必填；關鍵字、內容選填，去空白後為空時不輸出該參數。值不轉小寫、不做 slug 化，大小寫原樣保留再編碼。</li>
+        <li>每個值以 encodeURIComponent 編碼：空格一律編為 %20，絕不用 +；不編碼的字元僅限 A–Z a–z 0–9 - _ . ! ~ * ' ( )；其餘一律百分比編碼，包括 / → %2F、? → %3F、&amp; → %26、= → %3D、# → %23、+ → %2B；非 ASCII 字元先轉 UTF-8 再編碼，十六進位用大寫；值內的 % 不先解碼，直接編為 %25。</li>
+        <li>既有查詢字串原樣保留在前，UTM 參數以 &amp; 接在其後，固定順序為 source、medium、campaign、term、content；既有查詢為空時不留空段。既有 fragment 原樣保留在 UTM 參數之後。輸出不補斜線、不做大小寫正規化。</li>
+        <li>目標網址已含任何 utm_* 參數時直接拒絕，不覆寫。網址須為 http 或 https、有主機、不得含帳號或密碼；本工具不造訪或驗證目標網址。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>空格會編成 + 嗎？</h3>
+    <p>不會，空格一律編為 %20。</p>
+    <h3>目標網址本來就有查詢參數怎麼辦？</h3>
+    <p>原樣保留在前，UTM 接在後面；若已含 utm_* 參數會直接拒絕，不覆寫。</p>
+    <h3>這會縮短網址或追蹤成效嗎？</h3>
+    <p>不會，只產生連結；不發送請求、不縮短、不記錄。</p>
+    <h3>範本會改掉我填的活動名稱嗎？</h3>
+    <p>不會，範本只填 source 與 medium、清空 term 與 content，campaign 保持原值。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · UTM 連結產生器在本機離線計算，沒有帳號，也不會傳送你的網址或參數。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

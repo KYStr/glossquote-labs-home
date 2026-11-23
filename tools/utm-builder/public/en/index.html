@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UTM Builder | Gloss Tools</title>
+<meta name="description" content="Build a share-ready UTM-tagged link from a target URL: encoding and existing-query merging are pinned.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>UTM Builder</h1>
+    <p class="lede">Build a share-ready UTM-tagged link from a target URL: encoding and existing-query merging are pinned. Everything is computed on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field field-wide">
+          <label for="input-baseurl" id="label-baseurl">Target URL</label>
+          <input id="input-baseurl" name="baseUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://example.com/page">
+          <p class="field-error" id="error-baseurl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-source" id="label-source">Source utm_source</label>
+          <input id="input-source" name="source" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-source" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-medium" id="label-medium">Medium utm_medium</label>
+          <input id="input-medium" name="medium" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-medium" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-campaign" id="label-campaign">Campaign utm_campaign</label>
+          <input id="input-campaign" name="campaign" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-campaign" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-term" id="label-term">Term utm_term (optional)</label>
+          <input id="input-term" name="term" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-term" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-content" id="label-content">Content utm_content (optional)</label>
+          <input id="input-content" name="content" type="text" autocomplete="off" spellcheck="false">
+          <p class="field-error" id="error-content" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="preset-group">
+        <legend>Presets</legend>
+        <div class="actions">
+          <button type="button" id="btn-preset-social">Social</button>
+          <button type="button" id="btn-preset-newsletter">Newsletter</button>
+          <button type="button" id="btn-preset-ads">Ads</button>
+        </div>
+        <p class="preset-note">A preset only fills source and medium and clears term and content; the campaign is left untouched. Run the build yourself after applying a preset.</p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Build tagged URL</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-copy" hidden>Copy link</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter a target URL and UTM parameters, or load the example.</p>
+
+    <p class="disclaimer">This tool only appends tracking parameters to your URL. It does not check whether the target URL exists, and it never uploads or stores your URL or parameters.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-url" id="result-url"></p>
+      <table class="params-table">
+        <caption>Parameter details (raw, unencoded values)</caption>
+        <thead>
+          <tr><th scope="col">Parameter</th><th scope="col">Value</th></tr>
+        </thead>
+        <tbody>
+          <tr id="param-row-source"><th scope="row">utm_source</th><td id="param-value-source"></td></tr>
+          <tr id="param-row-medium"><th scope="row">utm_medium</th><td id="param-value-medium"></td></tr>
+          <tr id="param-row-campaign"><th scope="row">utm_campaign</th><td id="param-value-campaign"></td></tr>
+          <tr id="param-row-term"><th scope="row">utm_term</th><td id="param-value-term"></td></tr>
+          <tr id="param-row-content"><th scope="row">utm_content</th><td id="param-value-content"></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>Encoding and merging rules and limits</summary>
+      <ul>
+        <li>The target URL is required, at most 2048 characters; each UTM value is at most 200 characters raw and at most 100 characters after trimming. Lengths are counted in UTF-16 code units.</li>
+        <li>Source, medium and campaign are required; term and content are optional and are omitted when blank after trimming. Values are not lowercased or slugified; case is kept as typed, then encoded.</li>
+        <li>Each value is encoded with encodeURIComponent semantics: a space is always %20, never +; the only unencoded characters are A–Z a–z 0–9 - _ . ! ~ * ' ( ); everything else is percent-encoded, including / → %2F, ? → %3F, &amp; → %26, = → %3D, # → %23, + → %2B; non-ASCII characters are UTF-8 encoded first, with uppercase hex digits; a % in a value is encoded as %25 without pre-decoding.</li>
+        <li>An existing query string is kept verbatim first, with UTM parameters appended after &amp; in the fixed order source, medium, campaign, term, content; an empty existing query leaves no empty segment. An existing fragment is kept verbatim after the UTM parameters. No slash is added and no case normalization is applied.</li>
+        <li>A target URL that already contains any utm_* parameter is rejected, never overwritten. The URL must be http or https, have a host, and carry no username or password; this tool does not visit or verify the target URL.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Are spaces encoded as +?</h3>
+    <p>No, spaces are always encoded as %20.</p>
+    <h3>What if the target URL already has query parameters?</h3>
+    <p>They are kept verbatim first, with UTM parameters appended; if it already contains a utm_* parameter the build is rejected instead of overwriting it.</p>
+    <h3>Does this shorten the URL or track performance?</h3>
+    <p>No, it only builds the link; it sends no request, shortens nothing and records nothing.</p>
+    <h3>Does a preset overwrite my campaign name?</h3>
+    <p>No, a preset only fills source and medium and clears term and content; campaign is left untouched.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The UTM Builder runs offline on your device. No account, and your URL or parameters are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
