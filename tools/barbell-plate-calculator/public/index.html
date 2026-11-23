@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>槓鈴配重｜Gloss Tools</title>
+<meta name="description" content="輸入目標總重、槓鈴重與手邊槓片，算出每邊要掛哪幾片；掛不出來時告訴你差多少、最近能掛到幾公斤。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>槓鈴配重</h1>
+  <p class="lede">輸入目標總重、槓鈴重與手邊各面額槓片的對數，算出每邊要掛哪幾片；掛不出來時告訴你差多少、實際能掛到幾公斤，以及下一個較重建議。只算配重，不估算最大重量、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">目標總重、槓鈴重與槓片</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-targetKg">目標總重（公斤）</label>
+          <p class="help" id="help-targetKg">0 至 500 公斤，須為 0.25 公斤的倍數，最多兩位小數。</p>
+          <input id="field-targetKg" name="targetKg" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 100" value="" aria-describedby="help-targetKg">
+          <p class="field-error" id="error-targetKg" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-barKg">槓鈴重量（公斤）</label>
+          <p class="help" id="help-barKg">0 至 50 公斤，須為 0.25 公斤的倍數，最多兩位小數。</p>
+          <input id="field-barKg" name="barKg" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 20" value="" aria-describedby="help-barKg">
+          <p class="field-error" id="error-barKg" role="alert"></p>
+          <div class="bar-presets" aria-label="常用槓鈴重量">
+            <button type="button" id="bar-preset-20" class="button-secondary button-small" data-bar-kg="20">男槓 20 公斤</button>
+            <button type="button" id="bar-preset-15" class="button-secondary button-small" data-bar-kg="15">女槓 15 公斤</button>
+            <button type="button" id="bar-preset-10" class="button-secondary button-small" data-bar-kg="10">10 公斤</button>
+          </div>
+        </div>
+        <fieldset class="pairs-fieldset">
+          <legend>每種槓片有幾對</legend>
+          <p class="help">每欄為該面額可用的對數（即每邊最多可掛的片數），0 至 10 對。槓片組為 IWF 標準面額：25、20、15、10、5、2.5、1.25 公斤。</p>
+          <div class="pairs-grid">
+            <div class="field">
+              <label for="field-pairs25">25 公斤（對）</label>
+              <input id="field-pairs25" name="pairs25" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs25">
+              <p class="field-error" id="error-pairs25" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs20">20 公斤（對）</label>
+              <input id="field-pairs20" name="pairs20" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs20">
+              <p class="field-error" id="error-pairs20" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs15">15 公斤（對）</label>
+              <input id="field-pairs15" name="pairs15" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs15">
+              <p class="field-error" id="error-pairs15" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs10">10 公斤（對）</label>
+              <input id="field-pairs10" name="pairs10" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs10">
+              <p class="field-error" id="error-pairs10" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs5">5 公斤（對）</label>
+              <input id="field-pairs5" name="pairs5" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs5">
+              <p class="field-error" id="error-pairs5" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs2_5">2.5 公斤（對）</label>
+              <input id="field-pairs2_5" name="pairs2_5" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs2_5">
+              <p class="field-error" id="error-pairs2_5" role="alert"></p>
+            </div>
+            <div class="field">
+              <label for="field-pairs1_25">1.25 公斤（對）</label>
+              <input id="field-pairs1_25" name="pairs1_25" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="" aria-describedby="help-pairs1_25">
+              <p class="field-error" id="error-pairs1_25" role="alert"></p>
+            </div>
+          </div>
+          <p class="help" id="help-pairs25">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs20">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs15">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs10">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs5">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs2_5">對數為整數，0 至 10。</p>
+          <p class="help" id="help-pairs1_25">對數為整數，0 至 10。</p>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入目標總重、槓鈴重與槓片對數，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算每邊配重</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每邊槓片與可達重量</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="plates-rows"></dl>
+      <p class="remainder-note" id="remainder-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具只依目標總重選槓片，不估算任何人的最大重量，也不把結果當訓練處方或安全保證。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+      <p class="disclaimer">This tool only picks plates for a target total. It never estimates anyone's maximum lift, and its result is not a training prescription or a safety guarantee. All calculation happens locally on this page; nothing is uploaded, stored, or logged.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>配重方式與固定規則</summary>
+    <p>每邊重量為（目標總重 − 槓鈴重）÷ 2。槓片由大到小貪心掛上：25、20、15、10、5、2.5、1.25 公斤，每種最多掛手邊有的對數。全部重量以 0.125 公斤為整數單位計算，不用浮點。槓鈴夾重量以 0 公斤計；微型槓片（0.5 公斤及以下）不在本組內。</p>
+    <p>掛不出來時，每邊餘數大於 0，頁面會顯示實際可達總重與下一個較重建議；下一個建議是「再多掛一片最小剩餘槓片」，不是已證明的全域最小可達上限。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>掛不出來是什麼意思？</dt>
+      <dd>每邊餘數大於 0，表示手邊槓片湊不出目標；頁面會顯示實際可達總重與下一個較重建議。</dd>
+      <dt>這會估算我的最大重量（1RM）嗎？</dt>
+      <dd>不會。這只依目標總重選槓片，不估算任何人的最大重量。</dd>
+      <dt>槓鈴夾的重量算進去了嗎？</dt>
+      <dd>沒有。槓鈴夾以 0 公斤計；若你的夾子有重量，請把它加進槓鈴重量欄。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
