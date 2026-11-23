@@ -1,9 +1,10 @@
 # Deal Comparator （優惠比價）— VERIFICATION
 
 - Candidate: branch `muse/deal-comparator-production-20261121`,
-  draft PR TBD (base `codex/initial-publication`). PR head SHA is
-  read back with `gh pr view` after the final push and recorded in
-  the parent report; this file's commit is part of that head.
+  draft PR #416 (https://github.com/KYStr/glossquote-labs-home/pull/416),
+  base `codex/initial-publication`. PR head SHA is read back with
+  `gh pr view` after the final push and recorded in the parent report;
+  this file's commit is part of that head.
 - Spec: `spec-deal-comparator-20261121`, spec PR #375, head
   `d96c5920128637f2b942b52c0fd11f771e7d25dc`.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
