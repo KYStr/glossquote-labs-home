@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generator Size Calculator | Gloss Tools</title>
+<meta name="description" content="Before buying a generator for backup, camping or a job site, check the size you need from your appliances' running and starting watts.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">中文</a>
+      <span class="draft-note">Switching languages leaves this page; an unsaved draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Generator Size Calculator</h1>
+    <p class="lede">Before buying a generator for backup, camping or a job site, check the size you need: list the appliances you will run together (running watts plus starting watts), and get the total running watts, the starting surge, and a recommended generator size in kVA against a 25% safety margin and a 0.8 power factor. Everything is computed locally; nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="rows" id="rows" aria-label="Appliance list"></div>
+      <div class="actions">
+        <button type="button" id="btn-add-row">Add a row</button>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate generator size</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter your appliance list, or load the example.</p>
+
+    <p class="disclaimer">This tool is a sizing estimate, not a professional electrical design. The result is for purchase reference only; confirm wiring, start order and capacity against the appliance and generator nameplates and a professional.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Total running watts</dt>
+          <dd id="result-total"></dd>
+        </div>
+        <div>
+          <dt>Largest starting jump</dt>
+          <dd id="result-max-surge"></dd>
+        </div>
+        <div>
+          <dt>Largest jump from</dt>
+          <dd id="result-surge-row"></dd>
+        </div>
+        <div>
+          <dt>Starting surge</dt>
+          <dd id="result-peak"></dd>
+        </div>
+        <div>
+          <dt>Running watts with margin</dt>
+          <dd id="result-required"></dd>
+        </div>
+        <div>
+          <dt>Required kVA</dt>
+          <dd id="result-required-kva"></dd>
+        </div>
+        <div>
+          <dt>Surge kVA</dt>
+          <dd id="result-peak-kva"></dd>
+        </div>
+        <div>
+          <dt>Recommended kVA</dt>
+          <dd id="result-recommended"></dd>
+        </div>
+        <div>
+          <dt>Recommended retail size</dt>
+          <dd id="result-size"></dd>
+        </div>
+      </dl>
+      <p class="oversize-note" id="result-oversize" hidden></p>
+      <table class="result-rows">
+        <caption>Row-by-row detail</caption>
+        <thead>
+          <tr>
+            <th scope="col">Appliance</th>
+            <th scope="col">Running watts (W)</th>
+            <th scope="col">Starting watts (W)</th>
+            <th scope="col">Starting jump (W)</th>
+          </tr>
+        </thead>
+        <tbody id="result-rows-body"></tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>Calculation rules and limits</summary>
+      <ul>
+        <li>Appliance list of 1 to 12 rows; each name 1 to 40 characters, watts are whole numbers, running watts 1 to 20000 W, starting watts 1 to 30000 W, and starting watts must not be below running watts. Watts accept no decimals, symbols, spaces or leading zeros (007 is invalid).</li>
+        <li>Total running watts is the sum of running watts; the starting surge adds only the largest single starting jump (starting minus running watts) — motors start one at a time, never together.</li>
+        <li>Running watts with margin is total running watts × 1.25, rounded up to whole watts; kVA is watts ÷ 0.8 ÷ 1000, rounded up to 0.1 kVA; recommended kVA is the larger of required kVA and surge kVA. Surge kVA carries no extra 25% margin.</li>
+        <li>The retail size table is 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0 kVA; the smallest size at or above the recommended kVA is used. Above 20.0 kVA the size is rounded up to the nearest 0.5 kVA and flagged as oversize.</li>
+        <li>The preset watts table comes from the Honda official wattage estimation guide, Home Applications table, with ranges taken at their upper bound. These are approximate values, not nameplate values; your appliances' nameplate values always win.</li>
+        <li>Data stays only in this page's draft; leaving the page or switching languages discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Why add only the largest starting watts?</h3>
+    <p>When motors start one at a time, only one is starting at any moment; starting several motors at once is out of scope — stagger the starts.</p>
+    <h3>What are the 25% safety margin and 0.8 power factor?</h3>
+    <p>The margin keeps continuous load at or below 80% of the rated capacity; 0.8 is the standard nameplate power factor for generators, kVA = kW ÷ 0.8. Both are fixed values pinned by this tool.</p>
+    <h3>Does this replace a professional electrical assessment?</h3>
+    <p>No, it is a sizing estimate from nameplate approximations; confirm wiring, start order and capacity against the appliance and generator nameplates and a professional.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · Generator Size Calculator computes locally and offline. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>

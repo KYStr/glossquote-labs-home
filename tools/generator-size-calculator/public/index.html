@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>發電機容量試算｜Gloss Tools</title>
+<meta name="description" content="停電備援或露營用電前，先確認要買多大的發電機：列出家電的運轉與啟動瓦數，算出總運轉瓦數、啟動突波與建議 kVA。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>發電機容量試算</h1>
+    <p class="lede">停電備援、露營或工地用電前，先確認要買多大的發電機：列出同時要用的家電（運轉瓦數＋啟動瓦數），算出總運轉瓦數與啟動突波，對照 25% 安全裕度與功率因數 0.8，建議發電機 kVA 與最接近的市售規格。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="rows" id="rows" aria-label="家電清單"></div>
+      <div class="actions">
+        <button type="button" id="btn-add-row">新增一列</button>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算發電機容量</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入家電清單，或載入範例。</p>
+
+    <p class="disclaimer">本工具是選型估算，不是專業電氣設計；結果僅供購買參考，實際接線、啟動順序與容量請依家電與發電機銘牌及專業人員確認。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">計算結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>總運轉瓦數</dt>
+          <dd id="result-total"></dd>
+        </div>
+        <div>
+          <dt>最大啟動增量</dt>
+          <dd id="result-max-surge"></dd>
+        </div>
+        <div>
+          <dt>最大啟動增量來源</dt>
+          <dd id="result-surge-row"></dd>
+        </div>
+        <div>
+          <dt>啟動突波</dt>
+          <dd id="result-peak"></dd>
+        </div>
+        <div>
+          <dt>含裕度運轉瓦數</dt>
+          <dd id="result-required"></dd>
+        </div>
+        <div>
+          <dt>所需 kVA</dt>
+          <dd id="result-required-kva"></dd>
+        </div>
+        <div>
+          <dt>突波 kVA</dt>
+          <dd id="result-peak-kva"></dd>
+        </div>
+        <div>
+          <dt>建議 kVA</dt>
+          <dd id="result-recommended"></dd>
+        </div>
+        <div>
+          <dt>建議市售規格</dt>
+          <dd id="result-size"></dd>
+        </div>
+      </dl>
+      <p class="oversize-note" id="result-oversize" hidden></p>
+      <table class="result-rows">
+        <caption>逐列明細</caption>
+        <thead>
+          <tr>
+            <th scope="col">家電</th>
+            <th scope="col">運轉瓦數（W）</th>
+            <th scope="col">啟動瓦數（W）</th>
+            <th scope="col">啟動增量（W）</th>
+          </tr>
+        </thead>
+        <tbody id="result-rows-body"></tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>家電清單 1 至 12 列；每列名稱 1 至 40 字元，瓦數為整數，運轉瓦數 1 至 20000 W，啟動瓦數 1 至 30000 W，且啟動瓦數不可小於運轉瓦數。瓦數不接受小數、符號、空白或前導零（007 不可）。</li>
+        <li>總運轉瓦數為各列運轉瓦數之和；啟動突波只加最大一台的啟動增量（啟動瓦數減運轉瓦數），馬達依序啟動，不同時啟動。</li>
+        <li>含裕度運轉瓦數為總運轉瓦數 × 1.25，無條件進位到整數瓦；kVA 為瓦數 ÷ 0.8 ÷ 1000，無條件進位到 0.1 kVA；建議 kVA 取所需 kVA 與突波 kVA 的較大者。突波 kVA 不再疊加 25% 裕度。</li>
+        <li>市售規格表為 1.0、1.5、2.0、2.5、3.0、3.5、4.0、5.0、6.0、7.5、10.0、12.5、15.0、20.0 kVA，取最小且不小於建議 kVA 者；建議 kVA 超過 20.0 時以 0.5 kVA 進位報值並標示超規。</li>
+        <li>預設瓦數表取自 Honda 官方瓦數估算指南 Home Applications 表，區間取上界，為近似經驗值而非銘牌值；使用者家電的銘牌值永遠優先。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>為什麼只加最大一台的啟動瓦數？</h3>
+    <p>馬達依序啟動時，同一時間只有一台在啟動；同時啟動多台馬達不在本工具範圍內，請分開順序啟動。</p>
+    <h3>25% 安全裕度與功率因數 0.8 是什麼？</h3>
+    <p>裕度讓連續負載不超過額定容量的 80%；功率因數 0.8 是發電機銘牌 kVA 的標準換算值，kVA = kW ÷ 0.8。兩者皆為本工具釘版的固定值。</p>
+    <h3>這能取代專業電氣評估嗎？</h3>
+    <p>不能，這是依銘牌近似值的選型估算；實際接線、啟動順序與容量請依家電與發電機銘牌及專業人員確認。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 發電機容量試算在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
