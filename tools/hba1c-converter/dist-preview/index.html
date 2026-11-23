@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; worker-src 'blob:'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="description" content="輸入 HbA1c 或平均血糖的一個數值，一次對照 %、mmol/mol、mg/dL、mmol/L 四種表示法與 ADA 分級帶。">
+<title>糖化血色素換算｜Gloss Tools</title>
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">Gloss Tools</span>
+  <nav>
+    <a href="../../">回首頁</a>
+    <a href="en/index.html" hreflang="en">English</a>
+  </nav>
+  <p class="draft-note">切換語言或離開頁面將失去目前草稿。</p>
+</header>
+<main>
+  <h1>糖化血色素換算</h1>
+  <p class="lede">輸入 HbA1c 或平均血糖的一個數值，一次對照 %、mmol/mol、mg/dL、mmol/L 四種表示法與 ADA 分級帶。</p>
+
+  <div class="layout">
+    <form class="panel" id="converter-form" novalidate>
+      <div class="field">
+        <label for="value-input">數值</label>
+        <input type="text" id="value-input" value="7" inputmode="decimal" autocomplete="off" aria-describedby="value-help">
+        <p class="help" id="value-help">HbA1c 百分比，3.0–20.0%，最多兩位小數。</p>
+      </div>
+      <div class="field">
+        <label for="unit-select">輸入單位</label>
+        <select id="unit-select">
+          <option value="a1c-percent" selected>HbA1c %</option>
+          <option value="ifcc">HbA1c mmol/mol（IFCC）</option>
+          <option value="eag-mgdl">eAG mg/dL</option>
+          <option value="eag-mmoll">eAG mmol/L</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button type="button" class="primary" id="run-button">換算</button>
+        <button type="button" id="example-button">載入範例</button>
+        <button type="button" id="reset-button">重設</button>
+        <button type="button" id="cancel-button" hidden>取消</button>
+        <button type="button" id="download-button" hidden>下載報告</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite" aria-busy="false">
+        <span id="status-text">輸入一個數值並選擇單位，再按「換算」。</span>
+      </div>
+      <div class="error-box" id="error-box" role="alert" hidden>
+        <span id="error-text"></span>
+      </div>
+      <p class="example-note" id="example-note" hidden></p>
+    </form>
+
+    <div>
+      <section class="panel" id="result-section" hidden>
+        <h2>換算結果</h2>
+        <p class="result-summary" id="result-summary"></p>
+        <dl class="result-list">
+          <dt>HbA1c</dt><dd id="res-a1c"></dd>
+          <dt>HbA1c（IFCC）</dt><dd id="res-ifcc"></dd>
+          <dt>eAG</dt><dd id="res-eag-mgdl"></dd>
+          <dt>eAG</dt><dd id="res-eag-mmoll"></dd>
+          <dt>分級帶</dt><dd id="res-category"></dd>
+        </dl>
+        <p class="disclaimer" id="disclaimer">本工具僅提供估算與單位換算，不構成醫療建議或診斷。請與醫師討論你的檢查結果。 / This tool provides estimates and unit conversions only. It is not medical advice or a diagnosis. Discuss your results with your clinician.</p>
+      </section>
+
+      <section class="panel">
+        <h2>ADA 分級帶</h2>
+        <table class="chart" id="category-table">
+          <thead>
+            <tr><th scope="col">HbA1c</th><th scope="col">分級</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 5.7%</td><td>正常</td></tr>
+            <tr><td>5.7–6.4%</td><td>糖尿病前期</td></tr>
+            <tr><td>≥ 6.5%</td><td>糖尿病範圍</td></tr>
+          </tbody>
+        </table>
+        <p class="note">分級帶標示僅供參考，不是診斷。</p>
+      </section>
+
+      <section class="panel">
+        <h2>常見問題</h2>
+        <details>
+          <summary>eAG 是實測平均血糖嗎？</summary>
+          <p>不是，eAG 是由 A1c 迴歸估算的過去約 2–3 個月平均血糖，不是實測值。</p>
+        </details>
+        <details>
+          <summary>為什麼 mmol/L 有時和 ADA 表格差 0.1？</summary>
+          <p>本工具以 ADAG 論文的 mmol/L 迴歸式（1.5944 × A1c − 2.594）計算；ADA 對照表在 A1c 8.0% 與 8.5% 兩列無法由任一已發表的公式在小數 1 位重現（本工具為 10.2／11.0，對照表為 10.1／10.9），其餘 7 列一致。</p>
+        </details>
+        <details>
+          <summary>目標 A1c 是多少？</summary>
+          <p>ADA 建議多數非懷孕成人以 &lt;7.0% 為一般目標，個人目標請與醫師討論。</p>
+        </details>
+        <details>
+          <summary>可以用這個結果診斷糖尿病嗎？</summary>
+          <p>不行。診斷需由醫師依實驗室檢查與重複確認。</p>
+        </details>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>
+  <p>換算在本機完成，不傳送、不儲存輸入。公式：eAG（mg/dL）= 28.7 × A1c − 46.7（ADAG／Nathan 2008）；eAG（mmol/L）= 1.5944 × A1c − 2.594；IFCC（mmol/mol）=（A1c% − 2.15）× 10.929。分級切點依 ADA 診斷標準。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
