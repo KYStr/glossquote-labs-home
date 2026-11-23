@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Deal Comparator | Gloss Tools</title>
+<meta name="description" content="Compare 2–4 offers for the same product as one common unit price and rank the best deal.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Deal Comparator</h1>
+  <p class="lede">When the same product has two to four differently worded offers, convert each one to a common unit price (per 100 g / per 100 mL / per piece) and rank them, so you can see which deal is truly cheapest and by how much. Same product only; not a price guarantee.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Product and offers</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-product-name">Product name</label>
+          <p class="help" id="help-product-name">1 to 80 characters after trimming.</p>
+          <input id="field-product-name" name="productName" type="text" autocomplete="off" placeholder="e.g. Coffee beans" value="咖啡豆" aria-describedby="help-product-name">
+          <p class="field-error" id="error-product-name" role="alert"></p>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="field-unit-basis">Unit basis</label>
+            <p class="help" id="help-unit-basis">The basis for the common unit price.</p>
+            <select id="field-unit-basis" name="unitBasis" aria-describedby="help-unit-basis">
+              <option value="g" selected>Grams (g, per 100 g)</option>
+              <option value="ml">Millilitres (ml, per 100 mL)</option>
+              <option value="piece">Pieces (per piece)</option>
+            </select>
+            <p class="field-error" id="error-unit-basis" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-pack-size">Pack size</label>
+            <p class="help" id="help-pack-size">Whole number; 1 to 100000 for g/ml, 1 to 1000 for pieces.</p>
+            <input id="field-pack-size" name="packSize" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 500" value="500" aria-describedby="help-pack-size">
+            <p class="field-error" id="error-pack-size" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-pack-price">Pack price (NT$)</label>
+            <p class="help" id="help-pack-price">Amount from 0.01 to 999999.99, at most two decimals.</p>
+            <input id="field-pack-price" name="packPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 150.00" value="150.00" aria-describedby="help-pack-price">
+            <p class="field-error" id="error-pack-price" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-offer-count">Number of offers</label>
+          <p class="help" id="help-offer-count">Compare 2 to 4 offers at a time.</p>
+          <select id="field-offer-count" name="offerCount" aria-describedby="help-offer-count">
+            <option value="2" selected>2 offers</option>
+            <option value="3">3 offers</option>
+            <option value="4">4 offers</option>
+          </select>
+          <p class="field-error" id="error-offer-count" role="alert"></p>
+        </div>
+
+        <fieldset class="offer" id="offer-0">
+          <legend>Offer A</legend>
+          <div class="field">
+            <label for="field-offer-0-label">Label (optional)</label>
+            <input id="field-offer-0-label" type="text" autocomplete="off" placeholder="Shows “Offer A” when empty">
+          </div>
+          <div class="field">
+            <label for="field-offer-0-type">Offer type</label>
+            <select id="field-offer-0-type">
+              <option value="buyNGetM" selected>Buy N get M free</option>
+              <option value="percentOff">Percent off</option>
+              <option value="fixedOff">Fixed amount off</option>
+              <option value="bundle">Bundle price</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-0-group-buyNGetM">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-buy-n">Buy N (packs)</label>
+                <input id="field-offer-0-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-get-m">Get M free (packs)</label>
+                <input id="field-offer-0-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity">Quantity</label>
+                <input id="field-offer-0-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-percent">Percent off</label>
+                <input id="field-offer-0-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 20 means 20% off" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity-fixed">Quantity</label>
+                <input id="field-offer-0-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-amount-off">Amount off (NT$)</label>
+                <input id="field-offer-0-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity-bundle">Quantity</label>
+                <input id="field-offer-0-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-bundle-price">Bundle price (NT$)</label>
+                <input id="field-offer-0-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-0" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-1">
+          <legend>Offer B</legend>
+          <div class="field">
+            <label for="field-offer-1-label">Label (optional)</label>
+            <input id="field-offer-1-label" type="text" autocomplete="off" placeholder="Shows “Offer B” when empty">
+          </div>
+          <div class="field">
+            <label for="field-offer-1-type">Offer type</label>
+            <select id="field-offer-1-type">
+              <option value="buyNGetM">Buy N get M free</option>
+              <option value="percentOff" selected>Percent off</option>
+              <option value="fixedOff">Fixed amount off</option>
+              <option value="bundle">Bundle price</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-1-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-buy-n">Buy N (packs)</label>
+                <input id="field-offer-1-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-get-m">Get M free (packs)</label>
+                <input id="field-offer-1-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-percentOff">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity">Quantity</label>
+                <input id="field-offer-1-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-percent">Percent off</label>
+                <input id="field-offer-1-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 20 means 20% off" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity-fixed">Quantity</label>
+                <input id="field-offer-1-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-amount-off">Amount off (NT$)</label>
+                <input id="field-offer-1-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity-bundle">Quantity</label>
+                <input id="field-offer-1-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-bundle-price">Bundle price (NT$)</label>
+                <input id="field-offer-1-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-1" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-2" hidden>
+          <legend>Offer C</legend>
+          <div class="field">
+            <label for="field-offer-2-label">Label (optional)</label>
+            <input id="field-offer-2-label" type="text" autocomplete="off" placeholder="Shows “Offer C” when empty">
+          </div>
+          <div class="field">
+            <label for="field-offer-2-type">Offer type</label>
+            <select id="field-offer-2-type">
+              <option value="buyNGetM">Buy N get M free</option>
+              <option value="percentOff">Percent off</option>
+              <option value="fixedOff" selected>Fixed amount off</option>
+              <option value="bundle">Bundle price</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-2-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-buy-n">Buy N (packs)</label>
+                <input id="field-offer-2-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-get-m">Get M free (packs)</label>
+                <input id="field-offer-2-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity">Quantity</label>
+                <input id="field-offer-2-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-percent">Percent off</label>
+                <input id="field-offer-2-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 20 means 20% off" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-fixedOff">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity-fixed">Quantity</label>
+                <input id="field-offer-2-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-amount-off">Amount off (NT$)</label>
+                <input id="field-offer-2-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 30.00" value="30.00">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity-bundle">Quantity</label>
+                <input id="field-offer-2-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-bundle-price">Bundle price (NT$)</label>
+                <input id="field-offer-2-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-2" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-3" hidden>
+          <legend>Offer D</legend>
+          <div class="field">
+            <label for="field-offer-3-label">Label (optional)</label>
+            <input id="field-offer-3-label" type="text" autocomplete="off" placeholder="Shows “Offer D” when empty">
+          </div>
+          <div class="field">
+            <label for="field-offer-3-type">Offer type</label>
+            <select id="field-offer-3-type">
+              <option value="buyNGetM">Buy N get M free</option>
+              <option value="percentOff">Percent off</option>
+              <option value="fixedOff">Fixed amount off</option>
+              <option value="bundle" selected>Bundle price</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-3-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-buy-n">Buy N (packs)</label>
+                <input id="field-offer-3-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-get-m">Get M free (packs)</label>
+                <input id="field-offer-3-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity">Quantity</label>
+                <input id="field-offer-3-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-percent">Percent off</label>
+                <input id="field-offer-3-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 20 means 20% off" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity-fixed">Quantity</label>
+                <input id="field-offer-3-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-amount-off">Amount off (NT$)</label>
+                <input id="field-offer-3-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-bundle">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity-bundle">Quantity</label>
+                <input id="field-offer-3-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="3">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-bundle-price">Bundle price (NT$)</label>
+                <input id="field-offer-3-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 360.00" value="360.00">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-3" role="alert"></p>
+        </fieldset>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing compared yet. Enter the product and 2–4 offers, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Compare deals</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Ranked results</h2>
+      <p class="best-line" id="best-line"></p>
+      <div class="table-scroll">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Offer</th>
+              <th scope="col">Type</th>
+              <th scope="col">Total paid</th>
+              <th scope="col">Total quantity</th>
+              <th scope="col">Unit price</th>
+              <th scope="col">Savings</th>
+            </tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How is the unit price calculated?</summary>
+    <p>Divide each offer's total paid by its total quantity, then scale to per 100 g / per 100 mL / per piece; free items from buy N get M count toward the total quantity. When unit prices tie, the lower total paid ranks first; if the totals are also equal, the earlier-entered offer ranks first. Ranks are consecutive, with no ties.</p>
+    <p>All calculation happens locally in this page. Nothing is uploaded, stored, or logged. Results apply to this one comparison only and are not a price guarantee.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is the unit price calculated?</dt>
+      <dd>Divide each offer's total paid by its total quantity, then scale to per 100 g / per 100 mL / per piece; free items from buy N get M count toward the total quantity.</dd>
+      <dt>Why do two offers with the same unit price rank differently?</dt>
+      <dd>The lower total paid ranks first; if the totals are also equal, the earlier-entered offer ranks first.</dd>
+      <dt>Can I compare different products?</dt>
+      <dd>No. This tool only compares offers for the same product; comparing different products is out of scope.</dd>
+      <dt>What if a bundle costs more than the list price?</dt>
+      <dd>It still compares; its savings amount and percent are negative and it ranks last.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

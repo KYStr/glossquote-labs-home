@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>優惠比價｜Gloss Tools</title>
+<meta name="description" content="同一商品 2–4 個優惠方案，換算成統一單位價再排名，找出真正最划算的買法。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>優惠比價</h1>
+  <p class="lede">同一商品有兩到四種寫法不同的優惠時，把每一種換算成統一單位價（每 100 g／每 100 mL／每件）再排名，告訴你哪一個方案真正最便宜、便宜多少。只比較同一商品，不做報價保證。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">商品與優惠方案</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-product-name">商品名稱</label>
+          <p class="help" id="help-product-name">去空白後 1 至 80 字元。</p>
+          <input id="field-product-name" name="productName" type="text" autocomplete="off" placeholder="例如 咖啡豆" value="咖啡豆" aria-describedby="help-product-name">
+          <p class="field-error" id="error-product-name" role="alert"></p>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="field-unit-basis">單位基準</label>
+            <p class="help" id="help-unit-basis">統一單位價的換算基準。</p>
+            <select id="field-unit-basis" name="unitBasis" aria-describedby="help-unit-basis">
+              <option value="g" selected>公克（g，每 100 g）</option>
+              <option value="ml">毫升（ml，每 100 mL）</option>
+              <option value="piece">件（piece，每件）</option>
+            </select>
+            <p class="field-error" id="error-unit-basis" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-pack-size">每包規格</label>
+            <p class="help" id="help-pack-size">整數；公克／毫升 1 至 100000，件 1 至 1000。</p>
+            <input id="field-pack-size" name="packSize" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 500" value="500" aria-describedby="help-pack-size">
+            <p class="field-error" id="error-pack-size" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-pack-price">每包單價（NT$）</label>
+            <p class="help" id="help-pack-price">金額，0.01 至 999999.99 元，最多兩位小數。</p>
+            <input id="field-pack-price" name="packPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 150.00" value="150.00" aria-describedby="help-pack-price">
+            <p class="field-error" id="error-pack-price" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-offer-count">方案數量</label>
+          <p class="help" id="help-offer-count">一次比較 2 至 4 個優惠方案。</p>
+          <select id="field-offer-count" name="offerCount" aria-describedby="help-offer-count">
+            <option value="2" selected>2 個方案</option>
+            <option value="3">3 個方案</option>
+            <option value="4">4 個方案</option>
+          </select>
+          <p class="field-error" id="error-offer-count" role="alert"></p>
+        </div>
+
+        <fieldset class="offer" id="offer-0">
+          <legend>方案 A</legend>
+          <div class="field">
+            <label for="field-offer-0-label">標籤（可選）</label>
+            <input id="field-offer-0-label" type="text" autocomplete="off" placeholder="未填寫時顯示「方案 A」">
+          </div>
+          <div class="field">
+            <label for="field-offer-0-type">優惠型別</label>
+            <select id="field-offer-0-type">
+              <option value="buyNGetM" selected>買 N 送 M</option>
+              <option value="percentOff">百分比折扣</option>
+              <option value="fixedOff">定額折價</option>
+              <option value="bundle">組合價</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-0-group-buyNGetM">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-buy-n">買 N（件）</label>
+                <input id="field-offer-0-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-get-m">送 M（件）</label>
+                <input id="field-offer-0-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity">件數</label>
+                <input id="field-offer-0-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-percent">折扣百分比</label>
+                <input id="field-offer-0-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 20 表示八折" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity-fixed">件數</label>
+                <input id="field-offer-0-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-amount-off">折抵金額（NT$）</label>
+                <input id="field-offer-0-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-0-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-0-quantity-bundle">件數</label>
+                <input id="field-offer-0-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-0-bundle-price">組合價（NT$）</label>
+                <input id="field-offer-0-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-0" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-1">
+          <legend>方案 B</legend>
+          <div class="field">
+            <label for="field-offer-1-label">標籤（可選）</label>
+            <input id="field-offer-1-label" type="text" autocomplete="off" placeholder="未填寫時顯示「方案 B」">
+          </div>
+          <div class="field">
+            <label for="field-offer-1-type">優惠型別</label>
+            <select id="field-offer-1-type">
+              <option value="buyNGetM">買 N 送 M</option>
+              <option value="percentOff" selected>百分比折扣</option>
+              <option value="fixedOff">定額折價</option>
+              <option value="bundle">組合價</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-1-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-buy-n">買 N（件）</label>
+                <input id="field-offer-1-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-get-m">送 M（件）</label>
+                <input id="field-offer-1-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-percentOff">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity">件數</label>
+                <input id="field-offer-1-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-percent">折扣百分比</label>
+                <input id="field-offer-1-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 20 表示八折" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity-fixed">件數</label>
+                <input id="field-offer-1-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-amount-off">折抵金額（NT$）</label>
+                <input id="field-offer-1-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-1-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-1-quantity-bundle">件數</label>
+                <input id="field-offer-1-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-1-bundle-price">組合價（NT$）</label>
+                <input id="field-offer-1-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-1" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-2" hidden>
+          <legend>方案 C</legend>
+          <div class="field">
+            <label for="field-offer-2-label">標籤（可選）</label>
+            <input id="field-offer-2-label" type="text" autocomplete="off" placeholder="未填寫時顯示「方案 C」">
+          </div>
+          <div class="field">
+            <label for="field-offer-2-type">優惠型別</label>
+            <select id="field-offer-2-type">
+              <option value="buyNGetM">買 N 送 M</option>
+              <option value="percentOff">百分比折扣</option>
+              <option value="fixedOff" selected>定額折價</option>
+              <option value="bundle">組合價</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-2-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-buy-n">買 N（件）</label>
+                <input id="field-offer-2-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-get-m">送 M（件）</label>
+                <input id="field-offer-2-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity">件數</label>
+                <input id="field-offer-2-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-percent">折扣百分比</label>
+                <input id="field-offer-2-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 20 表示八折" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-fixedOff">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity-fixed">件數</label>
+                <input id="field-offer-2-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-amount-off">折抵金額（NT$）</label>
+                <input id="field-offer-2-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 30.00" value="30.00">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-2-group-bundle" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-2-quantity-bundle">件數</label>
+                <input id="field-offer-2-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-2-bundle-price">組合價（NT$）</label>
+                <input id="field-offer-2-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 360.00" value="">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-2" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="offer" id="offer-3" hidden>
+          <legend>方案 D</legend>
+          <div class="field">
+            <label for="field-offer-3-label">標籤（可選）</label>
+            <input id="field-offer-3-label" type="text" autocomplete="off" placeholder="未填寫時顯示「方案 D」">
+          </div>
+          <div class="field">
+            <label for="field-offer-3-type">優惠型別</label>
+            <select id="field-offer-3-type">
+              <option value="buyNGetM">買 N 送 M</option>
+              <option value="percentOff">百分比折扣</option>
+              <option value="fixedOff">定額折價</option>
+              <option value="bundle" selected>組合價</option>
+            </select>
+          </div>
+          <div class="type-group" id="offer-3-group-buyNGetM" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-buy-n">買 N（件）</label>
+                <input id="field-offer-3-buy-n" type="text" inputmode="numeric" autocomplete="off" value="2">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-get-m">送 M（件）</label>
+                <input id="field-offer-3-get-m" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-percentOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity">件數</label>
+                <input id="field-offer-3-quantity" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-percent">折扣百分比</label>
+                <input id="field-offer-3-percent" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 20 表示八折" value="20">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-fixedOff" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity-fixed">件數</label>
+                <input id="field-offer-3-quantity-fixed" type="text" inputmode="numeric" autocomplete="off" value="1">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-amount-off">折抵金額（NT$）</label>
+                <input id="field-offer-3-amount-off" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 30.00" value="">
+              </div>
+            </div>
+          </div>
+          <div class="type-group" id="offer-3-group-bundle">
+            <div class="field-row">
+              <div class="field">
+                <label for="field-offer-3-quantity-bundle">件數</label>
+                <input id="field-offer-3-quantity-bundle" type="text" inputmode="numeric" autocomplete="off" value="3">
+              </div>
+              <div class="field">
+                <label for="field-offer-3-bundle-price">組合價（NT$）</label>
+                <input id="field-offer-3-bundle-price" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 360.00" value="360.00">
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="error-offer-3" role="alert"></p>
+        </fieldset>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未比較。輸入商品與 2–4 個優惠方案，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">比較優惠</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">排名結果</h2>
+      <p class="best-line" id="best-line"></p>
+      <div class="table-scroll">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th scope="col">名次</th>
+              <th scope="col">方案</th>
+              <th scope="col">型別</th>
+              <th scope="col">實付總價</th>
+              <th scope="col">總數量</th>
+              <th scope="col">統一單位價</th>
+              <th scope="col">省下</th>
+            </tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>單位價怎麼算</summary>
+    <p>把每個方案的實付金額除以總數量，再換算成每 100 g／每 100 mL／每件；買 N 送 M 的贈品數量也算進總數量。單位價相同時先比實付總價，總價低者在前；總價也相同時，輸入順序在前者在前。名次連續，不併列。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對這一次比較，不做報價保證。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>單位價怎麼算？</dt>
+      <dd>把每個方案的實付金額除以總數量，再換算成每 100 g／每 100 mL／每件；買 N 送 M 的贈品數量也算進總數量。</dd>
+      <dt>兩個方案單位價相同時為什麼排名不同？</dt>
+      <dd>先比實付總價，總價低者在前；總價也相同時，輸入順序在前者在前。</dd>
+      <dt>可以比較不同商品嗎？</dt>
+      <dd>不行。本工具只比較同一商品的優惠方案；不同商品的比較不在範圍內。</dd>
+      <dt>組合價比原價貴會怎樣？</dt>
+      <dd>仍可比較，省下金額與百分比會是負值，該方案排名最後。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
