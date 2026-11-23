@@ -1,7 +1,7 @@
 # Solar Payback Calculator （太陽能回本試算）— VERIFICATION
 
 - Candidate: branch `muse/solar-payback-calculator-production-20261121`,
-  draft PR (number recorded below after creation),
+  draft PR #447 (https://github.com/KYStr/glossquote-labs-home/pull/447),
   base `codex/initial-publication`. PR head SHA is read back with
   `gh pr view` after the final push and recorded in the parent report;
   this file's commit is part of that head.
