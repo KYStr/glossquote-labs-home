@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Depth of Field Calculator | Gloss Tools</title>
+<meta name="description" content="Enter focal length, aperture, focus distance and sensor format to find the near limit, far limit, total depth of field and hyperfocal distance.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Depth of Field Calculator</h1>
+  <p class="lede">Enter focal length, aperture, focus distance and sensor format to find the near limit, far limit, total depth of field and hyperfocal distance, and decide how far to stop down or where to focus. Pre-shot calculation only — no photos are read and nothing is stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Focal length, aperture and focus distance</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-focal-length-mm">Focal length (mm)</label>
+          <p class="help" id="help-focal-length-mm">Decimal number, from 1 to 2000 mm, at most 2 decimal places.</p>
+          <input id="field-focal-length-mm" name="focalLengthMm" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 50" value="" aria-describedby="help-focal-length-mm">
+          <p class="field-error" id="error-focal-length-mm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-aperture">Aperture (f-number)</label>
+          <p class="help" id="help-aperture">Decimal number, from 0.5 to 64, at most 2 decimal places.</p>
+          <input id="field-aperture" name="aperture" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 8" value="" aria-describedby="help-aperture">
+          <p class="field-error" id="error-aperture" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-focus-distance-m">Focus distance (m)</label>
+          <p class="help" id="help-focus-distance-m">Decimal number, from 0.05 to 10000 m, at most 3 decimal places, and greater than the focal length.</p>
+          <input id="field-focus-distance-m" name="focusDistanceM" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 3" value="" aria-describedby="help-focus-distance-m">
+          <p class="field-error" id="error-focus-distance-m" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sensor">Sensor format and circle of confusion</label>
+          <p class="help" id="help-sensor">Pick a sensor format to use its listed circle of confusion; pick “Custom” and enter a value in the next field.</p>
+          <select id="field-sensor" name="sensor" aria-describedby="help-sensor">
+            <option value="1-inch">1-inch (CoC 0.011 mm)</option>
+            <option value="four-thirds">Four Thirds (CoC 0.015 mm)</option>
+            <option value="aps-c">APS-C (CoC 0.018 mm)</option>
+            <option value="aps-c-canon">APS-C (Canon, CoC 0.018 mm)</option>
+            <option value="aps-c-nikon">APS-C (Nikon, CoC 0.019 mm)</option>
+            <option value="aps-h">APS-H (CoC 0.023 mm)</option>
+            <option value="full-frame" selected>Full frame (CoC 0.029 mm)</option>
+            <option value="medium-645">645 (CoC 0.047 mm)</option>
+            <option value="custom">Custom</option>
+          </select>
+          <p class="field-error" id="error-sensor" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-coc-mm">Custom circle of confusion (mm)</label>
+          <p class="help" id="help-coc-mm">Required only when the sensor format is “Custom”; from 0.001 to 1.000 mm, at most 3 decimal places. Ignored for a listed sensor format.</p>
+          <input id="field-coc-mm" name="cocMm" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 0.029" value="" aria-describedby="help-coc-mm">
+          <p class="field-error" id="error-coc-mm" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter focal length, aperture, focus distance and sensor format, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate depth of field</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Near limit, far limit, depth of field and hyperfocal distance</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="setup-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">The circle of confusion is a conventional value — the largest blur spot still seen as a point under standard viewing conditions — not a law of physics. For enlarged viewing or large prints, use a smaller custom circle of confusion.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>Standard thin-lens formulas (Wikipedia, Hyperfocal distance): hyperfocal distance H = f² / (N × c) + f; near limit Dn = s × (H − f) / (H + s − 2f); far limit Df = s × (H − f) / (H − s), and the far limit is infinite when the focus distance s reaches or passes the hyperfocal distance; total depth of field DoF = Df − Dn, also infinite when the far limit is infinite. Outputs are in metres, rounded half-up to 3 decimal places once, at output; the total depth of field is the unrounded far limit minus the unrounded near limit, then rounded.</p>
+    <p>The listed circle-of-confusion values follow Wikipedia’s “Circle of confusion diameter limit based on d/1500” table: 1-inch 0.011 mm, Four Thirds 0.015 mm, APS-C 0.018 mm, APS-C (Canon) 0.018 mm, APS-C (Nikon) 0.019 mm, APS-H 0.023 mm, full frame 0.029 mm, 645 0.047 mm. The 44 mm × 33 mm digital medium format is not in that table, so enter its circle of confusion as custom (d/1500 is about 0.037 mm, for reference only, not a listed value).</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What is the circle of confusion?</dt>
+      <dd>The largest blur spot still seen as a point, set by sensor size.</dd>
+      <dt>What does an infinite far limit mean?</dt>
+      <dd>The focus distance has reached or passed the hyperfocal distance, so everything from the near limit onward is acceptably sharp.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>

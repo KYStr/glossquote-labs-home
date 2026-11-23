@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>景深計算｜Gloss Tools</title>
+<meta name="description" content="輸入焦距、光圈、對焦距離與感光元件，算出近限、遠限、景深總長與超焦距，決定該收幾級光圈或把焦點移到哪裡。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>景深計算</h1>
+  <p class="lede">輸入焦距、光圈、對焦距離與感光元件，算出近限、遠限、景深總長與超焦距，決定該收幾級光圈或把焦點移到哪裡。只算拍攝前的設定試算，不讀取照片、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">焦距、光圈、對焦距離</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-focal-length-mm">焦距（mm）</label>
+          <p class="help" id="help-focal-length-mm">十進位數字，範圍 1 至 2000 mm，小數至多 2 位。</p>
+          <input id="field-focal-length-mm" name="focalLengthMm" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 50" value="" aria-describedby="help-focal-length-mm">
+          <p class="field-error" id="error-focal-length-mm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-aperture">光圈（f-number）</label>
+          <p class="help" id="help-aperture">十進位數字，範圍 0.5 至 64，小數至多 2 位。</p>
+          <input id="field-aperture" name="aperture" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 8" value="" aria-describedby="help-aperture">
+          <p class="field-error" id="error-aperture" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-focus-distance-m">對焦距離（m）</label>
+          <p class="help" id="help-focus-distance-m">十進位數字，範圍 0.05 至 10000 m，小數至多 3 位，必須大於焦距。</p>
+          <input id="field-focus-distance-m" name="focusDistanceM" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 3" value="" aria-describedby="help-focus-distance-m">
+          <p class="field-error" id="error-focus-distance-m" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-sensor">感光元件、容許彌散圓</label>
+          <p class="help" id="help-sensor">選擇感光元件，採用表定容許彌散圓；選「自訂」時請在下一欄輸入。</p>
+          <select id="field-sensor" name="sensor" aria-describedby="help-sensor">
+            <option value="1-inch">1 吋（CoC 0.011 mm）</option>
+            <option value="four-thirds">四三系統（CoC 0.015 mm）</option>
+            <option value="aps-c">APS-C（CoC 0.018 mm）</option>
+            <option value="aps-c-canon">APS-C（Canon，CoC 0.018 mm）</option>
+            <option value="aps-c-nikon">APS-C（Nikon，CoC 0.019 mm）</option>
+            <option value="aps-h">APS-H（CoC 0.023 mm）</option>
+            <option value="full-frame" selected>全片幅（CoC 0.029 mm）</option>
+            <option value="medium-645">645（CoC 0.047 mm）</option>
+            <option value="custom">自訂</option>
+          </select>
+          <p class="field-error" id="error-sensor" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-coc-mm">自訂容許彌散圓（mm）</label>
+          <p class="help" id="help-coc-mm">僅感光元件選「自訂」時必填；範圍 0.001 至 1.000 mm，小數至多 3 位。選表定感光元件時此欄會被忽略。</p>
+          <input id="field-coc-mm" name="cocMm" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 0.029" value="" aria-describedby="help-coc-mm">
+          <p class="field-error" id="error-coc-mm" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入焦距、光圈、對焦距離與感光元件，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算景深</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">近限、遠限、景深與超焦距</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="setup-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">容許彌散圓是「在標準觀看條件下仍被視為一點的最大彌散圓」的約定值，不是物理定律；放大檢視或大尺寸輸出時應改用較小的自訂容許彌散圓。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>採標準薄透鏡公式（Wikipedia，Hyperfocal distance）：超焦距 H = f² / (N × c) + f；近限 Dn = s × (H − f) / (H + s − 2f)；遠限 Df = s × (H − f) / (H − s)，對焦距離 s 大於或等於超焦距時遠限為無限遠；景深總長 DoF = Df − Dn，遠限無限遠時景深總長亦為無限遠。輸出以公尺計，逢 .5 進位至小數 3 位，只在輸出時捨入一次；景深總長由未捨入的遠限減近限再捨入。</p>
+    <p>容許彌散圓表定值採 Wikipedia「Circle of confusion diameter limit based on d/1500」表：1 吋 0.011 mm、四三系統 0.015 mm、APS-C 0.018 mm、APS-C（Canon）0.018 mm、APS-C（Nikon）0.019 mm、APS-H 0.023 mm、全片幅 0.029 mm、645 0.047 mm。數位中片幅 44 mm × 33 mm 不在該表，須以自訂輸入容許彌散圓（d/1500 約 0.037 mm，僅供參考，不列為表定值）。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>容許彌散圓是什麼？</dt>
+      <dd>畫面上仍被視為一點的最大模糊圓直徑，依感光元件尺寸而定。</dd>
+      <dt>遠限顯示無限遠是什麼意思？</dt>
+      <dd>對焦距離已達或超過超焦距，從近限起的一切都落在可接受的清晰範圍內。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
