@@ -15,7 +15,8 @@
 - Production target: `tools/home-affordability-calculator/` in
   `KYStr/glossquote-labs-home`, branch
   `muse/home-affordability-calculator-production-20261121`, base
-  `codex/initial-publication`. Build-first (no registry production
+  `codex/initial-publication`. Production PR #420 (draft, OPEN).
+  Build-first (no registry production
   registration in this run, per the run-6 production mode: build +
   draft PR + parent verification + ledger).
 - Builder: run-6 production builder subagent (third wave; parent

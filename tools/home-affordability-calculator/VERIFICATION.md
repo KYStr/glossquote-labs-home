@@ -7,8 +7,10 @@
 - Environment: Node v24.22.1, no dependencies, no network use by the
   tool itself (only the initial `git clone` and `gh` reads of the
   public spec PR).
-- PR: (to be filled after the draft PR is opened — see HANDOFF.md).
-- PR head SHA: (to be filled after push, read back with `gh pr view`).
+- PR: #420 (draft, OPEN, base `codex/initial-publication`).
+- PR head SHA: read back with `gh pr view` after the final push
+  (see the builder's report to the parent orchestrator; the SHA is
+  not hard-coded here so it cannot go stale).
 
 ## Commands run (all from `tools/home-affordability-calculator/`)
 
