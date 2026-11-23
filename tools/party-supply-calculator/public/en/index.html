@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Party Supply Calculator | Gloss Tools</title>
+<meta name="description" content="Enter guest count, party duration and meal type to work out how much food, drink, cups, plates and ice to buy.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching languages leaves this page; an unsaved draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Party Supply Calculator</h1>
+    <p class="lede">Enter guest count, party duration and meal type to work out how much food, drink, cups, plates and ice to buy. Everything is calculated locally; nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-guests" id="label-guests">Number of guests</label>
+          <input id="input-guests" name="guests" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="20">
+          <p class="field-error" id="error-guests" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-duration" id="label-duration">Party duration (hours)</label>
+          <input id="input-duration" name="durationHours" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="3">
+          <p class="field-error" id="error-duration" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>Meal type</legend>
+        <div class="segmented">
+          <label class="segment"><input type="radio" name="mealType" value="snacks">Snacks only</label>
+          <label class="segment"><input type="radio" name="mealType" value="light">Light meal</label>
+          <label class="segment"><input type="radio" name="mealType" value="full" checked>Full meal</label>
+        </div>
+        <p class="field-error" id="error-meal" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate shopping list</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter guest count, party duration and meal type, or load the example.</p>
+
+    <p class="disclaimer">These quantities are planning estimates, not a caterer&rsquo;s guarantee; adjust for your menu and guests.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Shopping list</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <p class="result-factor" id="result-factor"></p>
+      <h3>Shopping totals</h3>
+      <dl class="result-facts">
+        <div>
+          <dt>Food</dt>
+          <dd><span id="total-food"></span> g</dd>
+        </div>
+        <div>
+          <dt>Drinks</dt>
+          <dd><span id="total-drinks"></span> ml (<span id="total-bottles"></span> x 2 L bottles)</dd>
+        </div>
+        <div>
+          <dt>Cups</dt>
+          <dd><span id="total-cups"></span></dd>
+        </div>
+        <div>
+          <dt>Plates</dt>
+          <dd><span id="total-plates"></span> (includes 20% spare)</dd>
+        </div>
+        <div>
+          <dt>Ice</dt>
+          <dd><span id="total-ice"></span> kg</dd>
+        </div>
+      </dl>
+      <h3>Per-person amounts</h3>
+      <table class="per-person">
+        <thead>
+          <tr><th scope="col">Item</th><th scope="col">Per person</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Food</th><td><span id="per-food"></span> g</td></tr>
+          <tr><th scope="row">Drinks</th><td><span id="per-drinks"></span> ml</td></tr>
+          <tr><th scope="row">Cups</th><td><span id="per-cups"></span></td></tr>
+          <tr><th scope="row">Plates</th><td><span id="per-plates"></span></td></tr>
+          <tr><th scope="row">Ice</th><td><span id="per-ice"></span> kg</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>Rules and limits</summary>
+      <ul>
+        <li>Guests 1 to 500; party duration 0.5 to 12 hours in 0.5-hour steps; meal type snacks, light meal or full meal.</li>
+        <li>Food per person: snacks 200 g, light meal 350 g, full meal 500 g, times the duration factor (1.0 up to 2 hours, 1.2 for 2–4 hours, 1.5 over 4 hours).</li>
+        <li>Drinks use the 2-1 rule: 2 servings per person in the first hour, 1 per hour after, at 350 ml per serving.</li>
+        <li>Cups: 2 per person up to 3 hours, otherwise 3 per person. Plates: 1 per person for snacks or light meal, 2 for a full meal, plus 20% spare in the total. Ice: 0.5 kg per person, times the duration factor.</li>
+        <li>Totals are always rounded up to buyable units: food to 100 g, drinks to 500 ml, ice to 0.5 kg; drinks are also converted to 2-litre bottles.</li>
+        <li>Data stays only in the current page draft; leaving or switching languages discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Are these quantities guaranteed?</h3>
+    <p>No. They are planning estimates from common catering rules of thumb; adjust for your menu and guests.</p>
+    <h3>Why 2 drinks in the first hour and 1 per hour after?</h3>
+    <p>That is the caterers&rsquo; 2-1 rule: 2 servings per person in the first hour, 1 per hour after, at 350 ml per serving.</p>
+    <h3>Where does 0.5 kg of ice per person come from?</h3>
+    <p>It is the common rule of about 1 lb of ice per person, times 1.5 for parties over 4 hours.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · Party Supply Calculator calculates locally and offline. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
