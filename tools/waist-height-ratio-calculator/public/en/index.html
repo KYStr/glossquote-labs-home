@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waist-to-Height Ratio Calculator | Gloss Tools</title>
+<meta name="description" content="Enter your waist and height to get your waist-to-height ratio, its NICE category, and how far your waist is from staying under half your height.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Waist-to-Height Ratio Calculator</h1>
+    <p class="lede">Enter your waist and height to get your waist-to-height ratio, its NICE category, and how far your waist is from staying under half your height. Everything is computed on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-waist" id="label-waist">Waist (cm)</label>
+          <input id="input-waist" name="waistCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-waist" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-height" id="label-height">Height (cm)</label>
+          <input id="input-height" name="heightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-height" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate waist-to-height ratio</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter your waist and height, or load the example.</p>
+
+    <p class="disclaimer">This tool provides general health information only. It is not a medical diagnosis or advice; consult a healthcare professional if you have concerns.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Waist-to-height ratio</dt>
+          <dd id="result-whtr"></dd>
+        </div>
+        <div>
+          <dt>Category</dt>
+          <dd id="result-category"></dd>
+        </div>
+        <div>
+          <dt>Healthy waist range</dt>
+          <dd id="result-range"></dd>
+        </div>
+        <div>
+          <dt>Distance to target</dt>
+          <dd id="result-lose"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>Rules and limits</summary>
+      <ul>
+        <li>Waist 20 to 300 cm, height 50 to 300 cm. Numbers are decimals with at most 2 decimal places; no thousands commas, exponents, signs or spaces. Each field holds at most 16 characters.</li>
+        <li>The displayed ratio is rounded to 2 decimals. The category uses the exact unrounded ratio: below 0.40 is below the healthy range, 0.40 to under 0.50 is healthy, 0.50 to under 0.60 is increased central adiposity, and 0.60 or above is high central adiposity.</li>
+        <li>The healthy waist range is 0.40 to 0.50 times your height, to 1 decimal place. The distance to target is shown only when the exact ratio is 0.50 or above: waist minus half your height, to 1 decimal place.</li>
+        <li>The categories apply to adults with a BMI under 35 kg/m², with the same cut-offs for men and women and all ethnicities. At a BMI of 35 or above, waist adds little extra prediction of risk, so this tool makes no extra adjustment and the result remains for reference only.</li>
+        <li>How to measure: stand relaxed and measure at the end of a normal breath out, with the tape horizontal at the midpoint between the lower edge of the lowest rib and the top of the hip bone (iliac crest), snug but not compressing the skin (WHO STEPS method).</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Why does it show 0.50 but say healthy?</h3>
+    <p>The category uses the exact unrounded ratio; the display is rounded to 2 decimals. For example, 84.9 ÷ 170 = 0.4994…, which displays as 0.50 but is still healthy.</p>
+    <h3>How do I measure my waist?</h3>
+    <p>Stand relaxed and measure at the end of a normal breath out, with the tape horizontal at the midpoint between the lower edge of the lowest rib and the top of the hip bone, snug but not compressing the skin.</p>
+    <h3>How is WHtR different from BMI?</h3>
+    <p>BMI uses weight and height and reflects overall body weight; WHtR uses waist and height and reflects abdominal fat distribution. They complement each other and cannot replace one another.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The Waist-to-Height Ratio Calculator runs offline on your device. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
