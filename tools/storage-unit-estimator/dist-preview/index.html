@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>倉儲空間估算｜Gloss Tools</title>
+<meta name="description" content="搬家或裝修前，先算東西總共多大：加入家具、家電與箱子，算出總體積與推薦的倉儲單位尺寸。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>倉儲空間估算</h1>
+  <p class="lede">搬家或裝修前，先算東西總共多大：逐列加入家具、家電與箱子，算出總體積與含走道預留的需要體積，再推薦最小的合適倉儲單位尺寸。本工具是體積估算，不是實際裝載規劃；結果僅供選租參考。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">物品清單</h2>
+      <form id="entry-form" novalidate>
+        <p class="help" id="help-rows">每列選一個品項並輸入數量（1 至 99）；自訂物品另輸入長、寬、高（1 至 300 cm）。最多 30 列，同品項可重複列入，各自計入。</p>
+        <div id="rows-list" aria-describedby="help-rows"></div>
+        <div class="actions">
+          <button type="button" id="add-row-btn" class="button-secondary">新增一列</button>
+        </div>
+        <p class="row-limit-note" id="row-limit-note" hidden></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未估算。輸入物品清單，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">估算倉儲空間</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">總體積與推薦單位</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <table class="rows-table">
+        <caption>逐列體積</caption>
+        <thead>
+          <tr><th scope="col">品項</th><th scope="col">數量</th><th scope="col">單件體積</th><th scope="col">列體積</th></tr>
+        </thead>
+        <tbody id="rows-table-body"></tbody>
+      </table>
+      <p class="crisis-note" id="overflow-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具是體積估算，不是實際裝載規劃；結果僅供選租參考，實際能否裝入還受物品形狀、門寬與堆疊方式影響。</p>
+      <p class="disclaimer">This tool estimates volume; it is not a loading plan. Results are for choosing a unit size only — whether everything actually fits also depends on item shapes, door width, and how things are stacked.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>體積與推薦方式</summary>
+    <p>每件物品以釘版典型外形尺寸的長 × 寬 × 高換算成立方公尺，再乘以數量加總；自訂物品以輸入的長寬高計算。需要體積為總體積 × 1.25：物品不是完美立方體，堆疊會有空隙，單位內還要留走道；25% 是固定經驗預留，不是實測裝載效率。推薦單位取六檔倉儲尺寸（5×5 至 10×30 ft，8 ft 高）中容量大於或等於需要體積的最小一檔；單一最大單位裝不下時，建議多間最大單位。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>體積怎麼算？</dt>
+      <dd>每件物品以釘版典型外形尺寸的長×寬×高換算成立方公尺，再乘以數量加總；自訂物品以輸入的長寬高計算。</dd>
+      <dt>為什麼需要體積比總體積大 25%？</dt>
+      <dd>物品不是完美立方體，堆疊會有空隙，單位內還要留走道；本工具以固定 25% 預留估算，不是實測裝載效率。</dd>
+      <dt>推薦的單位一定裝得下嗎？</dt>
+      <dd>不一定。推薦以體積比較，實際還受物品形狀、門寬與堆疊方式影響；超大或不規則物品請先量門寬並向業者確認。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

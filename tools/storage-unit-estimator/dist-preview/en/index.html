@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Storage Unit Estimator | Gloss Tools</title>
+<meta name="description" content="Before moving or renovating, work out how much space your things need: add furniture, appliances and boxes to get the total volume and a recommended storage unit size.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Storage Unit Estimator</h1>
+  <p class="lede">Before moving or renovating, work out how much space your things need: add furniture, appliances and boxes row by row to get the total volume and the required volume including an aisle allowance, then a recommended storage unit size. This tool estimates volume; it is not a loading plan, and results are for choosing a unit size only.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Item list</h2>
+      <form id="entry-form" novalidate>
+        <p class="help" id="help-rows">For each row, pick an item and enter a quantity (1 to 99); custom items also need length, width, and height (1 to 300 cm). At most 30 rows; the same item may appear in more than one row, and each row is counted separately.</p>
+        <div id="rows-list" aria-describedby="help-rows"></div>
+        <div class="actions">
+          <button type="button" id="add-row-btn" class="button-secondary">Add row</button>
+        </div>
+        <p class="row-limit-note" id="row-limit-note" hidden></p>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing estimated yet. Enter the item list, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Estimate storage size</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Total volume and recommended unit</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <table class="rows-table">
+        <caption>Volume per row</caption>
+        <thead>
+          <tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Unit volume</th><th scope="col">Row volume</th></tr>
+        </thead>
+        <tbody id="rows-table-body"></tbody>
+      </table>
+      <p class="crisis-note" id="overflow-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具是體積估算，不是實際裝載規劃；結果僅供選租參考，實際能否裝入還受物品形狀、門寬與堆疊方式影響。</p>
+      <p class="disclaimer">This tool estimates volume; it is not a loading plan. Results are for choosing a unit size only — whether everything actually fits also depends on item shapes, door width, and how things are stacked.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How volume and the recommendation are calculated</summary>
+    <p>Each item uses its pinned typical outer dimensions (length × width × height) converted to cubic metres, multiplied by quantity and summed; custom items use the dimensions you enter. The required volume is the total × 1.25: items are not perfect cubes, stacking leaves gaps, and you need an aisle inside the unit; the 25% is a fixed empirical allowance, not a measured packing efficiency. The recommended unit is the smallest of six storage sizes (5×5 to 10×30 ft, 8 ft high) whose capacity is at least the required volume; when even the largest single unit cannot hold everything, several largest units are suggested.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is volume calculated?</dt>
+      <dd>Each item uses its pinned typical outer dimensions (length × width × height) converted to cubic metres, multiplied by quantity and summed; custom items use the dimensions you enter.</dd>
+      <dt>Why is the required volume 25% more than the total?</dt>
+      <dd>Items are not perfect cubes, stacking leaves gaps, and you need an aisle inside the unit; the tool applies a fixed 25% allowance, not a measured packing efficiency.</dd>
+      <dt>Will the recommended unit definitely fit everything?</dt>
+      <dd>Not necessarily. The recommendation compares volumes only; shape, door width and stacking also matter. Measure the door and check with the facility for oversized or irregular items.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
