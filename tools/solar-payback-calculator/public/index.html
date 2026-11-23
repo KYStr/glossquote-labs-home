@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>太陽能回本試算｜Gloss Tools</title>
+<meta name="description" content="輸入裝置容量、屋頂面積、年日照時數與建置成本，按台灣躉購費率算一年發多少電、一年拿回多少錢、幾年回本。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>太陽能回本試算</h1>
+  <p class="lede">輸入裝置容量、屋頂面積、年日照時數與建置成本，按台灣躉購費率算一年發多少電、一年拿回多少錢、幾年回本。只做靜態試算，不跑任何申辦流程、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">試算條件</h2>
+      <form id="entry-form" novalidate>
+        <h3>裝置容量、屋頂面積</h3>
+        <div class="field">
+          <label for="field-systemKwp">裝置容量（kWp）</label>
+          <p class="help" id="help-systemKwp">十進位數字，小數最多 2 位，範圍 0.1 至 500 kWp。</p>
+          <input id="field-systemKwp" name="systemKwp" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 9" value="9" aria-describedby="help-systemKwp">
+          <p class="field-error" id="error-systemKwp" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-roofAreaM2">屋頂面積（m²）</label>
+          <p class="help" id="help-roofAreaM2">十進位數字，小數最多 2 位，範圍 1 至 100,000 m²。</p>
+          <input id="field-roofAreaM2" name="roofAreaM2" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 80" value="80" aria-describedby="help-roofAreaM2">
+          <p class="field-error" id="error-roofAreaM2" role="alert"></p>
+        </div>
+        <h3>年日照時數、建置成本</h3>
+        <div class="field">
+          <label for="field-sunHours">年日照時數（小時/年）</label>
+          <p class="help" id="help-sunHours">年等效滿發時數，十進位數字，小數最多 1 位，範圍 500 至 2,000 小時/年。</p>
+          <input id="field-sunHours" name="sunHours" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1250" value="1250" aria-describedby="help-sunHours">
+          <p class="field-error" id="error-sunHours" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-installCost">建置成本（元）</label>
+          <p class="help" id="help-installCost">整數，範圍 1 至 100,000,000 元。</p>
+          <input id="field-installCost" name="installCost" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 540000" value="540000" aria-describedby="help-installCost">
+          <p class="field-error" id="error-installCost" role="alert"></p>
+        </div>
+        <h3>躉購費率、自用比例、零售電價</h3>
+        <div class="field">
+          <label for="field-fitRate">躉購費率（元/度）</label>
+          <p class="help" id="help-fitRate">十進位數字，小數最多 4 位，範圍 0.0001 至 20 元/度。預設為裝置容量對應的級距表值，可自行改填覆寫。</p>
+          <input id="field-fitRate" name="fitRate" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 5.6279" value="5.6279" aria-describedby="help-fitRate">
+          <p class="field-error" id="error-fitRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-selfUsePct">自用比例（%）</label>
+          <p class="help" id="help-selfUsePct">十進位數字，小數最多 1 位，範圍 0 至 100%。</p>
+          <input id="field-selfUsePct" name="selfUsePct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 30" value="30" aria-describedby="help-selfUsePct">
+          <p class="field-error" id="error-selfUsePct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-retailPrice">零售電價（元/度）</label>
+          <p class="help" id="help-retailPrice">十進位數字，小數最多 2 位，範圍 0.01 至 20 元/度。預設每度 3.00 元是假設值，請按自家電費單的邊際單價改填。</p>
+          <input id="field-retailPrice" name="retailPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 3.00" value="3.00" aria-describedby="help-retailPrice">
+          <p class="field-error" id="error-retailPrice" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未試算。輸入裝置容量、屋頂面積、年日照時數與建置成本，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算回本</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">年發電量、年收益與回本年數</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <p class="warning-note" id="roof-note" hidden></p>
+      <p class="warning-note" id="beyond-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具的結果是靜態試算估計，不是發電保證、報價或投資建議；實際發電量受方位、傾角、遮蔭、氣候與設備影響，實際費率以完工併網當期經濟部公告與台電購售電契約為準。</p>
+      <p class="disclaimer">Results are static estimates, not a generation guarantee, a quote, or investment advice. Actual generation depends on orientation, tilt, shading, climate, and equipment; the applicable tariff is the one announced for the period when the system is completed and grid-connected, per the Taipower contract.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>年發電量＝裝置容量 × 年等效日照時數；自用度數按自用比例分攤，售電收入＝售電度數 × 躉購費率，自用節省＝自用度數 × 零售電價；回本年數＝建置成本 ÷ 年總收益。20 年總收益＝年收益 × 20，不計模組逐年衰減、維運成本、折現、通膨、補助與費率未來變動。</p>
+    <p>躉購費率表（2026 年屋頂型，經濟部 2026 年 1 月 2 日公告「115 年度再生能源電能躉購費率及其計算公式」，經能字第 11458005630 號）：1 kW 以上不及 10 kW 為 5.6279 元/度；10 kW 以上不及 20 kW 為 5.3819 元/度；20 kW 以上不及 50 kW 為 4.2505 元/度；50 kW 以上不及 100 kW 為 4.0459 元/度；100 kW 以上不及 500 kW 為 3.7152 元/度；500 kW 以上為 3.6236 元/度。級距下限含、上限不含。北部地區加成 15%、高效能模組加成 6% 與地方政府補助一律不計入；地面型與水面型費率本工具不採用。</p>
+    <p>屋頂面積規則：每 1 kWp 需 8 m²（含模組間距與維修通道的規劃值）。屋頂不足時是警告不是錯誤，頁面會顯示最大可裝容量。坪換算只做顯示：1 坪＝400/121 m²，顯示到小數 2 位。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>躉購費率是哪一年的？</dt>
+      <dd>2026 年（115 年度）經濟部公告的屋頂型費率，兩期相同；實際費率以完工併網當期的公告與台電契約為準。</dd>
+      <dt>自用的電怎麼算錢？</dt>
+      <dd>自用度數按你填的零售電價折算節省，預設每度 3.00 元是假設值，請按自家電費單的邊際單價改填；台電住宅用電是累進電價，本工具不做分段計算。</dd>
+      <dt>屋頂不夠大怎麼辦？</dt>
+      <dd>這是警告不是錯誤；頁面會顯示最大可裝容量，你可以改小裝置容量再算。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
