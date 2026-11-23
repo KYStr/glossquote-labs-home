@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>膽固醇分級｜Gloss Tools</title>
+<meta name="description" content="輸入健檢報告上的總膽固醇、LDL、HDL 與三酸甘油脂，對照 NCEP ATP III 分級表，逐項查看分級與整體摘要。僅供參考，非醫療建議。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>膽固醇分級</h1>
+    <p class="lede">輸入健檢報告上的血脂四項數值，對照 NCEP ATP III 分級表，逐項查看分級、非 HDL 膽固醇與整體摘要。全部在本機計算，不上傳。</p>
+
+    <p class="disclaimer">本工具僅供參考，不能取代專業醫療建議、診斷或治療。如有疑問，請諮詢醫師或合格醫療人員。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-total">總膽固醇 (mg/dL)</label>
+          <input id="input-total" name="total" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="180">
+          <p class="field-error" id="error-total" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-ldl">低密度脂蛋白膽固醇 LDL (mg/dL)</label>
+          <input id="input-ldl" name="ldl" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="90">
+          <p class="field-error" id="error-ldl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-hdl">高密度脂蛋白膽固醇 HDL (mg/dL)</label>
+          <input id="input-hdl" name="hdl" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="65">
+          <p class="field-error" id="error-hdl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-triglycerides">三酸甘油脂 (mg/dL)</label>
+          <input id="input-triglycerides" name="triglycerides" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="120">
+          <p class="field-error" id="error-triglycerides" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">查詢分級</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入數值，或載入範例。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">分級結果</h2>
+      <p class="result-sentence" id="result-overall"></p>
+      <ul class="result-list">
+        <li id="result-total"></li>
+        <li id="result-ldl"></li>
+        <li id="result-hdl"></li>
+        <li id="result-triglycerides"></li>
+      </ul>
+      <p class="result-nonhdl" id="result-nonhdl"></p>
+      <p class="result-note" id="result-hdl-note" hidden><span id="result-hdl-note-text"></span></p>
+    </section>
+
+    <details class="rules">
+      <summary>分級規則與限制</summary>
+      <ul>
+        <li>四欄皆為整數，單位 mg/dL，範圍 1–9999；每欄最多 5 個字元，不接受小數、符號、空白或指數。</li>
+        <li>分級依 NCEP ATP III 分級表：區間左閉右開，切點值歸入較高一級（例如總膽固醇 200 為邊緣偏高、LDL 100 為接近或略高於最佳）。</li>
+        <li>非 HDL 膽固醇＝總膽固醇 − HDL，僅供參考，不分級；總膽固醇不大於 HDL 時仍如實顯示該整數。</li>
+        <li>整體摘要取四項中最嚴重的分級：皆理想為「四項數值皆在理想範圍」，最高為邊緣值為「部分數值為邊緣值」，有一項以上需注意為「有一項以上數值需要注意」。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>分級表是哪一套標準？</h3>
+    <p>NCEP ATP III（美國 National Cholesterol Education Program），數值單位為 mg/dL。</p>
+    <h3>為什麼 HDL 偏高是好事？</h3>
+    <p>ATP III 將 HDL ≥60 mg/dL 視為「負向危險因子」，具保護性；偏低（&lt;40）才需要注意。</p>
+    <h3>需要空腹抽血嗎？</h3>
+    <p>ATP III 分級以 9–12 小時空腹血脂檢查為前提，三酸甘油脂最受進食影響；非空腹數值僅供參考。</p>
+    <h3>這是診斷嗎？</h3>
+    <p>不是。本工具僅供參考，不能取代專業醫療建議、診斷或治療。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>本工具僅供參考，不能取代專業醫療建議、診斷或治療。如有疑問，請諮詢醫師或合格醫療人員。</p>
+  <p>Gloss Tools · 膽固醇分級在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
