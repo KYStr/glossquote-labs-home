@@ -1,9 +1,12 @@
 # Brick Calculator （磚塊用量計算）— VERIFICATION
 
 - Candidate: branch `muse/brick-calculator-production-20261121`,
-  draft PR TBD (base `codex/initial-publication`). PR head SHA is
-  read back with `gh pr view` after the final push and recorded in
-  the parent report; this file's commit is part of that head.
+  draft PR #427 (https://github.com/KYStr/glossquote-labs-home/pull/427),
+  base `codex/initial-publication`. PR head SHA, read back with
+  `gh pr view` after the final push, is
+  `621767e5998b93b5927f8d23fd2da6f8b7a387b4` for the first commit;
+  this file's commit is part of that head (see the parent report for
+  the final head after the VERIFICATION.md update commit).
 - Spec: `spec-brick-calculator-20261121`, spec PR #384, head
   `f3a6e9d8b1047c2ad8aca895911bdc5eaa70bdbc`, registry rev 1767.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
