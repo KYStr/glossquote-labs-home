@@ -110,8 +110,9 @@
 
 ## Production PR
 
-- Draft PR: TBD (filled in by the parent after push; see
-  VERIFICATION.md for the head SHA read back with `gh pr view`).
+- Draft PR #443: https://github.com/KYStr/glossquote-labs-home/pull/443
+  (OPEN, draft; head `68cd4a7dc9ba18a87c1a1e1c27015392002869c0`,
+  read back with `gh pr view`).
 - Base: `codex/initial-publication`. Never merge, never publish.
   No registry production registration was done (run-6 production
   mode).

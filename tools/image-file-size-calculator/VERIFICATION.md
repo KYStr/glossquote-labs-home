@@ -12,8 +12,10 @@
   API), `AUTHOR-CHECK.md`.
 - Production branch: `muse/image-file-size-calculator-production-20261121`,
   base `codex/initial-publication`.
-- Production PR: TBD (draft; number and head SHA to be filled in
-  from `gh pr view` after push).
+- Production PR: #443 (draft, OPEN),
+  https://github.com/KYStr/glossquote-labs-home/pull/443, head
+  `68cd4a7dc9ba18a87c1a1e1c27015392002869c0` (read back with
+  `gh pr view`).
 - Environment: Node v24.22.1, no network use by the tool itself
   (zero runtime dependencies), local VM only.
 
