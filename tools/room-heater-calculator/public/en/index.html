@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Room Heater Calculator | Gloss Tools</title>
+<meta name="description" content="Before buying a space heater, check how many watts your room needs from its area, ceiling height and insulation level.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Room Heater Calculator</h1>
+  <p class="lede">Before buying a space heater, check how many watts your room needs: enter the room area, ceiling height and insulation level to get the required wattage and the recommended size. This is a rule-of-thumb estimate by insulation level, for sizing guidance only — not a professional heat-loss calculation — and nothing is stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Room area, ceiling height and insulation level</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-area">Room area</label>
+          <p class="help" id="help-area">Number with up to 2 decimal places; converted area must be between 0.5 and 200 m².</p>
+          <input id="field-area" name="area" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 10" value="10" aria-describedby="help-area">
+          <p class="field-error" id="error-area" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-area-unit">Area unit</label>
+          <p class="help" id="help-area-unit">Square metres or 坪 (1 坪 = 400/121 m², about 3.305785 m²).</p>
+          <select id="field-area-unit" name="areaUnit" aria-describedby="help-area-unit">
+            <option value="m2" selected>Square metres (m²)</option>
+            <option value="ping">坪</option>
+          </select>
+          <p class="field-error" id="error-area-unit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ceiling-height">Ceiling height (m)</label>
+          <p class="help" id="help-ceiling-height">Number with up to 2 decimal places, 2.0 to 4.0 m; default 2.4.</p>
+          <input id="field-ceiling-height" name="ceilingHeight" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2.4" value="2.4" aria-describedby="help-ceiling-height">
+          <p class="field-error" id="error-ceiling-height" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-insulation">Insulation level</label>
+          <p class="help" id="help-insulation">Good 60 / average 80 / poor 130 W/m² (rule of thumb, not an engineering heat-loss standard).</p>
+          <select id="field-insulation" name="insulation" aria-describedby="help-insulation">
+            <option value="good">Good (60 W/m²)</option>
+            <option value="average" selected>Average (80 W/m²)</option>
+            <option value="poor">Poor (130 W/m²)</option>
+          </select>
+          <p class="field-error" id="error-insulation" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the room area, ceiling height and insulation level, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate heater wattage</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Required wattage and recommended size</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <p class="multi-note" id="multi-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具是選型估算，不是專業熱損失計算；結果僅供購買參考。大坪數、挑高或特殊格局請諮詢專業人員。</p>
+      <p class="disclaimer">This tool is a sizing estimate, not a professional heat-loss calculation; the result is for purchase guidance only. For large rooms, high ceilings or unusual layouts, consult a professional.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated, and the fixed rules</summary>
+    <p>Required wattage = converted area × W/m² × (ceiling height / 2.4), rounded up to the next multiple of 10 W; above 3000 W, use multiple 2000 W units. The W/m² table (good 60 / average 80 / poor 130) comes from the Adax by Solaire buying guide's published rule of thumb, not an engineering heat-loss standard. 1 坪 = 400/121 m² (about 3.305785 m²).</p>
+    <p>All calculation happens locally on this page: nothing is uploaded, stored, or logged. The result covers this one estimate only, with no long-term tracking.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>How is 坪 converted?</dt>
+      <dd>1 坪 = 400/121 m² (about 3.305785 m²).</dd>
+      <dt>Is this a professional heat-loss calculation?</dt>
+      <dd>No, it is a rule-of-thumb estimate by insulation level, for sizing guidance only; consult a professional for large rooms, high ceilings or unusual layouts.</dd>
+      <dt>Why is the recommended size larger than the required wattage?</dt>
+      <dd>Heaters are sold in fixed wattage steps, so the recommendation is the smallest step at or above the required wattage; above 3000 W, use multiple 2000 W units.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page: nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
