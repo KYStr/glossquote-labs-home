@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Air Purifier Calculator | Gloss Tools</title>
+<meta name="description" content="Enter room area and ceiling height to find the smoke CADR your room needs under the AHAM rule, with the suggested room size, and check whether your purifier is big enough.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Air Purifier Calculator</h1>
+  <p class="lede">Enter room area and ceiling height to find the smoke CADR your room needs under the AHAM rule, with the suggested room size. If you already own a purifier, enter its smoke CADR to check whether it is big enough. Sizing estimates only — no air-quality measurement, nothing stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Room and target air changes</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-areaValue">Room area</label>
+          <p class="help" id="help-areaValue">Decimal number, at most 4 decimal places; converted area from 1 to 200 m².</p>
+          <input id="field-areaValue" name="areaValue" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 15" value="" aria-describedby="help-areaValue">
+          <p class="field-error" id="error-areaValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-areaUnit">Area unit</label>
+          <p class="help" id="help-areaUnit">Choose square metres or ping (1 ping = 3.3058 m²).</p>
+          <select id="field-areaUnit" name="areaUnit" aria-describedby="help-areaUnit">
+            <option value="m2" selected>Square metres (m²)</option>
+            <option value="ping">Ping</option>
+          </select>
+          <p class="field-error" id="error-areaUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ceilingHeightM">Ceiling height (m)</label>
+          <p class="help" id="help-ceilingHeightM">Decimal number, from 2.0 to 4.0 m; blank means 2.8 m.</p>
+          <input id="field-ceilingHeightM" name="ceilingHeightM" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2.8" value="2.8" aria-describedby="help-ceilingHeightM">
+          <p class="field-error" id="error-ceilingHeightM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetAch">Target air changes per hour (optional, ACH)</label>
+          <p class="help" id="help-targetAch">Decimal number, from 1.0 to 10.0, at most 1 decimal place; blank means 5.0. Wildfire smoke calls for 7.5.</p>
+          <input id="field-targetAch" name="targetAch" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 5.0" value="5.0" aria-describedby="help-targetAch">
+          <p class="field-error" id="error-targetAch" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-purifierCadrCfm">Your purifier's smoke CADR (optional, CFM)</label>
+          <p class="help" id="help-purifierCadrCfm">Whole number, from 10 to 2000 CFM; blank means no owned-purifier check.</p>
+          <input id="field-purifierCadrCfm" name="purifierCadrCfm" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 200" value="" aria-describedby="help-purifierCadrCfm">
+          <p class="field-error" id="error-purifierCadrCfm" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the room area and ceiling height, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate required CADR</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Required CADR and suggested room size</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="owned-heading" hidden>Your purifier check</h3>
+      <dl class="summary-list" id="owned-rows" hidden></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具只做選型試算，不量測空氣品質、不提供醫療建議。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+      <p class="disclaimer">This tool only estimates purifier sizing. It does not measure air quality and gives no medical advice. All calculation happens locally on this page; nothing is uploaded, stored, or logged.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>The AHAM rule and the fixed calculation</summary>
+    <p>Required smoke CADR (CFM) = room volume (ft³) × target air changes per hour ÷ 60, rounded up to whole CFM (a minimum must never round down); AHAM suggested room size (sq ft) = smoke CADR × 1.55. The 2/3 rule and the 1.55 factor are two directions of one relationship: required CADR = area × 2/3, suggested room = CADR × 1.55; the first is 5.0 ACH, the second 4.8 ACH, about 3% apart, and this tool defaults to the stricter 5.0, with 4.8 available as a manual choice.</p>
+    <p>When the ceiling is higher than 8 ft, required CADR scales with ceiling height (ceiling feet ÷ 8). Only smoke CADR is used for sizing (the smallest particle size, the strictest); if a spec sheet lists only m³/h, divide by 1.6990 to get CFM first. Marketing coverage is often quoted at 1–2 air changes per hour, while AHAM uses 4.8–5.0, so the two cannot be compared directly.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why smoke CADR, not dust or pollen CADR?</dt>
+      <dd>Smoke is the smallest of the three particle sizes and the strictest; the AHAM room-size rule is written against smoke CADR.</dd>
+      <dt>Are 1.55 and 2/3 the same rule?</dt>
+      <dd>They are two directions of one relationship: required CADR = area × 2/3, suggested room = CADR × 1.55; the first is 5.0 ACH, the second 4.8 ACH, about 3% apart, and this tool defaults to the stricter 5.0.</dd>
+      <dt>The box claims a bigger coverage than AHAM suggests — can I trust it?</dt>
+      <dd>Marketing coverage is often quoted at 1–2 air changes per hour, while AHAM uses 4.8–5.0; compare smoke CADR, not coverage claims.</dd>
+      <dt>What if my ceiling is higher than 8 ft?</dt>
+      <dd>Required CADR scales with ceiling height (ceiling feet ÷ 8); a taller room needs a bigger purifier.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
