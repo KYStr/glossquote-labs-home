@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>國道通行費試算｜Gloss Tools</title>
+<meta name="description" content="輸入里程或上下交流道，依台灣 ETC 計程收費規則試算國道通行費：每日 20 公里免費、200 公里以上長途 75 折、eTag 9 折。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="./en/index.html">English</a>
+    <a href="../../">回到工具首頁</a>
+  </span>
+</div>
+<p class="draft-note">切換語言或離開頁面會失去目前草稿。</p>
+
+<header class="page-head">
+  <h1>國道通行費試算</h1>
+  <p class="lede">輸入里程或上下交流道，依台灣 ETC 計程收費規則試算國道通行費：每日 20 公里免費、200 公里以上長途 75 折、eTag 9 折。</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">里程、車種與 eTag</h2>
+      <form id="toll-form" novalidate>
+        <fieldset class="field">
+          <legend>輸入方式</legend>
+          <label class="radio-row"><input type="radio" name="mode" id="field-mode-distance" value="distance" checked> 直接輸入里程</label>
+          <label class="radio-row"><input type="radio" name="mode" id="field-mode-pair" value="pair"> 上下交流道</label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+
+        <div id="mode-distance-fields">
+          <div class="field">
+            <label for="field-distanceKm">里程（公里）</label>
+            <p class="help" id="help-distanceKm">數字，最多 1 位小數；範圍 0.1 至 999.9 公里。</p>
+            <input type="text" id="field-distanceKm" aria-describedby="help-distanceKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+            <p class="field-error" id="error-distanceKm" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="mode-pair-fields" hidden>
+          <div class="field">
+            <label for="field-entry">上交流道</label>
+            <p class="help" id="help-entry">國道 1 號，附距基隆端里程。</p>
+            <select id="field-entry" aria-describedby="help-entry">
+              <option value="">請選擇</option>
+              <option value="keelung">基隆端（0.0 公里）</option>
+              <option value="xizhi">汐止（10.5 公里）</option>
+              <option value="neihu">內湖（16.8 公里）</option>
+              <option value="taipei">台北（25.1 公里）</option>
+              <option value="wugu">五股（33.1 公里）</option>
+              <option value="linkou">林口（41.5 公里）</option>
+              <option value="taoyuan">桃園（49.1 公里）</option>
+              <option value="zhongli">中壢（62.4 公里）</option>
+              <option value="yangmei">楊梅（69.2 公里）</option>
+              <option value="hukou">湖口（83.8 公里）</option>
+              <option value="taichung">台中（178.6 公里）</option>
+              <option value="changhua">彰化（198.4 公里）</option>
+              <option value="tainan">台南（327.4 公里）</option>
+              <option value="kaohsiung_end">高雄端（372.8 公里）</option>
+            </select>
+            <p class="field-error" id="error-entry" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="field-exit">下交流道</label>
+            <p class="help" id="help-exit">國道 1 號，附距基隆端里程。</p>
+            <select id="field-exit" aria-describedby="help-exit">
+              <option value="">請選擇</option>
+              <option value="keelung">基隆端（0.0 公里）</option>
+              <option value="xizhi">汐止（10.5 公里）</option>
+              <option value="neihu">內湖（16.8 公里）</option>
+              <option value="taipei">台北（25.1 公里）</option>
+              <option value="wugu">五股（33.1 公里）</option>
+              <option value="linkou">林口（41.5 公里）</option>
+              <option value="taoyuan">桃園（49.1 公里）</option>
+              <option value="zhongli">中壢（62.4 公里）</option>
+              <option value="yangmei">楊梅（69.2 公里）</option>
+              <option value="hukou">湖口（83.8 公里）</option>
+              <option value="taichung">台中（178.6 公里）</option>
+              <option value="changhua">彰化（198.4 公里）</option>
+              <option value="tainan">台南（327.4 公里）</option>
+              <option value="kaohsiung_end">高雄端（372.8 公里）</option>
+            </select>
+            <p class="field-error" id="error-exit" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-vehicleType">車種</label>
+          <p class="help" id="help-vehicleType">費率依車種而異。</p>
+          <select id="field-vehicleType" aria-describedby="help-vehicleType">
+            <option value="small">小型車</option>
+            <option value="large">大型車</option>
+            <option value="trailer">聯結車</option>
+          </select>
+          <p class="field-error" id="error-vehicleType" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-priorKm">今日已行駛里程（公里）</label>
+          <p class="help" id="help-priorKm">選填，空白視為 0；同一車輛今天已在國道行駛的里程，用來合併計算每日 20 公里優惠與 200 公里門檻。數字，最多 1 位小數；範圍 0 至 999.9 公里。</p>
+          <input type="text" id="field-priorKm" aria-describedby="help-priorKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-priorKm" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label class="radio-row"><input type="checkbox" id="field-etag"> eTag 9 折</label>
+          <p class="help" id="help-etag">預儲帳戶餘額足夠扣款，或在通行次日起第 3–5 日內自行繳費；先打折、再四捨五入到元。</p>
+          <p class="field-error" id="error-etag" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">本工具以交流道里程估算，實際通行費按每座門架牌價（每段四捨五入到角）加總後再扣優惠與折扣，兩者可能差數元。官方範例：小型車基隆端至台南，門架牌價合計 389.6 元，減長途折扣 37.4 元、減優惠里程 24 元後為 328.2 元（應繳 328 元；eTag 9 折為 295 元）；本工具以 327.4 公里算得 331 元（eTag 298 元）。實際扣款金額以遠通電收帳務為準。連續假期費率方案另行公告，本工具不適用。</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">計算通行費</button>
+          <button type="button" class="button-secondary" id="example-btn">載入範例</button>
+          <button type="button" class="button-secondary" id="reset-btn">重設</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">應繳通行費與分段明細</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>分段明細</h3>
+      <ul class="readings-list" id="details-list"></ul>
+      <p class="disclaimer">本工具以交流道里程估算，實際通行費按每座門架牌價（每段四捨五入到角）加總後再扣優惠與折扣，兩者可能差數元。官方範例：小型車基隆端至台南，門架牌價合計 389.6 元，減長途折扣 37.4 元、減優惠里程 24 元後為 328.2 元（應繳 328 元；eTag 9 折為 295 元）；本工具以 327.4 公里算得 331 元（eTag 298 元）。實際扣款金額以遠通電收帳務為準。連續假期費率方案另行公告，本工具不適用。</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>下載報告（JSON）</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>計算方法與規則</summary>
+    <p>費率（元／公里，平常日／一般假日）：每日前 20 公里免費；20–200 公里小型車 1.20、大型車 1.50、聯結車 1.80；超過 200 公里部分小型車 0.90、大型車 1.12、聯結車 1.35（75 折）。大型車長途費率 1.12 元／公里為官方表定值。</p>
+    <p>20 公里優惠與 200 公里門檻按車號每日歸戶：同一天所有里程合併計算後只扣一次 20 公里。本趟費用＝gross（今日已行駛里程＋本趟里程）− gross（今日已行駛里程）。eTag 先打 9 折，再四捨五入到整數元；全程只在最後取整一次。</p>
+    <p>上下交流道模式的里程為兩站距基隆端公里數相減（國道 1 號 14 站，基隆端 0.0 公里至高雄端 372.8 公里）。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <h3>20 公里免費是每趟都有嗎？</h3>
+    <p>不是，每車每日一次，依車號每日歸戶合併計算。</p>
+    <h3>eTag 9 折怎麼拿？</h3>
+    <p>預儲帳戶餘額足夠扣款，或在通行次日起第 3–5 日內自行繳費；先打折、再四捨五入到元。</p>
+    <h3>連續假期也適用嗎？</h3>
+    <p>不適用。連假另行公告單一費率，取消 20 公里優惠與長途折扣；本工具只算平常日／一般假日費率。</p>
+    <h3>為什麼算出來的金額和實際帳單差幾元？</h3>
+    <p>實際按門架牌價加總，本工具以交流道里程估算；實際扣款以遠通電收帳務為準。</p>
+  </section>
+
+  <p class="privacy-note">所有計算都在你的瀏覽器中完成，不送出任何資料。</p>
+</main>
+</body>
+</html>
