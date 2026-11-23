@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>空氣清淨機選型試算｜Gloss Tools</title>
+<meta name="description" content="填房間面積與天花板高度，依 AHAM 規則算出需要的煙霧 CADR 與建議適用面積，確認手邊那台清淨機夠不夠用。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>空氣清淨機選型試算</h1>
+  <p class="lede">填房間面積與天花板高度，依 AHAM 規則算出需要的煙霧 CADR 與建議適用面積；有現成清淨機時再填它的煙霧 CADR，看夠不夠用。只做選型試算，不量測空氣品質、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">房間與目標換氣率</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-areaValue">房間面積</label>
+          <p class="help" id="help-areaValue">十進位數字，小數至多 4 位；換算後面積 1 至 200 平方公尺。</p>
+          <input id="field-areaValue" name="areaValue" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 15" value="" aria-describedby="help-areaValue">
+          <p class="field-error" id="error-areaValue" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-areaUnit">面積單位</label>
+          <p class="help" id="help-areaUnit">選擇平方公尺或坪（1 坪 = 3.3058 平方公尺）。</p>
+          <select id="field-areaUnit" name="areaUnit" aria-describedby="help-areaUnit">
+            <option value="m2" selected>平方公尺（m²）</option>
+            <option value="ping">坪</option>
+          </select>
+          <p class="field-error" id="error-areaUnit" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-ceilingHeightM">天花板高度（公尺）</label>
+          <p class="help" id="help-ceilingHeightM">十進位數字，範圍 2.0 至 4.0 公尺；空白為 2.8 公尺。</p>
+          <input id="field-ceilingHeightM" name="ceilingHeightM" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2.8" value="2.8" aria-describedby="help-ceilingHeightM">
+          <p class="field-error" id="error-ceilingHeightM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-targetAch">目標換氣率（選填，ACH）</label>
+          <p class="help" id="help-targetAch">十進位數字，範圍 1.0 至 10.0，小數至多 1 位；空白為 5.0。野火煙霧建議 7.5。</p>
+          <input id="field-targetAch" name="targetAch" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 5.0" value="5.0" aria-describedby="help-targetAch">
+          <p class="field-error" id="error-targetAch" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-purifierCadrCfm">自有清淨機煙霧 CADR（選填，CFM）</label>
+          <p class="help" id="help-purifierCadrCfm">整數，範圍 10 至 2000 CFM；空白表示不檢查自有清淨機。</p>
+          <input id="field-purifierCadrCfm" name="purifierCadrCfm" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 200" value="" aria-describedby="help-purifierCadrCfm">
+          <p class="field-error" id="error-purifierCadrCfm" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入房間面積與天花板高度，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算所需 CADR</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">所需 CADR 與建議適用面積</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="owned-heading" hidden>自有清淨機檢查</h3>
+      <dl class="summary-list" id="owned-rows" hidden></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具只做選型試算，不量測空氣品質、不提供醫療建議。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+      <p class="disclaimer">This tool only estimates purifier sizing. It does not measure air quality and gives no medical advice. All calculation happens locally on this page; nothing is uploaded, stored, or logged.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>AHAM 規則與固定算法</summary>
+    <p>所需煙霧 CADR（CFM）= 房間體積（立方呎）× 目標換氣率 ÷ 60，無條件進位至整數 CFM（下限不可向下捨入）；AHAM 建議適用面積（平方呎）= 煙霧 CADR × 1.55。2/3 規則與 1.55 倍率是同一條關係的兩個方向：所需 CADR = 面積 × 2/3，建議面積 = CADR × 1.55；前者是 5.0 ACH，後者是 4.8 ACH，相差約 3%，本工具以較嚴格的 5.0 為預設，4.8 可由使用者選填。</p>
+    <p>天花板高於 8 呎時所需 CADR 按天花板高度等比提高（天花板呎數 ÷ 8）。只用煙霧 CADR 選型（最小粒徑、最嚴格）；規格表若只列 m³/h，以 ÷1.6990 換算為 CFM 後再用本工具。廠商標示的「適用坪數」常以每小時換氣 1–2 次計，與 AHAM 的 4.8–5.0 次不同，不可直接比較。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼用煙霧 CADR 而不是粉塵或花粉 CADR？</dt>
+      <dd>煙霧是三種粒徑中最小的、最嚴格的；AHAM 的適用面積規則就是以煙霧 CADR 寫的。</dd>
+      <dt>1.55 和 2/3 是同一條規則嗎？</dt>
+      <dd>是同一條關係的兩個方向：所需 CADR = 面積 × 2/3，建議面積 = CADR × 1.55；前者是 5.0 ACH，後者是 4.8 ACH，相差約 3%，本工具以較嚴格的 5.0 為預設。</dd>
+      <dt>盒子上寫的適用坪數比 AHAM 建議的大，可以信嗎？</dt>
+      <dd>廠商標示的適用面積常以每小時換氣 1–2 次計，AHAM 以 4.8–5.0 次計；比煙霧 CADR，不要只比適用坪數。</dd>
+      <dt>天花板比 8 呎高怎麼辦？</dt>
+      <dd>所需 CADR 按天花板高度等比提高（天花板呎數 ÷ 8）；挑高房間要買更大台。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
