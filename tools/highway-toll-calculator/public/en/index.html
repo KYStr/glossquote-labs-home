@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Highway Toll Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate Taiwan freeway ETC tolls from distance or entry and exit interchanges: 20 km free per day, 25% off beyond 200 km, 10% off with eTag.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="../../en/">Gloss Tools</a>
+  <span class="topbar-links">
+    <a href="../index.html">繁體中文</a>
+    <a href="../../en/">Back to the tools home page</a>
+  </span>
+</div>
+<p class="draft-note">Switching language or leaving this page discards the current draft.</p>
+
+<header class="page-head">
+  <h1>Highway Toll Calculator</h1>
+  <p class="lede">Estimate Taiwan freeway ETC tolls from distance or entry and exit interchanges: 20 km free per day, 25% off beyond 200 km, 10% off with eTag.</p>
+</header>
+
+<main class="layout">
+  <div class="columns">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Distance, vehicle type, and eTag</h2>
+      <form id="toll-form" novalidate>
+        <fieldset class="field">
+          <legend>How to enter the trip</legend>
+          <label class="radio-row"><input type="radio" name="mode" id="field-mode-distance" value="distance" checked> Enter distance</label>
+          <label class="radio-row"><input type="radio" name="mode" id="field-mode-pair" value="pair"> Entry &amp; exit interchanges</label>
+          <p class="field-error" id="error-mode" role="alert"></p>
+        </fieldset>
+
+        <div id="mode-distance-fields">
+          <div class="field">
+            <label for="field-distanceKm">Distance (km)</label>
+            <p class="help" id="help-distanceKm">A number with at most 1 decimal place; range 0.1 to 999.9 km.</p>
+            <input type="text" id="field-distanceKm" aria-describedby="help-distanceKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+            <p class="field-error" id="error-distanceKm" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="mode-pair-fields" hidden>
+          <div class="field">
+            <label for="field-entry">Entry interchange</label>
+            <p class="help" id="help-entry">Freeway 1, with distance from the Keelung end.</p>
+            <select id="field-entry" aria-describedby="help-entry">
+              <option value="">Choose</option>
+              <option value="keelung">Keelung End (0.0 km)</option>
+              <option value="xizhi">Xizhi (10.5 km)</option>
+              <option value="neihu">Neihu (16.8 km)</option>
+              <option value="taipei">Taipei (25.1 km)</option>
+              <option value="wugu">Wugu (33.1 km)</option>
+              <option value="linkou">Linkou (41.5 km)</option>
+              <option value="taoyuan">Taoyuan (49.1 km)</option>
+              <option value="zhongli">Zhongli (62.4 km)</option>
+              <option value="yangmei">Yangmei (69.2 km)</option>
+              <option value="hukou">Hukou (83.8 km)</option>
+              <option value="taichung">Taichung (178.6 km)</option>
+              <option value="changhua">Changhua (198.4 km)</option>
+              <option value="tainan">Tainan (327.4 km)</option>
+              <option value="kaohsiung_end">Kaohsiung End (372.8 km)</option>
+            </select>
+            <p class="field-error" id="error-entry" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="field-exit">Exit interchange</label>
+            <p class="help" id="help-exit">Freeway 1, with distance from the Keelung end.</p>
+            <select id="field-exit" aria-describedby="help-exit">
+              <option value="">Choose</option>
+              <option value="keelung">Keelung End (0.0 km)</option>
+              <option value="xizhi">Xizhi (10.5 km)</option>
+              <option value="neihu">Neihu (16.8 km)</option>
+              <option value="taipei">Taipei (25.1 km)</option>
+              <option value="wugu">Wugu (33.1 km)</option>
+              <option value="linkou">Linkou (41.5 km)</option>
+              <option value="taoyuan">Taoyuan (49.1 km)</option>
+              <option value="zhongli">Zhongli (62.4 km)</option>
+              <option value="yangmei">Yangmei (69.2 km)</option>
+              <option value="hukou">Hukou (83.8 km)</option>
+              <option value="taichung">Taichung (178.6 km)</option>
+              <option value="changhua">Changhua (198.4 km)</option>
+              <option value="tainan">Tainan (327.4 km)</option>
+              <option value="kaohsiung_end">Kaohsiung End (372.8 km)</option>
+            </select>
+            <p class="field-error" id="error-exit" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-vehicleType">Vehicle type</label>
+          <p class="help" id="help-vehicleType">Rates differ by vehicle type.</p>
+          <select id="field-vehicleType" aria-describedby="help-vehicleType">
+            <option value="small">Small vehicle</option>
+            <option value="large">Large vehicle</option>
+            <option value="trailer">Articulated vehicle</option>
+          </select>
+          <p class="field-error" id="error-vehicleType" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="field-priorKm">Distance already driven today (km)</label>
+          <p class="help" id="help-priorKm">Optional; blank means 0. The distance this vehicle has already driven on freeways today, used to settle the daily 20 km allowance and the 200 km threshold together. A number with at most 1 decimal place; range 0 to 999.9 km.</p>
+          <input type="text" id="field-priorKm" aria-describedby="help-priorKm" autocomplete="off" spellcheck="false" inputmode="decimal">
+          <p class="field-error" id="error-priorKm" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label class="radio-row"><input type="checkbox" id="field-etag"> eTag 10% off</label>
+          <p class="help" id="help-etag">Keep a prepaid eTag balance high enough to cover the toll, or pay by yourself within 3–5 days after passage; the discount applies before rounding to the nearest dollar.</p>
+          <p class="field-error" id="error-etag" role="alert"></p>
+        </div>
+
+        <p class="disclaimer">This tool estimates from interchange distances. Actual tolls sum per-gantry prices (each rounded to the nearest 0.1 dollar) before deducting the allowance and discount, so the two can differ by a few dollars. Official example: a small vehicle from the Keelung end to Tainan — gantry prices total 389.6 dollars, minus a long-distance discount of 37.4 dollars and a 24-dollar free-distance allowance, giving 328.2 dollars (328 dollars due; 295 dollars with the eTag discount); this tool computes 331 dollars from 327.4 km (298 dollars with eTag). The amount charged by the toll operator is authoritative. Long-holiday rate plans are announced separately; this tool does not cover them.</p>
+
+        <p id="status" class="status" role="status" aria-live="polite" aria-busy="false"></p>
+        <p id="example-note" class="example-note" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="button-primary" id="run-btn">Calculate toll</button>
+          <button type="button" class="button-secondary" id="example-btn">Load example</button>
+          <button type="button" class="button-secondary" id="reset-btn">Reset</button>
+          <button type="button" class="button-secondary" id="cancel-btn" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Toll due and breakdown</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <h3>Breakdown</h3>
+      <ul class="readings-list" id="details-list"></ul>
+      <p class="disclaimer">This tool estimates from interchange distances. Actual tolls sum per-gantry prices (each rounded to the nearest 0.1 dollar) before deducting the allowance and discount, so the two can differ by a few dollars. Official example: a small vehicle from the Keelung end to Tainan — gantry prices total 389.6 dollars, minus a long-distance discount of 37.4 dollars and a 24-dollar free-distance allowance, giving 328.2 dollars (328 dollars due; 295 dollars with the eTag discount); this tool computes 331 dollars from 327.4 km (298 dollars with eTag). The amount charged by the toll operator is authoritative. Long-holiday rate plans are announced separately; this tool does not cover them.</p>
+      <div class="actions">
+        <button type="button" class="button-secondary" id="download-btn" hidden>Download report (JSON)</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="panel details">
+    <summary>How it is calculated</summary>
+    <p>Rates (per km, normal days and regular holidays): the first 20 km of the day are free; 20–200 km cost 1.20 for small vehicles, 1.50 for large vehicles, and 1.80 for articulated vehicles; beyond 200 km the rates are 0.90, 1.12, and 1.35 (25% off). The large-vehicle long-distance rate of 1.12 per km is the official table value.</p>
+    <p>The 20 km allowance and the 200 km threshold are settled per vehicle per day: all of the day's distance is combined and the 20 km are deducted only once. This trip's charge is gross (distance already driven today + this trip's distance) − gross (distance already driven today). eTag takes 10% off first, then the result is rounded half-up to whole dollars; rounding happens only once, at the end.</p>
+    <p>In entry &amp; exit mode the distance is the difference between the two interchanges' distances from the Keelung end (Freeway 1, 14 interchanges, Keelung End 0.0 km to Kaohsiung End 372.8 km).</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <h3>Is the 20 km free allowance per trip?</h3>
+    <p>No — once per vehicle per day; all trips on the same day are settled together by licence plate.</p>
+    <h3>How do I get the 10% eTag discount?</h3>
+    <p>Keep a prepaid eTag balance high enough to cover the toll, or pay by yourself within 3–5 days after passage; the discount applies before rounding to the nearest dollar.</p>
+    <h3>Does this apply on long holidays?</h3>
+    <p>No. Holidays use a separately announced flat rate with no free kilometres or long-distance discount; this tool covers normal and regular weekend rates only.</p>
+    <h3>Why does the estimate differ from my actual bill by a few dollars?</h3>
+    <p>Actual bills sum per-gantry prices; this tool estimates from interchange distances. The amount charged by the toll operator is authoritative.</p>
+  </section>
+
+  <p class="privacy-note">All calculation happens in your browser. No data leaves your device.</p>
+</main>
+</body>
+</html>
