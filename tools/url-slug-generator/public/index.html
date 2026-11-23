@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>網址 slug 產生器｜Gloss Tools</title>
+<meta name="description" content="輸入文章標題，產生小寫、連字號分隔的網址 slug：去重音、轉寫與長度上限規則皆已釘版。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>網址 slug 產生器</h1>
+    <p class="lede">輸入文章標題，產生小寫、連字號分隔的網址 slug：去重音、轉寫與長度上限規則皆已釘版。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-title" id="label-title">標題</label>
+          <textarea id="input-title" name="title" rows="3" autocomplete="off" spellcheck="false"></textarea>
+          <p class="field-error" id="error-title" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-maxlength" id="label-maxlength">長度上限（選填，預設 50）</label>
+          <input id="input-maxlength" name="maxLength" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="50">
+          <p class="field-error" id="error-maxlength" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">產生 slug</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-copy" hidden>複製 slug</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入標題，或載入範例。</p>
+
+    <p class="disclaimer">本工具只轉換你輸入的標題文字，不檢查 slug 是否已被網站使用，也不會上傳或儲存你的標題。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">產生結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <p class="result-slug" id="result-slug"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>slug 長度</dt>
+          <dd id="result-length"></dd>
+        </div>
+        <div>
+          <dt>套用的長度上限</dt>
+          <dd id="result-maxlength"></dd>
+        </div>
+        <div>
+          <dt>是否截斷</dt>
+          <dd id="result-truncated"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>轉換規則與限制</summary>
+      <ul>
+        <li>標題必填，最多 1000 個字元；長度上限選填，預設 50，範圍 1 至 100，留空時套用預設 50。長度上限只接受整數，不接受小數、符號或空白。</li>
+        <li>轉換依序進行：NFKD 正規化（全形字母數字折為 ASCII、連字展開、帶重音字母拆解）→ 移除結合附加符號 U+0300–U+036F → 套用封閉特殊字母表（æ→ae、œ→oe、ø→o、đ→d、ð→d、þ→th、ł→l、ß→ss，大小寫成對）→ 轉小寫 → 每段連續的非 a–z、非 0–9 字元改為一個連字號 → 去除前後連字號。</li>
+        <li>中文字元不做拼音轉寫，視為分隔字元捨棄；純中文標題轉換後沒有 slug，會回錯誤，不會補成 untitled。</li>
+        <li>底線、空白、標點、emoji 都是分隔字元，會變成連字號；數字保留。slug 長度超過上限時截斷為前 maxLength 個字元，再去除截斷後尾端的連字號；長度恰等於上限時不截斷。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>中文標題會變成拼音嗎？</h3>
+    <p>不會，中文字元視為分隔字元捨棄；純中文標題會回錯誤，請補拉丁字母或數字。</p>
+    <h3>底線會保留嗎？</h3>
+    <p>不會，底線是分隔字元，會變成連字號。</p>
+    <h3>slug 會超過長度上限嗎？</h3>
+    <p>不會，超過時截斷並去除截斷後尾端的連字號。</p>
+    <h3>這會檢查 slug 有沒有被用過嗎？</h3>
+    <p>不會，只轉換文字；是否重複請在你的網站後台確認。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 網址 slug 產生器在本機離線計算，沒有帳號，也不會傳送你的標題。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
