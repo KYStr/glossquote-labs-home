@@ -4,8 +4,7 @@
 - 規格：`spec-unix-timestamp-converter-20261121`，draft spec PR #392，登記 rev 1807
 - 規格 fixtures：vendored `test/fixtures.json`，SHA-256 `390c38ed95bcc6f28ee32c385b229cf170d220ebded8e032ef4491aea19b59b3`（byte-identical to the fixed spec fixtures）
 - 分支：`muse/unix-timestamp-converter-production-20261121`（基底 `codex/initial-publication` @ `8c265267`）
-- 候選 PR：（push 後填入）
-- PR head SHA：（`gh pr view` 讀回後填入）
+- 候選 PR：draft PR #432（https://github.com/KYStr/glossquote-labs-home/pull/432），base `codex/initial-publication`。PR head SHA 以 `gh pr view` 於最終 push 後讀回，記於 parent 回報；本檔案的 commit 即為該 head 的一部分。
 - 環境：Node v24.22.1，Linux VM，無 GPU；零 runtime 依賴
 
 ## 命令與結果（均實跑，exit 0）

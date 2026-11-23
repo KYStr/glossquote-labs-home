@@ -4,7 +4,7 @@
 - 規格：`spec-unix-timestamp-converter-20261121`，draft spec PR #392，登記 rev 1807
 - 規格來源（固定）：run 6 規格工作 `build6/specs/unix-timestamp-converter/docs/specs/unix-timestamp-converter/`（BRIEF.md、SPEC.md 8 節、fixtures.json 17 筆、AUTHOR-CHECK.md）；vendored 至 `test/fixtures.json`，SHA-256 `390c38ed95bcc6f28ee32c385b229cf170d220ebded8e032ef4491aea19b59b3`
 - 實作來源：本分支 `muse/unix-timestamp-converter-production-20261121`，基底 `codex/initial-publication`（base commit `8c265267`）
-- 候選 PR：（見 VERIFICATION.md，push 後填入）
+- 候選 PR：draft PR #432（https://github.com/KYStr/glossquote-labs-home/pull/432），base `codex/initial-publication`。PR head SHA 以 `gh pr view` 於最終 push 後讀回，記於 parent 回報；本檔案的 commit 即為該 head 的一部分。
 - 模式：build-first；實作不走 registry 生產登記（第五輪模式：直接做、開草稿 PR、逐件核對、記帳本）
 - 授權：使用者 2026-11-23 四次知情確認（14:31、14:33:56、14:58:49、15:04:46）涵蓋本輪同一類執行風險提示；製作期間同一類提示再出現按授權繼續，不停問
 
