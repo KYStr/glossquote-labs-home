@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bike Frame Size Calculator | Gloss Tools</title>
+<meta name="description" content="Enter your height and inseam to get a recommended frame-size range in centimetres and inches for road, mountain and hybrid bikes, then confirm against the brand size chart and a test ride.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">中文</a>
+      <span class="draft-note">Switching languages leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Bike Frame Size Calculator</h1>
+    <p class="lede">Enter your height and inseam, pick a bike type, and get a recommended frame-size range (centimetres with an inch conversion), the matching letter size, and a starting saddle height — then confirm against the brand size chart and a test ride. Everything is calculated locally; nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-height" id="label-height">Height (cm)</label>
+          <input id="input-height" name="heightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="175">
+          <p class="field-error" id="error-height" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-inseam" id="label-inseam">Inseam, book method (cm)</label>
+          <input id="input-inseam" name="inseamCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="80">
+          <p class="field-error" id="error-inseam" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>Bike type</legend>
+        <div class="segmented">
+          <label class="segment"><input type="radio" id="input-type-road" name="bikeType" value="road" checked> Road</label>
+          <label class="segment"><input type="radio" id="input-type-mountain" name="bikeType" value="mountain"> Mountain</label>
+          <label class="segment"><input type="radio" id="input-type-hybrid" name="bikeType" value="hybrid"> Hybrid</label>
+        </div>
+        <p class="field-error" id="error-type" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Calculate frame size</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter your height and inseam, pick a bike type, or load the example.</p>
+
+    <p class="disclaimer">This is a starting point. Brands differ in geometry; confirm against the brand size chart and a test ride.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Recommended frame size (centre)</dt>
+          <dd id="result-centre"></dd>
+        </div>
+        <div>
+          <dt>Recommended range (cm)</dt>
+          <dd id="result-range-cm"></dd>
+        </div>
+        <div>
+          <dt>Recommended range (inches)</dt>
+          <dd id="result-range-in"></dd>
+        </div>
+        <div>
+          <dt>Letter size</dt>
+          <dd id="result-letter"></dd>
+        </div>
+        <div>
+          <dt>Starting saddle height</dt>
+          <dd id="result-saddle"></dd>
+        </div>
+      </dl>
+      <p class="result-warning" id="result-warning" hidden></p>
+      <p class="disclaimer">This is a starting point. Brands differ in geometry; confirm against the brand size chart and a test ride.</p>
+    </section>
+
+    <details class="rules">
+      <summary>Calculation rules and limits</summary>
+      <ul>
+        <li>Height 120 to 220 cm, inseam 50 to 110 cm, inseam must not exceed height. Numbers are decimals with at most 1 decimal place; no thousands commas, exponents, signs, or spaces; at most 6 characters per field.</li>
+        <li>Formulas: road frame = inseam × 0.67 (Guimard, 1980s); hybrid = inseam × 0.64 (city / trekking geometry); mountain = road frame − 11 cm; starting saddle height = inseam × 0.883 (LeMond method, measured from the bottom-bracket centre along the seat tube to the top of the saddle). 1 inch = 2.54 cm exactly.</li>
+        <li>The output is always a range, never a single number: the recommended range is the centre ± 1.0 cm. The inch figures are arithmetic conversions of the centimetre figures, not shop labels.</li>
+        <li>Letter size comes from height (half-open intervals): under 150 cm XXS, 150–160 XS, 160–168 S, 168–178 M, 178–185 L, 185–193 XL, 193 cm or taller XXL. The letter is a height reference, not a frame-centimetre reference.</li>
+        <li>An inseam-to-height ratio inside 40% to 50% inclusive gives no warning; outside it only warns to re-measure and does not block the result. Values round half-up (0.5 up) to 1 decimal place, the ratio to 3 decimal places, only at output.</li>
+        <li>How to measure (book method): barefoot, back against a wall, feet about 15–20 cm apart, push a hardcover book spine-up into your crotch with saddle-like pressure, and measure from the floor to the top of the book spine. Measure twice and average. A trouser inseam runs about 1–2 inches shorter than a cycling inseam; do not enter it directly.</li>
+        <li>Data stays only in this page's draft; leaving the page or switching languages discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Can I order this size directly?</h3>
+    <p>No — this is a starting point. Brands differ in geometry; confirm against the brand size chart and a test ride.</p>
+    <h3>Is the inch figure the shop size?</h3>
+    <p>No — it is the arithmetic conversion of the centimetre figure. Road and hybrid bikes are not sold by inches in shops.</p>
+    <h3>Can I enter my trouser inseam?</h3>
+    <p>No — a trouser inseam runs about 1–2 inches shorter than a cycling inseam. Re-measure with the book method.</p>
+    <h3>How do I measure my inseam?</h3>
+    <p>Barefoot, back against a wall, feet about 15–20 cm apart, push a hardcover book spine-up into your crotch with saddle-like pressure, and measure from the floor to the top of the book spine. Measure twice and average.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · Bike Frame Size Calculator runs locally and offline, with no account, and never sends your numbers anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
