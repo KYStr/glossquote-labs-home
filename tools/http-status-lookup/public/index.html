@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>HTTP 狀態碼查詢｜Gloss Tools</title>
+<meta name="description" content="輸入一個 HTTP 狀態碼，立即知道它的分類、官方名稱、中文說明、常見成因與處理建議。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>HTTP 狀態碼查詢</h1>
+  <p class="lede">輸入一個 HTTP 狀態碼，立即知道它的分類、官方名稱、中文說明、常見成因與處理建議。對照表採 IANA HTTP 狀態碼登記（2026-11-21 讀取）的 64 個已指派代碼。全部查詢都在這個頁面本機進行，不發出任何網路請求、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">狀態碼</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-code">狀態碼 / Status code</label>
+          <p class="help" id="help-code">三位數字，100 至 599，例如 404。</p>
+          <input id="field-code" name="code" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 404" value="404" aria-describedby="help-code">
+          <p class="field-error" id="error-code" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未查詢。輸入一個狀態碼，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">查詢</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">查詢結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="advice-rows"></dl>
+      <p class="flags-note" id="flags-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel table-panel" aria-labelledby="table-heading">
+    <h2 id="table-heading">完整狀態碼表</h2>
+    <div class="field">
+      <label for="table-filter">分類篩選</label>
+      <select id="table-filter">
+        <option value="all">全部</option>
+        <option value="1">1xx 資訊</option>
+        <option value="2">2xx 成功</option>
+        <option value="3">3xx 重導向</option>
+        <option value="4">4xx 客戶端錯誤</option>
+        <option value="5">5xx 伺服器錯誤</option>
+      </select>
+    </div>
+    <p class="help">點選任一代碼可將它填入輸入欄，再按「查詢」執行。</p>
+    <div class="table-wrap">
+    <table id="status-table">
+      <thead>
+        <tr><th scope="col">狀態碼</th><th scope="col">官方名稱</th><th scope="col">中文名稱</th><th scope="col">意義</th><th scope="col">出處</th></tr>
+      </thead>
+      <tbody>
+      <tr data-class="1"><td><button type="button" class="code-btn" data-code="100">100</button></td><td>Continue</td><td>繼續</td><td>伺服器已收到請求標頭，客戶端應繼續傳送主體。</td><td>RFC 9110 §15.2.1</td></tr>
+      <tr data-class="1"><td><button type="button" class="code-btn" data-code="101">101</button></td><td>Switching Protocols</td><td>切換通訊協定</td><td>伺服器接受 Upgrade 要求，將切換為新協定。</td><td>RFC 9110 §15.2.2</td></tr>
+      <tr data-class="1"><td><button type="button" class="code-btn" data-code="102">102</button></td><td>Processing</td><td>處理中</td><td>伺服器已收到完整請求，正在處理，請客戶端繼續等候。</td><td>RFC 2518</td></tr>
+      <tr data-class="1"><td><button type="button" class="code-btn" data-code="103">103</button></td><td>Early Hints</td><td>早期提示</td><td>伺服器在送出最終回應前，先提示客戶端可預載的資源。</td><td>RFC 8297</td></tr>
+      <tr data-class="1"><td><button type="button" class="code-btn" data-code="104">104</button></td><td>Upload Resumption Supported</td><td>支援續傳上傳</td><td>伺服器支援續傳上傳（暫時性登記）。</td><td>draft-ietf-httpbis-resumable-upload-05</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="200">200</button></td><td>OK</td><td>成功</td><td>請求成功，伺服器已回傳請求的內容。</td><td>RFC 9110 §15.3.1</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="201">201</button></td><td>Created</td><td>已建立</td><td>請求成功，並已建立新的資源。</td><td>RFC 9110 §15.3.2</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="202">202</button></td><td>Accepted</td><td>已接受</td><td>請求已接受處理，但尚未完成。</td><td>RFC 9110 §15.3.3</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="203">203</button></td><td>Non-Authoritative Information</td><td>非權威資訊</td><td>請求成功，但回應內容來自第三方副本，可能與來源不同。</td><td>RFC 9110 §15.3.4</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="204">204</button></td><td>No Content</td><td>無內容</td><td>請求成功，但沒有要回傳的內容。</td><td>RFC 9110 §15.3.5</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="205">205</button></td><td>Reset Content</td><td>重設內容</td><td>請求成功，客戶端應重設送出請求的表單或畫面。</td><td>RFC 9110 §15.3.6</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="206">206</button></td><td>Partial Content</td><td>部分內容</td><td>伺服器依 Range 要求，只回傳資源的一部分。</td><td>RFC 9110 §15.3.7</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="207">207</button></td><td>Multi-Status</td><td>多重狀態</td><td>回應主體列出多個子請求各自的狀態。</td><td>RFC 4918</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="208">208</button></td><td>Already Reported</td><td>已回報</td><td>此成員已在本次回應前面列出，不重複列。</td><td>RFC 5842</td></tr>
+      <tr data-class="2"><td><button type="button" class="code-btn" data-code="226">226</button></td><td>IM Used</td><td>已使用 IM</td><td>伺服器對 GET 套用了 instance manipulation，回傳處理後的結果。</td><td>RFC 3229</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="300">300</button></td><td>Multiple Choices</td><td>多重選擇</td><td>資源有多種表示形式，客戶端應選擇其一。</td><td>RFC 9110 §15.4.1</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="301">301</button></td><td>Moved Permanently</td><td>永久移動</td><td>資源已永久移到新的 URI。</td><td>RFC 9110 §15.4.2</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="302">302</button></td><td>Found</td><td>已找到</td><td>資源暫時位於另一 URI。</td><td>RFC 9110 §15.4.3</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="303">303</button></td><td>See Other</td><td>參見其他</td><td>回應可在另一 URI 以 GET 取得。</td><td>RFC 9110 §15.4.4</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="304">304</button></td><td>Not Modified</td><td>未修改</td><td>資源自條件請求指定的時間後未曾修改，可使用快取。</td><td>RFC 9110 §15.4.5</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="305">305</button></td><td>Use Proxy</td><td>使用 Proxy</td><td>必須經由指定的 Proxy 存取資源。</td><td>RFC 9110 §15.4.6</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="306">306</button></td><td>(Unused)</td><td>（未使用）</td><td>此代碼目前未使用，沒有定義的語義。</td><td>RFC 9110 §15.4.7</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="307">307</button></td><td>Temporary Redirect</td><td>暫時重導向</td><td>資源暫時位於另一 URI，且重送時必須保持原請求方法。</td><td>RFC 9110 §15.4.8</td></tr>
+      <tr data-class="3"><td><button type="button" class="code-btn" data-code="308">308</button></td><td>Permanent Redirect</td><td>永久重導向</td><td>資源已永久移到另一 URI，且重送時必須保持原請求方法。</td><td>RFC 9110 §15.4.9</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="400">400</button></td><td>Bad Request</td><td>錯誤請求</td><td>伺服器無法理解請求，多半是語法錯誤。</td><td>RFC 9110 §15.5.1</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="401">401</button></td><td>Unauthorized</td><td>未授權</td><td>請求需要驗證身分。</td><td>RFC 9110 §15.5.2</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="402">402</button></td><td>Payment Required</td><td>需要付款</td><td>保留給未來付款機制使用，尚未定義標準語義。</td><td>RFC 9110 §15.5.3</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="403">403</button></td><td>Forbidden</td><td>禁止存取</td><td>伺服器理解請求，但拒絕授權。</td><td>RFC 9110 §15.5.4</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="404">404</button></td><td>Not Found</td><td>找不到</td><td>伺服器找不到請求的資源。</td><td>RFC 9110 §15.5.5</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="405">405</button></td><td>Method Not Allowed</td><td>不允許的方法</td><td>資源存在，但不支援此請求方法。</td><td>RFC 9110 §15.5.6</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="406">406</button></td><td>Not Acceptable</td><td>不可接受</td><td>伺服器無法提供符合 Accept 標頭的表示形式。</td><td>RFC 9110 §15.5.7</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="407">407</button></td><td>Proxy Authentication Required</td><td>需要 Proxy 驗證</td><td>需先向 Proxy 驗證身分。</td><td>RFC 9110 §15.5.8</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="408">408</button></td><td>Request Timeout</td><td>請求逾時</td><td>伺服器等候請求逾時。</td><td>RFC 9110 §15.5.9</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="409">409</button></td><td>Conflict</td><td>衝突</td><td>請求與資源目前狀態衝突。</td><td>RFC 9110 §15.5.10</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="410">410</button></td><td>Gone</td><td>已刪除</td><td>資源已永久刪除，且無轉址位址。</td><td>RFC 9110 §15.5.11</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="411">411</button></td><td>Length Required</td><td>需要長度</td><td>請求缺少必要的 Content-Length。</td><td>RFC 9110 §15.5.12</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="412">412</button></td><td>Precondition Failed</td><td>前置條件失敗</td><td>請求中的前置條件未成立。</td><td>RFC 9110 §15.5.13</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="413">413</button></td><td>Content Too Large</td><td>內容過大</td><td>請求主體超過伺服器願意處理的大小。</td><td>RFC 9110 §15.5.14</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="414">414</button></td><td>URI Too Long</td><td>URI 過長</td><td>URI 超過伺服器願意處理的長度。</td><td>RFC 9110 §15.5.15</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="415">415</button></td><td>Unsupported Media Type</td><td>不支援的媒體類型</td><td>請求主體的媒體類型伺服器不支援。</td><td>RFC 9110 §15.5.16</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="416">416</button></td><td>Range Not Satisfiable</td><td>無法滿足範圍</td><td>請求的範圍超出資源實際大小。</td><td>RFC 9110 §15.5.17</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="417">417</button></td><td>Expectation Failed</td><td>預期失敗</td><td>伺服器無法滿足 Expect 標頭的要求。</td><td>RFC 9110 §15.5.18</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="418">418</button></td><td>(Unused)</td><td>（未使用）</td><td>此代碼目前未使用，沒有定義的語義。</td><td>RFC 9110 §15.5.19</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="421">421</button></td><td>Misdirected Request</td><td>錯誤導向的請求</td><td>請求被導向無法回應的伺服器。</td><td>RFC 9110 §15.5.20</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="422">422</button></td><td>Unprocessable Content</td><td>無法處理的內容</td><td>請求語法正確，但內容語義有誤無法處理。</td><td>RFC 9110 §15.5.21</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="423">423</button></td><td>Locked</td><td>已鎖定</td><td>資源已被鎖定。</td><td>RFC 4918</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="424">424</button></td><td>Failed Dependency</td><td>相依性失敗</td><td>請求因另一請求失敗而無法執行。</td><td>RFC 4918</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="425">425</button></td><td>Too Early</td><td>太早</td><td>伺服器不願處理可能被重送的早期請求。</td><td>RFC 8470</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="426">426</button></td><td>Upgrade Required</td><td>需要升級</td><td>客戶端應升級為其他協定才能繼續。</td><td>RFC 9110 §15.5.22</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="428">428</button></td><td>Precondition Required</td><td>需要前置條件</td><td>伺服器要求請求必須附帶條件式標頭。</td><td>RFC 6585</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="429">429</button></td><td>Too Many Requests</td><td>請求過多</td><td>客戶端在短時間內送出太多請求。</td><td>RFC 6585</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="431">431</button></td><td>Request Header Fields Too Large</td><td>請求標頭欄位過大</td><td>請求標頭總量過大，伺服器拒絕處理。</td><td>RFC 6585</td></tr>
+      <tr data-class="4"><td><button type="button" class="code-btn" data-code="451">451</button></td><td>Unavailable For Legal Reasons</td><td>因法律原因無法提供</td><td>因法律要求，資源無法提供。</td><td>RFC 7725</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="500">500</button></td><td>Internal Server Error</td><td>內部伺服器錯誤</td><td>伺服器發生未預期的錯誤。</td><td>RFC 9110 §15.6.1</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="501">501</button></td><td>Not Implemented</td><td>未實作</td><td>伺服器不支援請求所需的功能。</td><td>RFC 9110 §15.6.2</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="502">502</button></td><td>Bad Gateway</td><td>錯誤的閘道</td><td>閘道或代理收到上游伺服器的無效回應。</td><td>RFC 9110 §15.6.3</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="503">503</button></td><td>Service Unavailable</td><td>服務無法使用</td><td>伺服器暫時無法處理請求。</td><td>RFC 9110 §15.6.4</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="504">504</button></td><td>Gateway Timeout</td><td>閘道逾時</td><td>閘道等候上游伺服器逾時。</td><td>RFC 9110 §15.6.5</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="505">505</button></td><td>HTTP Version Not Supported</td><td>不支援的 HTTP 版本</td><td>伺服器不支援請求使用的 HTTP 版本。</td><td>RFC 9110 §15.6.6</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="506">506</button></td><td>Variant Also Negotiates</td><td>變體亦協商</td><td>內容協商設定錯誤，選出的變體本身又是協商資源。</td><td>RFC 2295</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="507">507</button></td><td>Insufficient Storage</td><td>儲存空間不足</td><td>伺服器儲存空間不足，無法完成請求。</td><td>RFC 4918</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="508">508</button></td><td>Loop Detected</td><td>偵測到迴圈</td><td>伺服器在處理請求時偵測到無限迴圈。</td><td>RFC 5842</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="510">510</button></td><td>Not Extended</td><td>未擴充（已廢止）</td><td>請求需要進一步擴充才能完成；此碼已廢止。</td><td>RFC 2774 (OBSOLETED)</td></tr>
+      <tr data-class="5"><td><button type="button" class="code-btn" data-code="511">511</button></td><td>Network Authentication Required</td><td>需要網路驗證</td><td>客戶端需先通過網路存取驗證，例如 captive portal。</td><td>RFC 6585</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="table-note">未指派區間（不在表中逐列列出）：105–199、209–225、227–299、309–399、419–420、427、430、432–450、452–499、509、512–599。在 100–599 內但尚未指派的代碼，查詢時會顯示未指派說明，只以分類概略理解。</p>
+  </section>
+
+  <details class="details">
+    <summary>分類方式與固定規則</summary>
+    <p>分類由狀態碼第一個數字決定：1xx 資訊（請求已收到，繼續處理）、2xx 成功（請求已成功接收、理解並接受）、3xx 重導向（需要進一步動作才能完成請求）、4xx 客戶端錯誤（請求語法錯誤或無法完成）、5xx 伺服器錯誤（伺服器無法完成看似有效的請求）。分類摘要逐字取自 IANA 登記註記。</p>
+    <p>418 在現行 IANA 登記與 RFC 9110 列為 (Unused)；舊稱「I'm a teapot」出自 RFC 2324 愚人節玩笑，不在現行登記中。413、422 採用 RFC 9110 現行名稱「Content Too Large」、「Unprocessable Content」。104 為暫時性登記，已於 2026-11-13 到期，但登記列仍在；510 已廢止（OBSOLETED）。</p>
+    <p>全部查詢都在這個頁面本機進行，不發出任何網路請求、不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>查不到的代碼怎麼辦？</dt>
+      <dd>在 100–599 內但尚未指派的代碼會顯示未指派說明，只以分類概略理解。</dd>
+      <dt>會真的去請求某個網址嗎？</dt>
+      <dd>不會。本工具只查內建的狀態碼表，不發出任何網路請求。</dd>
+      <dt>418 是 "I'm a teapot" 嗎？</dt>
+      <dd>不是。現行 IANA 登記與 RFC 9110 將 418 列為 (Unused)；"I'm a teapot" 出自 RFC 2324 愚人節玩笑。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
