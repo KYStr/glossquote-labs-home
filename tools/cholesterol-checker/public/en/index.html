@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cholesterol Checker | Gloss Tools</title>
+<meta name="description" content="Enter total cholesterol, LDL, HDL and triglycerides from a lab report and see each value classified against the NCEP ATP III table, with an overall summary. For reference only — not medical advice.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>Cholesterol Checker</h1>
+    <p class="lede">Enter the four lipid values from a lab report and see each one classified against the NCEP ATP III table, with non-HDL cholesterol and an overall summary. Everything is computed on your device only — nothing is uploaded.</p>
+
+    <p class="disclaimer">This tool is for reference only and is not a substitute for professional medical advice, diagnosis, or treatment. If you have questions, consult a physician or qualified healthcare professional.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-total">Total cholesterol (mg/dL)</label>
+          <input id="input-total" name="total" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="180">
+          <p class="field-error" id="error-total" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-ldl">LDL cholesterol (mg/dL)</label>
+          <input id="input-ldl" name="ldl" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="90">
+          <p class="field-error" id="error-ldl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-hdl">HDL cholesterol (mg/dL)</label>
+          <input id="input-hdl" name="hdl" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="65">
+          <p class="field-error" id="error-hdl" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-triglycerides">Triglycerides (mg/dL)</label>
+          <input id="input-triglycerides" name="triglycerides" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="120">
+          <p class="field-error" id="error-triglycerides" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Check categories</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter values, or load the example.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Classification results</h2>
+      <p class="result-sentence" id="result-overall"></p>
+      <ul class="result-list">
+        <li id="result-total"></li>
+        <li id="result-ldl"></li>
+        <li id="result-hdl"></li>
+        <li id="result-triglycerides"></li>
+      </ul>
+      <p class="result-nonhdl" id="result-nonhdl"></p>
+      <p class="result-note" id="result-hdl-note" hidden><span id="result-hdl-note-text"></span></p>
+    </section>
+
+    <details class="rules">
+      <summary>Classification rules and limits</summary>
+      <ul>
+        <li>All four fields are whole numbers in mg/dL, from 1 to 9999; each field holds at most 5 characters. No decimals, signs, spaces, or exponents.</li>
+        <li>Classification follows the NCEP ATP III table: intervals are left-closed, so a cut-point value belongs to the higher band (for example, total cholesterol 200 is borderline high, LDL 100 is near or above optimal).</li>
+        <li>Non-HDL cholesterol = total cholesterol − HDL, for reference only and not classified; when total cholesterol is not greater than HDL, the integer is still shown as-is.</li>
+        <li>The overall summary takes the most severe of the four bands: all desirable, borderline when the worst is a borderline value, and needs attention when any value needs attention.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Which standard is used?</h3>
+    <p>NCEP ATP III (U.S. National Cholesterol Education Program); values are in mg/dL.</p>
+    <h3>Why is high HDL good?</h3>
+    <p>ATP III treats HDL ≥60 mg/dL as a “negative” risk factor — protective; low HDL (&lt;40) is the concern.</p>
+    <h3>Do I need to fast?</h3>
+    <p>The ATP III classification assumes a 9–12 hour fasting lipid profile; triglycerides are most affected by eating.</p>
+    <h3>Is this a diagnosis?</h3>
+    <p>No. This tool is for reference only and is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>This tool is for reference only and is not a substitute for professional medical advice, diagnosis, or treatment. If you have questions, consult a physician or qualified healthcare professional.</p>
+  <p>Gloss Tools · The Cholesterol Checker runs offline on your device. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
