@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Unix 時間戳轉換｜Gloss Tools</title>
+<meta name="description" content="把 Unix 時間戳換成人類可讀的日期時間，或把日期時間換回時間戳；UTC 與台北時間對照，支援秒／毫秒與多種輸出格式。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Unix 時間戳轉換</h1>
+  <p class="lede">貼上 Unix 時間戳（秒或毫秒），立即看到 UTC 與台北時間的對照；或填入日期時間，換回時間戳。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">轉換</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>方向</legend>
+          <div class="radio-row">
+            <label><input type="radio" id="field-direction-timestamp" name="direction" value="timestamp-to-datetime" checked> 時間戳 → 日期時間</label>
+          </div>
+          <div class="radio-row">
+            <label><input type="radio" id="field-direction-datetime" name="direction" value="datetime-to-timestamp"> 日期時間 → 時間戳</label>
+          </div>
+          <p class="field-error" id="error-direction" role="alert"></p>
+        </fieldset>
+
+        <div id="group-timestamp">
+          <div class="field">
+            <label for="field-timestamp">時間戳</label>
+            <p class="help" id="help-timestamp">十進位數字，可選負號與 1–3 位小數，例如 1700000000 或 1700000000000。</p>
+            <input id="field-timestamp" name="timestamp" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1700000000" value="" aria-describedby="help-timestamp">
+            <p class="field-error" id="error-timestamp" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-unit">單位</label>
+            <p class="help" id="help-unit">自動判別：絕對值 ≥ 10¹² 為毫秒，&lt; 10¹¹ 為秒，中間地帶請明確選擇。</p>
+            <select id="field-unit" name="unit" aria-describedby="help-unit">
+              <option value="auto" selected>自動判別</option>
+              <option value="seconds">秒</option>
+              <option value="milliseconds">毫秒</option>
+            </select>
+            <p class="field-error" id="error-unit" role="alert"></p>
+          </div>
+        </div>
+
+        <div id="group-datetime" hidden>
+          <div class="field">
+            <label for="field-date">日期</label>
+            <p class="help" id="help-date">嚴格 YYYY-MM-DD，例如 2026-11-21。</p>
+            <input id="field-date" name="date" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2026-11-21" value="" aria-describedby="help-date">
+            <p class="field-error" id="error-date" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-time">時間</label>
+            <p class="help" id="help-time">嚴格 HH:MM:SS，00:00:00 至 23:59:59；不接受 23:59:60。</p>
+            <input id="field-time" name="time" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 00:00:00" value="" aria-describedby="help-time">
+            <p class="field-error" id="error-time" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-milliseconds">毫秒</label>
+            <p class="help" id="help-milliseconds">1–3 位數字，0–999；「5」即 5 毫秒，不是 500 毫秒。</p>
+            <input id="field-milliseconds" name="milliseconds" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 000" value="000" aria-describedby="help-milliseconds">
+            <p class="field-error" id="error-milliseconds" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-timezone">時區</label>
+          <p class="help" id="help-timezone">日期時間方向的時區，也是第三組顯示的時區。UTC 與台北時間永遠另外顯示。</p>
+          <select id="field-timezone" name="timezone" aria-describedby="help-timezone">
+            <option value="UTC">UTC</option>
+            <option value="Asia/Taipei" selected>Asia/Taipei（台北）</option>
+            <option value="Asia/Tokyo">Asia/Tokyo（東京）</option>
+            <option value="Asia/Shanghai">Asia/Shanghai（上海）</option>
+            <option value="Europe/London">Europe/London（倫敦）</option>
+            <option value="Europe/Paris">Europe/Paris（巴黎）</option>
+            <option value="America/New_York">America/New_York（紐約）</option>
+            <option value="America/Los_Angeles">America/Los_Angeles（洛杉磯）</option>
+            <option value="Australia/Sydney">Australia/Sydney（雪梨）</option>
+          </select>
+          <p class="field-error" id="error-timezone" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-format">輸出格式</label>
+          <p class="help" id="help-format">每組顯示永遠列出 ISO 8601 與 RFC 2822；選自訂時另顯示自訂格式結果。</p>
+          <select id="field-format" name="format" aria-describedby="help-format">
+            <option value="iso8601" selected>ISO 8601</option>
+            <option value="rfc2822">RFC 2822</option>
+            <option value="custom">自訂</option>
+          </select>
+          <p class="field-error" id="error-format" role="alert"></p>
+        </div>
+        <div class="field" id="field-custom-pattern-wrap" hidden>
+          <label for="field-custom-pattern">自訂格式</label>
+          <p class="help" id="help-custom-pattern">可用 token：YYYY、MM、DD、HH、mm、ss、SSS；其餘字元原樣輸出。最多 64 個字元。</p>
+          <input id="field-custom-pattern" name="customPattern" type="text" autocomplete="off" placeholder="例如 YYYY-MM-DD HH:mm:ss" value="YYYY-MM-DD HH:mm:ss" aria-describedby="help-custom-pattern">
+          <p class="field-error" id="error-custom-pattern" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未轉換。輸入時間戳或日期時間，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <p class="example-note" id="now-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">轉換</button>
+          <button type="button" id="now-btn" class="button-secondary">現在</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">轉換結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <p class="ambiguous-note" id="ambiguous-note" hidden></p>
+      <div id="displays-rows"></div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>固定規則</summary>
+    <p>單位自動判別看整數部分的絕對值：≥ 10¹² 為毫秒，&lt; 10¹¹ 為秒，10¹¹ 至 10¹² 之間必須明確選單位。秒模式接受 1–3 位小數（0.5 秒 = 500 毫秒），毫秒模式只接受整數。負時間戳代表 1970 年以前；可換算範圍為 0001-01-01 至 9999-12-31。閏秒不計入 Unix 時間，23:59:60 沒有對應的時間戳。日光節約切換時，不存在的本地時間會報錯；出現兩次的本地時間採用較早者並標示。時區偏移取自裝置內建的 IANA 時區資料庫，不隨裝置的 host 時區改變。</p>
+    <p>結果永遠顯示 UTC 與 Asia/Taipei，再加一個自選時區；自選時區與前兩者重複時不重複列出。下載的報告為結果的 JSON，檔名固定為 unix-timestamp-report.json。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>毫秒和秒怎麼分？</dt>
+      <dd>13 位數通常是毫秒，10 位數通常是秒；中間地帶請明確選擇單位。</dd>
+      <dt>閏秒怎麼處理？</dt>
+      <dd>Unix 時間不計閏秒，23:59:60 沒有獨立的時間戳。</dd>
+      <dt>1970 年以前可以嗎？</dt>
+      <dd>可以，負時間戳代表紀元之前。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
