@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>派對採購試算｜Gloss Tools</title>
+<meta name="description" content="輸入賓客人數、派對時長與餐型，算出食物、飲料、杯子、盤子與冰塊各要買多少。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>派對採購試算</h1>
+    <p class="lede">輸入賓客人數、派對時長與餐型，算出食物、飲料、杯子、盤子與冰塊各要買多少。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-guests" id="label-guests">賓客人數</label>
+          <input id="input-guests" name="guests" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="20">
+          <p class="field-error" id="error-guests" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-duration" id="label-duration">派對時長（小時）</label>
+          <input id="input-duration" name="durationHours" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="3">
+          <p class="field-error" id="error-duration" hidden></p>
+        </div>
+      </div>
+
+      <fieldset class="mode-group">
+        <legend>餐型</legend>
+        <div class="segmented">
+          <label class="segment"><input type="radio" name="mealType" value="snacks">點心</label>
+          <label class="segment"><input type="radio" name="mealType" value="light">輕食</label>
+          <label class="segment"><input type="radio" name="mealType" value="full" checked>正餐</label>
+        </div>
+        <p class="field-error" id="error-meal" hidden></p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算採購清單</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入賓客人數、派對時長與餐型，或載入範例。</p>
+
+    <p class="disclaimer">這些數字是規劃估算，不是餐飲業者的合約保證；實際依菜單與賓客調整。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">採購清單</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <p class="result-factor" id="result-factor"></p>
+      <h3>採購總量</h3>
+      <dl class="result-facts">
+        <div>
+          <dt>食物</dt>
+          <dd><span id="total-food"></span> 公克</dd>
+        </div>
+        <div>
+          <dt>飲料</dt>
+          <dd><span id="total-drinks"></span> 毫升（<span id="total-bottles"></span> 瓶 2 公升裝）</dd>
+        </div>
+        <div>
+          <dt>杯子</dt>
+          <dd><span id="total-cups"></span> 個</dd>
+        </div>
+        <div>
+          <dt>盤子</dt>
+          <dd><span id="total-plates"></span> 個（含 20% 備量）</dd>
+        </div>
+        <div>
+          <dt>冰塊</dt>
+          <dd><span id="total-ice"></span> 公斤</dd>
+        </div>
+      </dl>
+      <h3>每人份明細</h3>
+      <table class="per-person">
+        <thead>
+          <tr><th scope="col">項目</th><th scope="col">每人份</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">食物</th><td><span id="per-food"></span> 公克</td></tr>
+          <tr><th scope="row">飲料</th><td><span id="per-drinks"></span> 毫升</td></tr>
+          <tr><th scope="row">杯子</th><td><span id="per-cups"></span> 個</td></tr>
+          <tr><th scope="row">盤子</th><td><span id="per-plates"></span> 個</td></tr>
+          <tr><th scope="row">冰塊</th><td><span id="per-ice"></span> 公斤</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>賓客人數 1 至 500 人；派對時長 0.5 至 12 小時，以 0.5 小時為級距；餐型為點心、輕食或正餐。</li>
+        <li>食物每人份：點心 200 公克、輕食 350 公克、正餐 500 公克，再乘時長係數（2 小時以內 1.0、2 至 4 小時 1.2、超過 4 小時 1.5）。</li>
+        <li>飲料用 2-1 規則：第一小時每人 2 份，之後每小時每人 1 份，每份 350 毫升。</li>
+        <li>杯子：3 小時以內每人 2 個，否則每人 3 個。盤子：點心或輕食每人 1 個，正餐每人 2 個，總量另加 20% 備量。冰塊每人 0.5 公斤，再乘時長係數。</li>
+        <li>總量一律向上取整到可購買的單位：食物到 100 公克、飲料到 500 毫升、冰塊到 0.5 公斤；飲料另換算 2 公升瓶數。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>這些數字是保證嗎？</h3>
+    <p>不是，是餐飲業常用估算規則的規劃量，實際依菜單與賓客調整。</p>
+    <h3>飲料為什麼是首小時 2 份、之後每小時 1 份？</h3>
+    <p>這是餐飲業常用的 2-1 規則：第一小時每人 2 份，之後每小時每人 1 份，每份以 350 毫升計。</p>
+    <h3>冰塊 0.5 公斤是怎麼來的？</h3>
+    <p>約為每人 1 磅冰的常用規則，時長超過 4 小時再乘 1.5。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 派對採購試算在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
