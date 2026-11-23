@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UV Index Guide | Gloss Tools</title>
+<meta name="description" content="Enter the UV index and your skin type to get the WHO / CWA category, colour and sun-protection advice.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../en/index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="Navigation">
+    <a href="../../en/index.html">Home</a>
+    <span class="lang-switch">
+      <a href="../index.html" hreflang="zh-Hant">繁體中文</a>
+      <span class="draft-note">Switching language leaves this page; an unrun draft will be lost.</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>UV Index Guide</h1>
+    <p class="lede">Enter the UV index and your skin type to get the WHO / CWA category, colour and sun-protection advice. The time to redness is an estimate of when redness appears without protection — not a safe exposure time. Everything is computed on your device only — nothing is uploaded.</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-uv" id="label-uv">UV index</label>
+          <input id="input-uv" name="uvIndex" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="5">
+          <p class="field-hint">0 to 20, at most 1 decimal place, for example 8.5.</p>
+          <p class="field-error" id="error-uv" hidden></p>
+        </div>
+        <div class="field">
+          <label for="select-skin" id="label-skin">Skin type (Fitzpatrick I–VI)</label>
+          <select id="select-skin" name="skinType">
+            <option value="I">I — Always burns, never tans</option>
+            <option value="II">II — Burns easily, tans minimally</option>
+            <option value="III" selected>III — Sometimes burns, tans gradually</option>
+            <option value="IV">IV — Rarely burns, tans easily</option>
+            <option value="V">V — Very rarely burns, tans very easily</option>
+            <option value="VI">VI — Almost never burns</option>
+          </select>
+          <p class="field-error" id="error-skin" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">Check sun protection</button>
+        <button type="button" id="btn-example">Load example</button>
+        <button type="button" id="btn-cancel" hidden>Cancel</button>
+        <button type="button" id="btn-reset">Reset</button>
+        <button type="button" id="btn-download" hidden>Download report</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">Enter the UV index and your skin type, or load the example.</p>
+
+    <p class="disclaimer">This tool is for general reference only and is not medical advice. Time-to-redness is an estimate; individual variation is large. Follow official sun-protection guidance.</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>Category</dt>
+          <dd><span class="swatch swatch-green" id="result-swatch">green</span> <span id="result-category"></span></dd>
+        </div>
+        <div>
+          <dt>SPF and reapplication</dt>
+          <dd id="result-spf"></dd>
+        </div>
+        <div>
+          <dt>Estimated time to redness</dt>
+          <dd id="result-burn"></dd>
+        </div>
+        <div>
+          <dt>CWA burn reference</dt>
+          <dd id="result-cwa"></dd>
+        </div>
+        <div>
+          <dt>Protection advice</dt>
+          <dd class="prose" id="result-advice"></dd>
+        </div>
+        <div>
+          <dt>Skin note</dt>
+          <dd class="prose" id="result-skin"></dd>
+        </div>
+      </dl>
+      <p class="disclaimer" id="result-disclaimer"></p>
+    </section>
+
+    <details class="rules">
+      <summary>Categories and calculation rules</summary>
+      <ul>
+        <li>Categories follow the WHO “Global Solar UV Index: A Practical Guide” thresholds and colours, with Chinese names from the Central Weather Administration: 0–2 Low (green, PMS 375), 3–5 Moderate (yellow, PMS 102), 6–7 High (orange, PMS 151), 8–10 Very high (red, PMS 032), 11+ Extreme (purple, PMS 265). The category is judged after rounding the UV index to the nearest integer (0.5 rounds up).</li>
+        <li>The UV index is 0 to 20 with at most 1 decimal place. Leading zeros, exponents, signs and spaces are not accepted. Each field holds at most 8 characters.</li>
+        <li>The minimum SPF depends on the category only: SPF 15 for Low, SPF 30 for Moderate and High, SPF 50 for Very high and Extreme; reapply every 2 hours from Moderate up. Avoid being outside during midday hours at 8 and above.</li>
+        <li>Time to redness is computed from the unprotected, unrounded index: minutes = MED ÷ (1.5 × UV index), rounded to whole minutes. There is no estimate when the index is 0; values above 180 minutes are shown as “180+ minutes”. MED values are approximate typical values: I 200, II 250, III 300, IV 450, V 600, VI 1000 J/m².</li>
+        <li>The CWA burn reference is the table entry “burn possible within N minutes”: High 30 minutes, Very high 20 minutes, Extreme 15 minutes; Low and Moderate have no entry. It is a reference value for an average unprotected person, not a safe time.</li>
+        <li>Data stays in the current page draft only; leaving or switching language discards it. Nothing is stored or uploaded.</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>FAQ</h2>
+    <h3>Do I need protection at UV index 3 and above?</h3>
+    <p>Yes — WHO advises sun protection from UV index 3.</p>
+    <h3>Is the time to redness a safe time?</h3>
+    <p>No — it is an estimate of when redness appears without protection; individual variation is large and it is not a guarantee of how long you can stay in the sun.</p>
+    <h3>Why does WHO not recommend reporting burn times?</h3>
+    <p>The WHO guide states that reporting burn times is not recommended, because individual variation is large and the number is easily mistaken for a safe exposure time. This tool therefore only reports an estimate, with a disclaimer.</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · The UV Index Guide runs offline on your device. No account, and your numbers are never sent anywhere.</p>
+</footer>
+<script type="module" src="../js/app.js"></script>
+</body>
+</html>
