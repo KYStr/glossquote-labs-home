@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>租屋 vs 買房試算｜Gloss Tools</title>
+<meta name="description" content="輸入租金、房價、頭期款、房貸利率與年增率假設，看到第幾年買房開始比租屋划算，以及逐年的總成本比較表。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>租屋 vs 買房試算</h1>
+  <p class="lede">輸入租金、房價、頭期款、房貸利率與年增率假設，看到第幾年買房開始比租屋划算，以及逐年的總成本比較表。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">每月租金、房價與貸款假設</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-monthly-rent">每月租金（元）</label>
+          <p class="help" id="help-monthly-rent">整數，範圍 1 至 1,000,000 元。</p>
+          <input id="field-monthly-rent" name="monthlyRent" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 20000" value="20000" aria-describedby="help-monthly-rent">
+          <p class="field-error" id="error-monthly-rent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-home-price">房價（元）</label>
+          <p class="help" id="help-home-price">整數，範圍 1 至 1,000,000,000 元。</p>
+          <input id="field-home-price" name="homePrice" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 10000000" value="10000000" aria-describedby="help-home-price">
+          <p class="field-error" id="error-home-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-down-payment">頭期款（元）</label>
+          <p class="help" id="help-down-payment">整數，範圍 0 至 1,000,000,000 元，且不可超過房價。</p>
+          <input id="field-down-payment" name="downPayment" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2000000" value="2000000" aria-describedby="help-down-payment">
+          <p class="field-error" id="error-down-payment" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mortgage-rate">房貸年利率（%）</label>
+          <p class="help" id="help-mortgage-rate">數字，範圍 0 至 30%，小數至多 4 位。</p>
+          <input id="field-mortgage-rate" name="mortgageRate" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2.5" value="2" aria-describedby="help-mortgage-rate">
+          <p class="field-error" id="error-mortgage-rate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-years">比較年數（年）</label>
+          <p class="help" id="help-years">整數，範圍 1 至 40 年；同時是房貸年期與比較年數。</p>
+          <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 30" value="30" aria-describedby="help-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rent-growth">租金年漲幅（%）</label>
+          <p class="help" id="help-rent-growth">數字，範圍 -10 至 30%，小數至多 2 位；可為負數。</p>
+          <input id="field-rent-growth" name="rentGrowthPct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2" value="2" aria-describedby="help-rent-growth">
+          <p class="field-error" id="error-rent-growth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-home-appreciation">房價年漲幅（%）</label>
+          <p class="help" id="help-home-appreciation">數字，範圍 -10 至 30%，小數至多 2 位；可為負數。</p>
+          <input id="field-home-appreciation" name="homeAppreciationPct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 0" value="2" aria-describedby="help-home-appreciation">
+          <p class="field-error" id="error-home-appreciation" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-opportunity-cost">頭期款機會成本年利率（%）</label>
+          <p class="help" id="help-opportunity-cost">數字，範圍 0 至 30%，小數至多 2 位。</p>
+          <input id="field-opportunity-cost" name="opportunityCostPct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 3" value="3" aria-describedby="help-opportunity-cost">
+          <p class="field-error" id="error-opportunity-cost" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未試算。輸入租金、房價等假設，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算租買比較</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="results-column">
+      <p class="disclaimer">本工具僅依你輸入的假設試算，不含稅費、仲介費、裝修、維修、管理費與房貸成數限制，不是財務建議或銀行報價。</p>
+      <p class="disclaimer">This tool estimates only from the assumptions you enter. It excludes taxes, agent fees, renovation, maintenance, management fees and loan-to-value limits, and is not financial advice or a bank quotation.</p>
+      <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading">損益平衡年數與總成本比較</h2>
+        <dl class="summary-list" id="summary-rows"></dl>
+        <h3 id="table-heading">逐年比較表</h3>
+        <div class="table-scroll" id="table-scroll" tabindex="0" role="region" aria-labelledby="table-heading">
+          <table class="yearly-table" id="yearly-table">
+            <thead>
+              <tr>
+                <th scope="col">年份</th>
+                <th scope="col">當年租金</th>
+                <th scope="col">累計租金</th>
+                <th scope="col">當年房貸</th>
+                <th scope="col">房價</th>
+                <th scope="col">貸款餘額</th>
+                <th scope="col">淨值</th>
+                <th scope="col">機會成本</th>
+                <th scope="col">買房累計淨成本</th>
+                <th scope="col">差額</th>
+                <th scope="col">備註</th>
+              </tr>
+            </thead>
+            <tbody id="yearly-rows"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="pagination" hidden>
+          <button type="button" id="table-prev" class="button-secondary">上一頁</button>
+          <span class="page-label" id="table-page-label" role="status" aria-live="polite"></span>
+          <button type="button" id="table-next" class="button-secondary">下一頁</button>
+        </div>
+        <div class="actions">
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="details">
+    <summary>試算方式與固定規則</summary>
+    <p>房貸採等額本息月付，內部逐月分攤（不顯示逐月表）：月付以整元四捨五入，最後一個月精確結清。租金按年複利成長、房價按年漲跌、頭期款機會成本按年複利；機會成本只計在買房一側。比較年數同時是房貸年期與比較年數。損益平衡年數是差額首次大於或等於 0 的那一年；之後是否回落，請看逐年比較表的差額欄。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對你輸入的假設，不做長期追蹤。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>機會成本是什麼意思？</dt>
+      <dd>買房把頭期款鎖進房子，租屋則假設這筆錢以你填的年利率複利增值；比較時這筆放棄的增值算在買房的成本裡。</dd>
+      <dt>過了損益平衡年就一定一直划算嗎？</dt>
+      <dd>不一定。損益平衡年是買房第一次追上租屋的那一年；之後是否回落，請看逐年比較表的差額欄。</dd>
+      <dt>這是買房建議嗎？</dt>
+      <dd>不是。這只是依你輸入的假設試算，不含稅費、仲介費、裝修、維修、管理費與房貸成數限制，也不是銀行報價。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

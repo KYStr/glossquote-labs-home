@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Rent vs Buy Calculator | Gloss Tools</title>
+<meta name="description" content="Enter rent, home price, down payment, mortgage rate and growth assumptions to see the breakeven year and the year-by-year total-cost comparison.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Rent vs Buy Calculator</h1>
+  <p class="lede">Enter rent, home price, down payment, mortgage rate and growth assumptions to see the breakeven year and the year-by-year total-cost comparison. All calculation happens locally in this page; nothing is uploaded, stored, or recorded.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Monthly rent, home price, and loan assumptions</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-monthly-rent">Monthly rent (NT$)</label>
+          <p class="help" id="help-monthly-rent">Whole number, from 1 to 1,000,000.</p>
+          <input id="field-monthly-rent" name="monthlyRent" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 20000" value="20000" aria-describedby="help-monthly-rent">
+          <p class="field-error" id="error-monthly-rent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-home-price">Home price (NT$)</label>
+          <p class="help" id="help-home-price">Whole number, from 1 to 1,000,000,000.</p>
+          <input id="field-home-price" name="homePrice" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 10000000" value="10000000" aria-describedby="help-home-price">
+          <p class="field-error" id="error-home-price" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-down-payment">Down payment (NT$)</label>
+          <p class="help" id="help-down-payment">Whole number, from 0 to 1,000,000,000, and no more than the home price.</p>
+          <input id="field-down-payment" name="downPayment" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 2000000" value="2000000" aria-describedby="help-down-payment">
+          <p class="field-error" id="error-down-payment" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-mortgage-rate">Annual mortgage rate (%)</label>
+          <p class="help" id="help-mortgage-rate">Number, from 0 to 30%, with at most 4 decimal places.</p>
+          <input id="field-mortgage-rate" name="mortgageRate" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2.5" value="2" aria-describedby="help-mortgage-rate">
+          <p class="field-error" id="error-mortgage-rate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-years">Horizon (years)</label>
+          <p class="help" id="help-years">Whole number, from 1 to 40 years; also the mortgage term and the comparison horizon.</p>
+          <input id="field-years" name="years" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 30" value="30" aria-describedby="help-years">
+          <p class="field-error" id="error-years" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-rent-growth">Annual rent growth (%)</label>
+          <p class="help" id="help-rent-growth">Number, from -10 to 30%, with at most 2 decimal places; may be negative.</p>
+          <input id="field-rent-growth" name="rentGrowthPct" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2" value="2" aria-describedby="help-rent-growth">
+          <p class="field-error" id="error-rent-growth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-home-appreciation">Annual home appreciation (%)</label>
+          <p class="help" id="help-home-appreciation">Number, from -10 to 30%, with at most 2 decimal places; may be negative.</p>
+          <input id="field-home-appreciation" name="homeAppreciationPct" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 0" value="2" aria-describedby="help-home-appreciation">
+          <p class="field-error" id="error-home-appreciation" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-opportunity-cost">Annual opportunity cost rate (%)</label>
+          <p class="help" id="help-opportunity-cost">Number, from 0 to 30%, with at most 2 decimal places.</p>
+          <input id="field-opportunity-cost" name="opportunityCostPct" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 3" value="3" aria-describedby="help-opportunity-cost">
+          <p class="field-error" id="error-opportunity-cost" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter rent, home price and the other assumptions, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate rent vs buy</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="results-column">
+      <p class="disclaimer">本工具僅依你輸入的假設試算，不含稅費、仲介費、裝修、維修、管理費與房貸成數限制，不是財務建議或銀行報價。</p>
+      <p class="disclaimer">This tool estimates only from the assumptions you enter. It excludes taxes, agent fees, renovation, maintenance, management fees and loan-to-value limits, and is not financial advice or a bank quotation.</p>
+      <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading">Breakeven year and total-cost comparison</h2>
+        <dl class="summary-list" id="summary-rows"></dl>
+        <h3 id="table-heading">Year-by-year comparison</h3>
+        <div class="table-scroll" id="table-scroll" tabindex="0" role="region" aria-labelledby="table-heading">
+          <table class="yearly-table" id="yearly-table">
+            <thead>
+              <tr>
+                <th scope="col">Year</th>
+                <th scope="col">Rent (year)</th>
+                <th scope="col">Rent (total)</th>
+                <th scope="col">Mortgage (year)</th>
+                <th scope="col">Home value</th>
+                <th scope="col">Loan balance</th>
+                <th scope="col">Equity</th>
+                <th scope="col">Opportunity cost</th>
+                <th scope="col">Buy net total</th>
+                <th scope="col">Difference</th>
+                <th scope="col">Note</th>
+              </tr>
+            </thead>
+            <tbody id="yearly-rows"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="pagination" hidden>
+          <button type="button" id="table-prev" class="button-secondary">Previous page</button>
+          <span class="page-label" id="table-page-label" role="status" aria-live="polite"></span>
+          <button type="button" id="table-next" class="button-secondary">Next page</button>
+        </div>
+        <div class="actions">
+          <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="details">
+    <summary>How the estimate works and the fixed rules</summary>
+    <p>The mortgage uses equal monthly instalments with an internal monthly split (the monthly table is not shown): the payment is rounded to whole dollars and the last month pays the balance off exactly. Rent compounds yearly, the home price rises or falls yearly, and the down payment's opportunity cost compounds yearly; the opportunity cost counts on the buying side only. The horizon in years is both the mortgage term and the comparison horizon. The breakeven year is the first year the difference reaches zero or above; whether it falls back afterwards, check the difference column of the yearly table.</p>
+    <p>All calculation happens locally in this page; nothing is uploaded, stored, or recorded. The result only reflects the assumptions you enter.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What is opportunity cost?</dt>
+      <dd>Buying locks the down payment into the house, while renting assumes that money grows at the rate you enter; the forgone growth counts as part of buying's cost.</dd>
+      <dt>Once past the breakeven year, is buying always cheaper?</dt>
+      <dd>Not necessarily. The breakeven year is the first year buying catches up with renting; check the difference column of the yearly table for later years.</dd>
+      <dt>Is this buying advice?</dt>
+      <dd>No. It only estimates from the assumptions you enter, excludes taxes, agent fees, renovation, maintenance, management fees and loan-to-value limits, and is not a bank quotation.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page; nothing is uploaded, stored, or recorded.</p>
+</main>
+</body>
+</html>
