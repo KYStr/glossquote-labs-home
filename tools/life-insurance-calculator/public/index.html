@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>壽險保額試算｜Gloss Tools</title>
+<meta name="description" content="以需求法試算家人需要的壽險保額：加總收入替代、房貸、負債、喪葬與教育費用，再扣掉現有保障與資產，並以 10 倍年收入法則對照。僅供教育參考，不構成保險建議。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>壽險保額試算</h1>
+  <p class="lede">以需求法試算家人需要的壽險保額：加總收入替代、房貸、負債、喪葬與教育費用，再扣掉現有保障與資產，並以 10 倍年收入法則對照。僅供教育參考，不構成保險建議。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">試算輸入</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field-group">
+          <legend>年收入、扶養年數與人數</legend>
+          <div class="field">
+            <label for="field-annualIncome">年收入（NT$/年）</label>
+            <p class="help" id="help-annualIncome">整數，範圍 0 至 99,999,999 NT$。</p>
+            <input id="field-annualIncome" name="annualIncome" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1200000" value="1200000" aria-describedby="help-annualIncome">
+            <p class="field-error" id="error-annualIncome" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-supportYears">扶養年數（年）</label>
+            <p class="help" id="help-supportYears">整數，範圍 0 至 40 年。</p>
+            <input id="field-supportYears" name="supportYears" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 10" value="10" aria-describedby="help-supportYears">
+            <p class="field-error" id="error-supportYears" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-dependents">扶養人數（人）</label>
+            <p class="help" id="help-dependents">整數，範圍 0 至 10 人。</p>
+            <input id="field-dependents" name="dependents" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2" value="2" aria-describedby="help-dependents">
+            <p class="field-error" id="error-dependents" role="alert"></p>
+          </div>
+        </fieldset>
+        <fieldset class="field-group">
+          <legend>房貸餘額、其他負債、喪葬與處理費用</legend>
+          <div class="field">
+            <label for="field-mortgageBalance">房貸餘額（NT$）</label>
+            <p class="help" id="help-mortgageBalance">整數，範圍 0 至 99,999,999 NT$。</p>
+            <input id="field-mortgageBalance" name="mortgageBalance" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 3000000" value="3000000" aria-describedby="help-mortgageBalance">
+            <p class="field-error" id="error-mortgageBalance" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-otherDebts">其他負債（NT$）</label>
+            <p class="help" id="help-otherDebts">整數，範圍 0 至 99,999,999 NT$；房貸以外的負債餘額。</p>
+            <input id="field-otherDebts" name="otherDebts" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 200000" value="200000" aria-describedby="help-otherDebts">
+            <p class="field-error" id="error-otherDebts" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-finalExpenses">喪葬與處理費用（NT$）</label>
+            <p class="help" id="help-finalExpenses">整數，範圍 0 至 9,999,999 NT$；預設 350,000 NT$，為內政部調查的平均治喪費用約 35 萬元。</p>
+            <input id="field-finalExpenses" name="finalExpenses" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 350000" value="350000" aria-describedby="help-finalExpenses">
+            <p class="field-error" id="error-finalExpenses" role="alert"></p>
+          </div>
+        </fieldset>
+        <fieldset class="field-group">
+          <legend>每位扶養人教育費用、現有保障、可動用資產</legend>
+          <div class="field">
+            <label for="field-educationPerChild">每位扶養人教育費用（NT$）</label>
+            <p class="help" id="help-educationPerChild">整數，範圍 0 至 9,999,999 NT$；每位扶養人的教育費用總額，不是每年費用。</p>
+            <input id="field-educationPerChild" name="educationPerChild" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 500000" value="500000" aria-describedby="help-educationPerChild">
+            <p class="field-error" id="error-educationPerChild" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-existingCoverage">現有壽險保障（NT$）</label>
+            <p class="help" id="help-existingCoverage">整數，範圍 0 至 99,999,999 NT$。</p>
+            <input id="field-existingCoverage" name="existingCoverage" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1000000" value="1000000" aria-describedby="help-existingCoverage">
+            <p class="field-error" id="error-existingCoverage" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-liquidAssets">可動用資產（NT$）</label>
+            <p class="help" id="help-liquidAssets">整數，範圍 0 至 99,999,999 NT$。</p>
+            <input id="field-liquidAssets" name="liquidAssets" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 500000" value="500000" aria-describedby="help-liquidAssets">
+            <p class="field-error" id="error-liquidAssets" role="alert"></p>
+          </div>
+        </fieldset>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未試算。輸入年收入、扶養年數與其他數字，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算建議保額</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="results-column">
+      <p class="disclaimer">本工具僅供教育試算參考，不構成保險建議、招攬或商品推薦。實際保額請諮詢合格保險業務員或理財顧問，並以保單條款為準。</p>
+      <p class="disclaimer">This tool is an educational estimate only. It is not insurance advice, a solicitation, or a product recommendation. Consult a licensed insurance professional for advice on your own situation.</p>
+
+      <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+        <h2 id="results-heading">建議保額與需求明細</h2>
+        <dl class="summary-list" id="summary-rows"></dl>
+        <dl class="summary-list" id="breakdown-rows"></dl>
+        <div class="actions">
+          <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+        </div>
+        <p class="disclaimer">本工具僅供教育試算參考，不構成保險建議、招攬或商品推薦。實際保額請諮詢合格保險業務員或理財顧問，並以保單條款為準。</p>
+        <p class="disclaimer">This tool is an educational estimate only. It is not insurance advice, a solicitation, or a product recommendation. Consult a licensed insurance professional for advice on your own situation.</p>
+      </section>
+    </div>
+  </div>
+
+  <details class="details">
+    <summary>需求法與固定規則</summary>
+    <p>需求法：建議保額＝年收入 × 扶養年數＋房貸餘額＋其他負債＋喪葬與處理費用＋每位扶養人教育費用 × 扶養人數，再減現有壽險保障與可動用資產；若扣抵後為負數，建議保額為 0。全部以整數新台幣精確運算，不捨入、不計通膨或折現。</p>
+    <p>10 倍年收入法則（年收入 × 10）只作對照值顯示，不參與建議保額。喪葬與處理費用預設 350,000 NT$，引內政部《臺閩地區殯葬消費行為調查研究》國人平均治喪費用約 35 萬元；此為可改寫的預設值，不是法定金額。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只供教育試算參考，不是保險建議、招攬或商品推薦。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>10 倍年收入法則和需求法有什麼不同？</dt>
+      <dd>10 倍法則只用年收入乘 10，是快速對照；需求法按你家的負債、房貸、教育與既有保障逐項加總扣抵，建議保額以需求法為準。</dd>
+      <dt>為什麼建議保額可能是 0？</dt>
+      <dd>現有保障加可動用資產已大於或等於需求總額時，缺口為零，狀態顯示已足夠。</dd>
+      <dt>扶養年數怎麼選？</dt>
+      <dd>通常是收入需要被替代的年數，例如到最年幼的扶養人成年或完成學業為止；常見參考為 10 年，本工具允許 0–40 年。</dd>
+      <dt>試算有考慮通膨或投資報酬嗎？</dt>
+      <dd>沒有。各項以名目金額直接相加，不做折現或複利，這是刻意的簡化；實際規劃請諮詢專業人士。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
