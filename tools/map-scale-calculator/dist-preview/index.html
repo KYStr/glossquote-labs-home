@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>地圖比例尺換算｜Gloss Tools</title>
+<meta name="description" content="輸入地圖比例尺與圖上距離，換算實際距離；反向也可由實際距離算回圖上距離，並附常用比例尺對照表。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>地圖比例尺換算</h1>
+  <p class="lede">輸入地圖比例尺與圖上距離，換算實際距離；反向也可由實際距離算回圖上距離，並附常用比例尺對照表。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">比例尺與距離</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>換算方向</legend>
+          <label class="radio-label"><input type="radio" id="field-mode-map" name="mode" value="map-to-real" checked> 圖上距離 → 實際距離</label>
+          <label class="radio-label"><input type="radio" id="field-mode-real" name="mode" value="real-to-map"> 實際距離 → 圖上距離</label>
+        </fieldset>
+        <div class="field">
+          <label for="field-scale">比例尺 1:N（分母 N）</label>
+          <p class="help" id="help-scale">整數，範圍 1 至 10,000,000。點下方對照表任一列可直接填入。</p>
+          <input id="field-scale" name="scale" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 25000" value="25000" aria-describedby="help-scale">
+          <p class="field-error" id="error-scale" role="alert"></p>
+        </div>
+        <div class="field" id="group-map-cm">
+          <label for="field-map-cm">圖上距離（公分）</label>
+          <p class="help" id="help-map-cm">數字，小數點後最多 3 位，範圍 0.01 至 10,000 公分。</p>
+          <input id="field-map-cm" name="mapCm" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 4" value="4" aria-describedby="help-map-cm">
+          <p class="field-error" id="error-map-cm" role="alert"></p>
+        </div>
+        <div class="field" id="group-real-value" hidden>
+          <label for="field-real-value">實際距離</label>
+          <p class="help" id="help-real-value">數字，小數點後最多 3 位；公尺範圍 0.01 至 1,000,000，公里範圍 0.01 至 1,000。</p>
+          <input id="field-real-value" name="realValue" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1" value="1" aria-describedby="help-real-value">
+          <p class="field-error" id="error-real-value" role="alert"></p>
+          <fieldset class="field">
+            <legend>實際距離單位</legend>
+            <label class="radio-label"><input type="radio" id="field-unit-m" name="realUnit" value="m"> 公尺（m）</label>
+            <label class="radio-label"><input type="radio" id="field-unit-km" name="realUnit" value="km" checked> 公里（km）</label>
+          </fieldset>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未換算。輸入比例尺與距離，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">換算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">換算結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel table-panel" aria-labelledby="scale-table-heading">
+    <h2 id="scale-table-heading">常用比例尺對照表</h2>
+    <p>圖上 1 公分等於實際 N 公分；實際 1 公里等於 100,000 公分，圖上公分等於 100,000 ÷ N。點「填入」把分母填入比例尺欄。</p>
+    <table id="scale-table">
+      <thead>
+        <tr><th scope="col">比例尺</th><th scope="col">圖上 1 公分＝實際</th><th scope="col">實際 1 公里＝圖上</th><th scope="col">填入比例尺</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1:1000</td><td>10 公尺</td><td>100 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="1000">填入 1:1000</button></td></tr>
+        <tr><td>1:5000</td><td>50 公尺</td><td>20 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="5000">填入 1:5000</button></td></tr>
+        <tr><td>1:10000</td><td>100 公尺</td><td>10 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="10000">填入 1:10000</button></td></tr>
+        <tr><td>1:25000</td><td>250 公尺</td><td>4 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="25000">填入 1:25000</button></td></tr>
+        <tr><td>1:50000</td><td>500 公尺</td><td>2 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="50000">填入 1:50000</button></td></tr>
+        <tr><td>1:100000</td><td>1 公里</td><td>1 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="100000">填入 1:100000</button></td></tr>
+        <tr><td>1:200000</td><td>2 公里</td><td>0.5 公分</td><td><button type="button" class="button-secondary table-btn" data-scale="200000">填入 1:200000</button></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <details class="details">
+    <summary>換算方式與固定規則</summary>
+    <p>比例尺 1:N 表示圖上 1 單位等於實際 N 單位。正向：實際距離（公分）＝圖上公分 × N，再換算為公尺（÷100）與公里（÷1000）。反向：實際距離先化為公分（公尺 ×100，公里 ×100,000），圖上公分＝實際公分 ÷ N。</p>
+    <p>捨入只在最後輸出：公尺取 2 位小數、公里取 3 位小數、反向算出的圖上公分取 2 位小數，一律半進位（half-up）。主要單位以捨入前的精確值判定：精確實際距離未滿 1000 公尺時主要單位為公尺，1000 公尺以上為公里；反向主要單位為公分。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>比例尺 1:25000 是什麼意思？</dt>
+      <dd>圖上 1 公分等於實際 250 公尺（25,000 公分）。</dd>
+      <dt>為什麼實際距離同時顯示公尺和公里？</dt>
+      <dd>短距離讀公尺較直覺，長距離讀公里較方便；主要單位以精確值 1000 公尺為界切換。</dd>
+      <dt>可以輸入不是整數的圖上距離嗎？</dt>
+      <dd>可以，小數點後最多 3 位，例如 2.5 公分。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

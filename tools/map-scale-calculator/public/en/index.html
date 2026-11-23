@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Map Scale Calculator | Gloss Tools</title>
+<meta name="description" content="Convert map distance to real distance from a map scale, or real distance back to map distance, with a common-scales reference table.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Map Scale Calculator</h1>
+  <p class="lede">Convert map distance to real distance from a map scale, or real distance back to map distance, with a common-scales reference table. All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Scale and distance</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>Direction</legend>
+          <label class="radio-label"><input type="radio" id="field-mode-map" name="mode" value="map-to-real" checked> Map distance → real distance</label>
+          <label class="radio-label"><input type="radio" id="field-mode-real" name="mode" value="real-to-map"> Real distance → map distance</label>
+        </fieldset>
+        <div class="field">
+          <label for="field-scale">Map scale 1:N (denominator N)</label>
+          <p class="help" id="help-scale">Whole number, from 1 to 10,000,000. Pick any row of the reference table below to fill it in.</p>
+          <input id="field-scale" name="scale" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 25000" value="25000" aria-describedby="help-scale">
+          <p class="field-error" id="error-scale" role="alert"></p>
+        </div>
+        <div class="field" id="group-map-cm">
+          <label for="field-map-cm">Map distance (cm)</label>
+          <p class="help" id="help-map-cm">Number with up to 3 decimal places, from 0.01 to 10,000 cm.</p>
+          <input id="field-map-cm" name="mapCm" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 4" value="4" aria-describedby="help-map-cm">
+          <p class="field-error" id="error-map-cm" role="alert"></p>
+        </div>
+        <div class="field" id="group-real-value" hidden>
+          <label for="field-real-value">Real distance</label>
+          <p class="help" id="help-real-value">Number with up to 3 decimal places; metres from 0.01 to 1,000,000, kilometres from 0.01 to 1,000.</p>
+          <input id="field-real-value" name="realValue" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1" value="1" aria-describedby="help-real-value">
+          <p class="field-error" id="error-real-value" role="alert"></p>
+          <fieldset class="field">
+            <legend>Real distance unit</legend>
+            <label class="radio-label"><input type="radio" id="field-unit-m" name="realUnit" value="m"> Metres (m)</label>
+            <label class="radio-label"><input type="radio" id="field-unit-km" name="realUnit" value="km" checked> Kilometres (km)</label>
+          </fieldset>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing converted yet. Enter a scale and a distance, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Convert</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Conversion result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel table-panel" aria-labelledby="scale-table-heading">
+    <h2 id="scale-table-heading">Common scales reference table</h2>
+    <p>1 cm on the map equals N cm in reality; 1 km in reality equals 100,000 cm, so the map centimetres equal 100,000 ÷ N. Press “Use” to fill the denominator into the scale field.</p>
+    <table id="scale-table">
+      <thead>
+        <tr><th scope="col">Scale</th><th scope="col">1 cm on the map =</th><th scope="col">1 km in reality =</th><th scope="col">Use scale</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1:1000</td><td>10 m</td><td>100 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="1000">Use 1:1000</button></td></tr>
+        <tr><td>1:5000</td><td>50 m</td><td>20 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="5000">Use 1:5000</button></td></tr>
+        <tr><td>1:10000</td><td>100 m</td><td>10 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="10000">Use 1:10000</button></td></tr>
+        <tr><td>1:25000</td><td>250 m</td><td>4 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="25000">Use 1:25000</button></td></tr>
+        <tr><td>1:50000</td><td>500 m</td><td>2 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="50000">Use 1:50000</button></td></tr>
+        <tr><td>1:100000</td><td>1 km</td><td>1 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="100000">Use 1:100000</button></td></tr>
+        <tr><td>1:200000</td><td>2 km</td><td>0.5 cm</td><td><button type="button" class="button-secondary table-btn" data-scale="200000">Use 1:200000</button></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <details class="details">
+    <summary>How conversion works</summary>
+    <p>A scale of 1:N means 1 unit on the map equals N units in reality. Forward: real distance (cm) = map cm × N, then converted to metres (÷100) and kilometres (÷1000). Reverse: real distance is first converted to centimetres (metres ×100, kilometres ×100,000), then map cm = real cm ÷ N.</p>
+    <p>Rounding happens only at output: metres to 2 decimal places, kilometres to 3 decimal places, reverse-computed map centimetres to 2 decimal places, all half-up. The primary unit is decided on the exact unrounded value: below exactly 1000 m the primary unit is metres, at 1000 m or above it is kilometres; reverse results use centimetres. All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>What does a 1:25000 scale mean?</dt>
+      <dd>1 cm on the map equals 250 m (25,000 cm) in reality.</dd>
+      <dt>Why show both metres and kilometres?</dt>
+      <dd>Metres read better for short distances and kilometres for long ones; the primary unit switches at exactly 1000 m on the unrounded value.</dd>
+      <dt>Can I enter a non-integer map distance?</dt>
+      <dd>Yes, up to 3 decimal places, for example 2.5 cm.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
