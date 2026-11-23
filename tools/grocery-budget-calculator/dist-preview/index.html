@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>採買預算試算｜Gloss Tools</title>
+<meta name="description" content="輸入家中成員的年齡層，對照 USDA 食物計畫表，算出每週與每月的在家做飯預算。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>採買預算試算</h1>
+  <p class="lede">輸入家中每位成員的年齡層與性別，選 Thrifty 或 Low-cost 計畫，對照美國農業部（USDA）公布的食物計畫表，算出這一戶每週與每月在家做飯的預算。金額為美元（美國平均值），不做匯率換算。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">食物計畫與家中成員</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>食物計畫</legend>
+          <p class="help">二選一：Thrifty 或 Low-cost。</p>
+          <div class="choice-row">
+            <label><input type="radio" id="field-plan-thrifty" name="plan" value="thrifty" checked> Thrifty</label>
+            <label><input type="radio" id="field-plan-low-cost" name="plan" value="low-cost"> Low-cost</label>
+          </div>
+          <p class="field-error" id="error-plan" role="alert"></p>
+        </fieldset>
+        <h3 id="members-heading">家中成員</h3>
+        <p class="help">每組 0 至 10 人；全戶共 1 至 20 人。</p>
+        <p class="household-total" id="household-total">全戶共 2 人</p>
+        <div class="field">
+          <label for="field-c1">Child, 1 year</label>
+          <p class="help" id="help-c1">$26.40 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c1" class="stepper-btn" aria-label="Decrease Child, 1 year">−</button>
+            <input id="field-c1" name="c1" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c1">
+            <button type="button" id="step-up-c1" class="stepper-btn" aria-label="Increase Child, 1 year">+</button>
+          </div>
+          <p class="field-error" id="error-c1" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c2_3">Child, 2–3 years</label>
+          <p class="help" id="help-c2_3">$39.80 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c2_3" class="stepper-btn" aria-label="Decrease Child, 2–3 years">−</button>
+            <input id="field-c2_3" name="c2_3" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c2_3">
+            <button type="button" id="step-up-c2_3" class="stepper-btn" aria-label="Increase Child, 2–3 years">+</button>
+          </div>
+          <p class="field-error" id="error-c2_3" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c4_5">Child, 4–5 years</label>
+          <p class="help" id="help-c4_5">$43.50 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c4_5" class="stepper-btn" aria-label="Decrease Child, 4–5 years">−</button>
+            <input id="field-c4_5" name="c4_5" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c4_5">
+            <button type="button" id="step-up-c4_5" class="stepper-btn" aria-label="Increase Child, 4–5 years">+</button>
+          </div>
+          <p class="field-error" id="error-c4_5" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c6_8">Child, 6–8 years</label>
+          <p class="help" id="help-c6_8">$48.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c6_8" class="stepper-btn" aria-label="Decrease Child, 6–8 years">−</button>
+            <input id="field-c6_8" name="c6_8" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c6_8">
+            <button type="button" id="step-up-c6_8" class="stepper-btn" aria-label="Increase Child, 6–8 years">+</button>
+          </div>
+          <p class="field-error" id="error-c6_8" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c9_11">Child, 9–11 years</label>
+          <p class="help" id="help-c9_11">$55.80 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c9_11" class="stepper-btn" aria-label="Decrease Child, 9–11 years">−</button>
+            <input id="field-c9_11" name="c9_11" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c9_11">
+            <button type="button" id="step-up-c9_11" class="stepper-btn" aria-label="Increase Child, 9–11 years">+</button>
+          </div>
+          <p class="field-error" id="error-c9_11" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f12_13">Female, 12–13 years</label>
+          <p class="help" id="help-f12_13">$51.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f12_13" class="stepper-btn" aria-label="Decrease Female, 12–13 years">−</button>
+            <input id="field-f12_13" name="f12_13" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f12_13">
+            <button type="button" id="step-up-f12_13" class="stepper-btn" aria-label="Increase Female, 12–13 years">+</button>
+          </div>
+          <p class="field-error" id="error-f12_13" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f14_19">Female, 14–19 years</label>
+          <p class="help" id="help-f14_19">$60.10 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f14_19" class="stepper-btn" aria-label="Decrease Female, 14–19 years">−</button>
+            <input id="field-f14_19" name="f14_19" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f14_19">
+            <button type="button" id="step-up-f14_19" class="stepper-btn" aria-label="Increase Female, 14–19 years">+</button>
+          </div>
+          <p class="field-error" id="error-f14_19" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f20_50">Female, 20–50 years</label>
+          <p class="help" id="help-f20_50">$58.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f20_50" class="stepper-btn" aria-label="Decrease Female, 20–50 years">−</button>
+            <input id="field-f20_50" name="f20_50" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-f20_50">
+            <button type="button" id="step-up-f20_50" class="stepper-btn" aria-label="Increase Female, 20–50 years">+</button>
+          </div>
+          <p class="field-error" id="error-f20_50" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f51_70">Female, 51–70 years</label>
+          <p class="help" id="help-f51_70">$54.60 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f51_70" class="stepper-btn" aria-label="Decrease Female, 51–70 years">−</button>
+            <input id="field-f51_70" name="f51_70" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f51_70">
+            <button type="button" id="step-up-f51_70" class="stepper-btn" aria-label="Increase Female, 51–70 years">+</button>
+          </div>
+          <p class="field-error" id="error-f51_70" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f71">Female, 71+ years</label>
+          <p class="help" id="help-f71">$60.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f71" class="stepper-btn" aria-label="Decrease Female, 71+ years">−</button>
+            <input id="field-f71" name="f71" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f71">
+            <button type="button" id="step-up-f71" class="stepper-btn" aria-label="Increase Female, 71+ years">+</button>
+          </div>
+          <p class="field-error" id="error-f71" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m12_13">Male, 12–13 years</label>
+          <p class="help" id="help-m12_13">$59.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m12_13" class="stepper-btn" aria-label="Decrease Male, 12–13 years">−</button>
+            <input id="field-m12_13" name="m12_13" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m12_13">
+            <button type="button" id="step-up-m12_13" class="stepper-btn" aria-label="Increase Male, 12–13 years">+</button>
+          </div>
+          <p class="field-error" id="error-m12_13" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m14_19">Male, 14–19 years</label>
+          <p class="help" id="help-m14_19">$75.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m14_19" class="stepper-btn" aria-label="Decrease Male, 14–19 years">−</button>
+            <input id="field-m14_19" name="m14_19" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m14_19">
+            <button type="button" id="step-up-m14_19" class="stepper-btn" aria-label="Increase Male, 14–19 years">+</button>
+          </div>
+          <p class="field-error" id="error-m14_19" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m20_50">Male, 20–50 years</label>
+          <p class="help" id="help-m20_50">$73.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m20_50" class="stepper-btn" aria-label="Decrease Male, 20–50 years">−</button>
+            <input id="field-m20_50" name="m20_50" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-m20_50">
+            <button type="button" id="step-up-m20_50" class="stepper-btn" aria-label="Increase Male, 20–50 years">+</button>
+          </div>
+          <p class="field-error" id="error-m20_50" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m51_70">Male, 51–70 years</label>
+          <p class="help" id="help-m51_70">$65.00 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m51_70" class="stepper-btn" aria-label="Decrease Male, 51–70 years">−</button>
+            <input id="field-m51_70" name="m51_70" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m51_70">
+            <button type="button" id="step-up-m51_70" class="stepper-btn" aria-label="Increase Male, 51–70 years">+</button>
+          </div>
+          <p class="field-error" id="error-m51_70" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m71">Male, 71+ years</label>
+          <p class="help" id="help-m71">$62.00 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m71" class="stepper-btn" aria-label="Decrease Male, 71+ years">−</button>
+            <input id="field-m71" name="m71" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m71">
+            <button type="button" id="step-up-m71" class="stepper-btn" aria-label="Increase Male, 71+ years">+</button>
+          </div>
+          <p class="field-error" id="error-m71" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未試算。輸入家中各年齡層人數、選好食物計畫，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算採買預算</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每週與每月預算</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="breakdown-heading">分攤明細</h3>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="分攤明細">
+        <table class="breakdown">
+          <thead>
+            <tr><th>組別</th><th>人數</th><th>每人每週</th><th>該組每週小計</th><th>該組每月小計</th></tr>
+          </thead>
+          <tbody id="breakdown-body"></tbody>
+        </table>
+      </div>
+      <p class="breakdown-note">明細為調整前金額；各組每月小計之和可能與每月總額相差 0.10 至 0.40 美元，此為捨入所致，不是錯誤。</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計畫表與固定規則</summary>
+    <p>費用取自 USDA 食物計畫表 2026 年 10 月版（美國平均，四口之家基準），假設全部餐點與點心皆在家製備；阿拉斯加與夏威夷另有價格，不在本工具範圍。</p>
+    <p>戶人數調整因子：1 人 ×1.20；2 人 ×1.10；3 人 ×1.05；4 人 ×1.00；5–6 人 ×0.95；7 人以上 ×0.90。</p>
+    <p>每週總額＝未調整合計 × 調整因子，半捨入到最接近的 0.10 美元（恰落中間取較大者，例如 143.55 美元取 143.60 美元）。每月總額＝每週總額 × 4.333，半捨入到最接近的 0.10 美元；每人每週、每人每月與每日平均半捨入到分。</p>
+    <p>參照四口之家（男性與女性 20–50 歲、孩童 6–8 與 9–11 歲）Thrifty 每週合計 236.50 美元，與 USDA 公布值逐字相符。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+      <table class="plan-table">
+        <caption>Tables A (Thrifty) and B (Low-cost): weekly dollars per person, USDA Food Plans, October 2026.</caption>
+        <thead>
+<tr><th>Age / sex group</th><th>Thrifty (weekly)</th><th>Low-cost (weekly)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Child, 1 year</td><td>$26.40</td><td>$38.30</td></tr>
+          <tr><td>Child, 2–3 years</td><td>$39.80</td><td>$40.10</td></tr>
+          <tr><td>Child, 4–5 years</td><td>$43.50</td><td>$41.40</td></tr>
+          <tr><td>Child, 6–8 years</td><td>$48.30</td><td>$60.50</td></tr>
+          <tr><td>Child, 9–11 years</td><td>$55.80</td><td>$62.60</td></tr>
+          <tr><td>Female, 12–13 years</td><td>$51.70</td><td>$62.30</td></tr>
+          <tr><td>Female, 14–19 years</td><td>$60.10</td><td>$62.60</td></tr>
+          <tr><td>Female, 20–50 years</td><td>$58.70</td><td>$63.90</td></tr>
+          <tr><td>Female, 51–70 years</td><td>$54.60</td><td>$62.20</td></tr>
+          <tr><td>Female, 71+ years</td><td>$60.30</td><td>$62.10</td></tr>
+          <tr><td>Male, 12–13 years</td><td>$59.70</td><td>$73.20</td></tr>
+          <tr><td>Male, 14–19 years</td><td>$75.30</td><td>$74.50</td></tr>
+          <tr><td>Male, 20–50 years</td><td>$73.70</td><td>$73.50</td></tr>
+          <tr><td>Male, 51–70 years</td><td>$65.00</td><td>$69.20</td></tr>
+          <tr><td>Male, 71+ years</td><td>$62.00</td><td>$68.40</td></tr>
+        </tbody>
+      </table>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>為什麼每月金額和 USDA 公布的不完全一樣？</dt>
+      <dd>本工具的每月金額以公布的每週總額乘 4.333 算出；USDA 自己的每月金額以未捨入的每週費用算出，兩者可相差約 0.20 美元。</dd>
+      <dt>包含外食嗎？</dt>
+      <dd>不包含。食物計畫表假設全部餐點與點心都在家製備。</dd>
+      <dt>為什麼一人戶每人反而比較貴？</dt>
+      <dd>USDA 規定一人戶加 20%、二人戶加 10%，因為小家庭採買較無規模效益；七人以上減 10%。</dd>
+      <dt>有 Moderate-cost 或 Liberal 計畫嗎？</dt>
+      <dd>本工具只提供 Thrifty 與 Low-cost 兩種計畫。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
