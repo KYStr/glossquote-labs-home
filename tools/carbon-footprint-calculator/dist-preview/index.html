@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>碳足跡計算｜Gloss Tools</title>
+<meta name="description" content="輸入用電、交通與飲食，以官方排放係數估算一年碳足跡（公斤 CO2e），並看到六大類別的拆解。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>碳足跡計算</h1>
+  <p class="lede">輸入每月用電、開車里程與油耗、大眾運輸與飛行里程、每週飲食量，以釘版的官方排放係數估算一年的碳足跡（公斤 CO2e），並看到六大類別的拆解。只做個人估算，不做正式盤查、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">每月用電、開車里程與油耗</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-electricityKwhPerMonth">每月用電（度／月）</label>
+          <p class="help" id="help-electricityKwhPerMonth">數字，最多 2 位小數，範圍 0 至 100000 度／月。</p>
+          <input id="field-electricityKwhPerMonth" name="electricityKwhPerMonth" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 300" value="300" aria-describedby="help-electricityKwhPerMonth">
+          <p class="field-error" id="error-electricityKwhPerMonth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carKmPerYear">開車里程（公里／年）</label>
+          <p class="help" id="help-carKmPerYear">數字，最多 2 位小數，範圍 0 至 500000 公里／年。機車也填同一欄。</p>
+          <input id="field-carKmPerYear" name="carKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 12000" value="0" aria-describedby="help-carKmPerYear">
+          <p class="field-error" id="error-carKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carFuelLPer100Km">油耗（公升／100 公里）</label>
+          <p class="help" id="help-carFuelLPer100Km">數字，最多 2 位小數，範圍 0 至 100 公升／100 公里。</p>
+          <input id="field-carFuelLPer100Km" name="carFuelLPer100Km" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 8" value="8" aria-describedby="help-carFuelLPer100Km">
+          <p class="field-error" id="error-carFuelLPer100Km" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carFuelType">燃料種類</label>
+          <p class="help" id="help-carFuelType">汽油或柴油。</p>
+          <select id="field-carFuelType" name="carFuelType" aria-describedby="help-carFuelType">
+            <option value="gasoline" selected>汽油</option>
+            <option value="diesel">柴油</option>
+          </select>
+          <p class="field-error" id="error-carFuelType" role="alert"></p>
+        </div>
+
+        <h2 id="form-heading-transport">大眾運輸與飛行里程</h2>
+        <div class="field">
+          <label for="field-busKmPerYear">公車里程（公里／年）</label>
+          <p class="help" id="help-busKmPerYear">數字，最多 2 位小數，範圍 0 至 1000000 公里／年。</p>
+          <input id="field-busKmPerYear" name="busKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1000" value="0" aria-describedby="help-busKmPerYear">
+          <p class="field-error" id="error-busKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-railKmPerYear">捷運／鐵路里程（公里／年）</label>
+          <p class="help" id="help-railKmPerYear">數字，最多 2 位小數，範圍 0 至 1000000 公里／年。</p>
+          <input id="field-railKmPerYear" name="railKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2000" value="0" aria-describedby="help-railKmPerYear">
+          <p class="field-error" id="error-railKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flightShortKmPerYear">短程飛行里程（公里／年）</label>
+          <p class="help" id="help-flightShortKmPerYear">單程未滿 3,700 公里者填短程。數字，最多 2 位小數，範圍 0 至 1000000 公里／年。</p>
+          <input id="field-flightShortKmPerYear" name="flightShortKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2000" value="0" aria-describedby="help-flightShortKmPerYear">
+          <p class="field-error" id="error-flightShortKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flightLongKmPerYear">長程飛行里程（公里／年）</label>
+          <p class="help" id="help-flightLongKmPerYear">單程 3,700 公里以上者填長程。數字，最多 2 位小數，範圍 0 至 1000000 公里／年。</p>
+          <input id="field-flightLongKmPerYear" name="flightLongKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 10000" value="0" aria-describedby="help-flightLongKmPerYear">
+          <p class="field-error" id="error-flightLongKmPerYear" role="alert"></p>
+        </div>
+
+        <h2 id="form-heading-diet">每週飲食量</h2>
+        <div class="field">
+          <label for="field-dietBeefKgPerWeek">牛肉（公斤／週）</label>
+          <p class="help" id="help-dietBeefKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietBeefKgPerWeek" name="dietBeefKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 0.5" value="0" aria-describedby="help-dietBeefKgPerWeek">
+          <p class="field-error" id="error-dietBeefKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietPorkKgPerWeek">豬肉（公斤／週）</label>
+          <p class="help" id="help-dietPorkKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietPorkKgPerWeek" name="dietPorkKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1" value="0" aria-describedby="help-dietPorkKgPerWeek">
+          <p class="field-error" id="error-dietPorkKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietPoultryKgPerWeek">雞肉（公斤／週）</label>
+          <p class="help" id="help-dietPoultryKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietPoultryKgPerWeek" name="dietPoultryKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 1" value="0" aria-describedby="help-dietPoultryKgPerWeek">
+          <p class="field-error" id="error-dietPoultryKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietFishKgPerWeek">養殖魚（公斤／週）</label>
+          <p class="help" id="help-dietFishKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietFishKgPerWeek" name="dietFishKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 0.5" value="0" aria-describedby="help-dietFishKgPerWeek">
+          <p class="field-error" id="error-dietFishKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietEggsKgPerWeek">雞蛋（公斤／週）</label>
+          <p class="help" id="help-dietEggsKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietEggsKgPerWeek" name="dietEggsKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 0.5" value="0" aria-describedby="help-dietEggsKgPerWeek">
+          <p class="field-error" id="error-dietEggsKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietRiceKgPerWeek">米（公斤／週）</label>
+          <p class="help" id="help-dietRiceKgPerWeek">數字，最多 2 位小數，範圍 0 至 100 公斤／週。</p>
+          <input id="field-dietRiceKgPerWeek" name="dietRiceKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2" value="0" aria-describedby="help-dietRiceKgPerWeek">
+          <p class="field-error" id="error-dietRiceKgPerWeek" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入用電、交通與飲食資料，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算年度碳足跡</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">年度總量與類別占比</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="categories-heading">類別拆解</h3>
+      <dl class="summary-list" id="category-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">本工具結果為估算值，僅供個人參考，不構成正式碳盤查、碳足跡查證或任何申報依據。</p>
+      <p class="disclaimer">Results are estimates for personal reference only and are not a formal carbon inventory, verified footprint, or reporting basis.</p>
+      <h3>排放係數表</h3>
+      <table class="factor-table">
+        <thead><tr><th>活動</th><th>係數</th><th>來源</th></tr></thead>
+        <tbody>
+          <tr><td>用電</td><td>0.471 公斤 CO2e／度</td><td>經濟部能源署 114 年度住宅電力排碳係數，2026-06-02 公告</td></tr>
+          <tr><td>汽油燃燒</td><td>2.31 公斤 CO2／公升</td><td>IPCC 2006 年指南預設燃燒係數（僅 CO2，不含 CH4／N2O）</td></tr>
+          <tr><td>柴油燃燒</td><td>2.68 公斤 CO2／公升</td><td>IPCC 2006 年指南預設燃燒係數（僅 CO2，不含 CH4／N2O）</td></tr>
+          <tr><td>公車</td><td>0.102 公斤 CO2e／延人公里</td><td>DEFRA 2024，local bus</td></tr>
+          <tr><td>捷運／鐵路</td><td>0.035 公斤 CO2e／延人公里</td><td>DEFRA 2024，national rail 公布值 0.03546，取至 3 位小數</td></tr>
+          <tr><td>短程飛行</td><td>0.153 公斤 CO2e／延人公里</td><td>DEFRA 2024，economy，含輻射強迫（RF 1.9）；單程未滿 3,700 公里</td></tr>
+          <tr><td>長程飛行</td><td>0.148 公斤 CO2e／延人公里</td><td>DEFRA 2024，economy，含輻射強迫（RF 1.9）；單程 3,700 公里以上</td></tr>
+          <tr><td>牛肉</td><td>99.5 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+          <tr><td>豬肉</td><td>12.3 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+          <tr><td>雞肉</td><td>9.9 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+          <tr><td>養殖魚</td><td>13.6 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+          <tr><td>雞蛋</td><td>4.7 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+          <tr><td>米</td><td>4.5 公斤 CO2e／公斤</td><td>Poore &amp; Nemecek (2018)，全球平均（含土地利用變化）</td></tr>
+        </tbody>
+      </table>
+      <p class="limits-note">飲食係數為全球平均，生產方式差異極大（牛肉平均 99.5，但中位數遠低於平均，牧場與飼養方式可差數倍）；燃料係數為燃燒端 CO2，不含開採煉製上游排放；飛行係數含輻射強迫。</p>
+      <p class="context-note">台灣 2024 年人均溫室氣體排放約 11.7 公噸 CO2e（全國總量約 273 百萬公噸／人口約 2,340 萬人，2026 年版國家溫室氣體排放清冊），僅供對照，不作達標判定。</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>用電＝每月度數 × 12 × 0.471；車輛＝里程 × 油耗 ÷ 100 × 2.31（汽油）或 2.68（柴油）；公車＝里程 × 0.102；捷運／鐵路＝里程 × 0.035；飛行＝短程里程 × 0.153 ＋ 長程里程 × 0.148；飲食＝每項每週公斤 × 52 × 係數後相加。總量取六類未捨入值相加後半向上捨入至 1 位小數，不是六個已捨入類別值的和；公噸數為未捨入總量 ÷ 1000 再捨入；占比為類別未捨入值 ÷ 總量未捨入值 × 100 再捨入，全零輸入時占比皆為 0.0。年度換算固定為每月 × 12、每週 × 52。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對這一年估算，不做長期追蹤。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>結果是正式碳盤查嗎？</dt>
+      <dd>不是，這是估算值，僅供個人參考。</dd>
+      <dt>為什麼牛肉的係數這麼高？</dt>
+      <dd>飲食係數取 Poore &amp; Nemecek (2018) 全球平均（含土地利用變化），生產方式差異極大，數值僅供比較參考。</dd>
+      <dt>機車怎麼算？</dt>
+      <dd>機車用同一組車輛欄位，填機車里程與油耗即可。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
