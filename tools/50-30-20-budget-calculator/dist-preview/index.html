@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>50/30/20 預算分配｜Gloss Tools</title>
+<meta name="description" content="輸入稅後月收入，按需求 50%、想要 30%、儲蓄／還債 20% 分配，填入實際支出對照目標看差異。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>50/30/20 預算分配</h1>
+  <p class="lede">輸入稅後月收入，按需求 50%、想要 30%、儲蓄／還債 20% 分配；比例可以自訂，但三類合計必須是 100。填入三類實際支出後，對照目標看差異與合計結餘或超支。比例來源是 Elizabeth Warren 與 Amelia Warren Tyagi《All Your Worth: The Ultimate Lifetime Money Plan》（2005）提出的 50/30/20 法則。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">稅後月收入與三類比例</h2>
+      <form id="budget-form" novalidate>
+        <div class="field">
+          <label for="field-income">稅後月收入（元）</label>
+          <p class="help" id="help-income">1–100,000,000 元，整數。請填稅後實領金額，比例是對稅後收入算的。</p>
+          <input id="field-income" name="income" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-income">
+          <p class="field-error" id="error-income" role="alert"></p>
+        </div>
+
+        <h2 id="pct-heading">三類比例（%）</h2>
+        <p class="help" id="help-pct">三類合計須恰為 100。預設為需求 50、想要 30、儲蓄／還債 20。</p>
+        <div class="field">
+          <label for="field-needsPct">需求比例（%）</label>
+          <input id="field-needsPct" name="needsPct" type="text" inputmode="numeric" autocomplete="off" value="50" aria-describedby="help-pct">
+          <p class="field-error" id="error-needsPct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wantsPct">想要比例（%）</label>
+          <input id="field-wantsPct" name="wantsPct" type="text" inputmode="numeric" autocomplete="off" value="30" aria-describedby="help-pct">
+          <p class="field-error" id="error-wantsPct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-savingsPct">儲蓄／還債比例（%）</label>
+          <input id="field-savingsPct" name="savingsPct" type="text" inputmode="numeric" autocomplete="off" value="20" aria-describedby="help-pct">
+          <p class="field-error" id="error-savingsPct" role="alert"></p>
+        </div>
+
+        <h2 id="actuals-heading">實際支出（選填，元）</h2>
+        <p class="help" id="help-actuals">留空表示未填。只填部分類別時，只顯示已填類別的差異，合計不計算；三類都填才顯示合計。</p>
+        <div class="field">
+          <label for="field-actualNeeds">實際需求支出（元）</label>
+          <input id="field-actualNeeds" name="actualNeeds" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualNeeds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-actualWants">實際想要支出（元）</label>
+          <input id="field-actualWants" name="actualWants" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualWants" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-actualSavings">實際儲蓄／還債支出（元）</label>
+          <input id="field-actualSavings" name="actualSavings" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualSavings" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算預算分配</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">每類分配金額</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="每類分配金額表" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">類別</th><th scope="col">比例</th><th scope="col">每月金額（元）</th><th scope="col">每年金額（元）</th></tr>
+          </thead>
+          <tbody id="allocation-rows"></tbody>
+        </table>
+      </div>
+      <div id="variance-block" hidden>
+        <h3>實際支出與目標差異</h3>
+        <div class="table-scroll" role="region" aria-label="實際支出與目標差異表" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">類別</th><th scope="col">實際金額（元）</th><th scope="col">目標金額（元）</th><th scope="col">差異（元）</th><th scope="col">實際占收入</th><th scope="col">狀態</th></tr>
+            </thead>
+            <tbody id="variance-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="totals-block" hidden>
+        <h3>合計</h3>
+        <p id="totals"></p>
+      </div>
+      <div id="advice" hidden></div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">下載報告</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與分類說明</summary>
+    <p>每月金額以精確分數計算：稅後月收入 × 比例 ÷ 100，再四捨五入至整數元（小數部分 .5 進位）。三類四捨五入後與收入的餘差恆為 −1、0 或 +1；餘差不為 0 時，加到精確值最大的類別，並列最大時依需求、想要、儲蓄／還債順序取先者，調整後三類每月金額合計恆等於收入。每年金額為每月金額 × 12。差異為實際支出減目標金額，帶正負號；實際占收入為實際支出 ÷ 收入 × 100，四捨五入至小數 1 位。合計只在三類實際支出都填時計算：未分配餘額為收入減實際總支出，可為負。</p>
+    <p>需求是維持生活與工作必須支付者：房租或房貸、基本水電瓦斯與電話網路、伙食（不含外食）、通勤交通費、保險、必要托育、債務最低應繳金額。想要是可有可無但提升生活品質者：外食、串流訂閱、娛樂、嗜好、購物、旅遊、超出基本款的升級。儲蓄／還債是緊急預備金、退休儲蓄、其他儲蓄目標，以及高於最低應繳金額的額外還款。分類有疑義時以「失去收入後是否仍須支付」判斷：仍須支付者為需求，否則為想要。下載的報告是固定格式的 JSON 檔，內容與畫面上的結果相同。</p>
+  </details>
+
+  <p class="advice-note">本工具僅做算術分配與差異對照，不是理財、投資或稅務建議。</p>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>收入要用稅前還是稅後？</dt>
+      <dd>用稅後實領金額，比例是對稅後收入算的。</dd>
+      <dt>債務最低應繳金額算哪一類？</dt>
+      <dd>算需求；高於最低應繳的額外還款算儲蓄／還債。</dd>
+      <dt>比例一定要 50/30/20 嗎？</dt>
+      <dd>不用，可以自訂，但三類合計必須是 100。</dd>
+      <dt>需求超過 50% 怎麼辦？</dt>
+      <dd>先檢視固定支出，比例是起點不是鐵律；長期超過 50% 代表財務緩衝較薄。</dd>
+      <dt>這個工具會給我理財建議嗎？</dt>
+      <dd>不會，只做算術分配與差異對照。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

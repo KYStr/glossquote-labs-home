@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>50-30-20 Budget Calculator | Gloss Tools</title>
+<meta name="description" content="Split monthly after-tax income into 50% needs, 30% wants and 20% savings, then compare actual spending with the targets.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>50-30-20 Budget Calculator</h1>
+  <p class="lede">Enter your monthly after-tax income and split it into 50% needs, 30% wants and 20% savings and debt repayment. You can customize the percentages, but the three must add up to 100. Enter your actual spending for each category to compare it with the targets and see the total balance or overspend. The split comes from the 50/30/20 rule in Elizabeth Warren and Amelia Warren Tyagi's “All Your Worth: The Ultimate Lifetime Money Plan” (2005).</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Monthly after-tax income and percentages</h2>
+      <form id="budget-form" novalidate>
+        <div class="field">
+          <label for="field-income">Monthly after-tax income</label>
+          <p class="help" id="help-income">1–100,000,000, whole number. Enter take-home pay after tax; the percentages apply to after-tax income.</p>
+          <input id="field-income" name="income" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-income">
+          <p class="field-error" id="error-income" role="alert"></p>
+        </div>
+
+        <h2 id="pct-heading">Percentages (%)</h2>
+        <p class="help" id="help-pct">The three percentages must add up to exactly 100. Defaults are needs 50, wants 30, savings 20.</p>
+        <div class="field">
+          <label for="field-needsPct">Needs percentage (%)</label>
+          <input id="field-needsPct" name="needsPct" type="text" inputmode="numeric" autocomplete="off" value="50" aria-describedby="help-pct">
+          <p class="field-error" id="error-needsPct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wantsPct">Wants percentage (%)</label>
+          <input id="field-wantsPct" name="wantsPct" type="text" inputmode="numeric" autocomplete="off" value="30" aria-describedby="help-pct">
+          <p class="field-error" id="error-wantsPct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-savingsPct">Savings percentage (%)</label>
+          <input id="field-savingsPct" name="savingsPct" type="text" inputmode="numeric" autocomplete="off" value="20" aria-describedby="help-pct">
+          <p class="field-error" id="error-savingsPct" role="alert"></p>
+        </div>
+
+        <h2 id="actuals-heading">Actual spending (optional)</h2>
+        <p class="help" id="help-actuals">Leave blank when not filled. With only some categories filled, only the filled ones show a variance and no total is calculated; the total appears only when all three are filled.</p>
+        <div class="field">
+          <label for="field-actualNeeds">Actual needs spending</label>
+          <input id="field-actualNeeds" name="actualNeeds" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualNeeds" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-actualWants">Actual wants spending</label>
+          <input id="field-actualWants" name="actualWants" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualWants" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-actualSavings">Actual savings spending</label>
+          <input id="field-actualSavings" name="actualSavings" type="text" inputmode="numeric" autocomplete="off" value="" aria-describedby="help-actuals">
+          <p class="field-error" id="error-actualSavings" role="alert"></p>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter values or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate budget split</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Allocation per category</h2>
+      <p id="summary"></p>
+      <div class="table-scroll" role="region" aria-label="Allocation per category table" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Category</th><th scope="col">Percentage</th><th scope="col">Monthly amount</th><th scope="col">Yearly amount</th></tr>
+          </thead>
+          <tbody id="allocation-rows"></tbody>
+        </table>
+      </div>
+      <div id="variance-block" hidden>
+        <h3>Actual spending vs target</h3>
+        <div class="table-scroll" role="region" aria-label="Actual spending vs target table" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Category</th><th scope="col">Actual amount</th><th scope="col">Target amount</th><th scope="col">Difference</th><th scope="col">Actual share of income</th><th scope="col">Status</th></tr>
+            </thead>
+            <tbody id="variance-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="totals-block" hidden>
+        <h3>Total</h3>
+        <p id="totals"></p>
+      </div>
+      <div id="advice" hidden></div>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary">Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated and how categories are defined</summary>
+    <p>Monthly amounts use exact fractions: monthly after-tax income × percentage ÷ 100, rounded to the nearest whole unit (halves round up). After rounding, the three amounts differ from income by −1, 0 or +1; a non-zero difference is added to the category with the largest exact value, ties taken in needs, wants, savings order, so the three monthly amounts always add up to income. Yearly amounts are monthly amounts × 12. The difference is actual spending minus the target, with its sign; the actual share of income is actual spending ÷ income × 100, rounded to one decimal place. The total is calculated only when all three actual amounts are filled: the unallocated balance is income minus total actual spending and can be negative.</p>
+    <p>Needs are what you must pay to live and work: rent or mortgage, basic utilities and phone/internet, groceries (excluding eating out), commuting, insurance, essential childcare, and minimum debt payments. Wants are optional but improve life: eating out, streaming subscriptions, entertainment, hobbies, shopping, travel, and upgrades beyond the basics. Savings covers the emergency fund, retirement savings, other savings goals, and any repayment above the minimum payment. When a category is unclear, ask whether you would still have to pay it after losing your income: if yes, it is a need; otherwise, a want. The downloaded report is a fixed-format JSON file with the same content as the on-screen result.</p>
+  </details>
+
+  <p class="advice-note">This tool only calculates allocations and variances. It is not financial, investment, or tax advice.</p>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">FAQ</h2>
+    <dl>
+      <dt>Should I use gross or take-home pay?</dt>
+      <dd>Use take-home pay after tax; the percentages apply to after-tax income.</dd>
+      <dt>Where do minimum debt payments go?</dt>
+      <dd>Minimum payments count as needs; anything above the minimum counts as savings and debt repayment.</dd>
+      <dt>Must the split be exactly 50/30/20?</dt>
+      <dd>No, you can customize it, but the three percentages must add up to 100.</dd>
+      <dt>What if needs exceed 50%?</dt>
+      <dd>Review fixed costs first; the split is a starting point, not a hard rule, and staying above 50% for long leaves less buffer.</dd>
+      <dt>Does this tool give financial advice?</dt>
+      <dd>No, it only calculates allocations and variances.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally in this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
