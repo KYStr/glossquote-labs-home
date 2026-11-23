@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Solar Payback Calculator | Gloss Tools</title>
+<meta name="description" content="Enter system size, roof area, annual sun hours and installation cost to estimate annual generation, yearly benefit and payback years at Taiwan's feed-in tariff.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Solar Payback Calculator</h1>
+  <p class="lede">Enter system size, roof area, annual sun hours and installation cost to estimate how much electricity a rooftop system generates in a year, how much money it returns each year, and how many years it takes to pay back. Static estimate only — no application process, nothing stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Estimate inputs</h2>
+      <form id="entry-form" novalidate>
+        <h3>System capacity and roof area</h3>
+        <div class="field">
+          <label for="field-systemKwp">System capacity (kWp)</label>
+          <p class="help" id="help-systemKwp">Decimal number, at most 2 decimal places, from 0.1 to 500 kWp.</p>
+          <input id="field-systemKwp" name="systemKwp" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 9" value="9" aria-describedby="help-systemKwp">
+          <p class="field-error" id="error-systemKwp" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-roofAreaM2">Roof area (m²)</label>
+          <p class="help" id="help-roofAreaM2">Decimal number, at most 2 decimal places, from 1 to 100,000 m².</p>
+          <input id="field-roofAreaM2" name="roofAreaM2" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 80" value="80" aria-describedby="help-roofAreaM2">
+          <p class="field-error" id="error-roofAreaM2" role="alert"></p>
+        </div>
+        <h3>Annual sun hours and installation cost</h3>
+        <div class="field">
+          <label for="field-sunHours">Annual sun hours (hours/year)</label>
+          <p class="help" id="help-sunHours">Effective full-sun hours per year. Decimal number, at most 1 decimal place, from 500 to 2,000 hours/year.</p>
+          <input id="field-sunHours" name="sunHours" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1250" value="1250" aria-describedby="help-sunHours">
+          <p class="field-error" id="error-sunHours" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-installCost">Installation cost (NT$)</label>
+          <p class="help" id="help-installCost">Whole number, from NT$1 to NT$100,000,000.</p>
+          <input id="field-installCost" name="installCost" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 540000" value="540000" aria-describedby="help-installCost">
+          <p class="field-error" id="error-installCost" role="alert"></p>
+        </div>
+        <h3>Feed-in tariff, self-use ratio and retail electricity price</h3>
+        <div class="field">
+          <label for="field-fitRate">Feed-in tariff (NT$/kWh)</label>
+          <p class="help" id="help-fitRate">Decimal number, at most 4 decimal places, from NT$0.0001 to NT$20 per kWh. Defaults to the tariff-table value for the system size; you may override it.</p>
+          <input id="field-fitRate" name="fitRate" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 5.6279" value="5.6279" aria-describedby="help-fitRate">
+          <p class="field-error" id="error-fitRate" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-selfUsePct">Self-use ratio (%)</label>
+          <p class="help" id="help-selfUsePct">Decimal number, at most 1 decimal place, from 0 to 100%.</p>
+          <input id="field-selfUsePct" name="selfUsePct" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 30" value="30" aria-describedby="help-selfUsePct">
+          <p class="field-error" id="error-selfUsePct" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-retailPrice">Retail electricity price (NT$/kWh)</label>
+          <p class="help" id="help-retailPrice">Decimal number, at most 2 decimal places, from NT$0.01 to NT$20 per kWh. The default NT$3.00/kWh is an assumption — replace it with the marginal rate on your own bill.</p>
+          <input id="field-retailPrice" name="retailPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 3.00" value="3.00" aria-describedby="help-retailPrice">
+          <p class="field-error" id="error-retailPrice" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter system capacity, roof area, annual sun hours and installation cost, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate payback</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Annual generation, annual benefit and payback years</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <p class="warning-note" id="roof-note" hidden></p>
+      <p class="warning-note" id="beyond-note" hidden></p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具的結果是靜態試算估計，不是發電保證、報價或投資建議；實際發電量受方位、傾角、遮蔭、氣候與設備影響，實際費率以完工併網當期經濟部公告與台電購售電契約為準。</p>
+      <p class="disclaimer">Results are static estimates, not a generation guarantee, a quote, or investment advice. Actual generation depends on orientation, tilt, shading, climate, and equipment; the applicable tariff is the one announced for the period when the system is completed and grid-connected, per the Taipower contract.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated and the fixed rules</summary>
+    <p>Annual generation = system capacity × annual effective sun hours. Self-used kWh follow the self-use ratio; export revenue = exported kWh × feed-in tariff, self-use saving = self-used kWh × retail price; payback years = installation cost ÷ annual benefit. The 20-year total benefit = annual benefit × 20. Module degradation, maintenance cost, discounting, inflation, subsidies, and future tariff changes are not counted.</p>
+    <p>Feed-in tariff table (2026 rooftop rates, MOEA announcement dated 2 January 2026, Ref. No. 11458005630): 1 kW to below 10 kW, NT$5.6279/kWh; 10 kW to below 20 kW, NT$5.3819/kWh; 20 kW to below 50 kW, NT$4.2505/kWh; 50 kW to below 100 kW, NT$4.0459/kWh; 100 kW to below 500 kW, NT$3.7152/kWh; 500 kW and above, NT$3.6236/kWh. Band lower bounds are inclusive, upper bounds exclusive. The 15% northern-region bonus, the 6% high-efficiency module bonus, and local government subsidies are all excluded; ground-mounted and water-surface rates are not used by this tool.</p>
+    <p>Roof rule: each 1 kWp needs 8 m² (a planning value including module spacing and maintenance access). A shortfall is a warning, not an error, and the page shows the largest capacity that fits. Ping conversion is display only: 1 ping = 400/121 m², shown to 2 decimal places.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Which year's feed-in tariff is used?</dt>
+      <dd>The 2026 (ROC 115) MOEA-announced rooftop rates, identical in both phases; the rate that applies is the one announced for the period when the system is completed and grid-connected, per the Taipower contract.</dd>
+      <dt>How is self-consumed electricity valued?</dt>
+      <dd>Self-used kWh are valued at the retail price you enter (default NT$3.00/kWh is an assumption — replace it with the marginal rate on your own bill; Taipower residential rates are inclining-block, which this tool does not compute).</dd>
+      <dt>What if my roof is too small?</dt>
+      <dd>That is a warning, not an error; the page shows the largest capacity that fits, so you can lower the system size and recalculate.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
