@@ -1,10 +1,10 @@
 # HSR Fare Calculator （高鐵票價試算）— VERIFICATION
 
 - Candidate: branch `muse/hsr-fare-calculator-production-20261121`,
-  draft PR (number below), base `codex/initial-publication`. PR head
-  SHA is read back with `gh pr view` after the final push and
-  recorded in the parent report; this file's commit is part of that
-  head.
+  draft PR #430 (https://github.com/KYStr/glossquote-labs-home/pull/430),
+  base `codex/initial-publication`. PR head SHA is read back with
+  `gh pr view` after the final push and recorded in the parent report;
+  this file's commit is part of that head.
 - Spec: `spec-hsr-fare-calculator-20261121`, spec PR #389, head
   `9c9beb8e4a9a186ef4193d476bc41002fb9b81ae` (OPEN, read back with
   `gh pr view` at build time), registry rev 1792 (per the parent
