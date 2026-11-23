@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Carbon Footprint Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate your annual carbon footprint in kg CO2e from electricity, transport and diet using official emission factors, with a breakdown by category.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Back to home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Carbon Footprint Calculator</h1>
+  <p class="lede">Enter monthly electricity use, driving distance and fuel use, public transport and flight distance, and weekly diet amounts to estimate your annual carbon footprint in kg CO2e with official emission factors, broken down by category. A personal estimate only — not a formal inventory, nothing stored.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Monthly electricity, driving distance and fuel use</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-electricityKwhPerMonth">Electricity per month (kWh/month)</label>
+          <p class="help" id="help-electricityKwhPerMonth">Number, at most 2 decimal places, from 0 to 100000 kWh per month.</p>
+          <input id="field-electricityKwhPerMonth" name="electricityKwhPerMonth" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 300" value="300" aria-describedby="help-electricityKwhPerMonth">
+          <p class="field-error" id="error-electricityKwhPerMonth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carKmPerYear">Driving distance (km/year)</label>
+          <p class="help" id="help-carKmPerYear">Number, at most 2 decimal places, from 0 to 500000 km per year. Scooters use the same field.</p>
+          <input id="field-carKmPerYear" name="carKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 12000" value="0" aria-describedby="help-carKmPerYear">
+          <p class="field-error" id="error-carKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carFuelLPer100Km">Fuel use (litres/100 km)</label>
+          <p class="help" id="help-carFuelLPer100Km">Number, at most 2 decimal places, from 0 to 100 litres per 100 km.</p>
+          <input id="field-carFuelLPer100Km" name="carFuelLPer100Km" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 8" value="8" aria-describedby="help-carFuelLPer100Km">
+          <p class="field-error" id="error-carFuelLPer100Km" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-carFuelType">Fuel type</label>
+          <p class="help" id="help-carFuelType">Gasoline or diesel.</p>
+          <select id="field-carFuelType" name="carFuelType" aria-describedby="help-carFuelType">
+            <option value="gasoline" selected>Gasoline</option>
+            <option value="diesel">Diesel</option>
+          </select>
+          <p class="field-error" id="error-carFuelType" role="alert"></p>
+        </div>
+
+        <h2 id="form-heading-transport">Public transport and flight distance</h2>
+        <div class="field">
+          <label for="field-busKmPerYear">Bus distance (km/year)</label>
+          <p class="help" id="help-busKmPerYear">Number, at most 2 decimal places, from 0 to 1000000 km per year.</p>
+          <input id="field-busKmPerYear" name="busKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1000" value="0" aria-describedby="help-busKmPerYear">
+          <p class="field-error" id="error-busKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-railKmPerYear">Metro / rail distance (km/year)</label>
+          <p class="help" id="help-railKmPerYear">Number, at most 2 decimal places, from 0 to 1000000 km per year.</p>
+          <input id="field-railKmPerYear" name="railKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2000" value="0" aria-describedby="help-railKmPerYear">
+          <p class="field-error" id="error-railKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flightShortKmPerYear">Short-haul flight distance (km/year)</label>
+          <p class="help" id="help-flightShortKmPerYear">Flights with a single leg under 3,700 km go here. Number, at most 2 decimal places, from 0 to 1000000 km per year.</p>
+          <input id="field-flightShortKmPerYear" name="flightShortKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2000" value="0" aria-describedby="help-flightShortKmPerYear">
+          <p class="field-error" id="error-flightShortKmPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-flightLongKmPerYear">Long-haul flight distance (km/year)</label>
+          <p class="help" id="help-flightLongKmPerYear">Flights with a single leg of 3,700 km or more go here. Number, at most 2 decimal places, from 0 to 1000000 km per year.</p>
+          <input id="field-flightLongKmPerYear" name="flightLongKmPerYear" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 10000" value="0" aria-describedby="help-flightLongKmPerYear">
+          <p class="field-error" id="error-flightLongKmPerYear" role="alert"></p>
+        </div>
+
+        <h2 id="form-heading-diet">Weekly food amounts</h2>
+        <div class="field">
+          <label for="field-dietBeefKgPerWeek">Beef (kg/week)</label>
+          <p class="help" id="help-dietBeefKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietBeefKgPerWeek" name="dietBeefKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 0.5" value="0" aria-describedby="help-dietBeefKgPerWeek">
+          <p class="field-error" id="error-dietBeefKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietPorkKgPerWeek">Pork (kg/week)</label>
+          <p class="help" id="help-dietPorkKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietPorkKgPerWeek" name="dietPorkKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1" value="0" aria-describedby="help-dietPorkKgPerWeek">
+          <p class="field-error" id="error-dietPorkKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietPoultryKgPerWeek">Poultry (kg/week)</label>
+          <p class="help" id="help-dietPoultryKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietPoultryKgPerWeek" name="dietPoultryKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 1" value="0" aria-describedby="help-dietPoultryKgPerWeek">
+          <p class="field-error" id="error-dietPoultryKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietFishKgPerWeek">Farmed fish (kg/week)</label>
+          <p class="help" id="help-dietFishKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietFishKgPerWeek" name="dietFishKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 0.5" value="0" aria-describedby="help-dietFishKgPerWeek">
+          <p class="field-error" id="error-dietFishKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietEggsKgPerWeek">Eggs (kg/week)</label>
+          <p class="help" id="help-dietEggsKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietEggsKgPerWeek" name="dietEggsKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 0.5" value="0" aria-describedby="help-dietEggsKgPerWeek">
+          <p class="field-error" id="error-dietEggsKgPerWeek" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-dietRiceKgPerWeek">Rice (kg/week)</label>
+          <p class="help" id="help-dietRiceKgPerWeek">Number, at most 2 decimal places, from 0 to 100 kg per week.</p>
+          <input id="field-dietRiceKgPerWeek" name="dietRiceKgPerWeek" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2" value="0" aria-describedby="help-dietRiceKgPerWeek">
+          <p class="field-error" id="error-dietRiceKgPerWeek" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter electricity, transport, and diet figures, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate annual footprint</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Annual total and category shares</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="categories-heading">Breakdown by category</h3>
+      <dl class="summary-list" id="category-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">本工具結果為估算值，僅供個人參考，不構成正式碳盤查、碳足跡查證或任何申報依據。</p>
+      <p class="disclaimer">Results are estimates for personal reference only and are not a formal carbon inventory, verified footprint, or reporting basis.</p>
+      <h3>Emission factor table</h3>
+      <table class="factor-table">
+        <thead><tr><th>Activity</th><th>Factor</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Electricity</td><td>0.471 kg CO2e/kWh</td><td>Energy Administration residential electricity factor for 2025, announced 2026-06-02</td></tr>
+          <tr><td>Gasoline combustion</td><td>2.31 kg CO2/litre</td><td>IPCC 2006 Guidelines default combustion factor (CO2 only, excluding CH4/N2O)</td></tr>
+          <tr><td>Diesel combustion</td><td>2.68 kg CO2/litre</td><td>IPCC 2006 Guidelines default combustion factor (CO2 only, excluding CH4/N2O)</td></tr>
+          <tr><td>Bus</td><td>0.102 kg CO2e/passenger-km</td><td>DEFRA 2024, local bus</td></tr>
+          <tr><td>Metro / rail</td><td>0.035 kg CO2e/passenger-km</td><td>DEFRA 2024, national rail published value 0.03546, rounded to 3 decimals</td></tr>
+          <tr><td>Short-haul flight</td><td>0.153 kg CO2e/passenger-km</td><td>DEFRA 2024, economy, including radiative forcing (RF 1.9); single leg under 3,700 km</td></tr>
+          <tr><td>Long-haul flight</td><td>0.148 kg CO2e/passenger-km</td><td>DEFRA 2024, economy, including radiative forcing (RF 1.9); single leg 3,700 km or more</td></tr>
+          <tr><td>Beef</td><td>99.5 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+          <tr><td>Pork</td><td>12.3 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+          <tr><td>Poultry</td><td>9.9 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+          <tr><td>Farmed fish</td><td>13.6 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+          <tr><td>Eggs</td><td>4.7 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+          <tr><td>Rice</td><td>4.5 kg CO2e/kg</td><td>Poore &amp; Nemecek (2018), global average (including land-use change)</td></tr>
+        </tbody>
+      </table>
+      <p class="limits-note">Diet factors are global averages; production methods vary widely (beef averages 99.5, but the median is far below the average, and farming methods can differ several-fold). Fuel factors are combustion-end CO2 only and exclude upstream extraction and refining emissions. Flight factors include radiative forcing.</p>
+      <p class="context-note">Taiwan's 2024 per-capita greenhouse gas emissions were about 11.7 tonnes CO2e (national total about 273 million tonnes / population about 23.4 million, 2026 National Greenhouse Gas Inventory). For reference only — not a pass/fail target.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How the calculation works</summary>
+    <p>Electricity = monthly kWh × 12 × 0.471; driving = distance × fuel use ÷ 100 × 2.31 (gasoline) or 2.68 (diesel); bus = distance × 0.102; metro / rail = distance × 0.035; flights = short-haul distance × 0.153 + long-haul distance × 0.148; diet = each weekly kg × 52 × its factor, summed. The total is the unrounded category sum rounded half-up to 1 decimal — not the sum of the rounded categories; tonnes are the unrounded total ÷ 1000, rounded; each share is the unrounded category ÷ the unrounded total × 100, rounded; with all-zero input every share is 0.0. Annual conversion is fixed at monthly × 12 and weekly × 52.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or logged. The result is an estimate for this one year only; there is no long-term tracking.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Is this a formal carbon inventory?</dt>
+      <dd>No, it is an estimate for personal reference only.</dd>
+      <dt>Why is the beef factor so high?</dt>
+      <dd>Diet factors are Poore &amp; Nemecek (2018) global averages including land-use change; production methods vary widely, so treat the figures as comparative estimates.</dd>
+      <dt>How do I count a scooter?</dt>
+      <dd>Use the same vehicle fields with your scooter's distance and fuel use.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
