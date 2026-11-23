@@ -7,7 +7,7 @@
 - 基底：`codex/initial-publication`（clone 時 head `8c265267`）
 - 環境：Node v24.22.1（`node --version`）
 - PR：#421（DRAFT，OPEN）— https://github.com/KYStr/glossquote-labs-home/pull/421
-- PR head SHA：`ca718a13989cc271c7aa773a0eb1d00ea2930f66`（以 `gh pr view` 讀回；VERIFICATION 檔內記錄 PR 號的補登 commit 另見下行）
+- 生產 commit：`ca718a13989cc271c7aa773a0eb1d00ea2930f66`（工具本體）；PR head SHA 以 `gh pr view` 在最後一次 push 後讀回、記在 parent report；本檔的補登 commit 亦為 head 的一部分。
 
 ## 命令與結果
 
