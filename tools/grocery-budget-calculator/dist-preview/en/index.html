@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Grocery Budget Calculator | Gloss Tools</title>
+<meta name="description" content="Enter your household by age group and price a weekly and monthly at-home food budget from the USDA food plans.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Grocery Budget Calculator</h1>
+  <p class="lede">Enter each household member's age group and sex, choose the Thrifty or Low-cost plan, and price a weekly and monthly at-home food budget from the USDA food plans. Amounts are US dollars (US average); no currency conversion.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Food plan and household members</h2>
+      <form id="entry-form" novalidate>
+        <fieldset class="field">
+          <legend>Food plan</legend>
+          <p class="help">Choose one: Thrifty or Low-cost.</p>
+          <div class="choice-row">
+            <label><input type="radio" id="field-plan-thrifty" name="plan" value="thrifty" checked> Thrifty</label>
+            <label><input type="radio" id="field-plan-low-cost" name="plan" value="low-cost"> Low-cost</label>
+          </div>
+          <p class="field-error" id="error-plan" role="alert"></p>
+        </fieldset>
+        <h3 id="members-heading">Household members</h3>
+        <p class="help">0 to 10 people per group; 1 to 20 people in the household.</p>
+        <p class="household-total" id="household-total">2 people in the household</p>
+        <div class="field">
+          <label for="field-c1">Child, 1 year</label>
+          <p class="help" id="help-c1">$26.40 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c1" class="stepper-btn" aria-label="Decrease Child, 1 year">−</button>
+            <input id="field-c1" name="c1" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c1">
+            <button type="button" id="step-up-c1" class="stepper-btn" aria-label="Increase Child, 1 year">+</button>
+          </div>
+          <p class="field-error" id="error-c1" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c2_3">Child, 2–3 years</label>
+          <p class="help" id="help-c2_3">$39.80 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c2_3" class="stepper-btn" aria-label="Decrease Child, 2–3 years">−</button>
+            <input id="field-c2_3" name="c2_3" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c2_3">
+            <button type="button" id="step-up-c2_3" class="stepper-btn" aria-label="Increase Child, 2–3 years">+</button>
+          </div>
+          <p class="field-error" id="error-c2_3" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c4_5">Child, 4–5 years</label>
+          <p class="help" id="help-c4_5">$43.50 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c4_5" class="stepper-btn" aria-label="Decrease Child, 4–5 years">−</button>
+            <input id="field-c4_5" name="c4_5" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c4_5">
+            <button type="button" id="step-up-c4_5" class="stepper-btn" aria-label="Increase Child, 4–5 years">+</button>
+          </div>
+          <p class="field-error" id="error-c4_5" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c6_8">Child, 6–8 years</label>
+          <p class="help" id="help-c6_8">$48.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c6_8" class="stepper-btn" aria-label="Decrease Child, 6–8 years">−</button>
+            <input id="field-c6_8" name="c6_8" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c6_8">
+            <button type="button" id="step-up-c6_8" class="stepper-btn" aria-label="Increase Child, 6–8 years">+</button>
+          </div>
+          <p class="field-error" id="error-c6_8" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-c9_11">Child, 9–11 years</label>
+          <p class="help" id="help-c9_11">$55.80 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-c9_11" class="stepper-btn" aria-label="Decrease Child, 9–11 years">−</button>
+            <input id="field-c9_11" name="c9_11" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-c9_11">
+            <button type="button" id="step-up-c9_11" class="stepper-btn" aria-label="Increase Child, 9–11 years">+</button>
+          </div>
+          <p class="field-error" id="error-c9_11" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f12_13">Female, 12–13 years</label>
+          <p class="help" id="help-f12_13">$51.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f12_13" class="stepper-btn" aria-label="Decrease Female, 12–13 years">−</button>
+            <input id="field-f12_13" name="f12_13" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f12_13">
+            <button type="button" id="step-up-f12_13" class="stepper-btn" aria-label="Increase Female, 12–13 years">+</button>
+          </div>
+          <p class="field-error" id="error-f12_13" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f14_19">Female, 14–19 years</label>
+          <p class="help" id="help-f14_19">$60.10 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f14_19" class="stepper-btn" aria-label="Decrease Female, 14–19 years">−</button>
+            <input id="field-f14_19" name="f14_19" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f14_19">
+            <button type="button" id="step-up-f14_19" class="stepper-btn" aria-label="Increase Female, 14–19 years">+</button>
+          </div>
+          <p class="field-error" id="error-f14_19" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f20_50">Female, 20–50 years</label>
+          <p class="help" id="help-f20_50">$58.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f20_50" class="stepper-btn" aria-label="Decrease Female, 20–50 years">−</button>
+            <input id="field-f20_50" name="f20_50" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-f20_50">
+            <button type="button" id="step-up-f20_50" class="stepper-btn" aria-label="Increase Female, 20–50 years">+</button>
+          </div>
+          <p class="field-error" id="error-f20_50" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f51_70">Female, 51–70 years</label>
+          <p class="help" id="help-f51_70">$54.60 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f51_70" class="stepper-btn" aria-label="Decrease Female, 51–70 years">−</button>
+            <input id="field-f51_70" name="f51_70" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f51_70">
+            <button type="button" id="step-up-f51_70" class="stepper-btn" aria-label="Increase Female, 51–70 years">+</button>
+          </div>
+          <p class="field-error" id="error-f51_70" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-f71">Female, 71+ years</label>
+          <p class="help" id="help-f71">$60.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-f71" class="stepper-btn" aria-label="Decrease Female, 71+ years">−</button>
+            <input id="field-f71" name="f71" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-f71">
+            <button type="button" id="step-up-f71" class="stepper-btn" aria-label="Increase Female, 71+ years">+</button>
+          </div>
+          <p class="field-error" id="error-f71" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m12_13">Male, 12–13 years</label>
+          <p class="help" id="help-m12_13">$59.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m12_13" class="stepper-btn" aria-label="Decrease Male, 12–13 years">−</button>
+            <input id="field-m12_13" name="m12_13" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m12_13">
+            <button type="button" id="step-up-m12_13" class="stepper-btn" aria-label="Increase Male, 12–13 years">+</button>
+          </div>
+          <p class="field-error" id="error-m12_13" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m14_19">Male, 14–19 years</label>
+          <p class="help" id="help-m14_19">$75.30 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m14_19" class="stepper-btn" aria-label="Decrease Male, 14–19 years">−</button>
+            <input id="field-m14_19" name="m14_19" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m14_19">
+            <button type="button" id="step-up-m14_19" class="stepper-btn" aria-label="Increase Male, 14–19 years">+</button>
+          </div>
+          <p class="field-error" id="error-m14_19" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m20_50">Male, 20–50 years</label>
+          <p class="help" id="help-m20_50">$73.70 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m20_50" class="stepper-btn" aria-label="Decrease Male, 20–50 years">−</button>
+            <input id="field-m20_50" name="m20_50" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="help-m20_50">
+            <button type="button" id="step-up-m20_50" class="stepper-btn" aria-label="Increase Male, 20–50 years">+</button>
+          </div>
+          <p class="field-error" id="error-m20_50" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m51_70">Male, 51–70 years</label>
+          <p class="help" id="help-m51_70">$65.00 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m51_70" class="stepper-btn" aria-label="Decrease Male, 51–70 years">−</button>
+            <input id="field-m51_70" name="m51_70" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m51_70">
+            <button type="button" id="step-up-m51_70" class="stepper-btn" aria-label="Increase Male, 51–70 years">+</button>
+          </div>
+          <p class="field-error" id="error-m51_70" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-m71">Male, 71+ years</label>
+          <p class="help" id="help-m71">$62.00 per person per week</p>
+          <div class="stepper">
+            <button type="button" id="step-down-m71" class="stepper-btn" aria-label="Decrease Male, 71+ years">−</button>
+            <input id="field-m71" name="m71" type="text" inputmode="numeric" autocomplete="off" value="0" aria-describedby="help-m71">
+            <button type="button" id="step-up-m71" class="stepper-btn" aria-label="Increase Male, 71+ years">+</button>
+          </div>
+          <p class="field-error" id="error-m71" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter the number of people in each age group, choose a food plan, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate grocery budget</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Weekly and monthly budget</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <h3 id="breakdown-heading">Breakdown</h3>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Breakdown">
+        <table class="breakdown">
+          <thead>
+            <tr><th>Group</th><th>People</th><th>Weekly per person</th><th>Weekly subtotal</th><th>Monthly subtotal</th></tr>
+          </thead>
+          <tbody id="breakdown-body"></tbody>
+        </table>
+      </div>
+      <p class="breakdown-note">Breakdown amounts are before the household size adjustment; the monthly subtotals may differ from the monthly total by $0.10–$0.40 through rounding. That is not an error.</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>Food plan tables and fixed rules</summary>
+    <p>Costs come from the USDA Food Plans, October 2026 (US average, four-person household baseline), assuming all meals and snacks are prepared at home; Alaska and Hawaii have separate prices and are out of scope.</p>
+    <p>Household size factors: 1 person ×1.20; 2 persons ×1.10; 3 persons ×1.05; 4 persons ×1.00; 5–6 persons ×0.95; 7 or more persons ×0.90.</p>
+    <p>Weekly total = unadjusted total × size factor, rounded half-up to the nearest $0.10 (an exact halfway value rounds up; e.g. $143.55 becomes $143.60). Monthly total = weekly total × 4.333, rounded half-up to the nearest $0.10; per-person weekly, per-person monthly, and daily average are rounded half-up to the cent.</p>
+    <p>Reference family of four (male and female 20–50, children 6–8 and 9–11) on Thrifty totals $236.50 per week, exactly matching USDA's published figure.</p>
+    <p>All calculations happen locally on this page. Nothing is uploaded, stored, or logged.</p>
+      <table class="plan-table">
+        <caption>Tables A (Thrifty) and B (Low-cost): weekly dollars per person, USDA Food Plans, October 2026.</caption>
+        <thead>
+<tr><th>Age / sex group</th><th>Thrifty (weekly)</th><th>Low-cost (weekly)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Child, 1 year</td><td>$26.40</td><td>$38.30</td></tr>
+          <tr><td>Child, 2–3 years</td><td>$39.80</td><td>$40.10</td></tr>
+          <tr><td>Child, 4–5 years</td><td>$43.50</td><td>$41.40</td></tr>
+          <tr><td>Child, 6–8 years</td><td>$48.30</td><td>$60.50</td></tr>
+          <tr><td>Child, 9–11 years</td><td>$55.80</td><td>$62.60</td></tr>
+          <tr><td>Female, 12–13 years</td><td>$51.70</td><td>$62.30</td></tr>
+          <tr><td>Female, 14–19 years</td><td>$60.10</td><td>$62.60</td></tr>
+          <tr><td>Female, 20–50 years</td><td>$58.70</td><td>$63.90</td></tr>
+          <tr><td>Female, 51–70 years</td><td>$54.60</td><td>$62.20</td></tr>
+          <tr><td>Female, 71+ years</td><td>$60.30</td><td>$62.10</td></tr>
+          <tr><td>Male, 12–13 years</td><td>$59.70</td><td>$73.20</td></tr>
+          <tr><td>Male, 14–19 years</td><td>$75.30</td><td>$74.50</td></tr>
+          <tr><td>Male, 20–50 years</td><td>$73.70</td><td>$73.50</td></tr>
+          <tr><td>Male, 51–70 years</td><td>$65.00</td><td>$69.20</td></tr>
+          <tr><td>Male, 71+ years</td><td>$62.00</td><td>$68.40</td></tr>
+        </tbody>
+      </table>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Why does the monthly total differ slightly from USDA's published figure?</dt>
+      <dd>This tool multiplies the published rounded weekly total by 4.333; USDA's own monthly figures use unrounded weekly costs, so the two can differ by about $0.20.</dd>
+      <dt>Does it include eating out?</dt>
+      <dd>No. The food plans assume all meals and snacks are prepared at home.</dd>
+      <dt>Why does a one-person household cost more per person?</dt>
+      <dd>USDA adds 20% for one person and 10% for two, because small households get less bulk-buying benefit; households of seven or more get 10% off.</dd>
+      <dt>Are Moderate-Cost or Liberal plans included?</dt>
+      <dd>This tool offers only the Thrifty and Low-Cost plans.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculations happen locally on this page. Nothing is uploaded, stored, or logged.</p>
+</main>
+</body>
+</html>
