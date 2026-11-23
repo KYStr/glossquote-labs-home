@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Brick Calculator | Gloss Tools</title>
+<meta name="description" content="Enter wall size, openings, brick type, joint and waste to get net bricks, bricks to buy and mortar volume.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">繁體中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Brick Calculator</h1>
+  <p class="lede">Enter wall length, wall height, openings, brick type, mortar joint and waste allowance to get net bricks, bricks to buy and mortar volume. This estimates one single-leaf brick wall only; it is not a structural design and keeps no record.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Wall and bricks</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-wallLengthM">Wall length (m)</label>
+          <p class="help" id="help-wallLengthM">Number, up to 3 decimal places, from 0.01 to 100 m.</p>
+          <input id="field-wallLengthM" name="wallLengthM" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 4" value="4" aria-describedby="help-wallLengthM">
+          <p class="field-error" id="error-wallLengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wallHeightM">Wall height (m)</label>
+          <p class="help" id="help-wallHeightM">Number, up to 3 decimal places, from 0.01 to 100 m.</p>
+          <input id="field-wallHeightM" name="wallHeightM" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2.5" value="2.5" aria-describedby="help-wallHeightM">
+          <p class="field-error" id="error-wallHeightM" role="alert"></p>
+        </div>
+
+        <fieldset class="openings">
+          <legend>Openings (at most 10)</legend>
+          <p class="help" id="help-opening-widthM">Opening width: number, up to 3 decimal places, from 0.01 to 100 m.</p>
+          <p class="help" id="help-opening-heightM">Opening height: number, up to 3 decimal places, from 0.01 to 100 m. Total opening area must be less than the wall area.</p>
+          <div id="openings-list"></div>
+          <p class="field-error" id="error-openings" role="alert"></p>
+          <div class="actions">
+            <button type="button" id="add-opening-btn" class="button-secondary">Add opening</button>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-brickPreset">Brick type</label>
+          <p class="help" id="help-brickPreset">Preset sizes are commonly used nominal manufacturer sizes; actual supplied sizes follow the supplier. Choose custom if yours differ.</p>
+          <select id="field-brickPreset" name="brickPreset" aria-describedby="help-brickPreset">
+            <option value="taiwan-red" selected>Taiwan red brick (230 × 60 × 110 mm)</option>
+            <option value="uk-standard">UK standard brick (215 × 65 × 102.5 mm)</option>
+            <option value="us-modular">US modular brick (194 × 57 × 92 mm)</option>
+            <option value="custom">Custom brick</option>
+          </select>
+          <p class="field-error" id="error-brickPreset" role="alert"></p>
+        </div>
+
+        <div id="custom-dims" hidden>
+          <div class="field">
+            <label for="field-brickLengthMm">Brick length (mm)</label>
+            <p class="help" id="help-brickLengthMm">Whole number, from 20 to 500 mm.</p>
+            <input id="field-brickLengthMm" name="brickLengthMm" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 200" value="" aria-describedby="help-brickLengthMm">
+            <p class="field-error" id="error-brickLengthMm" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-brickHeightMm">Brick height (mm)</label>
+            <p class="help" id="help-brickHeightMm">Whole number, from 20 to 300 mm.</p>
+            <input id="field-brickHeightMm" name="brickHeightMm" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 60" value="" aria-describedby="help-brickHeightMm">
+            <p class="field-error" id="error-brickHeightMm" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-brickWidthMm">Brick width (mm)</label>
+            <p class="help" id="help-brickWidthMm">Whole number, from 20 to 300 mm.</p>
+            <input id="field-brickWidthMm" name="brickWidthMm" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 100" value="" aria-describedby="help-brickWidthMm">
+            <p class="field-error" id="error-brickWidthMm" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-jointMm">Mortar joint (mm)</label>
+          <p class="help" id="help-jointMm">Number, up to 1 decimal place, from 0 to 20 mm.</p>
+          <input id="field-jointMm" name="jointMm" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 10" value="10" aria-describedby="help-jointMm">
+          <p class="field-error" id="error-jointMm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wastePct">Waste allowance (%)</label>
+          <p class="help" id="help-wastePct">Number, up to 2 decimal places, from 0 to 50%.</p>
+          <input id="field-wastePct" name="wastePct" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 5" value="5" aria-describedby="help-wastePct">
+          <p class="field-error" id="error-wastePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing calculated yet. Enter wall length and height, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Calculate bricks</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Bricks and mortar</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">這是採購估算，不是結構設計；承重、配比與施工請依專業設計。</p>
+      <p class="disclaimer">This is a purchasing estimate, not a structural design; follow professional design for load-bearing, mix and workmanship.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How it is calculated</summary>
+    <p>Net bricks are the net area divided by the effective brick face (including the joint), rounded up. Bricks to buy add waste to the unrounded net count first, then round up — never to the already-rounded integer. Mortar volume is wall volume minus brick volume. Preset sizes are commonly used nominal manufacturer sizes (Taiwan red brick 230 × 60 × 110 mm, UK standard brick 215 × 65 × 102.5 mm, US modular brick 194 × 57 × 92 mm); actual supplied sizes follow the supplier.</p>
+    <p>All calculation happens locally on this page. Nothing is uploaded, stored, or recorded. The result covers one single-leaf wall only.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Where is waste applied?</dt>
+      <dd>Waste is added to the unrounded net brick count, then rounded up — never to the already-rounded integer.</dd>
+      <dt>Why is mortar zero with a 0 mm joint?</dt>
+      <dd>Mortar here is wall volume minus brick volume, so a zero joint leaves no mortar space.</dd>
+      <dt>Is this a structural design?</dt>
+      <dd>No. This is a purchasing estimate, not a structural design; follow professional design for load-bearing, mix and workmanship.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All calculation happens locally on this page. Nothing is uploaded, stored, or recorded.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>磚塊用量計算｜Gloss Tools</title>
+<meta name="description" content="輸入牆長、牆高、門窗開口、磚種、灰縫與損耗率，算出淨磚數、應購磚數與砂漿體積。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>磚塊用量計算</h1>
+  <p class="lede">輸入牆長、牆高、門窗開口、磚種、灰縫與損耗率，算出淨磚數、應購磚數與砂漿體積。只針對一面單層磚牆估算，不做結構設計、不留記錄。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">牆面與磚塊</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-wallLengthM">牆長（公尺）</label>
+          <p class="help" id="help-wallLengthM">數字，最多 3 位小數，範圍 0.01 至 100 公尺。</p>
+          <input id="field-wallLengthM" name="wallLengthM" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 4" value="4" aria-describedby="help-wallLengthM">
+          <p class="field-error" id="error-wallLengthM" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wallHeightM">牆高（公尺）</label>
+          <p class="help" id="help-wallHeightM">數字，最多 3 位小數，範圍 0.01 至 100 公尺。</p>
+          <input id="field-wallHeightM" name="wallHeightM" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 2.5" value="2.5" aria-describedby="help-wallHeightM">
+          <p class="field-error" id="error-wallHeightM" role="alert"></p>
+        </div>
+
+        <fieldset class="openings">
+          <legend>門窗開口（最多 10 個）</legend>
+          <p class="help" id="help-opening-widthM">開口寬：數字，最多 3 位小數，範圍 0.01 至 100 公尺。</p>
+          <p class="help" id="help-opening-heightM">開口高：數字，最多 3 位小數，範圍 0.01 至 100 公尺。開口總面積須小於牆面面積。</p>
+          <div id="openings-list"></div>
+          <p class="field-error" id="error-openings" role="alert"></p>
+          <div class="actions">
+            <button type="button" id="add-opening-btn" class="button-secondary">新增開口</button>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="field-brickPreset">磚塊種類</label>
+          <p class="help" id="help-brickPreset">預設磚種尺寸為製造商常用名目尺寸，實際供貨尺寸以供應商為準，不符者請選自訂。</p>
+          <select id="field-brickPreset" name="brickPreset" aria-describedby="help-brickPreset">
+            <option value="taiwan-red" selected>紅磚（230 × 60 × 110 公釐）</option>
+            <option value="uk-standard">英規標準磚（215 × 65 × 102.5 公釐）</option>
+            <option value="us-modular">美規模組磚（194 × 57 × 92 公釐）</option>
+            <option value="custom">自訂磚種</option>
+          </select>
+          <p class="field-error" id="error-brickPreset" role="alert"></p>
+        </div>
+
+        <div id="custom-dims" hidden>
+          <div class="field">
+            <label for="field-brickLengthMm">磚長（公釐）</label>
+            <p class="help" id="help-brickLengthMm">整數，範圍 20 至 500 公釐。</p>
+            <input id="field-brickLengthMm" name="brickLengthMm" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 200" value="" aria-describedby="help-brickLengthMm">
+            <p class="field-error" id="error-brickLengthMm" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-brickHeightMm">磚高（公釐）</label>
+            <p class="help" id="help-brickHeightMm">整數，範圍 20 至 300 公釐。</p>
+            <input id="field-brickHeightMm" name="brickHeightMm" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 60" value="" aria-describedby="help-brickHeightMm">
+            <p class="field-error" id="error-brickHeightMm" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="field-brickWidthMm">磚厚（公釐）</label>
+            <p class="help" id="help-brickWidthMm">整數，範圍 20 至 300 公釐。</p>
+            <input id="field-brickWidthMm" name="brickWidthMm" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 100" value="" aria-describedby="help-brickWidthMm">
+            <p class="field-error" id="error-brickWidthMm" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="field-jointMm">灰縫厚度（公釐）</label>
+          <p class="help" id="help-jointMm">數字，最多 1 位小數，範圍 0 至 20 公釐。</p>
+          <input id="field-jointMm" name="jointMm" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 10" value="10" aria-describedby="help-jointMm">
+          <p class="field-error" id="error-jointMm" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-wastePct">損耗率（%）</label>
+          <p class="help" id="help-wastePct">數字，最多 2 位小數，範圍 0 至 50%。</p>
+          <input id="field-wastePct" name="wastePct" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 5" value="5" aria-describedby="help-wastePct">
+          <p class="field-error" id="error-wastePct" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未計算。輸入牆長與牆高，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算磚塊用量</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">磚塊數與砂漿</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">這是採購估算，不是結構設計；承重、配比與施工請依專業設計。</p>
+      <p class="disclaimer">This is a purchasing estimate, not a structural design; follow professional design for load-bearing, mix and workmanship.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>淨磚數為淨面積除以含灰縫的有效磚面後無條件進位；應購磚數是損耗加在未捨入的淨磚數上再無條件進位，不是加在已進位的整數上。砂漿體積是牆體體積減磚體體積的差值。預設磚種尺寸為製造商常用名目尺寸（紅磚 230 × 60 × 110 公釐、英規標準磚 215 × 65 × 102.5 公釐、美規模組磚 194 × 57 × 92 公釐），實際供貨尺寸以供應商為準。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。結果只針對這一面單層磚牆，不做長期追蹤。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>損耗加在哪裡？</dt>
+      <dd>損耗加在未捨入的淨磚數上再無條件進位，不是加在已進位的整數上。</dd>
+      <dt>灰縫 0 時砂漿為什麼是 0？</dt>
+      <dd>本工具的砂漿是牆體減磚體的差值，灰縫為 0 代表磚與磚之間沒有砂漿空間。</dd>
+      <dt>這是結構設計嗎？</dt>
+      <dd>不是。這是採購估算，不做結構設計；承重、配比與施工請依專業設計。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
