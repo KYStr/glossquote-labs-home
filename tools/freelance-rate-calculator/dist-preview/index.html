@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>接案費率試算｜Gloss Tools</title>
+<meta name="description" content="自由工作者從目標年收入出發，計入可計費使用率與間接成本，算出應報的時薪與日薪。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>接案費率試算</h1>
+  <p class="lede">自由工作者從目標年收入出發，計入可計費使用率與間接成本，算出應報的時薪與日薪，不再憑感覺開價。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">目標與工作條件</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-targetAnnualIncome">目標年收入（NT$）</label>
+          <p class="help" id="help-targetAnnualIncome">整數，範圍 1 至 100,000,000 NT$。</p>
+          <input id="field-targetAnnualIncome" name="targetAnnualIncome" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 1200000" value="1200000" aria-describedby="help-targetAnnualIncome">
+          <p class="field-error" id="error-targetAnnualIncome" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-workingDaysPerYear">年工作天數</label>
+          <p class="help" id="help-workingDaysPerYear">整數，範圍 1 至 365 天。</p>
+          <input id="field-workingDaysPerYear" name="workingDaysPerYear" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 220" value="220" aria-describedby="help-workingDaysPerYear">
+          <p class="field-error" id="error-workingDaysPerYear" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-hoursPerDay">每日工時</label>
+          <p class="help" id="help-hoursPerDay">最多 1 位小數，範圍 0.5 至 24 小時。</p>
+          <input id="field-hoursPerDay" name="hoursPerDay" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 8" value="8" aria-describedby="help-hoursPerDay">
+          <p class="field-error" id="error-hoursPerDay" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-billableUtilizationPercent">可計費使用率（%）</label>
+          <p class="help" id="help-billableUtilizationPercent">最多 1 位小數，範圍 1 至 100%。</p>
+          <input id="field-billableUtilizationPercent" name="billableUtilizationPercent" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 70" value="70" aria-describedby="help-billableUtilizationPercent">
+          <p class="field-error" id="error-billableUtilizationPercent" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-overheadPercent">間接成本（%）</label>
+          <p class="help" id="help-overheadPercent">最多 1 位小數，範圍 0 至 100%。</p>
+          <input id="field-overheadPercent" name="overheadPercent" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 20" value="20" aria-describedby="help-overheadPercent">
+          <p class="field-error" id="error-overheadPercent" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未試算。輸入五個數值，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">計算費率</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">費率結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">這只是試算參考，實際報價還要考慮稅費、勞健保、議價空間與市場行情。</p>
+      <p class="disclaimer">This is an estimate only; actual quotes should also account for tax, insurance, negotiation room and market rates.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>計算方式與固定規則</summary>
+    <p>先把目標年收入加上間接成本，再除以計費時數（年工作天數 × 可計費使用率 × 每日工時），得到時薪；除以計費天數，得到日薪。月均目標為目標年收入除以 12。金額四捨五入至整元，天數與時數四捨五入至 1 位小數；費率由未捨入的精確值算出，不用已捨入的中間值。</p>
+    <p>全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。幣別固定新臺幣（NT$）。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>時薪是怎麼算出來的？</dt>
+      <dd>先把目標年收入加上間接成本，再除以計費時數（年工作天數 × 可計費使用率 × 每日工時）。</dd>
+      <dt>這個費率可以直接拿去報價嗎？</dt>
+      <dd>這只是試算參考，實際報價還要考慮稅費、勞健保、議價空間與市場行情。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>
