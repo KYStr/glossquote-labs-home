@@ -1,10 +1,10 @@
 # Map Scale Calculator （地圖比例尺換算）— VERIFICATION
 
 - Candidate: branch `muse/map-scale-calculator-production-20261121`,
-  draft PR (number below), base `codex/initial-publication`. PR head
-  SHA is read back with `gh pr view` after the final push and
-  recorded in the parent report; this file's commit is part of that
-  head.
+  draft PR #441 (https://github.com/KYStr/glossquote-labs-home/pull/441),
+  base `codex/initial-publication`. PR head SHA is read back with
+  `gh pr view` after the final push and recorded in the parent report;
+  this file's commit is part of that head.
 - Spec: `spec-map-scale-calculator-20261121`, spec PR #398, head
   `91540b9ccad4b01dc72aed0419f44b5661e1416c`.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
