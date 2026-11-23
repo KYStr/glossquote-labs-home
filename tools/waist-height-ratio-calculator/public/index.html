@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>腰高比計算機｜Gloss Tools</title>
+<meta name="description" content="輸入腰圍與身高，算出腰高比，對照 NICE 分級判斷中心肥胖程度，並算出腰圍維持不到身高一半還差幾公分。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../../index.html">Gloss Tools</a>
+  <nav class="topnav" aria-label="導覽">
+    <a href="../../index.html">回首頁</a>
+    <span class="lang-switch">
+      <a href="en/index.html" hreflang="en">English</a>
+      <span class="draft-note">切換語言會離開本頁，未執行的草稿將遺失。</span>
+    </span>
+  </nav>
+</header>
+<main class="shell">
+  <div class="canvas">
+    <h1>腰高比計算機</h1>
+    <p class="lede">輸入腰圍與身高，算出腰高比，對照 NICE 分級判斷中心肥胖程度，並算出腰圍維持不到身高一半還差幾公分。全部在本機計算，不上傳。</p>
+
+    <form id="calc-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <label for="input-waist" id="label-waist">腰圍（公分）</label>
+          <input id="input-waist" name="waistCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-waist" hidden></p>
+        </div>
+        <div class="field">
+          <label for="input-height" id="label-height">身高（公分）</label>
+          <input id="input-height" name="heightCm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="">
+          <p class="field-error" id="error-height" hidden></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="btn-run">計算腰高比</button>
+        <button type="button" id="btn-example">載入範例</button>
+        <button type="button" id="btn-cancel" hidden>取消</button>
+        <button type="button" id="btn-reset">重設</button>
+        <button type="button" id="btn-download" hidden>下載報告</button>
+      </div>
+    </form>
+
+    <p class="status" id="status" role="status" aria-live="polite">請輸入腰圍與身高，或載入範例。</p>
+
+    <p class="disclaimer">本工具僅供一般健康資訊參考，不是醫療診斷或建議；如有疑慮請諮詢醫事人員。</p>
+
+    <section class="result" id="result" hidden aria-labelledby="result-heading">
+      <h2 id="result-heading">計算結果</h2>
+      <p class="result-sentence" id="result-sentence"></p>
+      <dl class="result-facts">
+        <div>
+          <dt>腰高比</dt>
+          <dd id="result-whtr"></dd>
+        </div>
+        <div>
+          <dt>分級</dt>
+          <dd id="result-category"></dd>
+        </div>
+        <div>
+          <dt>健康腰圍區間</dt>
+          <dd id="result-range"></dd>
+        </div>
+        <div>
+          <dt>達標差值</dt>
+          <dd id="result-lose"></dd>
+        </div>
+      </dl>
+    </section>
+
+    <details class="rules">
+      <summary>計算規則與限制</summary>
+      <ul>
+        <li>腰圍 20 至 300 公分，身高 50 至 300 公分；數字格式為十進位小數，最多 2 位小數，不接受千分位逗號、指數、符號或空白；每欄最多 16 個字元。</li>
+        <li>腰高比顯示值四捨五入到小數第 2 位；分級以未四捨五入的精確比值判定：低於 0.40 為低於健康範圍，0.40 至未滿 0.50 為健康，0.50 至未滿 0.60 為中心肥胖增加，0.60 或以上為高中心肥胖。</li>
+        <li>健康腰圍區間為身高的 0.40 至 0.50 倍，取 1 位小數；達標差值只在精確比值達 0.50 或以上時顯示，為腰圍減去身高一半，取 1 位小數。</li>
+        <li>分級適用於 BMI 未滿 35 kg/m² 的成年人，男女與各族裔同一組界線；BMI ≥ 35 時腰圍對風險的額外預測力很小，本工具不另作調整，結果仍僅供參考。</li>
+        <li>量測說明：站立放鬆，自然呼氣末量測；捲尺水平置於最低肋骨下緣與髖骨（髂骨）上緣的中點，貼合皮膚但不勒緊（WHO STEPS 量測法）。</li>
+        <li>資料只保留在目前頁面草稿；離開或切換語言即丟棄，不儲存、不上傳。</li>
+      </ul>
+    </details>
+  </div>
+
+  <aside class="inspector">
+    <h2>常見問題</h2>
+    <h3>顯示 0.50 卻是健康，為什麼？</h3>
+    <p>分級用未四捨五入的精確比值判定，顯示值只取 2 位小數；例如 84.9 ÷ 170 = 0.4994…，顯示 0.50，仍屬健康。</p>
+    <h3>腰圍要怎麼量？</h3>
+    <p>站立放鬆，自然呼氣末量測；捲尺水平置於最低肋骨下緣與髖骨上緣的中點，貼合皮膚但不勒緊。</p>
+    <h3>腰高比跟 BMI 有什麼不同？</h3>
+    <p>BMI 用體重與身高，反映整體體重；腰高比用腰圍與身高，反映腹部脂肪分布，兩者互補，不能互相取代。</p>
+  </aside>
+</main>
+<footer class="footer">
+  <p>Gloss Tools · 腰高比計算機在本機離線計算，沒有帳號，也不會傳送你的數字。</p>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
