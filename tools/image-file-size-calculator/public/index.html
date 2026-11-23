@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>圖片檔案大小估算｜Gloss Tools</title>
+<meta name="description" content="輸入圖片寬×高像素、色彩深度與格式，估算靜態圖片的檔案大小（KB／MB）。">
+<link rel="stylesheet" href="./styles/app.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="語言與首頁">
+    <a href="./en/index.html" lang="en">English</a>
+    <span class="draft-note">切換語言或離開頁面會失去目前草稿。</span>
+    <a href="../../">回首頁</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>圖片檔案大小估算</h1>
+  <p class="lede">輸入圖片寬×高像素、色彩深度與格式，估算一張靜態圖片的檔案大小，並對照未壓縮原始大小。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">圖片尺寸與格式</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-widthPx">圖片寬度（像素）</label>
+          <p class="help" id="help-widthPx">整數，範圍 1 至 100000 像素。</p>
+          <input id="field-widthPx" name="widthPx" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 4000" value="" aria-describedby="help-widthPx">
+          <p class="field-error" id="error-widthPx" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-heightPx">圖片高度（像素）</label>
+          <p class="help" id="help-heightPx">整數，範圍 1 至 100000 像素；總像素不得超過 10 億。</p>
+          <input id="field-heightPx" name="heightPx" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 3000" value="" aria-describedby="help-heightPx">
+          <p class="field-error" id="error-heightPx" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bitDepth">色彩深度</label>
+          <p class="help" id="help-bitDepth">每像素位元數：1、8、16、24、32、48 或 64。</p>
+          <select id="field-bitDepth" name="bitDepth" aria-describedby="help-bitDepth">
+            <option value="1">1-bit（單色）</option>
+            <option value="8">8-bit</option>
+            <option value="16">16-bit</option>
+            <option value="24" selected>24-bit（一般彩色）</option>
+            <option value="32">32-bit（含透明通道）</option>
+            <option value="48">48-bit</option>
+            <option value="64">64-bit</option>
+          </select>
+          <p class="field-error" id="error-bitDepth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-format">格式</label>
+          <p class="help" id="help-format">七種格式之一；係數為典型估算值，實際大小依圖片內容與編碼器而異。</p>
+          <select id="field-format" name="format" aria-describedby="help-format">
+            <option value="uncompressed">未壓縮</option>
+            <option value="jpeg" selected>JPEG（有損，係數 0.10）</option>
+            <option value="png">PNG（無損，係數 0.40）</option>
+            <option value="webp-lossy">WebP（有損，係數 0.07）</option>
+            <option value="webp-lossless">WebP（無損，係數 0.30）</option>
+            <option value="gif">GIF（索引色，係數 0.25）</option>
+            <option value="avif">AVIF（有損，係數 0.05）</option>
+          </select>
+          <p class="field-error" id="error-format" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">尚未估算。輸入圖片寬×高像素、色彩深度與格式，或載入範例。</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">估算檔案大小</button>
+          <button type="button" id="example-btn" class="button-secondary">載入範例</button>
+          <button type="button" id="reset-btn" class="button-secondary">重設</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>取消</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">估算結果</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <p class="estimate-note" id="estimate-note">估算值，非實際檔案大小</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>下載報告</button>
+      </div>
+      <p class="disclaimer">估算值，非實際檔案大小。實際檔案大小依圖片內容、編碼器與品質設定而異，本工具給的是典型估算值，不是實際檔案大小。</p>
+      <p class="disclaimer">Estimate, not the actual file size. Actual file size depends on image content, encoder and quality settings; this tool gives a typical estimate, not the actual file size.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>估算方式與固定規則</summary>
+    <p>未壓縮位元組 = 寬 × 高 × 色彩深度 ÷ 8，1-bit 且總位元數為奇數時進位到整數位元組。估算位元組 = 有效位元組 × 格式係數（half-up 取整）。GIF 的有效色彩深度上限為 8-bit。1 KB = 1024 bytes、1 MB = 1024 KB。估算大小未滿 1024 位元組時以位元組顯示，未滿 1 MB 時以 KB 顯示，其餘以 MB 顯示。</p>
+    <p>格式係數（皆為典型估算值）：未壓縮 1.00、JPEG 0.10、PNG 0.40、WebP（有損）0.07、WebP（無損）0.30、GIF 0.25、AVIF 0.05。全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">常見問題</h2>
+    <dl>
+      <dt>估算值準嗎？</dt>
+      <dd>實際檔案大小依圖片內容、編碼器與品質設定而異，本工具給的是典型估算值，不是實際檔案大小。</dd>
+      <dt>1 KB 是 1000 還是 1024 bytes？</dt>
+      <dd>本工具 1 KB = 1024 bytes、1 MB = 1024 KB。</dd>
+      <dt>影片可以用嗎？</dt>
+      <dd>不行。影片大小以位元率 × 時長估算，本工具只算靜態圖片。</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">全部計算都在這個頁面本機進行，不上傳、不儲存、不記錄你的輸入。</p>
+</main>
+</body>
+</html>

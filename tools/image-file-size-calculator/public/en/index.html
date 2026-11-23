@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Image File Size Calculator | Gloss Tools</title>
+<meta name="description" content="Estimate a still image's file size from its pixel dimensions, bit depth and format.">
+<link rel="stylesheet" href="../styles/app.css">
+<script type="module" src="../js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <p class="topbar-product">Gloss Tools</p>
+  <nav class="topbar-nav" aria-label="Language and home">
+    <a href="../index.html" lang="zh-Hant">中文</a>
+    <span class="draft-note">Switching language or leaving this page discards the current draft.</span>
+    <a href="../../en/">Home</a>
+  </nav>
+</header>
+<main class="layout">
+  <h1>Image File Size Calculator</h1>
+  <p class="lede">Enter an image's width and height in pixels, its bit depth and format to estimate the file size of a still image, alongside its uncompressed size. All computation happens locally on this page; nothing is uploaded, stored, or recorded.</p>
+
+  <div class="columns">
+    <section class="panel" aria-labelledby="form-heading">
+      <h2 id="form-heading">Image size and format</h2>
+      <form id="entry-form" novalidate>
+        <div class="field">
+          <label for="field-widthPx">Image width (px)</label>
+          <p class="help" id="help-widthPx">Whole number, from 1 to 100000 pixels.</p>
+          <input id="field-widthPx" name="widthPx" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 4000" value="" aria-describedby="help-widthPx">
+          <p class="field-error" id="error-widthPx" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-heightPx">Image height (px)</label>
+          <p class="help" id="help-heightPx">Whole number, from 1 to 100000 pixels; total pixels must not exceed 1 billion.</p>
+          <input id="field-heightPx" name="heightPx" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 3000" value="" aria-describedby="help-heightPx">
+          <p class="field-error" id="error-heightPx" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-bitDepth">Colour depth</label>
+          <p class="help" id="help-bitDepth">Bits per pixel: 1, 8, 16, 24, 32, 48, or 64.</p>
+          <select id="field-bitDepth" name="bitDepth" aria-describedby="help-bitDepth">
+            <option value="1">1-bit (monochrome)</option>
+            <option value="8">8-bit</option>
+            <option value="16">16-bit</option>
+            <option value="24" selected>24-bit (typical colour)</option>
+            <option value="32">32-bit (with alpha channel)</option>
+            <option value="48">48-bit</option>
+            <option value="64">64-bit</option>
+          </select>
+          <p class="field-error" id="error-bitDepth" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="field-format">Format</label>
+          <p class="help" id="help-format">One of seven formats; factors are typical estimates and actual size varies with image content and encoder.</p>
+          <select id="field-format" name="format" aria-describedby="help-format">
+            <option value="uncompressed">Uncompressed</option>
+            <option value="jpeg" selected>JPEG (lossy, factor 0.10)</option>
+            <option value="png">PNG (lossless, factor 0.40)</option>
+            <option value="webp-lossy">WebP (lossy, factor 0.07)</option>
+            <option value="webp-lossless">WebP (lossless, factor 0.30)</option>
+            <option value="gif">GIF (indexed colour, factor 0.25)</option>
+            <option value="avif">AVIF (lossy, factor 0.05)</option>
+          </select>
+          <p class="field-error" id="error-format" role="alert"></p>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite" aria-busy="false">Nothing estimated yet. Enter the image width and height in pixels, bit depth and format, or load the example.</p>
+        <p class="example-note" id="example-note" hidden></p>
+        <div class="actions">
+          <button type="submit" id="run-btn" class="button-primary">Estimate file size</button>
+          <button type="button" id="example-btn" class="button-secondary">Load example</button>
+          <button type="button" id="reset-btn" class="button-secondary">Reset</button>
+          <button type="button" id="cancel-btn" class="button-secondary" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Estimated result</h2>
+      <dl class="summary-list" id="summary-rows"></dl>
+      <dl class="summary-list" id="detail-rows"></dl>
+      <p class="estimate-note" id="estimate-note">Estimate, not the actual file size</p>
+      <div class="actions">
+        <button type="button" id="download-btn" class="button-secondary" hidden>Download report</button>
+      </div>
+      <p class="disclaimer">估算值，非實際檔案大小。實際檔案大小依圖片內容、編碼器與品質設定而異，本工具給的是典型估算值，不是實際檔案大小。</p>
+      <p class="disclaimer">Estimate, not the actual file size. Actual file size depends on image content, encoder and quality settings; this tool gives a typical estimate, not the actual file size.</p>
+    </section>
+  </div>
+
+  <details class="details">
+    <summary>How the estimate works and the fixed rules</summary>
+    <p>Uncompressed bytes = width × height × bit depth ÷ 8, rounded up to a whole byte when the total bit count is odd at 1-bit. Estimated bytes = effective bytes × format factor (rounded half-up). GIF caps the effective bit depth at 8-bit. 1 KB = 1024 bytes and 1 MB = 1024 KB. Estimates under 1024 bytes are shown in bytes, under 1 MB in KB, and the rest in MB.</p>
+    <p>Format factors (all typical estimates): uncompressed 1.00, JPEG 0.10, PNG 0.40, WebP (lossy) 0.07, WebP (lossless) 0.30, GIF 0.25, AVIF 0.05. All computation happens locally on this page; nothing is uploaded, stored, or recorded.</p>
+  </details>
+
+  <section class="panel faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <dl>
+      <dt>Are estimates accurate?</dt>
+      <dd>Actual file size depends on image content, encoder and quality settings; this tool gives a typical estimate, not the actual file size.</dd>
+      <dt>Is 1 KB 1000 or 1024 bytes?</dt>
+      <dd>This tool uses 1 KB = 1024 bytes and 1 MB = 1024 KB.</dd>
+      <dt>Can I use it for video?</dt>
+      <dd>No. Video size is estimated from bitrate × duration; this tool is for still images only.</dd>
+    </dl>
+  </section>
+
+  <p class="privacy-note">All computation happens locally on this page; nothing is uploaded, stored, or recorded.</p>
+</main>
+</body>
+</html>
