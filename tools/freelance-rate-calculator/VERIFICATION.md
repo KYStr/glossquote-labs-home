@@ -1,9 +1,10 @@
 # Freelance Rate Calculator （接案費率試算）— VERIFICATION
 
 - Candidate: branch `muse/freelance-rate-calculator-production-20261121`,
-  draft PR (number and head SHA filled in after the final push; see
-  the parent report for the read-back head — this file's commit is
-  part of that head), base `codex/initial-publication`.
+  draft PR #414 (https://github.com/KYStr/glossquote-labs-home/pull/414),
+  base `codex/initial-publication`. PR head SHA is read back with
+  `gh pr view` after the final push and recorded in the parent report;
+  this file's commit is part of that head.
 - Spec: `spec-freelance-rate-calculator-20261121`, spec PR #374, head
   `468c6cd604644154701002a52c3d6949c3f726a0`.
 - Environment: Node v24.22.1, this VM, 2026-11-23.
